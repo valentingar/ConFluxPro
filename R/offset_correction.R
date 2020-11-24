@@ -34,11 +34,19 @@ offset_correction <- function(df,
                               gases_std,
                               depth_cal){
 
-un_mod <- unique(corr_map$mode)
+un_mod <- unique(na.omit(corr_map$mode))
 un_mod <- un_mod[!un_mod %in% c("lin","const")]
 if (length(un_mod)>0){
   stop(paste("wrong mode in corr_map:",un_mod ))
 }
+
+corr_map <- corr_map %>%
+  dplyr::mutate(SAMPLE_NO = as.character(SAMPLE_NO))
+
+if(any(is.na(corr_map$mode))){
+  warning("NAs in corr_map$mode. Not changing these samples.")
+}
+
 
 gas_map <- data.frame(gas = gases, corr_std = gases_std)
 
@@ -46,10 +54,14 @@ df<-df %>%
   dplyr::filter(depth_cat %in% !!depth_cal) %>%
   dplyr::left_join(corr_map) %>%
   dplyr::filter(is.na(section)==F) %>%
+  dplyr::filter(is.na(NRESULT_ppm)==F) %>%
   dplyr::group_by(gas,section) %>%
   dplyr::group_modify(~{
-    if(.x$mode[1] == "const"){
-      med = median(.x$NRESULT_ppm)
+  if(is.na(.x$mode[1])){
+    med = 1
+    grad = 0
+  }else  if(.x$mode[1] == "const"){
+      med = median(.x$NRESULT_ppm,na.rm=T)
       grad = 0
   } else if (.x$mode[1]=="lin"){
     if (.x %>% dplyr::filter(!is.na(Date),!is.na(NRESULT_ppm)) %>% nrow() <2){
@@ -67,6 +79,7 @@ df<-df %>%
   dplyr::right_join(df) %>%
   dplyr::mutate(corr_fac = ifelse(is.na(corr_fac),1,corr_fac)) %>%
   dplyr::mutate(NRESULT_ppm = NRESULT_ppm * corr_fac)
+
 
 return(df)
 }

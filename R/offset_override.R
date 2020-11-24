@@ -10,7 +10,7 @@
 #' @param section (vector, numeric) A vector in the same order as SAMPLE_No specifying the section to add to.
 #' @return corr_map (dataframe) The corr_map dataframe used in the offset_correction function with overriden SAMPLE_NO
 #'
-#' @examples offset_override(df = corr_map,
+#' @examples offset_override(corr_map = corr_map,
 #' SAMPLE_NO = c(3023,5612,405,"blackforest27"),
 #' section = c(6,2,9,3))
 #'
@@ -21,6 +21,15 @@
 offset_override <- function(corr_map,
                             SAMPLE_NO,
                             section){
+if(!length(SAMPLE_NO)==length(section)){
+  if (length(section)>1){
+  stop("section has wrong dimension. Must be same length as SAMPLE_NO or 1")
+} else {
+  section <- rep(section,length(SAMPLE_NO))
+}
+}
+
+
 mode_map <- corr_map %>%
   dplyr::select(section,mode) %>%
   dplyr::distinct()
