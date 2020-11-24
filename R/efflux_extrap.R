@@ -1,0 +1,70 @@
+#' @title efflux_extrap
+#'
+#' @description This function extrapolates fluxes calculated with the layers approach to the surface with different methods.
+#' To see the different approaches implemented check the "method" parameters below.
+#'
+#' @param FLUX (dataframe) the FLUX dataframe
+#' @param method (character) A character  defining the method to be used for extrapolation. Must be called multiple times for different methods. \n
+#' Possible methods are: \n
+#' "lm" implements a linear model approach. Here a linear model is fit to flux ~ depth and the value for the surface estimated \n
+#' "linextrap" implements a linear extrapolation approach. Here, two layer names must be given using the control parameters below, that will then be used for an linear extrapolation. This can be used to implement a Hirano et al. (2003) or Tang et al. (2005) approach.
+#'
+#' @param layers (character vector) layers to be used in the linextrap-approach.
+#' @param modename (character) A character defining the value of the variable "mode" in the returned dataframe.
+#' @return EFFLUX
+#'
+#' @examples
+#'
+#' @import dplyr
+#' @export
+
+efflux_extrap <-function(FLUX,
+                         method,
+                         layers = NA,
+                         modename = NA){
+  valid_methods <- c("lm","lnextrap")
+
+  if (!method %in% valid_methods){
+    stop(paste0("invalid method! Please choose one of the following: ", valid_methods))
+  }
+
+  if (method == "linextrap"){
+    if(!length(layers) == 2){
+      stop(paste0("invalid number of layers! Must be 2!"))
+    }
+    if(all(layers %in% unique(FLUX$layer))==F){
+     l_nv <- layers[!layers %in% FLUX$layer]
+      stop(paste0("The following layers are not present in the FLUX dataframe provided! ",l_nv))
+    }
+  }
+
+if(method == "lm"){
+  EFFLUX <- FLUX %>% dplyr::group_by(Plot,Date,gas) %>%
+    dplyr::group_modfiy(~{
+      h<-.x$topheight[1]
+      mod <- lm(flux~depth,data = .x)
+      efflux <- predict(mod,newdata = list(depth = h))
+      return(data.frame(efflux = efflux))
+    })
+} else if (method == "linextrap"){
+  EFFLUX <- FLUX %>% filter(layer %in% layers) %>%
+    dplyr::group_by(Plot,Date,gas) %>%
+    group_modify(~{
+      h<-.x$topheight[1]
+      efflux <- lin_extrap(depth,flux,h)})
+      return(efflux)
+}
+  if (is.na(modename)==T){
+    modename<-paste0(na.omit(c(method,layers)),collapse = "_")
+  }
+  EFFLUX$mode <- modename
+return(EFFLUX)
+}
+
+
+
+
+
+sdsdsdsd
+
+
