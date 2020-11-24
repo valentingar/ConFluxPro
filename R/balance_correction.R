@@ -12,7 +12,7 @@
 #'
 #' @param limits (vector, numeric) A vector of two that contain the upper and lower limits for b_tot, above and below which NRESULT_ppm are set NA. Defaults to c(0.6,1.05).
 #'
-#' @param gases (vector, character) A character vector of the gases that should be used in the balance approach. Standard are the four most abundant atmospheric gases.
+#' @param gases (vector, character) A character vector of the gases that should be used in the balance approach. Default are the four most abundant atmospheric gases.
 #' Spelling must match the spelling of the gas-column in gasdata exactly. Defaults to c("N2","O2","Ar","CO2").
 #'
 #' @param gases_ob (vector, character) A vector of obligatory gases that must be present for correct balance calculation.
@@ -45,16 +45,21 @@ balance_correction <- function(df,
                                gases_ob = c("N2","O2"),
                                gases_std = c(0.78084,0.20946,0.009340,0.0407)
                                ){
-#Adding commas to neccecary gases, to prevent finding N2 in N2O
+#Adding commas to necessary gases, to prevent finding N2 in N2O
 gases_ob <- unlist(lapply(gases_ob,function(g) paste0(c("",g,""),collapse = ",")))
 
 # Function to correct ges with standard values of missing gases.
 ges_corr <- function(ges,missing_gas){
-  gas_corr<-gases_std[gases %in% unlist(strsplit(missing_gas,split = ","))]
-  if (length(gas_corr>0)){
-    ges <- ges/(1-sum(gas_corr))
-  }
-  return(ges)
+  ges_corrected <- unlist(lapply(1:length(ges),function(i){
+    gas_corr<-gases_std[gases %in% unlist(strsplit(missing_gas[i],split = ","))]
+    if (length(gas_corr>0)){
+      ges_corrected <- ges[i]/(1-sum(gas_corr))
+    } else {
+      ges_corrected<-ges[i]
+    }
+    return(ges_corrected)
+  }))
+  return(ges_corrected)
 }
 
 

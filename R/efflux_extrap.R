@@ -61,10 +61,3 @@ if(method == "lm"){
 return(EFFLUX)
 }
 
-
-
-
-
-sdsdsdsd
-
-
