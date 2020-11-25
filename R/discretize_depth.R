@@ -107,9 +107,12 @@ if(l_knots == 1){
 
 #caring about the order of things:
 depth_target <- sort(depth_target,decreasing = T)
+if("depth" %in% names(df)){
 df <- df %>% dplyr::arrange(desc(depth))
+} else if("upper" %in% names(df)){
+  df <- df %>% dplyr::arrange(desc(upper))
 
-
+}
 
 # interpolation function definitions: ----------------------
 # each function must follow the following structure:
@@ -130,11 +133,14 @@ lower_orig <- df$lower
 upper_target <- depth_target[-length(depth_target)]
 lower_target <- depth_target[-1]
 
+
+
+
 param_int <-unlist(lapply(seq(upper_target),function(i){
   if (upper_target[i] > upper_orig[1] & boundary_nearest == T){
     warning(paste0("using nearest neighbour (topmost) for depth_step ",upper_target[i]," - ",lower_target[i]))
     p <- 1
-  } else if (lower_target[i]<lower_orig[length(lower)] & boundary_nearest == T){
+  } else if (lower_target[i]<lower_orig[length(lower_orig)] & boundary_nearest == T){
     warning(paste0("using nearest neighbour (lowest) for depth_step ",upper_target[i]," - ",lower_target[i]))
     p <- length(lower_orig)
   } else  if (length(which(c(upper_orig,lower_orig) >lower_target[i] & c(upper_orig,lower_orig) < upper_target[i]))>0){
@@ -149,10 +155,12 @@ param_int <-unlist(lapply(seq(upper_target),function(i){
   }
   return(param_ret)
 }))
-print(param_int)
+#print(param_int)
 
 return(param_int)
 }
+
+
 spline_lin_intdisc<-function(param,df,depth_target,control){
   depth <- df$depth
   int_depth <- control[["int_depth"]]
@@ -162,7 +170,6 @@ spline_lin_intdisc<-function(param,df,depth_target,control){
   param_int <- predict(lm(param ~ bs(depth, knots = knots,degree = 1)),newdata = data.frame(depth = depth_target_tmp))
   return(param_int)
 }
-
 
 
 df_discretized <- lapply(1:l_param, function(i){

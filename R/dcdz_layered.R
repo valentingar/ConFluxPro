@@ -52,7 +52,7 @@ if (mode == "LS"){
 mod<-lm(NRESULT_ppm~bs(depth,knots=depth_steps,#depth_steps,
                        degree = 1
 ),
-data=df2)
+data=df)
 
 # dc = the difference in concentration in ppm
 dc <- -diff(predict(mod,newdata = data.frame(depth =depths)))
