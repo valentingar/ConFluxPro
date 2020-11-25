@@ -29,20 +29,32 @@ if(!"DS" %in% param){
   stop("cannot calculate flux: 'DS' is missing in param!")
 }
 
+#for progress tracking
+n_gradients <- length(with(gasdata,unique(paste(Plot,Date,gas))))
+n_soilphys <- length(with(soilphys,unique(paste(Plot,Date,gas))))
+
+print("starting gradient")
 FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
+  dplyr::mutate(n_gr = dplyr::cur_group_id(),n_tot=n_gradients) %>%
     dplyr::group_modify(~{
+      if (.x$n_gr[1] %in% floor(seq(1,n_gradients,length.out = 11))){
+        print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
+      }
       FLUX <- lapply(modes, function(mode){
       dcdz_layered(.x,layers_map,mode)}) %>%
         dplyr::bind_rows()
       return(FLUX)
     })
-
+print("gradient complete")
+print("starting soilphys")
 soilphys_layers <-soilphys_layered(soilphys,
                             layers_map,
                             param,
                             funs)
+print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
   dplyr::mutate(flux = -DS*dcdz)
+print("flux calculation complete")
 return(FLUX)
 }

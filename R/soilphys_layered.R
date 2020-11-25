@@ -37,9 +37,12 @@ soilphys_layered<-function(soilphys,
 
   soilphys<-soilphys %>%
     dplyr::mutate(layer = set_layer(Plot,depth) ) %>%
-    dplyr::group_by(Plot,Date,gas,layer)
+    dplyr::group_by(Plot,Date,gas,layer) %>%
+    dplyr::mutate(height = abs(upper-lower))
+
   soilphys_arith <- soilphys %>%
     dplyr::summarise(across(.cols = contains( !!param_arith),.fns=~weighted.mean(.x,w=height,na.rm=T)))
+
   soilphys_harm <-soilphys %>%
     dplyr::summarise(across(.cols = contains( !!param_harm),.fns=~harm(.x,w=height,na.rm=T)))
 

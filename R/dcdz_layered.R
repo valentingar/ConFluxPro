@@ -44,10 +44,26 @@ layers <- layers_map$layer
 
 
 depth_steps <- rev(sort(upper))[-1] #depths between the layers from top to bottom
-depths <- rev(sort(unique(c(upper, lower)))) #depths including boundries from top to bottom
+depths <- rev(sort(unique(c(upper, lower)))) #depths including boundaries from top to bottom
+
+#depths with values in the df
+depths_df <- df %>% dplyr::filter(is.na(depth)==F,
+                     is.na(NRESULT_ppm)==F) %>%
+  dplyr::pull(depth) %>% unique() %>%sort() %>% rev()
+
+#true if the there are depths that exceed depths of non-NA values in df.
+ls_flag <- length(which(depths >max(depths_df,na.rm=T) | depths <min(depths_df,na.rm=T)))>0
+
 
 if (mode == "LS"){
 
+#not enough non-NA values or outside range.
+if ((nrow(df[is.na(df$depth)==F & is.na(df$NRESULT_ppm)==F,])>1) | ls_flag){
+  dc <-NA
+  dcdz <-NA
+  dcdz_sd <-NA
+  r2 <- NA
+} else {
 #spline model
 mod<-lm(NRESULT_ppm~bs(depth,knots=depth_steps,#depth_steps,
                        degree = 1
@@ -62,10 +78,13 @@ dcdz <- dc / -diff(depths) *100 #from cm^-1 to m^-1
 
 # error estimate in ppm/m:
 dcdz_sd <- -rev(as.numeric(summary(mod)$coefficients[,2][-1]+c(0,lag(summary(mod)$coefficients[,2][-1],1)[-1]))) /diff(depths) *100
+if (!length(dcdz_sd)==length(layers)){
+  dcdz_sd <- rep(NA,length(layers))
+}
 
 #r_squared
 r2 <- summary(mod)$r.squared
-
+}
 #create return table
 df_ret<- data.frame(mode = rep(mode),
            layer = layers,
@@ -74,7 +93,7 @@ df_ret<- data.frame(mode = rep(mode),
            dcdz_ppm = dcdz,
            dcdz_sd = dcdz_sd,
            dc_ppm = dc,
-           r2 = r2)
+           r2 = rep(r2))
 
 } else if (mode == "LL"){
 
