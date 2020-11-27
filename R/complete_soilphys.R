@@ -17,7 +17,7 @@
 #'
 
 complete_soilphys <- function(soilphys,
-                              DSD0_formula="a*AFPS+b",
+                              DSD0_formula="a*AFPS^b",
                               gases){
 df_names <- names(soilphys)
 if (all(c("depth","upper","lower","Date","Plot","TPS","SWC","Temp","p") %in% df_names)==F){

@@ -47,14 +47,16 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
     })
 print("gradient complete")
 print("starting soilphys")
-soilphys_layers <-soilphys_layered(soilphys,
+relevant_subset <- with(gasdata, paste(Plot,gas,Date))
+soilphys_layers <-soilphys_layered(soilphys %>% dplyr::filter(paste(Plot,gas,Date) %in% relevant_subset),
                             layers_map,
                             param,
                             funs)
 print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
-  dplyr::mutate(flux = -DS*dcdz)
+  dplyr::mutate(n_air = p*100 / (8.314 * (273.15+Temp))) %>%
+  dplyr::mutate(flux = -DS*n_air*dcdz)
 print("flux calculation complete")
 return(FLUX)
 }

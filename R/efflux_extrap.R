@@ -22,7 +22,7 @@ efflux_extrap <-function(FLUX,
                          method,
                          layers = NA,
                          modename = NA){
-  valid_methods <- c("lm","lnextrap")
+  valid_methods <- c("lm","linextrap")
 
   if (!method %in% valid_methods){
     stop(paste0("invalid method! Please choose one of the following: ", valid_methods))
@@ -40,10 +40,14 @@ efflux_extrap <-function(FLUX,
 
 if(method == "lm"){
   EFFLUX <- FLUX %>% dplyr::group_by(Plot,Date,gas) %>%
-    dplyr::group_modfiy(~{
+    dplyr::group_modify(~{
       h<-.x$topheight[1]
+      if (nrow(.x %>% dplyr::filter(is.na(depth)==F,is.na(flux)==F))<2){
+        efflux <- NA
+      } else {
       mod <- lm(flux~depth,data = .x)
       efflux <- predict(mod,newdata = list(depth = h))
+      }
       return(data.frame(efflux = efflux))
     })
 } else if (method == "linextrap"){
@@ -51,8 +55,11 @@ if(method == "lm"){
     dplyr::group_by(Plot,Date,gas) %>%
     group_modify(~{
       h<-.x$topheight[1]
-      efflux <- lin_extrap(depth,flux,h)})
-      return(efflux)
+      efflux <- lin_extrap(.x$depth,.x$flux,h)
+      df <- data.frame(efflux=efflux)
+      return(df)
+      })
+
 }
   if (is.na(modename)==T){
     modename<-paste0(na.omit(c(method,layers)),collapse = "_")

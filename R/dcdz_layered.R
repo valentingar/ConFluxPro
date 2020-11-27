@@ -54,11 +54,14 @@ depths_df <- df %>% dplyr::filter(is.na(depth)==F,
 #true if the there are depths that exceed depths of non-NA values in df.
 ls_flag <- length(which(depths >max(depths_df,na.rm=T) | depths <min(depths_df,na.rm=T)))>0
 
+#turns Inf-values to NA
+df$NRESULT_ppm[is.infinite(df$NRESULT_ppm)==T] <- NA
+
 
 if (mode == "LS"){
 
 #not enough non-NA values or outside range.
-if ((nrow(df[is.na(df$depth)==F & is.na(df$NRESULT_ppm)==F,])>1) | ls_flag){
+if (nrow(df[all(is.na(df$depth)==F,is.na(df$NRESULT_ppm)==F),])<length(depths) | ls_flag){
   dc <-NA
   dcdz <-NA
   dcdz_sd <-NA
