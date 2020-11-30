@@ -45,6 +45,7 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
         dplyr::bind_rows()
       return(FLUX)
     })
+
 print("gradient complete")
 print("starting soilphys")
 relevant_subset <- with(gasdata, paste(Plot,gas,Date))
@@ -56,7 +57,7 @@ print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
   dplyr::mutate(n_air = p*100 / (8.314 * (273.15+Temp))) %>%
-  dplyr::mutate(flux = -DS*n_air*dcdz)
+  dplyr::mutate(flux = -DS*n_air*dcdz_ppm)
 print("flux calculation complete")
 return(FLUX)
 }

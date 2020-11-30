@@ -402,5 +402,5 @@ EFFLUX_lm <-efflux_extrap(FLUX,method = "lm",layers = c("HU","MIN2"),modename = 
 
 
 EFFLUX %>%bind_rows(EFFLUX_t)%>%bind_rows(EFFLUX_lm) %>% filter(is.na(efflux)==F) %>% ggplot(aes(x=Date, y=efflux,col=mode))+geom_line()
-
+EFFLUX %>% filter(Date == "2016-03-07")
 
