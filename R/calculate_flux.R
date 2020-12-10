@@ -29,6 +29,29 @@ if(!"DS" %in% param){
   stop("cannot calculate flux: 'DS' is missing in param!")
 }
 
+g_plots <- unique(gasdata$Plot)
+s_plots <- unique(soilphys$Plot)
+if ("Plot" %in% names(layers_map)){
+l_plots <- unique(layers_map$Plot)
+
+if(!all(g_plots %in% l_plots)){
+  no_plots <- g_plots[!g_plots %in% l_plots]
+  print(no_plots)
+  warning(paste("The following Plots are not represented in layers_map, skipping: "),paste(no_plots,collapse = " ,"))
+  gasdata <- gasdata %>% dplyr::filter(!Plot %in% no_plots)
+}
+
+
+
+}
+else{
+  layers_map <- lapply(g_plots,function(Plot){
+    df <- layers_map %>% dplyr::mutate(Plot == !!Plot)
+  }) %>% bind_rows()
+
+}
+
+
 #for progress tracking
 n_gradients <- length(with(gasdata,unique(paste(Plot,Date,gas))))
 n_soilphys <- length(with(soilphys,unique(paste(Plot,Date,gas))))
@@ -41,7 +64,8 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
         print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
       }
       FLUX <- lapply(modes, function(mode){
-      dcdz_layered(.x,layers_map,mode)}) %>%
+       # print(.y$Plot)
+      dcdz_layered(.x,layers_map[layers_map$Plot == .y$Plot[1],],mode)}) %>%
         dplyr::bind_rows()
       return(FLUX)
     })

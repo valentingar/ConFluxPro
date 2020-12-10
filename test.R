@@ -84,7 +84,7 @@ humheights <- read.table(paste0(MainDir,DatDir,"humheights.txt"),stringsAsFactor
 
 #  **ES/FI**
 humheights <-humheights %>% #MANUAL CHANGE OF HUMHEIGHT TO 6 cm
-  mutate(humheight = ifelse(Plot == "ES" &
+  mutate(topheight = ifelse(Plot == "ES" &
                               SubPlot == "Fi",
                             6,
                             humheight))
@@ -97,7 +97,7 @@ gasdata$depth[grep("+",gasdata$depth_cat,fixed=T)]<- -gasdata$depth[grep("+",gas
 
 ##replace "AL" and "WL" with respective humus height
 gasdata <-gasdata %>%
-  left_join(humheights) %>%
+  left_join(humheights %>% select(Plot,SubPlot,topheight)) %>%
   mutate(depth = ifelse(depth_cat %in% c("AL","WL"),humheight,depth))
 
 gasdata$MainPlot <- gasdata$Plot
@@ -380,15 +380,15 @@ gases<-gases[-c(1,length(gases))]
 
 soilphys_complete <- complete_soilphys(soilphys_joined,gases=gases,DSD0_formula = )
 
-layers_map<-data.frame(Plot = rep("ES_Fi"),
-                       upper = c(6,0,-5),
-                       lower = c(0,-5,-10),
-                       layer = c("HU","MIN1","MIN2"))
+layers_map<-data.frame(Plot = rep(c("ES_Fi","AS_Fi"),each = 3),
+                       upper = c(6,0,-5,8,0,-5),
+                       lower = rep(c(0,-5,-10),2),
+                       layer = rep(c("HU","MIN1","MIN2"),2))
 
-FLUX <- calculate_flux(gasdata_o2offset %>% filter(Plot == "ES_Fi",
+FLUX <- calculate_flux(gasdata_o2offset %>% filter(#Plot == "AS_Fi",
                                                    gas == "CO2"),
                soilphys_complete,
-               layers_map = layers_map,
+               layers_map = layers_map ,
                modes ="LS",
                param = c("DSD0","DS","SWC","Temp","p"),
                funs = c("harm","harm","mean","mean","mean"))
