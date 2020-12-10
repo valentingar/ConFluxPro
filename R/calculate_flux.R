@@ -36,7 +36,7 @@ l_plots <- unique(layers_map$Plot)
 
 if(!all(g_plots %in% l_plots)){
   no_plots <- g_plots[!g_plots %in% l_plots]
-  print(no_plots)
+  #print(no_plots)
   warning(paste("The following Plots are not represented in layers_map, skipping: "),paste(no_plots,collapse = " ,"))
   gasdata <- gasdata %>% dplyr::filter(!Plot %in% no_plots)
 }
@@ -64,7 +64,9 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
         print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
       }
       FLUX <- lapply(modes, function(mode){
-       # print(.y$Plot)
+        print(.y$Plot)
+        print(mode)
+        print(.y$Date)
       dcdz_layered(.x,layers_map[layers_map$Plot == .y$Plot[1],],mode)}) %>%
         dplyr::bind_rows()
       return(FLUX)

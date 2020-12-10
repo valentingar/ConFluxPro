@@ -32,7 +32,7 @@ dcdz_layered <- function(df,
 valid_modes = c("LS","LL","EF")
 
 if ((mode %in% valid_modes)==F){
-  stop(paste0("wrong mode selected: ",mode,". Please use one of the following modes: ",valid_modes))
+  stop(paste0("wrong mode selected: ",mode,". Please use one of the following modes: ",paste0(valid_modes,collapse = ", ")))
 }
 
 layers_map <- layers_map %>%
@@ -56,6 +56,9 @@ ls_flag <- length(which(depths >max(depths_df,na.rm=T) | depths <min(depths_df,n
 
 #turns Inf-values to NA
 df$NRESULT_ppm[is.infinite(df$NRESULT_ppm)==T] <- NA
+
+#removes all NAs from df
+df <- df %>% dplyr::filter(is.na(NRESULT_ppm)==F,is.na(depth) == F)
 
 
 if (mode == "LS"){
@@ -104,11 +107,18 @@ df_ret<- data.frame(mode = rep(mode),
   df_ret <- lapply(seq(upper), function(i){
     df_part <- df %>% dplyr::filter(depth <= upper[i],
                                     depth >= lower[i])
+    if (nrow(df_part %>% dplyr::filter(!is.na(depth),!is.na(NRESULT_ppm))) < 2){
+      dcdz <- NA
+      dc <- NA
+      dcdz_sd <- NA
+      r2 <- NA
+    } else{
     mod <- lm(NRESULT_ppm ~depth, data = df_part)
     dcdz <- as.numeric(coef(mod)[2])*100 #gradient in ppm/m
     dc <- dcdz * (abs(diff(c(upper[i],lower[i]))) / 100)
     dcdz_sd <- as.numeric(summary(mod)$coefficients[2,2])*100 #error of gradient in ppm/m
     r2 <- summary(mod)$r.squared
+    }
 
     df_ret <- data.frame(mode = mode,
                          layer = layers[i],
@@ -124,24 +134,33 @@ df_ret<- data.frame(mode = rep(mode),
 
 } else if (mode == "EF"){
 
+  if(nrow(df)>1){
   starts<-coef(lm(NRESULT_ppm~I((depth-min(depths))^1.1),data=df))
+  } else {
+    starts <- NA
+    }
+  #If all values are basically the same, problems arise, this checks for the relative difference of all values being less than 1e-10
+  sing_flag <- mean(abs(na.omit(df$NRESULT_ppm)-mean(df$NRESULT_ppm,na.rm=T)))/mean(df$NRESULT_ppm,na.rm=T) < 1e-10
 
-  if(anyNA(starts) | nrow(df)<4 | sum(starts)==0){ #preventing model errors before they occur and replacing with NA
+  if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){ #preventing model errors before they occur and replacing with NA
     dcdz <- NA
     dc <- NA
     dcdz_sd <- NA
     r2 <- NA
   } else {
+    #print(df$NRESULT_ppm)
+    #print(df$depth)
     #print(starts)
-
+print("premod")
     #exponential model
     mod <- nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
                data = df,
                start = list(#"a"=as.numeric(starts[1]),
-                            "b"=as.numeric(starts[2]),
-                            "c"=1.1),
+                            "b"=as.numeric(starts[2])*rnorm(1,1,0.01),
+                            "c"=1.1*rnorm(1,1,0.01)),
                algorithm = "plinear")
-
+#print("aftermod")
+#print(mod)
     #a <- coef(mod)[1]
     b <- coef(mod)[1]
     c <- coef(mod)[2]
@@ -149,7 +168,8 @@ df_ret<- data.frame(mode = rep(mode),
 
     db <- summary(mod)$coefficients[1,2]
     dc <- summary(mod)$coefficients[2,2]
-
+print(db)
+print(dc)
     #calculating dcdz via the 1st derivative of the exponential Function.
     dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
     dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
