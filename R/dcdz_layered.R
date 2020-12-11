@@ -99,8 +99,13 @@ create_return <- T
   df_ret <- lapply(seq(upper), function(i){
     df_part <- df %>% dplyr::filter(depth <= upper[i],
                                     depth >= lower[i])
+    df_ret <- data.frame(mode = mode,
+                         layer = layers[i],
+                         upper = upper[i],
+                         lower = lower[i])
+
     if (nrow(df_part %>% dplyr::filter(!is.na(depth),!is.na(NRESULT_ppm))) < 2){
-      return_na <- T
+      return(df_ret)
     } else{
     mod <- lm(NRESULT_ppm ~depth, data = df_part)
     dcdz <- as.numeric(coef(mod)[2])*100 #gradient in ppm/m
@@ -109,10 +114,7 @@ create_return <- T
     r2 <- summary(mod)$r.squared
     }
 
-    df_ret <- data.frame(mode = mode,
-                         layer = layers[i],
-                         upper = upper[i],
-                         lower = lower[i],
+    df_ret <- cbind.data.frame(df_ret,
                          dcdz_ppm = dcdz,
                          dcdz_sd = dcdz_sd,
                          dc_ppm = dc,
@@ -121,7 +123,14 @@ create_return <- T
   }) %>%
     dplyr::bind_rows()
 
-  create_return <- F
+  if(all(is.na(df_ret))){
+    return_na <- T
+  } else {
+    create_return <- F
+
+  }
+
+
 
 } else if (mode == "EF"){
 

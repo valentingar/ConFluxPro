@@ -386,7 +386,7 @@ layers_map<-data.frame(Plot = rep(c("ES_Fi","AS_Fi"),each = 3),
                        layer = rep(c("HU","MIN1","MIN2"),2))
 
 FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
-                                          #,Date == "2014-07-28"
+                                          #,Date == "1998-10-26"
                                           ),
                soilphys_complete,
                layers_map = layers_map ,
@@ -397,8 +397,8 @@ FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
 
 FLUX %>% ggplot(aes(x=Date,y=flux,col=mode))+geom_line()+facet_wrap(~paste(Plot,layer,gas),ncol=1,scales = "free")
 
-df <-gasdata %>% filter(Plot == "ES_Fi",gas == "CH4",Date == "2014-07-28")
-dcdz_layered(df,layers_map = layers_map[layers_map$Plot == "ES_Fi",] ,mode = "EF")
+df <-gasdata %>% filter(Date == "1998-10-26",Plot == "ES_Fi",gas == "CH4")
+dcdz_layered(df,layers_map = layers_map[layers_map$Plot == "ES_Fi",] ,mode = "LL")
 
 ggplot(df, aes(x=NRESULT_ppm,y=depth))+geom_point()
 
@@ -407,9 +407,15 @@ FLUX$depth <- (FLUX$upper-FLUX$lower) / 2+FLUX$lower
 EFFLUX <-efflux_extrap(FLUX,method = "linextrap",layers = c("MIN1","MIN2"),modename = "Hirano")
 EFFLUX_t <-efflux_extrap(FLUX,method = "linextrap",layers = c("HU","MIN2"),modename = "Tang")
 EFFLUX_lm <-efflux_extrap(FLUX,method = "lm",layers = c("HU","MIN2"),modename = "lm")
+EFFLUX_ne <- efflux_extrap(FLUX,method = "nearest",layers = c("HU"),modename = "ne")
+
+FLUX %>% filter(Date == "1998-10-26",Plot == "ES_Fi",gas == "CH4",mode == "LL")
 
 
-
-EFFLUX %>%bind_rows(EFFLUX_t)%>%bind_rows(EFFLUX_lm) %>% filter(is.na(efflux)==F) %>% ggplot(aes(x=Date, y=efflux,col=mode))+geom_line()
+EFFLUX %>%bind_rows(EFFLUX_t)%>%
+  bind_rows(EFFLUX_lm) %>%
+  filter(is.na(efflux)==F) %>%
+  ggplot(aes(x=Date, y=efflux,col=mode))+
+  geom_line()
 EFFLUX %>% filter(Date == "2016-03-07")
 

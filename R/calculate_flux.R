@@ -67,10 +67,10 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
         print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
       }
       FLUX <- lapply(modes, function(mode){
-        print(.y$Plot)
-        print(mode)
-        print(.y$Date)
-        print(.y$gas)
+        #print(.y$Plot)
+        #print(mode)
+        #print(.y$Date)
+        #print(.y$gas)
       dcdz_layered(.x,layers_map[layers_map$Plot == .y$Plot[1],],mode)}) %>%
         dplyr::bind_rows()
       return(FLUX)
@@ -86,8 +86,9 @@ soilphys_layers <-soilphys_layered(soilphys %>% dplyr::filter(paste(Plot,gas,Dat
 print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
-  dplyr::mutate(n_air = p*100 / (8.314 * (273.15+Temp))) %>%
-  dplyr::mutate(flux = -DS*n_air*dcdz_ppm)
+  dplyr::mutate(rho_air = p*100 / (8.314 * (273.15+Temp))) %>%
+  dplyr::mutate(flux = -DS*rho_air*dcdz_ppm) %>%
+  dplyr::mutate(depth = upper-lower)
 print("flux calculation complete")
 return(FLUX)
 }
