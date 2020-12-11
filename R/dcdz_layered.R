@@ -60,15 +60,14 @@ df$NRESULT_ppm[is.infinite(df$NRESULT_ppm)==T] <- NA
 #removes all NAs from df
 df <- df %>% dplyr::filter(is.na(NRESULT_ppm)==F,is.na(depth) == F)
 
+#initializing NA-logical for return
+return_na <- F
 
 if (mode == "LS"){
 
 #not enough non-NA values or outside range.
 if (nrow(df[all(is.na(df$depth)==F,is.na(df$NRESULT_ppm)==F),])<length(depths) | ls_flag){
-  dc <-NA
-  dcdz <-NA
-  dcdz_sd <-NA
-  r2 <- NA
+  return_na <- T
 } else {
 #spline model
 mod<-lm(NRESULT_ppm~bs(depth,knots=depth_steps,#depth_steps,
@@ -92,14 +91,7 @@ if (!length(dcdz_sd)==length(layers)){
 r2 <- summary(mod)$r.squared
 }
 #create return table
-df_ret<- data.frame(mode = rep(mode),
-           layer = layers,
-           upper = upper,
-           lower = lower,
-           dcdz_ppm = dcdz,
-           dcdz_sd = dcdz_sd,
-           dc_ppm = dc,
-           r2 = rep(r2))
+create_return <- T
 
 } else if (mode == "LL"){
 
@@ -108,10 +100,7 @@ df_ret<- data.frame(mode = rep(mode),
     df_part <- df %>% dplyr::filter(depth <= upper[i],
                                     depth >= lower[i])
     if (nrow(df_part %>% dplyr::filter(!is.na(depth),!is.na(NRESULT_ppm))) < 2){
-      dcdz <- NA
-      dc <- NA
-      dcdz_sd <- NA
-      r2 <- NA
+      return_na <- T
     } else{
     mod <- lm(NRESULT_ppm ~depth, data = df_part)
     dcdz <- as.numeric(coef(mod)[2])*100 #gradient in ppm/m
@@ -132,6 +121,8 @@ df_ret<- data.frame(mode = rep(mode),
   }) %>%
     dplyr::bind_rows()
 
+  create_return <- F
+
 } else if (mode == "EF"){
 
   if(nrow(df)>1){
@@ -143,40 +134,62 @@ df_ret<- data.frame(mode = rep(mode),
   sing_flag <- mean(abs(na.omit(df$NRESULT_ppm)-mean(df$NRESULT_ppm,na.rm=T)))/mean(df$NRESULT_ppm,na.rm=T) < 1e-10
 
   if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){ #preventing model errors before they occur and replacing with NA
-    dcdz <- NA
-    dc <- NA
-    dcdz_sd <- NA
-    r2 <- NA
+    return_na <- T
   } else {
     #print(df$NRESULT_ppm)
     #print(df$depth)
     #print(starts)
-print("premod")
+    #print("premod")
     #exponential model
-    mod <- nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
+
+    mod <- try(nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
                data = df,
                start = list(#"a"=as.numeric(starts[1]),
                             "b"=as.numeric(starts[2])*rnorm(1,1,0.01),
                             "c"=1.1*rnorm(1,1,0.01)),
-               algorithm = "plinear")
-#print("aftermod")
-#print(mod)
-    #a <- coef(mod)[1]
-    b <- coef(mod)[1]
-    c <- coef(mod)[2]
-    d <- lower-diff(depths)/2-min(depths)
+               algorithm = "plinear",
+               control = nls.control(warnOnly = T)),silent = T)
 
-    db <- summary(mod)$coefficients[1,2]
-    dc <- summary(mod)$coefficients[2,2]
-print(db)
-print(dc)
-    #calculating dcdz via the 1st derivative of the exponential Function.
-    dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
-    dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
-    dc<--diff(starts[1]+(b*((depths-min(depths))^c)))
-    r2 <- summary(lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
+    #check for convergence
+    conv_flag <- ifelse(class(mod) == "nls",conv_flag <- !mod$convInfo$isConv,F)
+
+    #na if no convergence or error
+    if (conv_flag | class(mod)=="try-error"){
+      return_na <- T
+    } else {
+      #print("aftermod")
+      #print(mod)
+      #a <- coef(mod)[1]
+      b <- coef(mod)[1]
+      c <- coef(mod)[2]
+      d <- lower-diff(depths)/2-min(depths)
+
+      db <- summary(mod)$coefficients[1,2]
+      dc <- summary(mod)$coefficients[2,2]
+      print(db)
+      print(dc)
+      #calculating dcdz via the 1st derivative of the exponential Function.
+      dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
+      dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
+      dc<--diff(starts[1]+(b*((depths-min(depths))^c)))
+      r2 <- summary(lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
+
+      create_return <- T
+    }
   }
+    }
 
+if (return_na){
+  dcdz <- NA
+  dc <- NA
+  dcdz_sd <- NA
+  r2 <- NA
+
+  create_return <- T
+
+
+}
+if (create_return){
   df_ret <- data.frame(mode = mode,
                        layer = layers,
                        upper = upper,

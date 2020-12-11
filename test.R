@@ -385,17 +385,19 @@ layers_map<-data.frame(Plot = rep(c("ES_Fi","AS_Fi"),each = 3),
                        lower = rep(c(0,-5,-10),2),
                        layer = rep(c("HU","MIN1","MIN2"),2))
 
-FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi",
-                                                   gas == "CO2"),
+FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
+                                          #,Date == "2014-07-28"
+                                          ),
                soilphys_complete,
                layers_map = layers_map ,
+               gases = c("CO2","CH4"),
                modes =c("LL","LS","EF"),
                param = c("DSD0","DS","SWC","Temp","p"),
                funs = c("harm","harm","mean","mean","mean"))
 
-FLUX %>% ggplot(aes(x=Date,y=flux,col=layer))+geom_line()+facet_wrap(~Plot)
+FLUX %>% ggplot(aes(x=Date,y=flux,col=mode))+geom_line()+facet_wrap(~paste(Plot,layer,gas),ncol=1,scales = "free")
 
-df <-gasdata %>% filter(Plot == "ES_Fi",gas == "CO2",Date == "1998-05-12")
+df <-gasdata %>% filter(Plot == "ES_Fi",gas == "CH4",Date == "2014-07-28")
 dcdz_layered(df,layers_map = layers_map[layers_map$Plot == "ES_Fi",] ,mode = "EF")
 
 ggplot(df, aes(x=NRESULT_ppm,y=depth))+geom_point()

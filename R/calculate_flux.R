@@ -22,6 +22,7 @@
 calculate_flux <- function(gasdata,
                            soilphys,
                            layers_map,
+                           gases,
                            modes,
                            param,
                            funs){
@@ -51,6 +52,8 @@ else{
 
 }
 
+#subset gasdata to relevant gases
+gasdata <- gasdata %>% dplyr::filter(gas %in% gases)
 
 #for progress tracking
 n_gradients <- length(with(gasdata,unique(paste(Plot,Date,gas))))
@@ -67,6 +70,7 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
         print(.y$Plot)
         print(mode)
         print(.y$Date)
+        print(.y$gas)
       dcdz_layered(.x,layers_map[layers_map$Plot == .y$Plot[1],],mode)}) %>%
         dplyr::bind_rows()
       return(FLUX)

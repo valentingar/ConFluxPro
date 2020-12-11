@@ -46,7 +46,7 @@ soilphys_layered<-function(soilphys,
   soilphys_harm <-soilphys %>%
     dplyr::summarise(across(.cols = contains( !!param_harm),.fns=~harm(.x,w=height,na.rm=T)))
 
-  soilphys <- dplyr::left_join(soilphys_harm,soilphys_arith,by = c("Plot","Date","layer"),suffix = c("_harm","_arith"))
+  soilphys <- dplyr::left_join(soilphys_harm,soilphys_arith,by = c("Plot","Date","layer","gas"),suffix = c("_harm","_arith"))
   soilphys <- dplyr::left_join(soilphys,layers_map)
   return(soilphys)
 }
