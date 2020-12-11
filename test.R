@@ -397,8 +397,12 @@ FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
 
 FLUX %>% ggplot(aes(x=Date,y=flux,col=mode))+geom_line()+facet_wrap(~paste(Plot,layer,gas),ncol=1,scales = "free")
 
-df <-gasdata %>% filter(Date == "1998-10-26",Plot == "ES_Fi",gas == "CH4")
+unique(gasdata$Date[gasdata$Plot == "ES_Fi"])[180]
+df <-gasdata %>% filter(Date == "2012-08-27",Plot == "ES_Fi",gas == "CH4")
 dcdz_layered(df,layers_map = layers_map[layers_map$Plot == "ES_Fi",] ,mode = "LL")
+dcdz_ef(df,6,mode = "LR")
+
+
 
 ggplot(df, aes(x=NRESULT_ppm,y=depth))+geom_point()
 
