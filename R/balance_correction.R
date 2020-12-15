@@ -1,8 +1,8 @@
 #' @title balance_correction
 #'
 #' @description A function to correct the measured values for non-complete gas exchange.
-#' Per sample, a total balance (b_tot) is obtained and, if necessary, corrected for missing gases.
-#' Theoretically, b_tot is between (0;1), however values over 1 can result from calibration errors.
+#' Per sample, a total balance (bal) is obtained and, if necessary, corrected for missing gases.
+#' Theoretically, bal is between (0;1), however values over 1 can result from calibration errors.
 #' Values over 1 are treated the same and are corrected.
 #' Then each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
 #' This function should be applied before the series_cleaner()-function.
@@ -43,12 +43,33 @@
 #' @export
 
 balance_correction <- function(df,
-                               limits = c(0.6,1.05),
+                               limits = c(-999,+999),
                                gases  = c("N2","O2","Ar","CO2"),
                                gases_std = c(0.78084,0.20946,0.009340,0.0407),
                                gases_ob = c("N2","O2"),
                                set_na = F
                                ){
+
+  #stop-points for wrong input
+if (!length(limits) ==2){
+  stop("Please set upper and lower limits or leave out.")
+}
+if(!length(gases) == length(gases_std)){
+  stop("lengths of 'gases' and 'gases_std' do not match!")
+}
+if (is.logical(set_na)==F){
+  stop("set_na must be logical.")
+}
+if (!all(gases_ob %in% gases)){
+  stop("'gases_ob' contains entries not present in 'gases'")
+}
+gases_present <- gases %in% unique(df$gas)
+if (!all(gases_present)){
+  stop(paste0("'gases' contains entries not present in the dataframe:",paste0(gases[gases_present == F],collapse = ", "),collapse=" "))
+}
+
+
+
 #Adding commas to necessary gases, to prevent finding N2 in N2O
 gases_ob <- unlist(lapply(gases_ob,function(g) paste0(c("",g,""),collapse = ",")))
 
