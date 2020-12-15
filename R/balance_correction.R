@@ -15,23 +15,26 @@
 #' @param gases (vector, character) A character vector of the gases that should be used in the balance approach. Default are the four most abundant atmospheric gases.
 #' Spelling must match the spelling of the gas-column in gasdata exactly. Defaults to c("N2","O2","Ar","CO2").
 #'
-#' @param gases_ob (vector, character) A vector of obligatory gases that must be present for correct balance calculation.
-#' NRESULT_ppm of samples missing any of these gases will be flagged in b_flag. Defaults to c("N2","O2").
-#'
 #' @param gases_std (vector, numeric) A numeric vector of standard values to be used for missing gases as fraction of total volume.
 #' Values are then recalculated to account for assumed balance based on present gases. Order must match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))
 #'
+#' @param gases_ob (vector, character) A vector of obligatory gases that must be present for correct balance calculation.
+#' NRESULT_ppm of samples missing any of these gases will be flagged in bal_flag and not corrected. Defaults to c("N2","O2").
+#'
+#' @param set_na (logical) Should flagged values be set to NA (bal_flag == T)? Default is F.
 #'
 #' @return gasdata (dataframe) With added columns
-#' @return b_tot = balance
-#' @return b_flag  TRUE for values missing gases in gases_ob
+#' @return bal = balance
+#' @return bal_flag  TRUE if value was not corrected (or set NA).
+#' @return NRESULT_ppm, corrected for balance
 #'
 #' @examples
 #' gasdata <- balance_correction(gasdata,
 #'                               limits = c(0.6,1.05),
 #'                               gases = c("N2","O2","Ar"),
+#'                               gases_std = c(0.78,0.2,0.0093),
 #'                               gases_ob = c("N2","O2"),
-#'                               gases_std = c(0.78,0.2,0.0093)
+#'                               set_na = T
 #'                               )
 #'
 #'
@@ -42,38 +45,54 @@
 balance_correction <- function(df,
                                limits = c(0.6,1.05),
                                gases  = c("N2","O2","Ar","CO2"),
+                               gases_std = c(0.78084,0.20946,0.009340,0.0407),
                                gases_ob = c("N2","O2"),
-                               gases_std = c(0.78084,0.20946,0.009340,0.0407)
+                               set_na = F
                                ){
 #Adding commas to necessary gases, to prevent finding N2 in N2O
 gases_ob <- unlist(lapply(gases_ob,function(g) paste0(c("",g,""),collapse = ",")))
 
-# Function to correct ges with standard values of missing gases.
-ges_corr <- function(ges,missing_gas){
-  ges_corrected <- unlist(lapply(1:length(ges),function(i){
+# Function to correct bal with standard values of missing gases.
+bal_corr <- function(bal,missing_gas){
+  bal_corrected <- unlist(lapply(1:length(bal),function(i){
     gas_corr<-gases_std[gases %in% unlist(strsplit(missing_gas[i],split = ","))]
     if (length(gas_corr>0)){
-      ges_corrected <- ges[i]/(1-sum(gas_corr))
+      bal_corrected <- bal[i]/(1-sum(gas_corr))
     } else {
-      ges_corrected<-ges[i]
+      bal_corrected<-bal[i]
     }
-    return(ges_corrected)
+    return(bal_corrected)
   }))
-  return(ges_corrected)
+  return(bal_corrected)
 }
-
 
 df <- df %>%
   dplyr::filter(gas %in% !!gases) %>% #Only gases declared in function are used
   dplyr::group_by(SAMPLE_NO) %>%
   dplyr::arrange(gas) %>%
-  dplyr::summarise(ges = sum(NRESULT_ppm/10^6,na.rm = T), #ges
-            n_ges = length(na.omit(NRESULT_ppm)), #number of counted gases
+  dplyr::summarise(bal = sum(NRESULT_ppm/10^6,na.rm = T), #bal
+            n_bal = length(na.omit(NRESULT_ppm)), #number of counted gases
             missing_gas = paste(c("",gases[-match(gas[is.na(NRESULT_ppm)==F],!!gases)],""),collapse = ",")) %>% #Character string with missing gases, comma separated to discern between N2 and N2O, O2 and CO2
-  dplyr::mutate(ges_flag = grepl(paste0(gases_ob,collapse="|"),missing_gas)) %>% #TRUE if any of gases_ob are missing in "ges"
-  dplyr::mutate(ges = ges_corr(ges,missing_gas)) %>% # correcting ges with standard values for missing gases
-  dplyr::mutate(ges_flag = ifelse(ges < min(limits) | ges > max(limits),T,ges_flag)) %>% #ges_flag also true if ges exceeds limits
-  dplyr::right_join(df) %>% #joining with gasdata
-  dplyr::mutate(NRESULT_ppm = NRESULT_ppm / ges)  #CORRECTION OF THE MOLE RATIOS
+  dplyr::mutate(bal_flag = grepl(paste0(gases_ob,collapse="|"),missing_gas)) %>% #TRUE if any of gases_ob are missing in "bal"
+  dplyr::mutate(bal = bal_corr(bal,missing_gas)) %>% # correcting bal with standard values for missing gases
+  dplyr::mutate(bal_flag = ifelse(bal < min(limits) | bal > max(limits),T,bal_flag)) %>% #bal_flag also true if bal exceeds limits
+  dplyr::mutate(bal_flag = ifelse(bal == 0,T,bal_flag)) %>%
+  dplyr::right_join(df) #joining with gasdata
+
+
+#CORRECTION OF THE MOLE RATIOS for bal_flag = T
+if(set_na == T){
+  #if set_na == T, bal_flag == T NRESULT_ppm is set NA
+  df <- df %>% dplyr::mutate(NRESULT_ppm = ifelse(bal_flag == F, NRESULT_ppm / bal,NA))
+} else {
+  #otherwise NRESULT_ppm is not changed
+  df <- df %>% dplyr::mutate(NRESULT_ppm = ifelse(bal_flag == F, NRESULT_ppm / bal,NRESULT_ppm))
+}
+
+if(any(df$bal_flag)){
+  warning(paste0("Some of the entries have been flagged (bal_flag) and ",ifelse(set_na,"been set to NA!","were not corrected (old values remain)!")," Please check these values manually",collapse = ""))
+}
+
+
  return(df)
 }

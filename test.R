@@ -268,10 +268,9 @@ soiltemp <- soiltemp %>%
 #ACTUAL TESTING ---------------------------------
 
 
-gasdata_balcorr <- balance_correction(gasdata)
-
-df <- gasdata %>% filter(SAMPLE_NO %in% unique(gasdata$SAMPLE_NO)[30000:30001]) %>% select(SAMPLE_NO,NRESULT_ppm,gas)
-balance_correction(df)
+gasdata_balcorr <- balance_correction(gasdata,
+                                      limits = c(0.5,1.2),
+                                      set_na = T)
 
 gasdata_balcorr %>%  filter(Plot == "ES_Fi") %>% ggplot(aes(x=Date,y=NRESULT_ppm,col=depth_cat))+
   geom_line()+facet_wrap(~gas,scales="free",ncol=1)
