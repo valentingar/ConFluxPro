@@ -350,22 +350,21 @@ soilphys <-soilphys %>% filter(!MainPlot == "V")
 
 depth_target <-unique(c(soilwater$upper,soilwater$lower))
 
-sphys_dd <- soilphys %>% filter(Plot == "ES_Fi") %>%
-  group_by(Plot) %>%
-  group_modify(~{df <- discretize_depth(df =.x,
-                                        param = c("TPS","a","b"),
-                                        method = "boundary",
-                                        depth_target = depth_target,
-                                        control=list(boundary_nearest =F))})
+sphys_dd <- discretize_depth(df = soilphys %>% filter(Plot == "ES_Fi"),
+                 param = c("TPS","a","b"),
+                 method = "boundary",
+                 depth_target = depth_target,
+                 control=list(boundary_nearest =F),
+                 id_cols = c("Plot"))
 
 head(soiltemp)
-stemp_dd <- soiltemp %>% filter(Plot == "ES_Fi") %>%
-  group_by(Plot,Date) %>%
-  group_modify(~{df <- discretize_depth(df =.x,
-                                        param = c("Temp"),
-                                        method = "linear",
-                                        depth_target = depth_target,
-                                        control=list(int_depth =1))})
+
+stemp_dd <- discretize_depth(df =soiltemp,
+                 param = c("Temp"),
+                 method = "linear",
+                 depth_target = depth_target,
+                 control=list(int_depth =1),
+                 id_cols = c("Plot","Date"))
 
 soilphys_joined <- left_join(sphys_dd,soilwater %>% select(Plot,Date,depth,SWC)) %>%
   left_join(stemp_dd %>% select(Plot,Date,Temp,depth)) %>%

@@ -26,7 +26,7 @@
 #' @param depth_target (numeric vector) specifying the format of the depths to be interpolated. Must include n+1 depths for n target depth steps.
 #' @param boundary_nearest (logical vector) = TRUE/FALSE if it is TRUE then for target depth steps (partially) outside of the parameter boundaries, the neigherst neighbour is returned, else returns NA. Default is FA
 #' @param int_depth (numeric vector)  = value between 0 and 1 for 1 = interpolation takes the top of each depth step, 0.5 = middle and 0= bottom. Default = 0.5
-#'
+#' @param id_cols (character vector) = The names of the columns to be grouped by, i.e. uniqueley identifying one profile (usually 'Plot' and 'Date').
 #' @return dataframe with the columns upper and lower derived from depth_target, depth being the middle of each depth step, as well as the interpolated and discretised parameters.
 #'
 #' @import dplyr
@@ -48,7 +48,16 @@ discretize_depth<- function(df,
                           param,
                           method,
                           depth_target,
-                          control){
+                          control,
+                          id_cols){
+
+
+#First define a function to do the discretization for one profile
+discretize <- function(df,
+                       param,
+                       method,
+                       depth_target,
+                       control){
 
 
 boundary_nearest <- control[["boundary_nearest"]]
@@ -195,5 +204,27 @@ df_discretized <- df_discretized %>% dplyr::mutate(depth = !!depth_target[-1]-di
                                                    lower = !!depth_target[-1])
 
 return(df_discretized)
+}
+
+
+df_names <- names(df)
+if (!all(id_cols %in% df_names)){
+  stop("id_cols not present in input dataframe")
+}
+
+
+df_ret <- df %>%
+  dplyr::ungroup() %>%
+  dplyr::group_by(across({{id_cols}})) %>%
+  dplyr::group_modify(~{df <- discretize(df =.x,
+                                        param = param,
+                                        method = method,
+                                        depth_target = depth_target,
+                                        control=control)})
+
+
+
+return(df_ret)
+
 }
 
