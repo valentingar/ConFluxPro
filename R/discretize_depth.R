@@ -23,7 +23,7 @@
 #' "boundary" = mapping values to any depth within the boundarys. Suited for discrete variables.
 #' "exp" = exponential fit
 #' "spline_lin" = fits a linear spline. similar to linear interpolation but
-#' @param depth_target (numeric vector) specifying the format of the depths to be interpolated. Must include n+1 depths for n target depth steps.
+#' @param depth_target (numeric vector or data frame) specifying the format of the depths to be interpolated. Must include n+1 depths for n target depth steps. If it is different per Plot, enter a data.frame instead with the columns: Plot and depth.
 #' @param boundary_nearest (logical vector) = TRUE/FALSE if it is TRUE then for target depth steps (partially) outside of the parameter boundaries, the neigherst neighbour is returned, else returns NA. Default is FA
 #' @param int_depth (numeric vector)  = value between 0 and 1 for 1 = interpolation takes the top of each depth step, 0.5 = middle and 0= bottom. Default = 0.5
 #' @param id_cols (character vector) = The names of the columns to be grouped by, i.e. uniqueley identifying one profile (usually 'Plot' and 'Date').
@@ -33,14 +33,12 @@
 #' @import splines
 #'
 #' @example
-#' soilphys %>% group_by(Plot) %>%
-#'  group_modify(~{df<-discretize_depth(df = .x,
-#'                                      param = c("TPS","a","b"),
-#'                                      method = "boundary",
-#'                                      depth_target = depth_target,
-#'                                      boundary_nearest = T)
-#'  return(df)
-#'  })
+#' discretize_depth(df = soilphys,
+#'                  param = c("TPS","a","b"),
+#'                  method = "boundary",
+#'                  depth_target = depth_target,
+#'                  boundary_nearest = T,
+#'                  id_cols = c("Plot","Date))
 #'
 #' @export
 
@@ -206,23 +204,61 @@ df_discretized <- df_discretized %>% dplyr::mutate(depth = !!depth_target[-1]-di
 return(df_discretized)
 }
 
-
+#checking if id_cols are present in the provided data frame
 df_names <- names(df)
 if (!all(id_cols %in% df_names)){
   stop("id_cols not present in input dataframe")
 }
 
+if (is.vector(depth_target)){
+  depth_target = data.frame(depth = depth_target, stringsAsFactors = F)
+} else if (!is.data.frame(depth_target)){
+  #if it isn't a data frame - what is it? stopping.
+  stop("depth_target must be a numeric vector or a data frame!")
+}
 
+#checking for which id_cols are in target-depth data.frame
+target_id <- id_cols[which(id_cols %in% names(depth_target))]
+
+#flagging if there are no id cols in depth_target
+target_flag <- (length(target_id) == 0)
+
+#only selecting relevant columns in depth_target
+depth_target <- depth_target %>%
+  dplyr::select(any_of(c("depth",target_id)))
+
+#checking for duplicates
+dup_flag <- !(nrow(depth_target) == depth_target %>% dplyr::distinct() %>% nrow())
+
+if(dup_flag){
+  stop("depth_target: rows are not unique!")
+}
+
+#
 df_ret <- df %>%
   dplyr::ungroup() %>%
   dplyr::group_by(across({{id_cols}})) %>%
-  dplyr::group_modify(~{df <- discretize(df =.x,
-                                        param = param,
-                                        method = method,
-                                        depth_target = depth_target,
-                                        control=control)})
+  dplyr::group_modify(~{
+    if(target_flag){
+      dt <- depth_target$depth
+    } else {
+      #print(target_id)
+      #print(.y)
+      id_gr <- paste0(.y[1,target_id])
+      #print(id_gr)
+      dt <-depth_target %>%
+        dplyr::mutate(id = paste(!!sym(target_id))) %>%
+        dplyr::filter(id == !!id_gr) %>%
+        dplyr::pull(depth)
+    }
+      df <- discretize(df =.x,
+                       param = param,
+                       method = method,
+                       depth_target = dt,
+                       control=control)
+     return(df)
 
-
+  })
 
 return(df_ret)
 
