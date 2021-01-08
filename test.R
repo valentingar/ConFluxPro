@@ -350,6 +350,9 @@ soilphys <-soilphys %>% filter(!MainPlot == "V")
 
 depth_target <-unique(c(soilwater$upper,soilwater$lower))
 
+dt <- data.frame(Plot = rep(c("ES_Fi","ES_Bu"),each=8),
+                 depth = rep(depth_target,times=2))
+
 sphys_dd <- discretize_depth(df = soilphys %>% filter(Plot == "ES_Fi"),
                  param = c("TPS","a","b"),
                  method = "boundary",
@@ -372,11 +375,15 @@ soilphys_joined <- left_join(sphys_dd,soilwater %>% select(Plot,Date,depth,SWC))
 
 check_soilphys(soilphys_joined)
 
-gases <-unique(gasdata$gas)
-gases<-gases[-c(1,length(gases))]
+gases <-unique(gasdata_o2offset$gas)
+gases<-gases[!gases %in% c("Ar","C2H4","N2")]
 
 
-soilphys_complete <- complete_soilphys(soilphys_joined,gases=gases,DSD0_formula = )
+soilphys_complete <- complete_soilphys(soilphys_joined,gases=gases,DSD0_formula ="a*AFPS^b" )
+
+sp_backup <-soilphys
+
+soilphys <- soilphys_complete
 
 layers_map<-data.frame(Plot = rep(c("ES_Fi","AS_Fi"),each = 3),
                        upper = c(6,0,-5,8,0,-5),
