@@ -98,7 +98,7 @@ gasdata$depth[grep("+",gasdata$depth_cat,fixed=T)]<- -gasdata$depth[grep("+",gas
 ##replace "AL" and "WL" with respective humus height
 gasdata <-gasdata %>%
   left_join(humheights %>% select(Plot,SubPlot,topheight)) %>%
-  mutate(depth = ifelse(depth_cat %in% c("AL","WL"),humheight,depth))
+  mutate(depth = ifelse(depth_cat %in% c("AL","WL"),topheight,depth))
 
 gasdata$MainPlot <- gasdata$Plot
 gasdata$Plot <-paste0(gasdata$Plot,"_",gasdata$SubPlot)
@@ -107,7 +107,7 @@ gasdata$gas <-gasdata$PA_NAME
 
 gasdata <- gasdata %>% mutate(NRESULT_ppm = ifelse(PARAM_UNITS=="%",10000,1)*NRESULT)
 
-gasdata <-gasdata %>% select(MST_ID,SAMPLE_NO,NRESULT,NRESULT_ppm,Date,gas,Plot,depth_cat,MainPlot,SubPlot,depth,humheight)
+gasdata <-gasdata %>% select(MST_ID,SAMPLE_NO,NRESULT,NRESULT_ppm,Date,gas,Plot,depth_cat,MainPlot,SubPlot,depth,topheight)
 
 soilphys_raw<-read.csv(paste0(MainDir,DatDir,"DSD0_LevelII_akt.csv"),
                        sep = ";",
@@ -322,7 +322,10 @@ o2map <- offset_override(o2map,
 
 gasdata_o2offset <- offset_correction(gasdata_co2corr,o2map,"O2",0.21,depth_cal = c("AL","WL"))
 
-gasdata_o2offset %>% filter(gas == "N2") %>% ggplot(aes(x=Date, y=NRESULT_ppm))+geom_point()
+
+gasdata_o2offset <-gasdata_o2offset %>% filter(!(gas == "O2" & NRESULT_ppm>21.5e4))
+
+gasdata_o2offset %>% filter(gas == "O2") %>% ggplot(aes(x=Date, y=NRESULT_ppm,col = ifelse(NRESULT_ppm>21.5e4,T,F)))+geom_point()
 
 
 #soilphys zusammenführung:
@@ -366,7 +369,7 @@ stemp_dd <- discretize_depth(df =soiltemp,
                  param = c("Temp"),
                  method = "linear",
                  depth_target = depth_target,
-                 control=list(int_depth =1),
+                 control=list(int_depth =0.5),
                  id_cols = c("Plot","Date"))
 
 soilphys_joined <- left_join(sphys_dd,soilwater %>% select(Plot,Date,depth,SWC)) %>%
@@ -381,9 +384,9 @@ gases<-gases[!gases %in% c("Ar","C2H4","N2")]
 
 soilphys_complete <- complete_soilphys(soilphys_joined,gases=gases,DSD0_formula ="a*AFPS^b" )
 
-sp_backup <-soilphys
+#sp_backup <-soilphys
 
-soilphys <- soilphys_complete
+#soilphys <- soilphys_complete
 
 layers_map<-data.frame(Plot = rep(c("ES_Fi","AS_Fi"),each = 3),
                        upper = c(6,0,-5,8,0,-5),
@@ -423,8 +426,27 @@ FLUX %>% filter(Date == "1998-10-26",Plot == "ES_Fi",gas == "CH4",mode == "LL")
 
 EFFLUX %>%bind_rows(EFFLUX_t)%>%
   bind_rows(EFFLUX_lm) %>%
-  filter(is.na(efflux)==F) %>%
-  ggplot(aes(x=Date, y=efflux,col=mode))+
+  filter(is.na(efflux)==F,gas == "CO2",mode == "LL") %>%
+  ggplot(aes(x=Date, y=efflux,col=extrapmode))+
   geom_line()
 EFFLUX %>% filter(Date == "2016-03-07")
 
+
+
+PROFLUX <- pro_flux(gasdata_o2offset %>% filter(Plot == "ES_Fi"),
+               soilphys_complete,
+               prod_depth = c(-10,0,6),
+               storage_term = 0,
+               zero_flux = F,
+               highlim = 1000,
+               lowlim = -1000,
+               id_cols = c("Plot","Date","gas"))
+
+ggplot(PROFLUX %>% filter(upper == 6), aes (x=Date,y=flux))+
+  geom_line()+
+  geom_line(data = EFFLUX %>% filter(mode == "LL"),aes(col = extrapmode, y=efflux))+
+  facet_wrap(~gas,scales = "free_y")
+
+gasdata_o2offset %>% filter(gas == "O2",Plot == "ES_Fi") %>% filter(!NRESULT_ppm > 2.5e5)%>% ggplot(aes(x=Date,y=NRESULT_ppm,col = depth_cat))+geom_line()
+
+gasdata_o2offset %>% filter(gas == "O2",Plot == "ES_Fi") %>% filter(NRESULT_ppm > 2.5e5)

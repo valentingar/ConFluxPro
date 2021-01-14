@@ -2,7 +2,7 @@
 % Please edit documentation in R/season.R
 \name{season}
 \alias{season}
-\title{ConFluxPro}
+\title{season}
 \usage{
 season(d)
 }

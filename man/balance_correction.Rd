@@ -2,14 +2,15 @@
 % Please edit documentation in R/balance_correction.R
 \name{balance_correction}
 \alias{balance_correction}
-\title{ConFluxPro}
+\title{balance_correction}
 \usage{
 balance_correction(
   df,
-  limits = c(0.6, 1.05),
+  limits = c(-999, +999),
   gases = c("N2", "O2", "Ar", "CO2"),
+  gases_std = c(0.78084, 0.20946, 0.00934, 0.0407),
   gases_ob = c("N2", "O2"),
-  gases_std = c(0.78084, 0.20946, 0.00934, 0.0407)
+  set_na = F
 )
 }
 \arguments{
@@ -18,26 +19,30 @@ function, so that it has to be overwritten (see examples below).}
 
 \item{limits}{(vector, numeric) A vector of two that contain the upper and lower limits for b_tot, above and below which NRESULT_ppm are set NA. Defaults to c(0.6,1.05).}
 
-\item{gases}{(vector, character) A character vector of the gases that should be used in the balance approach. Standard are the four most abundant atmospheric gases.
+\item{gases}{(vector, character) A character vector of the gases that should be used in the balance approach. Default are the four most abundant atmospheric gases.
 Spelling must match the spelling of the gas-column in gasdata exactly. Defaults to c("N2","O2","Ar","CO2").}
-
-\item{gases_ob}{(vector, character) A vector of obligatory gases that must be present for correct balance calculation.
-NRESULT_ppm of samples missing any of these gases will be flagged in b_flag. Defaults to c("N2","O2").}
 
 \item{gases_std}{(vector, numeric) A numeric vector of standard values to be used for missing gases as fraction of total volume.
 Values are then recalculated to account for assumed balance based on present gases. Order must match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))}
+
+\item{gases_ob}{(vector, character) A vector of obligatory gases that must be present for correct balance calculation.
+NRESULT_ppm of samples missing any of these gases will be flagged in bal_flag and not corrected. Defaults to c("N2","O2").}
+
+\item{set_na}{(logical) Should flagged values be set to NA (bal_flag == T)? Default is F.}
 }
 \value{
 gasdata (dataframe) With added columns
 
-b_tot = balance
+bal = balance
 
-b_flag  TRUE for values missing gases in gases_ob
+bal_flag  TRUE if value was not corrected (or set NA).
+
+NRESULT_ppm, corrected for balance
 }
 \description{
 A function to correct the measured values for non-complete gas exchange.
-Per sample, a total balance (b_tot) is obtained and, if necessary, corrected for missing gases.
-Theoretically, b_tot is between (0;1), however values over 1 can result from calibration errors.
+Per sample, a total balance (bal) is obtained and, if necessary, corrected for missing gases.
+Theoretically, bal is between (0;1), however values over 1 can result from calibration errors.
 Values over 1 are treated the same and are corrected.
 Then each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
 This function should be applied before the series_cleaner()-function.
@@ -46,8 +51,9 @@ This function should be applied before the series_cleaner()-function.
 gasdata <- balance_correction(gasdata,
                               limits = c(0.6,1.05),
                               gases = c("N2","O2","Ar"),
+                              gases_std = c(0.78,0.2,0.0093),
                               gases_ob = c("N2","O2"),
-                              gases_std = c(0.78,0.2,0.0093)
+                              set_na = T
                               )
 
 

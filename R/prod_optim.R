@@ -21,11 +21,13 @@
 
 
 prod_optim<- function(X,
+                      height,
+                      DS,
+                      C0,
                       pmap,
                       cmap,
                       conc,
                       dstor,
-                      C0,
                       zero_flux=T){
 
   #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer

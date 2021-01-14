@@ -2,7 +2,7 @@
 % Please edit documentation in R/series_cleaner.R
 \name{series_cleaner}
 \alias{series_cleaner}
-\title{ConFluxPro}
+\title{series_cleaner}
 \usage{
 series_cleaner(df, mode = "data")
 }
@@ -31,18 +31,18 @@ The function can be used using dplyr group_modify()-function
 co2_clean<-gasdata \%>\%
 dplyr::filter(gas == "CO2") \%>\%
 dplyr::group_by(Plot,depth_cat) \%>\%
-dplyr::group_modify(~series.cleaner(.x))
+dplyr::group_modify(~series_cleaner(.x))
 
 gasdata<-gasdata \%>\%
 dplyr::filter(!gas == "CO2") \%>\%
 dplyr::bind_rows(co2_clean)
 
 \%Exactly the same but editing data directly
-gasdata <- gasdata \%>\% gasdata \%>\%
+gasdata <- gasdata \%>\%
 dplyr::group_by(Plot,depth_cat,gas) \%>\%
 dplyr::group_modify(~{
            if(.y$gas == "CO2"){
-               df <- series.cleaner(.x)
+               df <- series_cleaner(.x)
            } else {
                df <- .x}
            return(df)
