@@ -16,9 +16,13 @@ export(lin_extrap)
 export(offset_correction)
 export(offset_override)
 export(offset_subsetting)
+<<<<<<< HEAD
 export(pro_flux)
 export(prod_mod)
 export(prod_optim)
+=======
+export(prod_mod)
+>>>>>>> a876ba6fe158173faa8d192fe3eec6db69bb77d0
 export(season)
 export(series_cleaner)
 export(soilphys_layered)
