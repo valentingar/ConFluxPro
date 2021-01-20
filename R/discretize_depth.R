@@ -1,33 +1,37 @@
 #' @title discretize_depth
 #'
-#' @description This function helps to interpolate and discretize the data in soiltemp and soilwater to match a set final
-#' form for the soilphys dataframe. The idea is that the profile is discretized into set depth steps (see depth_target),
-#' each specifying a layer with an upper and lower boundary. So that for example one depth step is from top of the humus layer to +5 cm, the next from 5 to 0 cm and so on.
-#' The format of this final dataframe is specified in "depth_target", where a numeric vector of the boundrys is given. (e.g. c(6,3,0,-5,-10) resulting in 4 depth steps)
-#' There are different interpolation methods implemented, which might be more practical for different parameters.
+#' @description This function helps to interpolate and discretize depth-dependent data to match a set depth profile. \n
+#' The idea is that the data is discretized into set depth steps (see depth_target), each specifying a layer with an
+#' upper and lower boundary.
+#' So that for example one depth step is from top of the humus layer to +5 cm, the next from 5 to 0 cm and so on.
+#' The format of this final dataframe is specified in "depth_target", where a numeric vector of the interfaces of the steps is given
+#' (e.g. c(6,3,0,-5,-10) resulting in 4 depth steps). \n
+#' \n
+#' There are different interpolation methods implemented, which might be more practical for different parameters or tasks. \n
+#' \n
+#'  A linear interpolation is possible for more or less contiuous parameters, (e.g. soil temperature). \n
+#'  The boundary interpolation is a nearest neighbor interpolation and uses the values set in the "upper" and "lower" variables
+#'  to map the parameter to any step within these limits. \n
+#'  A linear spline interpolation fits a linear spline model to the data with knots defined in "knots". \n
+#'  \n
+#' It is possible to provide multiple parameters to be discretized. In this case it is also possible to define specific controls for each parameter individually. \n
+#' However, if only one value is given for method, int_depth, or knots, the corresponding value is applied to all parameters given in "param".
 #'
-#'  A linear interpolation is possible for more or less contiuous parameters, (e.g. top soil temperature)
-#'  A boundry interpolation is similar to a neirest neighbour interpolation and uses the values set in the upper and lower variables
-#'  to map the parameter to any depth within these limits.
-#'  The control parameter "tie_up" determines here wether the upper or lower boundry is included. It is T by default.
-#'  An exponential interpolation fits an exponential function to the parameter agains depth and predicts values accordingly.
-#'  a linear spline interpolation fits a linear spline model to the data with knots defined in the controlvariable "spline_knots".
-#'
-#' Data given to discretize_depth must always represent one profile, i.e. must be grouped by Plot (& Date for temporal data).
-#' If only one value is given for method, boundary_nearest, int_depth the same is applied to all parameters given in "param"
-#'
-#' @param df (dataframe) The dataframe containing the parameters to be interpolated, as well as the columns "depth", upper" and lower.
+#' @param df (dataframe) The dataframe containing the parameters to be interpolated, as well as the columns "depth", "upper" and "lower".
 #' @param param (character vector) The column names name of the parameters to be interpolated.
-#' @param method (character vector) a character (-vector) specifying the methods to be used for interpolation. Must be in the same order as param. One of
-#' "linear" = linear interpolation.
-#' "boundary" = mapping values to any depth within the boundarys. Suited for discrete variables.
-#' "exp" = exponential fit
-#' "spline_lin" = fits a linear spline. similar to linear interpolation but
-#' @param depth_target (numeric vector or data frame) specifying the format of the depths to be interpolated. Must include n+1 depths for n target depth steps. If it is different per Plot, enter a data.frame instead with the columns: Plot and depth.
+#' @param method (character vector) a character (-vector) specifying the methods to be used for interpolation. Must be in the same order as param. One of \n
+#' "linear" = linear interpolation. \n
+#' "boundary" = mapping values to any depth within the boundrys. Suited for discrete variables. \n
+#' "linspline" = fits a linear spline. similar to linear interpolation but with knots defined in "knots".
+#' @param depth_target (numeric vector or data frame) specifying the format of the target depths to be interpolated. Must include n+1 depths for n target depth steps.
+#' If it is different per id_cols, enter a data.frame in long form instead. This data frame must have  a "depth" column, as well as the columns that identify the different cases. These id-columns must be the same as or a subset of id_cols.
 #' @param boundary_nearest (logical) = TRUE/FALSE if it is TRUE then for target depth steps (partially) outside of the parameter boundaries, the neirest neighbor is returned, else returns NA. Default is FALSE.
 #' @param int_depth (numeric vector)  = value between 0 and 1 for 1 = interpolation takes the top of each depth step, 0.5 = middle and 0= bottom. Default = 0.5
-#' @param id_cols (character vector) = The names of the columns to be grouped by, i.e. uniqueley identifying one profile (usually 'Plot' and 'Date').
-#' @return dataframe with the columns upper and lower derived from depth_target, depth being the middle of each depth step, as well as the interpolated and discretised parameters.
+#' @param knots (numeric vector) = the depths at which knots for the linspline-method are to be placed. If this differs for the parameters, a list of numeric vectors with the same lenght as "param" can be provided. Cannot differ between id_cols.
+#' @param id_cols (character vector) = The names of the columns to be grouped by, i.e. uniquely identifying one profile (e.g. c('Plot','Date')).
+#'
+#'
+#' @return dataframe with the columns upper and lower derived from depth_target, depth being the middle of each depth step, as well as the interpolated and discretized parameters.
 #'
 #' @import dplyr
 #' @import splines
@@ -46,8 +50,11 @@ discretize_depth<- function(df,
                           param,
                           method,
                           depth_target,
-                          control,
-                          id_cols){
+                          id_cols,
+                          boundary_nearest = F,
+                          int_depth = 0.5,
+                          knots = NULL,
+                          ...){
 
 
 #First define a function to do the discretisation for one profile
@@ -75,6 +82,13 @@ boundary_intdisc<-function(param){
   #Boundary interpolation (nearest neighbor)
   param_int <- param[indices]
 
+  return(param_int)
+}
+
+linspline_intdisc<-function(param,depth_target,int_depth,knots){
+  #Linear spline interpolation
+  depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
+  param_int <- predict(lm(param ~splines::bs(depth,knots=knots,degree=1)),newdata = list(depth =depth_target_tmp))
   return(param_int)
 }
 
@@ -117,7 +131,7 @@ if("boundary" %in% method){
   }
 }
 #create depth variable if linear is in methods
-if ("linear" %in% method){
+if (any(c("linear","linspline") %in% method)){
   depth <- df$depth
 
 }
@@ -131,10 +145,13 @@ df_discretized <- lapply(1:l_param, function(i){
   } else if(meth_tmp == "linear"){
     int_depth_tmp <- int_depth[i]
     param_intdisc <- linear_intdisc(param_tmp,depth_target,int_depth_tmp)
-  } else if(meth_tmp == "spline"){
-#for future interpolation methods
-  } else if(meth_tmp == "asdasfdfg"){
+  } else if(meth_tmp == "linspline"){
+    int_depth_tmp <- int_depth[i]
+    knots_tmp <- knots[[i]]
+    param_intdisc <- linspline_intdisc(param_tmp,depth_target,int_depth_tmp,knots_tmp)
 
+  } else if(meth_tmp == "asdasfdfg"){
+    #for future interpolation methods
   } else {
 
   }
@@ -148,26 +165,6 @@ return(df_discretized)
 }
 
 
-
-
-
-
-
-
-boundary_nearest <- control[["boundary_nearest"]]
-int_depth <- control[["int_depth"]]
-knots <- control[["knots"]]
-
-if (is.null(int_depth)==T){
-  int_depth <- 0.5
-}
-
-if(is.list(boundary_nearest)==F){
-  boundary_nearest <-   list(boundary_nearest)
-}
-if(is.list(int_depth)==F){
-  int_depth <- list(int_depth)
-}
 if (is.list(knots)==F){
   knots <-list(knots)
 }
@@ -207,17 +204,11 @@ if(l_knots == 1){
 }
 
 
-control <-list("method" = unlist(method),
-               "boundary_nearest" = unlist(boundary_nearest),
-               "int_depth" = unlist(int_depth),
-               "knots" = unlist(knots))
-
 
 #creating vectors for method control
 boundary_nearest <- unlist(boundary_nearest)
 method <- unlist(method)
 int_depth <- unlist(int_depth)
-knots <-unlist(knots)
 
 
 
