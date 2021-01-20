@@ -442,9 +442,9 @@ PROFLUX <- pro_flux(gasdata_o2offset %>% filter(Plot == "ES_Fi"),
                lowlim = -1000,
                id_cols = c("Plot","Date","gas"))
 
-ggplot(PROFLUX %>% filter(upper == 6), aes (x=Date,y=flux))+
+ggplot(PROFLUX %>% filter(upper == 6,gas == "CO2"), aes (x=Date,y=flux))+
   geom_line()+
-  geom_line(data = EFFLUX %>% filter(mode == "LL"),aes(col = extrapmode, y=efflux))+
+  geom_line(data = EFFLUX %>% filter(mode == "LL",gas == "CO2"),aes(col = extrapmode, y=efflux))+
   facet_wrap(~gas,scales = "free_y")
 
 gasdata_o2offset %>% filter(gas == "O2",Plot == "ES_Fi") %>% filter(!NRESULT_ppm > 2.5e5)%>% ggplot(aes(x=Date,y=NRESULT_ppm,col = depth_cat))+geom_line()

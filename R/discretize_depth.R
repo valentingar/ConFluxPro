@@ -24,7 +24,7 @@
 #' "exp" = exponential fit
 #' "spline_lin" = fits a linear spline. similar to linear interpolation but
 #' @param depth_target (numeric vector or data frame) specifying the format of the depths to be interpolated. Must include n+1 depths for n target depth steps. If it is different per Plot, enter a data.frame instead with the columns: Plot and depth.
-#' @param boundary_nearest (logical vector) = TRUE/FALSE if it is TRUE then for target depth steps (partially) outside of the parameter boundaries, the neigherst neighbour is returned, else returns NA. Default is FA
+#' @param boundary_nearest (logical) = TRUE/FALSE if it is TRUE then for target depth steps (partially) outside of the parameter boundaries, the neirest neighbor is returned, else returns NA. Default is FALSE.
 #' @param int_depth (numeric vector)  = value between 0 and 1 for 1 = interpolation takes the top of each depth step, 0.5 = middle and 0= bottom. Default = 0.5
 #' @param id_cols (character vector) = The names of the columns to be grouped by, i.e. uniqueley identifying one profile (usually 'Plot' and 'Date').
 #' @return dataframe with the columns upper and lower derived from depth_target, depth being the middle of each depth step, as well as the interpolated and discretised parameters.
@@ -52,11 +52,8 @@ discretize_depth<- function(df,
 
 #First define a function to do the discretisation for one profile
 discretize <- function(df,
-                       param,
-                       method,
                        depth_target,
-                       depth_target_mid,
-                       control){
+                       depth_target_mid){
 
 # interpolation function definitions: ----------------------
 # each function must follow the following structure:
@@ -64,55 +61,87 @@ discretize <- function(df,
 # "control" is a list, where additional controlling variables will be stored.
 # The function must be able to accept control, even if it is not evaluating anything from it.
 
-linear_intdisc<-function(param,df,depth_target,depth_target_mid,control){
+linear_intdisc<-function(param,depth_target,int_depth){
   #Linear interpolation
 
-  depth <- df$depth
-  int_depth <- control[["int_depth"]]
   depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
   param_int <- approxfun(depth,param)(depth_target_tmp)
   return(param_int)
 }
 
-boundary_intdisc<-function(param,df,depth_target,depth_target_mid,control){
+
+
+boundary_intdisc<-function(param){
   #Boundary interpolation (nearest neighbor)
-
-  boundary_nearest <- control[["boundary_nearest"]]
-
-  upper_orig <- df$upper
-  lower_orig <- df$lower
-
-  depth_orig <- (unique(c(lower_orig,upper_orig)))
-
-  indices <- findInterval(depth_target_mid,depth_orig,all.inside = boundary_nearest)
-  indices[indices == 0] <-NA
-
   param_int <- param[indices]
 
   return(param_int)
 }
 
 
+
+#create interpolation indices for boundary method, if a parameter is to be interpolated by boundary
+if("boundary" %in% method){
+
+  upper_orig <- df$upper
+  lower_orig <- df$lower
+
+  #if boundary_nearest is FALSE, NA is returned for not fitting steps
+  if(boundary_nearest[1] == F){
+    indices<-unlist(
+      lapply(2:length(depth_target),function(i){
+        id<-which(upper_orig >= depth_target[i] & lower_orig<= depth_target[i-1])
+        if(length(id)==0){
+          id <- NA
+        }
+        return(id)})
+    )
+  #if boundary nearest is T, then the highest (or lowest) value is returned instead
+  } else {
+    indices<-
+      unlist(
+        lapply(2:length(depth_target),function(i){
+          id <-which(upper_orig >= depth_target[i] & lower_orig<= depth_target[i-1])
+          if (length(id)==0){
+            if(boundary_nearest ==F){
+              id<-NA
+            } else if(depth_target[i]>max(upper_orig)){
+              id <- length(upper_orig)
+            } else {
+              id <- 1
+            }
+
+          }
+          return(id)}
+        ))
+  }
+}
+#create depth variable if linear is in methods
+if ("linear" %in% method){
+  depth <- df$depth
+
+}
+
 df_discretized <- lapply(1:l_param, function(i){
   param_tmp <- unlist(df[,param[i]])
   meth_tmp <- method[i]
-  control_tmp  <- lapply(control,function(cont) cont[i])
-  param_intdisc<-do.call(paste0(meth_tmp,"_intdisc"),list(param = param_tmp,
-                                                          df = df,
-                                                          depth_target = depth_target,
-                                                          depth_target_mid = depth_target_mid,
-                                                          control = control_tmp))
+  if(meth_tmp == "boundary"){
+    boundary_neares <- boundary_nearest[i]
+    param_intdisc <- boundary_intdisc(param = param_tmp)
+  } else if(meth_tmp == "linear"){
+    int_depth_tmp <- int_depth[i]
+    param_intdisc <- linear_intdisc(param_tmp,depth_target,int_depth_tmp)
+  } else if(meth_tmp == "spline"){
+#for future interpolation methods
+  } else if(meth_tmp == "asdasfdfg"){
+
+  } else {
+
+  }
 
   return(param_intdisc)
 })
 names(df_discretized)<-param
-#df_discretized <- bind_cols(df_discretized)
-
-#df_discretized$depth <- depth_target_mid
-#df_discretized$lower <- depth_target[-length(depth_target)]
-#df_discretized$upper <- depth_target[-1]
-
-
 
 return(df_discretized)
 
@@ -182,6 +211,18 @@ control <-list("method" = unlist(method),
                "boundary_nearest" = unlist(boundary_nearest),
                "int_depth" = unlist(int_depth),
                "knots" = unlist(knots))
+
+
+#creating vectors for method control
+boundary_nearest <- unlist(boundary_nearest)
+method <- unlist(method)
+int_depth <- unlist(int_depth)
+knots <-unlist(knots)
+
+
+
+
+
 
 #caring about the order of things:
 if("depth" %in% names(df)){
@@ -266,12 +307,9 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
   df_tmp <- df[df$gr_id == id_gr,]
 
   df_ret <-lapply((df_tmp %>% dplyr::group_by(prof_id) %>% dplyr::group_split()),function(df_sp){
-    df_sp <- discretize(df =df_sp,
-                        param = param,
-                        method = method,
+    df_sp <- discretize(df =as.data.frame(df_sp),
                         depth_target = dt,
-                        depth_target_mid = dt_mid,
-                        control=control)
+                        depth_target_mid = dt_mid)
     return(df_sp)
 
   }) %>% bind_rows()
@@ -289,6 +327,7 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
   return(df_ret)
 
 }) %>% dplyr::bind_rows()
+
 
 df_ret <- df %>% select(any_of({c(id_cols,"prof_id")})) %>% distinct() %>%left_join(df_ret,by = "prof_id")
 
