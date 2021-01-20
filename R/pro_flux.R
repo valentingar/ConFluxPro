@@ -69,10 +69,10 @@ pro_flux <- function(gasdata,
 
   #something to split soilphys to have well depths at edges.
   soilphys <-discretize_depth(soilphys,
-                              param = sp_names, #vielleicht versuchen, dass alle mitgenommen werden?? nötig?
+                              param = sp_names,
                               method = "boundary",
                               depth_target = target_depths,
-                              control=list(boundary_nearest =F),
+                              boundary_nearest =F,
                               id_cols = c("Plot","gas","Date"))
 
 
