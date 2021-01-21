@@ -1,20 +1,27 @@
 #' @title prod_optim
 #'
-#' @description This is the optimiser-function that is minimised for the inverse,
+#' @description This is the optimizer-function that is minimized for the inverse,
 #' production based model. It takes as input a vector of the influx, as well as the
-#' values of the production to be optimised.
+#' values of the production to be optimized.
 #'
-#' @param X (numeric vector) specifying the productions to be optimised
+#' This function is embedded in pro_flux and is not intended to be used manually.
+#'
+#' @param X (numeric vector) specifying the productions to be optimized
 #' @param pmap (integer vector) assigning a production from X to each step
-#' @param cmap (integer vector) assigning the modelled concentrations to the observed concentrations
+#' @param cmap (integer vector) assigning the modeled concentrations to the observed concentrations
 #' as there can be multiple observations per depth
-#' @param conc (numeric) the observed concentrations
-#' @param dstor (numeric) storage changes per step
-#' @param C0 (numeric) The concentration at the bottom of the lowermost step
+#' @param conc (numeric) the observed concentrations (in the same unit as the modelled concentrations).
+#' @param dstor (numeric) storage changes per step (same unit as the productions given in X).
+#' @param C0 (numeric) The concentration at the bottom of the lowermost step.
 #' @param zero_flux (logical) Applies the zero-flux boundary condition(T)? If FALSE, the first value in X
 #' represents the incoming flux to the lowest layer.
 #'
+#' @param RMSE real mean square error of the modeled and measured concentration.
+#'
 #' @examples
+#'
+#' @seealso prod_mod
+#' @seealso pro_flux
 #'
 #' @export
 #'

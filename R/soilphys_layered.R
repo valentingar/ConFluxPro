@@ -4,9 +4,13 @@
 #' for the flux calculation.
 #'
 #' @param soilphys (dataframe) the soilphys dataframe
-#' @param layers_map (dataframe) containing the following parameters: "Plot",layer"=name of the layer;
-#' "upper"=upper limit of layer in cm; "lower" = lower limit of the layer in cm; Must be the same
-#' dataframe as the input of the same name in dcdz_layered().
+#' @param layers_map (dataframe) containing the following parameters: \n
+#' "Plot"\n
+#' "layer"=name of the layer\n
+#' "upper"=upper limit of layer in cm \n
+#' "lower" = lower limit of the layer in cm \n
+#'  Must be the same
+#'  dataframe as the input of the same name in dcdz_layered().
 #' @param param (character vector) A vector containing the names of the variables in soilphys to be carried over
 #' @param funs (character vector) A vector defining the type of mean to be used. One of "arith" or "harm"
 #'

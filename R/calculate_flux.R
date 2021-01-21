@@ -12,7 +12,7 @@
 #' @param modes (character) A character vector specifying mode(s) for dcdz calculation. Can be "LL","LS","EF".
 #' @param param (character) A vector containing the the parameters of soilphys, for which means should be calculated,
 #' must contain "rho_air" and "DS", more parameters help interpretation
-#' @param funs (character) A vector defining the type of mean to be used. One of "mean" or "harm"
+#' @param funs (character) A vector defining the type of mean to be used. One of "arith" or "harm"
 #'
 #'
 #'
@@ -24,7 +24,7 @@
 #'                gases = c("CO2","CH4","O2"),
 #'                modes =c("LL","LS","EF"),
 #'                param = c("DSD0","DS","SWC","Temp","p"),
-#'                funs = c("harm","harm","mean","mean","mean"))
+#'                funs = c("harm","harm","arith","arith","arith"))
 #'
 #' @import dplyr
 #'

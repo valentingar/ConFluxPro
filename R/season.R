@@ -13,9 +13,13 @@
 #'
 #' @examples d <- as.Date("2015-10-15")
 #' s <- season(d)
+#' s
+#' [1] "fall"
 #'
 #' d <- as.Date(c("1955-01-15","1985-06-15","2015-10-15"))
 #' s <- season(d)
+#' s
+#' [1] "winter" "summer" "fall"
 #'
 #' @import lubridate
 #'

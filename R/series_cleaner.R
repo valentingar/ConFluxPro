@@ -6,8 +6,8 @@
 #' concentration, so that the difference of each sampler on each day to the respective mean
 #' of all samplers is more or less the same.
 #'
-#' This function does not apply if your data either has only one observation per depth or if
-#' your data does not show any intrinsic ordering inside each depth. Check these preconditions first.
+#' This function does not apply if the data either has only one observation per depth or if
+#' the data does not show any intrinsic ordering inside each depth. Check these preconditions first.
 #'
 #' The function outputs a dataframe that has the same structure as the input, so that the original input can be removed.
 #' The function can be used using dplyr group_modify()-function
