@@ -14,6 +14,12 @@ load.libraries<-function(){
 
 load.libraries()
 
+
+library(dplyr)
+library(ConFluxPro)
+
+
+
 #Directories ----------------
 
 MainDir<-"C:/Users/valen/Documents/FVA/Gartiser_Valentin/LEVELII_gasflux/"
@@ -272,6 +278,7 @@ gasdata_balcorr <- balance_correction(gasdata,
                                       limits = c(0.5,1.2),
                                       set_na = T)
 
+library(ggplot2)
 gasdata_balcorr %>%  filter(Plot == "ES_Fi") %>% ggplot(aes(x=Date,y=NRESULT_ppm,col=depth_cat))+
   geom_line()+facet_wrap(~gas,scales="free",ncol=1)
 
@@ -418,7 +425,7 @@ FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
                gases = c("CO2","CH4","O2"),
                modes =c("LL","LS","EF"),
                param = c("DSD0","DS","SWC","Temp","p"),
-               funs = c("harm","harm","mean","mean","mean"))
+               funs = c("harm","harm","arith","arith","arith"))
 
 FLUX %>% ggplot(aes(x=Date,y=flux,col=mode))+geom_line()+facet_wrap(~paste(Plot,layer,gas),ncol=1,scales = "free")
 
