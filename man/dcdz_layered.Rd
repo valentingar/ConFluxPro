@@ -36,6 +36,10 @@ r2 (linearised) R^2 for the model.
 \description{
 This function calculates concentration gradients using different approaches.
 }
-\examples{
-
+\seealso{
+Other FLUX: 
+\code{\link{calculate_flux}()},
+\code{\link{dcdz_ef}()},
+\code{\link{efflux_extrap}()}
 }
+\concept{FLUX}

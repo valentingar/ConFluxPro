@@ -31,6 +31,9 @@
 #' @import dplyr
 #' @import lubridate
 #'
+#' @family gasdata
+#'
+#'
 #' @seealso offset_correction
 #' @seealso offset_override
 #'

@@ -7,14 +7,18 @@
 dcdz_ef(df, topheight, mode)
 }
 \arguments{
-\item{df}{(dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot ).}
+\item{df}{(dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot).}
 
-\item{topheight}{(numeric) Depth at the Atmosphere/Soil interface. (e.g. Height of Humus)}
+\item{topheight}{(numeric) Depth at the Atmosphere/Soil interface. (e.g. Height of Humus).}
 
-\item{mode}{(character) One of ("EF","LR").}
+\item{mode}{(character) how should the concentration gradient be calculated?
+One of ("EF","LR"). \n
+"EF" fits an exponential model of form a+b*depth^c to the data and takes the corresponding gradient from the derivative
+at the depth defined in "topheight" \n
+"LR" fits a linear regression model of form a*depth+c to the data and takes a as gradient.}
 }
 \value{
-df (dataframe) Following columns:
+df (dataframe) with the following columns:
 
 mode (character) the used gradient method.
 
@@ -27,8 +31,12 @@ dcdz_sd (numeric) standard error in ppm/cm.
 r2 (linearised) R^2 for the model.
 }
 \description{
-This function calculates concentration gradients for complete profiles with different approaches
+This function calculates concentration gradients for complete profiles with different approaches.
 }
-\examples{
-
+\seealso{
+Other FLUX: 
+\code{\link{calculate_flux}()},
+\code{\link{dcdz_layered}()},
+\code{\link{efflux_extrap}()}
 }
+\concept{FLUX}

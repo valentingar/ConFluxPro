@@ -15,6 +15,8 @@
 #'
 #' @examples check_soilphys(soilphys)
 #'
+#' @family soilphys
+#'
 #' @import dplyr
 #' @impot tidyr
 

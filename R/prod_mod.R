@@ -18,6 +18,7 @@
 #' @return concentration at top of each step in mumol/m^3
 #' @return flux at top of each step in mumol/m^2/s
 #'
+#' @family proflux
 #'
 #' @examples
 #' prod_mod_conc(prod = c(0.01,0.02,0.65,0.5,0.4),

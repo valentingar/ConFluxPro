@@ -7,27 +7,37 @@
 prod_optim(X, height, DS, C0, pmap, cmap, conc, dstor, zero_flux = T)
 }
 \arguments{
-\item{X}{(numeric vector) specifying the productions to be optimised}
+\item{X}{(numeric vector) specifying the productions to be optimized}
 
-\item{C0}{(numeric) The concentration at the bottom of the lowermost step}
+\item{C0}{(numeric) The concentration at the bottom of the lowermost step.}
 
 \item{pmap}{(integer vector) assigning a production from X to each step}
 
-\item{cmap}{(integer vector) assigning the modelled concentrations to the observed concentrations
+\item{cmap}{(integer vector) assigning the modeled concentrations to the observed concentrations
 as there can be multiple observations per depth}
 
-\item{conc}{(numeric) the observed concentrations}
+\item{conc}{(numeric) the observed concentrations (in the same unit as the modelled concentrations).}
 
-\item{dstor}{(numeric) storage changes per step}
+\item{dstor}{(numeric) storage changes per step (same unit as the productions given in X).}
 
 \item{zero_flux}{(logical) Applies the zero-flux boundary condition(T)? If FALSE, the first value in X
 represents the incoming flux to the lowest layer.}
+
+\item{RMSE}{real mean square error of the modeled and measured concentration.}
 }
 \description{
-This is the optimiser-function that is minimised for the inverse,
+This is the optimizer-function that is minimized for the inverse,
 production based model. It takes as input a vector of the influx, as well as the
-values of the production to be optimised.
+values of the production to be optimized.
+
+This function is embedded in pro_flux and is not intended to be used manually.
 }
 \examples{
 
 }
+\seealso{
+Other proflux: 
+\code{\link{pro_flux}()},
+\code{\link{prod_mod_conc}()}
+}
+\concept{proflux}

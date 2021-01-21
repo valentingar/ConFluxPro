@@ -17,6 +17,7 @@
 #' @return
 #'
 #' @examples
+#' @family soilphys
 #'
 #' @import dplyr
 #' @export

@@ -15,6 +15,7 @@
 #' SAMPLE_NO = c(3023,5612,405,"blackforest27"),
 #' section = c(6,2,9,3))
 #'
+#' @family gasdata
 #' @import dplyr
 #' @seealso offset_subsetting
 #' @seealso offset_correction

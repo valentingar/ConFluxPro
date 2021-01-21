@@ -16,7 +16,8 @@ calculate_flux(gasdata, soilphys, layers_map, gases, modes, param, funs)
 
 \item{modes}{(character) A character vector specifying mode(s) for dcdz calculation. Can be "LL","LS","EF".}
 
-\item{param}{(character) A vector containing the the parameters of soilphys, for which means should be calculated}
+\item{param}{(character) A vector containing the the parameters of soilphys, for which means should be calculated,
+must contain "rho_air" and "DS", more parameters help interpretation}
 
 \item{funs}{(character) A vector defining the type of mean to be used. One of "arith" or "harm"}
 }
@@ -24,8 +25,28 @@ calculate_flux(gasdata, soilphys, layers_map, gases, modes, param, funs)
 FLUX
 }
 \description{
-This function takes the soilphys-Dataframe as well as the gasdata-dataframe and calculates fluxes accordingly.
+This function takes the soilphys-dataframe as well as the gasdata-dataframe
+and calculates fluxes accordingly. Fluxes are calculated for each layer defined in
+layers map and are given in mumol/m^2/s.
 }
 \examples{
+calculate_flux(gasdata,
+               soilphys_complete,
+               layers_map = layers_map ,
+               gases = c("CO2","CH4","O2"),
+               modes =c("LL","LS","EF"),
+               param = c("DSD0","DS","SWC","Temp","p"),
+               funs = c("harm","harm","arith","arith","arith"))
 
 }
+\seealso{
+soilphys_layered
+
+dcdz_layered
+
+Other FLUX: 
+\code{\link{dcdz_ef}()},
+\code{\link{dcdz_layered}()},
+\code{\link{efflux_extrap}()}
+}
+\concept{FLUX}

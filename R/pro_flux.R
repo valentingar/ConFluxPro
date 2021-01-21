@@ -26,6 +26,9 @@
 #' storage_term = F,
 #' zero_flux = T)
 #'
+#' @family proflux
+#'
+#'
 #' @import dplyr
 #' @export
 
