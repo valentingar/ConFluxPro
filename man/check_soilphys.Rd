@@ -12,12 +12,25 @@ check_soilphys(df, extra_vars = c())
 \item{vars}{(character vector) column names of additional variables to be checked.}
 }
 \value{
-
+data frame of 'suspicious' parameter/depth combinations, where all values are NA.
 }
 \description{
 This function analyses the soilphys dataframe before the flux calculation. It presents a
-warning, if there are variables missing and also looks for suspicious patterns that suggest an error in the interpolation made by discretize_depth.
+warning, if there are variables missing and also looks for suspicious patterns that suggest an error
+in the interpolation made by discretize_depth.
+\n
+Mainly checks if ceratain columns are present and if they are missing, if they can be calcluated from the
+data present. Looks for the following columns by default:
+"depth","upper","lower","Date","Plot","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS"
 }
 \examples{
+check_soilphys(soilphys)
 
 }
+\seealso{
+Other soilphys: 
+\code{\link{complete_soilphys}()},
+\code{\link{discretize_depth}()},
+\code{\link{soilphys_layered}()}
+}
+\concept{soilphys}

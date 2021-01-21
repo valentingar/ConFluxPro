@@ -14,9 +14,13 @@ soilphys_layered(
 \arguments{
 \item{soilphys}{(dataframe) the soilphys dataframe}
 
-\item{layers_map}{(dataframe) containing the following parameters: "Plot",layer"=name of the layer;
-"upper"=upper limit of layer in cm; "lower" = lower limit of the layer in cm; Must be the same
-dataframe as the input of the same name in dcdz_layered().}
+\item{layers_map}{(dataframe) containing the following parameters: \n
+"Plot"\n
+"layer"=name of the layer\n
+"upper"=upper limit of layer in cm \n
+"lower" = lower limit of the layer in cm \n
+ Must be the same
+ dataframe as the input of the same name in dcdz_layered().}
 
 \item{param}{(character vector) A vector containing the names of the variables in soilphys to be carried over}
 
@@ -29,6 +33,10 @@ dataframe as the input of the same name in dcdz_layered().}
 This function calculates (harmonic-) means of the soilphys dataframe per layer
 for the flux calculation.
 }
-\examples{
-
+\seealso{
+Other soilphys: 
+\code{\link{check_soilphys}()},
+\code{\link{complete_soilphys}()},
+\code{\link{discretize_depth}()}
 }
+\concept{soilphys}

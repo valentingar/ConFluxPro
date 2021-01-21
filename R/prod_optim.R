@@ -20,8 +20,7 @@
 #'
 #' @examples
 #'
-#' @seealso prod_mod
-#' @seealso pro_flux
+#' @family proflux
 #'
 #' @export
 #'

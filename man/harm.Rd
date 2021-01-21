@@ -21,3 +21,19 @@ If FALSE (default) then returns NA if x contains NA values.}
 This function calculates harmonic mean of a vector and can be used analogous to the
 base functions mean() or median()
 }
+\examples{
+
+No weights:
+x <- c(1:10)
+hmean_noweights <- harm(x)
+hmean_noweights
+[1] 3.414172
+
+With weights
+w <- c(10:1)
+hmean_weighted <- harm(x,w)
+hmean_weighted
+[1] 2.475398
+
+
+}

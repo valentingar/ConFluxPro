@@ -16,6 +16,7 @@
 #'
 #' @seealso D0_massman
 #'
+#' @family soilphys
 #' @export
 #'
 

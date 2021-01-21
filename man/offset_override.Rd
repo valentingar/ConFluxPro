@@ -9,15 +9,15 @@ offset_override(corr_map, SAMPLE_NO, section)
 \arguments{
 \item{corr_map}{(dataframe) The corr_map dataframe created by offset_subsetting}
 
-\item{SAMPLE_NO}{(character) A vevctor of the SAMPLE_NO to change section}
+\item{SAMPLE_NO}{(character) A vector of the SAMPLE_NO to change section}
 
-\item{section}{(vector, numeric) A vector in the same order as SAMPLE_No specifying the section to add to.}
+\item{section}{(vector, numeric) A vector in the same order as SAMPLE_No specifying the target section.}
 }
 \value{
-corr_map (dataframe) The corr_map dataframe used in the offset_correction function with overriden SAMPLE_NO
+corr_map (dataframe) The corr_map dataframe used in the offset_correction function with overridden SAMPLE_NO.
 }
 \description{
-This function helps overriding the Date-based subsetting of offset_subsetting.
+This function helps overriding the Date-based subsetting of offset_subsetting().
 It modifies an existing corr_map by editing the section of a list of SAMPLE_NO. Check the section numbering of corr_map first.
 If a new section is manually introduced this way, a mode will have to be added manually.
 }
@@ -27,3 +27,15 @@ SAMPLE_NO = c(3023,5612,405,"blackforest27"),
 section = c(6,2,9,3))
 
 }
+\seealso{
+offset_subsetting
+
+offset_correction
+
+Other gasdata: 
+\code{\link{balance_correction}()},
+\code{\link{offset_correction}()},
+\code{\link{offset_subsetting}()},
+\code{\link{series_cleaner}()}
+}
+\concept{gasdata}

@@ -9,17 +9,27 @@ complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b", gases, overwrite = F)
 \arguments{
 \item{soilphys}{(dataframe) the soilphys dataframe}
 
-\item{DSD0_formula}{(character) A character vector defining the way DSD0 should be calculated. Must refer to existing variables in soilphys. See examples below}
+\item{DSD0_formula}{(character) A character vector defining the way DSD0 should be calculated.
+Must refer to existing columns in soilphys. See examples below.}
 
 \item{gases}{(character) A character vector defining the gases for which to calculate D0 and DS.}
 
-\item{overwrite}{(logical) If true, existing columns are overwritten.}
+\item{overwrite}{(logical) If true, already existing columns are overwritten.}
 }
 \description{
 This function completes the soilphys dataset by calculating different parameters if necessary, as long as
-all required parameters are available.
+all required parameters are available. Diffusion coefficients, as well as the air density are calculated if missing.
 }
 \examples{
 soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
 
 }
+\seealso{
+D0_massman
+
+Other soilphys: 
+\code{\link{check_soilphys}()},
+\code{\link{discretize_depth}()},
+\code{\link{soilphys_layered}()}
+}
+\concept{soilphys}

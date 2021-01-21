@@ -14,7 +14,7 @@
 #' must contain "rho_air" and "DS", more parameters help interpretation
 #' @param funs (character) A vector defining the type of mean to be used. One of "arith" or "harm"
 #'
-#'
+#' @family FLUX
 #'
 #' @return FLUX
 #' @examples

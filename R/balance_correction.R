@@ -33,6 +33,8 @@
 #' @return bal_flag  TRUE if value was not corrected (or set NA).
 #' @return NRESULT_ppm, corrected for balance
 #'
+#' @family gasdata
+#'
 #' @examples
 #' gasdata <- balance_correction(gasdata,
 #'                               limits = c(0.6,1.05),

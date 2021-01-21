@@ -39,7 +39,7 @@
 #'                             depth_cal = "ATM"))
 #'
 #' @import dplyr
-#'
+#' @family gasdata
 #' @export
 
 

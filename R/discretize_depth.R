@@ -33,6 +33,8 @@
 #'
 #' @return dataframe with the columns upper and lower derived from depth_target, depth being the middle of each depth step, as well as the interpolated and discretized parameters.
 #'
+#' @family soilphys
+#'
 #' @import dplyr
 #' @import splines
 #'

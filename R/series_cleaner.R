@@ -41,6 +41,7 @@
 #'            return(df)
 #'                       })
 #'
+#' @family gasdata
 #' @import lubridate
 #' @import dplyr
 #'

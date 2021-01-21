@@ -21,7 +21,7 @@
 #' @param layers (character vector) layers to be used in the linextrap-approach.
 #' @param modename (character) A character defining the value of the variable "mode" in the returned dataframe.
 #' @return EFFLUX
-#'
+#' @family FLUX
 #' @examples efflux_extrap(FLUX,
 #'                         gases = c("CO2","O2"),
 #'                         method = "linextrap",

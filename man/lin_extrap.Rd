@@ -7,7 +7,7 @@
 lin_extrap(x, y, x_new)
 }
 \arguments{
-\item{x}{(numeric) Two values of X}
+\item{x}{(numeric) Two values of x}
 
 \item{y}{(numeric) Two values of y (same order as x)}
 
@@ -21,4 +21,9 @@ This function linearly extrapolates based on two value-pairs (x1|y1),(X2|y2) to 
 }
 \examples{
 lin_extrap(c(3,4),c(10,20),5)
+[1] 30
+
+lin_extrap(c(3,4),c(10,20),c(5,-5))
+[1]  30 -70
+
 }

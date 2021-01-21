@@ -21,17 +21,24 @@ pro_flux(
 \item{soilphys}{(dataframe)}
 
 \item{storage_term}{(logical) Should changes in storage be accounted for? Default is F.
-Only works if data is present in a temporal dimension as well and is probably only representative for a high temporal resolution (hours).}
+Only works if data is present in a temporal dimension as well and is probably only
+representative for a high temporal resolution (hours).}
 
-\item{zero_flux}{(logical) Applies the zero-flux boundary condition (T)? If FALSE, the first value in X
+\item{zero_flux}{(logical) Applies the zero-flux boundary condition? If FALSE, the first value in X
 represents the incoming flux to the lowest layer.}
 
 \item{target_depth}{(numeric vector) This vector determines the depths of the interfaces between
-different production values to be fitted. This allows for an adaptive model with an individual number variables. So for three different production values, two depths that mark the intersection must be given.}
+different production values to be fitted. This allows for an adaptive model with an individual
+number variables and hence degrees-of-freedom. So for three different production values,
+two depths that mark the intersection must be given.}
 }
 \description{
-This implements an inverse modeling approach which optimizes vertically resolved production (or consumption)
-of the gases in question to fit a modeled concentration profile to observed data.
+This implements an inverse modeling approach which optimizes
+vertically resolved production (or consumption) of the gases in question to fit
+a modeled concentration profile to observed data.
+
+One boundary condition of this model is, that there is no incoming or outgoing flux at the bottom of the lowest layer
+of the profile. If this boundary condition is not met, the flux must be optimised as well. This can be set in "zero_fluix"
 }
 \examples{
 pro_flux(gasdata,
@@ -41,3 +48,9 @@ storage_term = F,
 zero_flux = T)
 
 }
+\seealso{
+Other proflux: 
+\code{\link{prod_mod_conc}()},
+\code{\link{prod_optim}()}
+}
+\concept{proflux}

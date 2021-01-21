@@ -20,7 +20,7 @@
 #' @return r2 (linearised) R^2 for the model.
 #'
 #' @examples
-#'
+#' @family FLUX
 #' @import dplyr
 #' @import splines
 #'
