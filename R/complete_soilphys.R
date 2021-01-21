@@ -1,18 +1,21 @@
 #' @title complete_soilphys
 #'
 #' @description This function completes the soilphys dataset by calculating different parameters if necessary, as long as
-#' all required parameters are available.
+#' all required parameters are available. Diffusion coefficients, as well as the air density are calculated if missing.
 #'
 #' @param soilphys (dataframe) the soilphys dataframe
-#' @param DSD0_formula (character) A character vector defining the way DSD0 should be calculated. Must refer to existing variables in soilphys. See examples below
+#' @param DSD0_formula (character) A character vector defining the way DSD0 should be calculated.
+#' Must refer to existing columns in soilphys. See examples below.
 #' @param gases (character) A character vector defining the gases for which to calculate D0 and DS.
-#' @param overwrite (logical) If true, existing columns are overwritten.
+#' @param overwrite (logical) If true, already existing columns are overwritten.
 #'
 #' @examples soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
 #'
 #' @import dplyr
 #' @import rlang
-
+#'
+#' @seealso D0_massman
+#'
 #' @export
 #'
 

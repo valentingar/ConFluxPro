@@ -1,20 +1,39 @@
 #' @title efflux_extrap
 #'
-#' @description This function extrapolates fluxes calculated with the layers approach to the surface with different methods.
-#' To see the different approaches implemented check the "method" parameters below.
+#' @description This function extrapolates fluxes calculated with the layers approach to
+#' the surface with different methods.
+#' To see the different approaches implemented check the "method" parameter below. The values are grouped by
+#' Plot,Date,gas,mode.
 #'
 #' @param FLUX (dataframe) the FLUX dataframe
-#' @param gases (character vector) A (vector) of gases to be extrapolated as stated in the function call. defaults to all gases.
-#' @param method (character) A string defining the method to be used for extrapolation. Must be called multiple times for different methods. \n
+#' @param gases (character vector) A (vector) of gases to be extrapolated as stated
+#' in the function call. Fefaults to all gases.
+#' @param method (character) A string defining the method to be used for extrapolation.
+#' Must be called multiple times for different methods. \n
 #' Possible methods are: \n
-#' "lm" implements a linear model approach. Here a linear model is fit to flux ~ depth and the value for the surface estimated \n
-#' "linextrap" implements a linear extrapolation approach. Here, two layer names must be given using the control parameters below, that will then be used for an linear extrapolation. This can be used to implement a Hirano et al. (2003) or Tang et al. (2005) approach.
+#' "lm" implements a linear model approach. Here a linear model is fit to
+#' flux ~ depth and the value for the surface estimated \n
+#' "linextrap" implements a linear extrapolation approach.
+#' Here, two layer names must be given using the control parameters below,
+#' that will then be used for an linear extrapolation.
+#' This can be used to implement a Hirano et al. (2003) or Tang et al. (2005) approach (see Maier & Schack_Kirchner (2014) below).
 #'
 #' @param layers (character vector) layers to be used in the linextrap-approach.
 #' @param modename (character) A character defining the value of the variable "mode" in the returned dataframe.
 #' @return EFFLUX
 #'
-#' @examples
+#' @examples efflux_extrap(FLUX,
+#'                         gases = c("CO2","O2"),
+#'                         method = "linextrap",
+#'                         layers = c("MIN1","MIN2"),
+#'                         modename = "Hirano")
+#'
+#'
+#'
+#'
+#' @references M. Maier, H. Schack-Kirchner,
+#' Using the gradient method to determine soil gas flux: A review,
+#' Agricultural and Forest Meteorology,Volumes 192–193,2014,Pages 78-95, https://doi.org/10.1016/j.agrformet.2014.03.006.
 #'
 #' @import dplyr
 #' @export

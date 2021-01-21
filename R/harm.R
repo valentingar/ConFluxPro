@@ -10,6 +10,21 @@
 #'
 #' @return (numeric) harmonic mean of x
 #'
+#'@examples
+#'
+#' No weights:
+#' x <- c(1:10)
+#' hmean_noweights <- harm(x)
+#' hmean_noweights
+#' [1] 3.414172
+#'
+#' With weights
+#' w <- c(10:1)
+#' hmean_weighted <- harm(x,w)
+#' hmean_weighted
+#' [1] 2.475398
+#'
+#'
 #' @export
 
 harm <- function(x,w=1,na.rm=F){

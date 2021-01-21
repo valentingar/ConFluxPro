@@ -1,25 +1,30 @@
 #' @title balance_correction
 #'
 #' @description A function to correct the measured values for non-complete gas exchange.
-#' Per sample, a total balance (bal) is obtained and, if necessary, corrected for missing gases.
+#' Per sample, a total balance (b_tot) is obtained by adding the measurements of all gases and, if necessary,
+#' corrected for missing gases. \n
 #' Theoretically, bal is between (0;1), however values over 1 can result from calibration errors.
 #' Values over 1 are treated the same and are corrected.
-#' Then each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
-#' This function should be applied before the series_cleaner()-function.
+#' Then, each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
 #'
 #' @param df (dataframe) The gasdata-dataframe. The dataframe will be altered in the process of the
 #' function, so that it has to be overwritten (see examples below).
 #'
-#' @param limits (vector, numeric) A vector of two that contain the upper and lower limits for b_tot, above and below which NRESULT_ppm are set NA. Defaults to c(0.6,1.05).
+#' @param limits (vector, numeric) A vector of two that contains the upper and lower limits for b_tot, above and below which NRESULT_ppm are flagged and set NA, if set_na is TRUE.
 #'
-#' @param gases (vector, character) A character vector of the gases that should be used in the balance approach. Default are the four most abundant atmospheric gases.
-#' Spelling must match the spelling of the gas-column in gasdata exactly. Defaults to c("N2","O2","Ar","CO2").
+#' @param gases (vector, character) A character vector of the gases that should be used in the balance approach.
+#' Default are the four most abundant atmospheric gases (N2, O2, Ar, CO2).
+#' Spelling must match the spelling of the gas-column in gasdata exactly.
 #'
-#' @param gases_std (vector, numeric) A numeric vector of standard values to be used for missing gases as fraction of total volume.
-#' Values are then recalculated to account for assumed balance based on present gases. Order must match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))
+#' @param gases_std (vector, numeric) A numeric vector of standard values to be used for
+#' missing gases as fraction of total volume. Values of b_tot recalculated to account for
+#' the missing gases based on the gases present and these standard values. This is achieved by assuming a balance of
+#' the gases present first and recalculating gases_st accordingly. \n
+#' Order must match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))
 #'
-#' @param gases_ob (vector, character) A vector of obligatory gases that must be present for correct balance calculation.
-#' NRESULT_ppm of samples missing any of these gases will be flagged in bal_flag and not corrected. Defaults to c("N2","O2").
+#' @param gases_ob (vector, character) A vector of obligatory gases that must be present for correct
+#' balance calculation. NRESULT_ppm of samples missing any of these gases will be flagged in bal_flag
+#' and not corrected or set NA. Defaults to c("N2","O2").
 #'
 #' @param set_na (logical) Should flagged values be set to NA (bal_flag == T)? Default is F.
 #'

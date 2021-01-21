@@ -1,13 +1,18 @@
 #' @title dcdz_ef
 #'
-#' @description This function calculates concentration gradients for complete profiles with different approaches
+#' @description This function calculates concentration gradients for complete profiles with different approaches.
 #'
 #'
-#' @param df (dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot ).
-#' @param topheight (numeric) Depth at the Atmosphere/Soil interface. (e.g. Height of Humus)
-#' @param mode (character) One of ("EF","LR").
+#' @param df (dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot).
+#' @param topheight (numeric) Depth at the Atmosphere/Soil interface. (e.g. Height of Humus).
+#' @param mode (character) how should the concentration gradient be calculated?
+#' One of ("EF","LR"). \n
+#' "EF" fits an exponential model of form a+b*depth^c to the data and takes the corresponding gradient from the derivative
+#' at the depth defined in "topheight" \n
+#' "LR" fits a linear regression model of form a*depth+c to the data and takes a as gradient.
 #'
-#' @return df (dataframe) Following columns:
+#'
+#' @return df (dataframe) with the following columns:
 #' @return mode (character) the used gradient method.
 #' @return topheight (numeric) the topheight of that profile
 #' @return dcdz_ppm (numeric) concentration gradient in ppm/cm.
