@@ -175,8 +175,8 @@ create_return <- T
 
       db <- summary(mod)$coefficients[1,2]
       dc <- summary(mod)$coefficients[2,2]
-      print(db)
-      print(dc)
+      #print(db)
+      #print(dc)
       #calculating dcdz via the 1st derivative of the exponential Function.
       dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
       dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
