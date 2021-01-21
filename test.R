@@ -14,6 +14,12 @@ load.libraries<-function(){
 
 load.libraries()
 
+
+library(dplyr)
+library(ConFluxPro)
+
+
+
 #Directories ----------------
 
 MainDir<-"C:/Users/valen/Documents/FVA/Gartiser_Valentin/LEVELII_gasflux/"
@@ -272,6 +278,7 @@ gasdata_balcorr <- balance_correction(gasdata,
                                       limits = c(0.5,1.2),
                                       set_na = T)
 
+library(ggplot2)
 gasdata_balcorr %>%  filter(Plot == "ES_Fi") %>% ggplot(aes(x=Date,y=NRESULT_ppm,col=depth_cat))+
   geom_line()+facet_wrap(~gas,scales="free",ncol=1)
 
@@ -418,7 +425,7 @@ FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
                gases = c("CO2","CH4","O2"),
                modes =c("LL","LS","EF"),
                param = c("DSD0","DS","SWC","Temp","p"),
-               funs = c("harm","harm","mean","mean","mean"))
+               funs = c("harm","harm","arith","arith","arith"))
 
 FLUX %>% ggplot(aes(x=Date,y=flux,col=mode))+geom_line()+facet_wrap(~paste(Plot,layer,gas),ncol=1,scales = "free")
 
@@ -450,18 +457,18 @@ EFFLUX %>% filter(Date == "2016-03-07")
 
 
 
-PROFLUX <- pro_flux(gasdata_o2offset %>% filter(Plot == "ES_Fi",gas=="O2"),
+PROFLUX <- pro_flux(gasdata_o2offset %>% filter(Plot == "ES_Fi",gas=="CO2"),
                soilphys_complete,
                prod_depth = c(-10,0,6),
                storage_term = 0,
-               zero_flux = T,
-               highlim = 0,
+               zero_flux = F,
+               highlim = 1000,
                lowlim = -1000,
                id_cols = c("Plot","Date","gas"))
 
-ggplot(PROFLUX %>% filter(upper == 6,gas == "O2"), aes (x=Date,y=flux))+
+ggplot(PROFLUX %>% filter(upper == 6,gas == "CO2"), aes (x=Date,y=flux))+
   geom_line()+
-  geom_line(data = EFFLUX %>% filter(mode == "LL",gas == "O2"),aes(col = extrapmode, y=efflux))+
+  geom_line(data = EFFLUX %>% filter(mode == "LL",gas == "CO2"),aes(col = extrapmode, y=efflux))+
   facet_wrap(~gas,scales = "free_y")
 
 gasdata_o2offset %>% filter(gas == "O2",Plot == "ES_Fi") %>% filter(!NRESULT_ppm > 2.5e5)%>% ggplot(aes(x=Date,y=NRESULT_ppm,col = depth_cat))+geom_line()

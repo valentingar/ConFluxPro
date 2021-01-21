@@ -42,14 +42,15 @@ soilphys_layered<-function(soilphys,
 
   soilphys<-soilphys %>%
     dplyr::mutate(layer = set_layer(Plot,depth) ) %>%
+    dplyr::ungroup() %>%
     dplyr::group_by(Plot,Date,gas,layer) %>%
     dplyr::mutate(height = abs(upper-lower))
 
   soilphys_arith <- soilphys %>%
-    dplyr::summarise(across(.cols = contains( !!param_arith),.fns=~weighted.mean(.x,w=height,na.rm=T)))
+    dplyr::summarise(dplyr::across(.cols = any_of( !!param_arith),.fns=~weighted.mean(.x,w=height,na.rm=T)))
 
   soilphys_harm <-soilphys %>%
-    dplyr::summarise(across(.cols = contains( !!param_harm),.fns=~harm(.x,w=height,na.rm=T)))
+    dplyr::summarise(dplyr::across(.cols = any_of( !!param_harm),.fns=~harm(.x,w=height,na.rm=T)))
 
   soilphys <- dplyr::left_join(soilphys_harm,soilphys_arith,by = c("Plot","Date","layer","gas"),suffix = c("_harm","_arith"))
   soilphys <- dplyr::left_join(soilphys,layers_map)

@@ -42,6 +42,7 @@
 #'                       })
 #'
 #' @family gasdata
+#'
 #' @import lubridate
 #' @import dplyr
 #'
