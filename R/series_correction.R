@@ -1,4 +1,4 @@
-#' @title series_cleaner
+#' @title series_correction
 #'
 #' @description This function corrects time series of gas concentrations within a certain depth at one site.
 #' The basic assumption is that gas data of different samplers within a depth are strictly ordered due to spatial
