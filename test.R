@@ -441,7 +441,7 @@ ggplot(df, aes(x=NRESULT_ppm,y=depth))+geom_point()
 
 FLUX$topheight <- 6
 FLUX$depth <- (FLUX$upper-FLUX$lower) / 2+FLUX$lower
-EFFLUX <-efflux_extrap(FLUX,method = "linextrap",layers = c("MIN1","MIN2"),modename = "Hirano")
+EFFLUX <-efflux_extrap(FLUX,method = "linextrap",layers = c("MIN1","MIN2"),modename = "Hirano",id_cols = c("Date","var"))
 EFFLUX_t <-efflux_extrap(FLUX,method = "linextrap",layers = c("HU","MIN2"),modename = "Tang")
 EFFLUX_lm <-efflux_extrap(FLUX,method = "lm",layers = c("HU","MIN2"),modename = "lm")
 EFFLUX_ne <- efflux_extrap(FLUX,method = "nearest",layers = c("HU"),modename = "ne")

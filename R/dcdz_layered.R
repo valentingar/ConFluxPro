@@ -96,7 +96,7 @@ create_return <- T
 } else if (mode == "LL"){
 
   #This implements a local linear approach using a linear regession model within each layer
-  df_ret <- lapply(seq(upper), function(i){
+  df_ret <- lapply(1:length(upper), function(i){
     df_part <- df %>% dplyr::filter(depth <= !!upper[i],
                                     depth >= !!lower[i])
     df_ret <- data.frame(mode = mode,
@@ -106,7 +106,7 @@ create_return <- T
 
 
     df_valid <- df_part %>% dplyr::filter(!is.na(NRESULT_ppm),!is.na(depth))
-    d_flag <- (df_valid  %>% dplyr::pull(depth) %>% unique() <2)
+    d_flag <- (df_valid  %>% dplyr::pull(depth) %>% unique() %>%length() <2)
     val_flag <- (df_valid %>% nrow() < 2)
 
     if (any(d_flag,val_flag)){
