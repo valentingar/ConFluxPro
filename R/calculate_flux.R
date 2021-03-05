@@ -13,6 +13,8 @@
 #' @param param (character) A vector containing the the parameters of soilphys, for which means should be calculated,
 #' must contain "rho_air" and "DS", more parameters help interpretation
 #' @param funs (character) A vector defining the type of mean to be used. One of "arith" or "harm"
+#' @param id_cols (character) A vector defining the id-columns uniquely identifying each profile.
+#' Usually this includes Date but might also include any variations considered.
 #'
 #' @family FLUX
 #'
@@ -24,7 +26,8 @@
 #'                gases = c("CO2","CH4","O2"),
 #'                modes =c("LL","LS","EF"),
 #'                param = c("DSD0","DS","SWC","Temp","p"),
-#'                funs = c("harm","harm","arith","arith","arith"))
+#'                funs = c("harm","harm","arith","arith","arith"),
+#'                id_cols = c(Date))
 #'
 #' @import dplyr
 #'
@@ -38,10 +41,27 @@ calculate_flux <- function(gasdata,
                            gases,
                            modes,
                            param,
-                           funs){
+                           funs,
+                           id_cols){
 if(!"DS" %in% param){
   stop("cannot calculate flux: 'DS' is missing in param!")
 }
+
+
+if(!length(which(id_cols %in% names(gasdata)))== length(id_cols)){
+  warning("not all id_cols are present in gasdata.")
+}
+  if(!length(which(id_cols %in% names(soilphys)))== length(id_cols)){
+    warning("not all id_cols are present in soilphys")
+  }
+
+  if(!"gas" %in% id_cols){
+    id_cols <- c(id_cols,"gas")
+  }
+  if(!"Plot" %in% id_cols){
+    id_cols <- c(id_cols,"Plot")
+  }
+
 
 g_plots <- unique(gasdata$Plot)
 s_plots <- unique(soilphys$Plot)
@@ -57,10 +77,9 @@ if(!all(g_plots %in% l_plots)){
 
 
 
-}
-else{
+}else{
   layers_map <- lapply(g_plots,function(Plot){
-    df <- layers_map %>% dplyr::mutate(Plot == !!Plot)
+    df <- layers_map %>% dplyr::filter(Plot == !!Plot)
   }) %>% bind_rows()
 
 }
@@ -68,12 +87,27 @@ else{
 #subset gasdata to relevant gases
 gasdata <- gasdata %>% dplyr::filter(gas %in% gases)
 
+#removing points without data
+gasdata <- gasdata %>% dplyr::filter(!is.na(NRESULT_ppm),!is.na(depth))
+
+if(nrow(gasdata) < 2){
+  stop("gasdata is empty for given gases - check your input and data!")
+}
+
 #for progress tracking
-n_gradients <- length(with(gasdata,unique(paste(Plot,Date,gas))))
-n_soilphys <- length(with(soilphys,unique(paste(Plot,Date,gas))))
+n_gradients <- gasdata %>% dplyr::ungroup() %>%
+  dplyr::select(dplyr::any_of({{id_cols}}))  %>%
+  dplyr::distinct() %>%
+  nrow()
+n_soilphys <- soilphys%>% dplyr::ungroup() %>%
+  dplyr::select(dplyr::any_of({{id_cols}}))  %>%
+  dplyr::distinct() %>%
+  nrow()
 
 print("starting gradient")
-FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
+FLUX <- gasdata %>%
+  ungroup()%>%
+  dplyr::group_by(dplyr::across(dplyr::any_of({{id_cols}}))) %>%
   dplyr::mutate(n_gr = dplyr::cur_group_id(),n_tot=n_gradients) %>%
     dplyr::group_modify(~{
       if (.x$n_gr[1] %in% floor(seq(1,n_gradients,length.out = 11))){
@@ -91,11 +125,17 @@ FLUX <- gasdata %>% dplyr::group_by(Plot,Date,gas) %>%
 
 print("gradient complete")
 print("starting soilphys")
-relevant_subset <- with(gasdata, paste(Plot,gas,Date))
-soilphys_layers <-soilphys_layered(soilphys %>% dplyr::filter(paste(Plot,gas,Date) %in% relevant_subset),
-                            layers_map,
-                            param,
-                            funs)
+
+
+soilphys_layers <-soilphys_layered(gasdata %>% #decreasing size of soilphys to relevant subset
+                                     dplyr::ungroup() %>%
+                                     dplyr::select(dplyr::any_of({id_cols})) %>%
+                                     dplyr::distinct() %>%
+                                     dplyr::left_join(soilphys),
+                                   layers_map,
+                                   param,
+                                   funs,
+                                   id_cols)
 print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%

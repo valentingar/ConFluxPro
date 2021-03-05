@@ -97,8 +97,8 @@ create_return <- T
 
   #This implements a local linear approach using a linear regession model within each layer
   df_ret <- lapply(seq(upper), function(i){
-    df_part <- df %>% dplyr::filter(depth <= upper[i],
-                                    depth >= lower[i])
+    df_part <- df %>% dplyr::filter(depth <= !!upper[i],
+                                    depth >= !!lower[i])
     df_ret <- data.frame(mode = mode,
                          layer = layers[i],
                          upper = upper[i],
