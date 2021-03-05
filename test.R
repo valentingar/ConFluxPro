@@ -420,12 +420,13 @@ layers_map<-data.frame(Plot = rep(c("ES_Fi","AS_Fi"),each = 3),
 FLUX <- calculate_flux(gasdata %>% filter(Plot == "ES_Fi"
                                           #,Date == "1998-10-26"
                                           ),
-               soilphys_complete,
+               bind_rows(soilphys_complete %>% mutate(var = 1),soilphys_complete %>% mutate(var = 2)),
                layers_map = layers_map ,
-               gases = c("CO2","CH4","O2"),
-               modes =c("LL","LS","EF"),
+               gases = c("O2"),
+               modes =c("LL"),
                param = c("DSD0","DS","SWC","Temp","p"),
-               funs = c("harm","harm","arith","arith","arith"))
+               funs = c("harm","harm","arith","arith","arith"),
+               id_cols = c("Date","var"))
 
 FLUX %>% ggplot(aes(x=Date,y=flux,col=mode))+geom_line()+facet_wrap(~paste(Plot,layer,gas),ncol=1,scales = "free")
 

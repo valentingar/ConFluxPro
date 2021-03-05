@@ -20,13 +20,16 @@
 #'
 #' @param layers (character vector) layers to be used in the linextrap-approach.
 #' @param modename (character) A character defining the value of the variable "mode" in the returned dataframe.
+#' @param id_cols (character) A character vector defining the columns that uniquely identify one profile.
+#'
 #' @return EFFLUX
 #' @family FLUX
 #' @examples efflux_extrap(FLUX,
 #'                         gases = c("CO2","O2"),
 #'                         method = "linextrap",
 #'                         layers = c("MIN1","MIN2"),
-#'                         modename = "Hirano")
+#'                         modename = "Hirano";
+#'                         id_cols = c("Date"))
 #'
 #'
 #'
@@ -42,7 +45,8 @@ efflux_extrap <-function(FLUX,
                          gases = "all",
                          method,
                          layers = NA,
-                         modename = NA){
+                         modename = NA,
+                         id_cols){
   valid_methods <- c("lm","linextrap","nearest")
 
   if (!method %in% valid_methods){
@@ -73,8 +77,17 @@ efflux_extrap <-function(FLUX,
     stop("gases set to all but does not have length 1. Check input.")
   }
 
+  if(!all(id_cols %in% names(FLUX))){
+    stop("Not all id_cols are present in FLUX.")
+  }
+
+  id_cols <- c(id_cols,"gas","mode","Plot")
+
+
 if(method == "lm"){
-  EFFLUX <- FLUX %>% dplyr::group_by(Plot,Date,gas,mode) %>%
+  EFFLUX <- FLUX %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
     dplyr::group_modify(~{
       h<-.x$topheight[1]
       #print(paste(.y$Plot,.y$Date))
@@ -87,8 +100,10 @@ if(method == "lm"){
       return(data.frame(efflux = efflux))
     })
 } else if (method == "linextrap"){
-  EFFLUX <- FLUX %>% filter(layer %in% layers) %>%
-    dplyr::group_by(Plot,Date,gas,mode) %>%
+  EFFLUX <- FLUX %>%
+    dplyr::filter(layer %in% layers) %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
     dplyr::group_modify(~{
       #print(paste(.y$Plot,.y$Date,.y$gas,.y$mode))
       #print(.x$depth)
