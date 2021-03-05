@@ -25,12 +25,20 @@
 soilphys_layered<-function(soilphys,
                            layers_map,
                            param=c("TPS","SWC","AFPS","T","p","DSD0","D0","DS"),
-                           funs=c("arith","arith","arith","arith","arith","harm","harm","harm")){
+                           funs=c("arith","arith","arith","arith","arith","harm","harm","harm"),
+                           id_cols){
+
+  id_cols_s <- c(id_cols,"layer")
 
   set_layer <-function(Plot,depth){
     unlist(lapply(1:length(Plot),function(i){
-    l<-layers_map$layer[layers_map$Plot == Plot[i] & layers_map$upper > depth[i] & layers_map$lower < depth[i]]
-    return(l)}))
+      if(any(is.na(depth[i]),is.na(Plot[i]))){
+        return(NA)
+      } else {
+        l<-layers_map$layer[layers_map$Plot == Plot[i] & layers_map$upper > depth[i] & layers_map$lower < depth[i]]
+        return(l)
+      }
+   }))
   }
 
   param_arith <- param[funs == "arith"]
@@ -43,7 +51,7 @@ soilphys_layered<-function(soilphys,
   soilphys<-soilphys %>%
     dplyr::mutate(layer = set_layer(Plot,depth) ) %>%
     dplyr::ungroup() %>%
-    dplyr::group_by(Plot,Date,gas,layer) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols_s}))) %>%
     dplyr::mutate(height = abs(upper-lower))
 
   soilphys_arith <- soilphys %>%
@@ -52,7 +60,7 @@ soilphys_layered<-function(soilphys,
   soilphys_harm <-soilphys %>%
     dplyr::summarise(dplyr::across(.cols = any_of( !!param_harm),.fns=~harm(.x,w=height,na.rm=T)))
 
-  soilphys <- dplyr::left_join(soilphys_harm,soilphys_arith,by = c("Plot","Date","layer","gas"),suffix = c("_harm","_arith"))
+  soilphys <- dplyr::left_join(soilphys_harm,soilphys_arith,by = id_cols_s,suffix = c("_harm","_arith"))
   soilphys <- dplyr::left_join(soilphys,layers_map)
   return(soilphys)
 }
