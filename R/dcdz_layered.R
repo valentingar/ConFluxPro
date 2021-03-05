@@ -104,7 +104,12 @@ create_return <- T
                          upper = upper[i],
                          lower = lower[i])
 
-    if (nrow(df_part %>% dplyr::filter(!is.na(depth),!is.na(NRESULT_ppm))) < 2){
+
+    df_valid <- df_part %>% dplyr::filter(!is.na(NRESULT_ppm),!is.na(depth))
+    d_flag <- (df_valid  %>% dplyr::pull(depth) %>% unique() <2)
+    val_flag <- (df_valid %>% nrow() < 2)
+
+    if (any(d_flag,val_flag)){
       return(df_ret)
     } else{
     mod <- lm(NRESULT_ppm ~depth, data = df_part)
