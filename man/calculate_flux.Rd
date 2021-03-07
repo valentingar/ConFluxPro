@@ -4,7 +4,16 @@
 \alias{calculate_flux}
 \title{calculate_flux}
 \usage{
-calculate_flux(gasdata, soilphys, layers_map, gases, modes, param, funs)
+calculate_flux(
+  gasdata,
+  soilphys,
+  layers_map,
+  gases,
+  modes,
+  param,
+  funs,
+  id_cols
+)
 }
 \arguments{
 \item{gasdata}{(dataframe) The gasdata dataframe}
@@ -20,6 +29,9 @@ calculate_flux(gasdata, soilphys, layers_map, gases, modes, param, funs)
 must contain "rho_air" and "DS", more parameters help interpretation}
 
 \item{funs}{(character) A vector defining the type of mean to be used. One of "arith" or "harm"}
+
+\item{id_cols}{(character) A vector defining the id-columns uniquely identifying each profile.
+Usually this includes Date but might also include any variations considered.}
 }
 \value{
 FLUX
@@ -36,7 +48,8 @@ calculate_flux(gasdata,
                gases = c("CO2","CH4","O2"),
                modes =c("LL","LS","EF"),
                param = c("DSD0","DS","SWC","Temp","p"),
-               funs = c("harm","harm","arith","arith","arith"))
+               funs = c("harm","harm","arith","arith","arith"),
+               id_cols = c(Date))
 
 }
 \seealso{

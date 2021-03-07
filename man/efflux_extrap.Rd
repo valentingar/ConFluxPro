@@ -4,7 +4,7 @@
 \alias{efflux_extrap}
 \title{efflux_extrap}
 \usage{
-efflux_extrap(FLUX, gases = "all", method, layers = NA, modename = NA)
+efflux_extrap(FLUX, gases = "all", method, layers = NA, modename = NA, id_cols)
 }
 \arguments{
 \item{FLUX}{(dataframe) the FLUX dataframe}
@@ -25,6 +25,8 @@ This can be used to implement a Hirano et al. (2003) or Tang et al. (2005) appro
 \item{layers}{(character vector) layers to be used in the linextrap-approach.}
 
 \item{modename}{(character) A character defining the value of the variable "mode" in the returned dataframe.}
+
+\item{id_cols}{(character) A character vector defining the columns that uniquely identify one profile.}
 }
 \value{
 EFFLUX
@@ -40,7 +42,8 @@ efflux_extrap(FLUX,
                         gases = c("CO2","O2"),
                         method = "linextrap",
                         layers = c("MIN1","MIN2"),
-                        modename = "Hirano")
+                        modename = "Hirano";
+                        id_cols = c("Date"))
 
 
 
