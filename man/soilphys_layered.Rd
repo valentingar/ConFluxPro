@@ -8,7 +8,8 @@ soilphys_layered(
   soilphys,
   layers_map,
   param = c("TPS", "SWC", "AFPS", "T", "p", "DSD0", "D0", "DS"),
-  funs = c("arith", "arith", "arith", "arith", "arith", "harm", "harm", "harm")
+  funs = c("arith", "arith", "arith", "arith", "arith", "harm", "harm", "harm"),
+  id_cols
 )
 }
 \arguments{
