@@ -324,7 +324,7 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
 
 df_ret <- df %>% select(any_of({c(id_cols,"prof_id")})) %>% distinct() %>%left_join(df_ret,by = "prof_id")
 
-return(df_ret)
+return(df_ret %>% select(-"prof_id"))
 
 }
 
