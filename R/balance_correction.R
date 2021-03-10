@@ -105,7 +105,8 @@ df <- df %>%
   dplyr::mutate(bal = bal_corr(bal,missing_gas)) %>% # correcting bal with standard values for missing gases
   dplyr::mutate(bal_flag = ifelse(bal < min(limits) | bal > max(limits),T,bal_flag)) %>% #bal_flag also true if bal exceeds limits
   dplyr::mutate(bal_flag = ifelse(bal == 0,T,bal_flag)) %>%
-  dplyr::right_join(df) #joining with gasdata
+  dplyr::right_join(df) %>% #joining with gasdata
+  dplyr::mutate(bal_flag = ifelse(is.na(bal_flag),T,bal_flag)) #if after the join a sample_no was not met in gasdata, bal_flag is na and thus is set T
 
 
 #CORRECTION OF THE MOLE RATIOS for bal_flag = T
