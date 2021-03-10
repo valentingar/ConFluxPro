@@ -47,6 +47,10 @@ if(!"DS" %in% param){
   stop("cannot calculate flux: 'DS' is missing in param!")
 }
 
+  if(!"rho_air" %in% param){
+    stop("cannot calculate flux: 'rho_air' is missing in param!")
+  }
+
 
 if(!length(which(id_cols %in% names(gasdata)))== length(id_cols)){
   warning("not all id_cols are present in gasdata.")
@@ -139,7 +143,6 @@ soilphys_layers <-soilphys_layered(gasdata %>% #decreasing size of soilphys to r
 print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
-  dplyr::mutate(rho_air = p*100 / (8.314 * (273.15+Temp))) %>%
   dplyr::mutate(flux = -DS*rho_air*dcdz_ppm) %>%
   dplyr::mutate(depth = upper-lower)
 print("flux calculation complete")
