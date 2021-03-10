@@ -47,17 +47,12 @@ if (DSD0_flag == T | overwrite == T){
     dplyr:: mutate(DSD0 = !!(rlang::parse_expr(DSD0_formula)))
 }
 if (D0_flag == T | overwrite == T){
-  soilphys <- soilphys %>%
+  soilphys <- lapply(gases, function(gas){
+    return(soilphys %>% mutate(gas = !!gas))
+  }) %>% bind_rows() %>%
     dplyr::select(!dplyr::any_of("D0")) %>%
     dplyr::group_by(Plot,Date,depth) %>%
-    dplyr::group_modify(~{
-      D0 <- unlist(lapply(gases,function(g){
-        D0 <- D0_massman(g,.x$Temp,.x$p)
-        return(D0)
-      }))
-      .x <- cbind(.x,gas = gases,D0 = D0)
-      return(.x)
-    })
+    dplyr::mutate(D0 = D0_massman(gas,Temp,p))
 
 }
 if(DS_flag == T | overwrite == T){
