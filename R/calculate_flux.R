@@ -132,8 +132,13 @@ n_soilphys <- soilphys%>% dplyr::ungroup() %>%
 
 printers <-floor(seq(1,n_gradients,length.out = 11))
 
+id_cols <- c(id_cols,"mode")
+
 print("starting gradient")
-FLUX <- gasdata %>%
+FLUX <- lapply(modes,function(mode){
+  return(gasdata %>% mutate(mode = !!mode))
+}) %>%
+  bind_rows() %>%
   ungroup()%>%
   dplyr::group_by(dplyr::across(dplyr::any_of({{id_cols}}))) %>%
   dplyr::mutate(n_gr = dplyr::cur_group_id(),n_tot=n_gradients) %>%
@@ -141,19 +146,15 @@ FLUX <- gasdata %>%
       if (.x$n_gr[1] %in% printers){
         print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
       }
-      FLUX <- lapply(modes, function(mode){
-        #print(.y$Plot)
-        #print(mode)
-        #print(.y$Date)
-        #print(.y$gas)
+      FLUX <-
       dcdz_layered(.x,
                    layers_map[layers_map$Plot == .y$Plot[1],],
-                   mode,
-                   depth_steps$depth_steps[depth_steps$Plot == .y$Plot[1]])}) %>%
-        dplyr::bind_rows()
+                   .y$mode[1],
+                   depth_steps$depth_steps[depth_steps$Plot == .y$Plot[1]])
       return(FLUX)
     })
 
+id_cols <-id_cols[!id_cols == "mode"]
 print("gradient complete")
 print("starting soilphys")
 

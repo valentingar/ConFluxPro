@@ -193,8 +193,7 @@ if (return_na){
 
 }
 if (create_return){
-  df_ret <- data.frame(mode = mode,
-                       layers_map[,!names(layers_map) =="Plot"],
+  df_ret <- data.frame(layers_map[,!names(layers_map) =="Plot"],
                        dcdz_ppm = dcdz,
                        dcdz_sd = dcdz_sd,
                        dc_ppm = dc,
