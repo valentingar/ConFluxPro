@@ -144,7 +144,7 @@ print("soilphys complete")
 FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
   dplyr::mutate(flux = -DS*rho_air*dcdz_ppm) %>%
-  dplyr::mutate(depth = upper-lower)
+  dplyr::mutate(depth = mean(c(upper,lower)))
 print("flux calculation complete")
 return(FLUX)
 }
