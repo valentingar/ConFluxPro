@@ -27,7 +27,8 @@
 
 dcdz_layered <- function(df,
                          layers_map,
-                         mode
+                         mode,
+                         depth_steps
                          ){
 valid_modes = c("LS","LL","EF")
 
@@ -35,30 +36,18 @@ if ((mode %in% valid_modes)==F){
   stop(paste0("wrong mode selected: ",mode,". Please use one of the following modes: ",paste0(valid_modes,collapse = ", ")))
 }
 
-layers_map <- layers_map %>%
-  dplyr::arrange(dplyr::desc(upper))
-
 upper <- layers_map$upper
 lower <- layers_map$lower
 layers <- layers_map$layer
 
 
-depth_steps <- rev(sort(upper))[-1] #depths between the layers from top to bottom
 depths <- rev(sort(unique(c(upper, lower)))) #depths including boundaries from top to bottom
 
 #depths with values in the df
-depths_df <- df %>% dplyr::filter(is.na(depth)==F,
-                     is.na(NRESULT_ppm)==F) %>%
-  dplyr::pull(depth) %>% unique() %>%sort() %>% rev()
+depths_df <- rev(sort(unique(df$depth)))
 
 #true if the there are depths that exceed depths of non-NA values in df.
 ls_flag <- length(which(depths >max(depths_df,na.rm=T) | depths <min(depths_df,na.rm=T)))>0
-
-#turns Inf-values to NA
-df$NRESULT_ppm[is.infinite(df$NRESULT_ppm)==T] <- NA
-
-#removes all NAs from df
-df <- df %>% dplyr::filter(is.na(NRESULT_ppm)==F,is.na(depth) == F)
 
 #initializing NA-logical for return
 return_na <- F
@@ -66,7 +55,7 @@ return_na <- F
 if (mode == "LS"){
 
 #not enough non-NA values or outside range.
-if (nrow(df[all(is.na(df$depth)==F,is.na(df$NRESULT_ppm)==F),])<length(depths) | ls_flag){
+if (nrow(df)<length(depths) | ls_flag){
   return_na <- T
 } else {
 #spline model
@@ -204,10 +193,7 @@ if (return_na){
 
 }
 if (create_return){
-  df_ret <- data.frame(mode = mode,
-                       layer = layers,
-                       upper = upper,
-                       lower = lower,
+  df_ret <- data.frame(layers_map[,!names(layers_map) =="Plot"],
                        dcdz_ppm = dcdz,
                        dcdz_sd = dcdz_sd,
                        dc_ppm = dc,

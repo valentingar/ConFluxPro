@@ -98,6 +98,28 @@ if(nrow(gasdata) < 2){
   stop("gasdata is empty for given gases - check your input and data!")
 }
 
+#some prep
+layers_map <- layers_map %>%
+  dplyr::arrange(dplyr::desc(upper))
+
+depth_steps <- layers_map %>% #depths between the layers from top to bottom
+  group_by(Plot) %>%
+  slice(n = -1) %>%
+  mutate(depth_steps = upper) %>%
+  select(Plot,depth_steps)
+
+
+
+#turns Inf-values to NA
+gasdata$NRESULT_ppm[is.infinite(gasdata$NRESULT_ppm)==T] <- NA
+
+#removes all NAs from gasdata
+gasdata <- gasdata %>%
+  dplyr::filter(is.na(NRESULT_ppm)==F,is.na(depth) == F)
+
+
+
+
 #for progress tracking
 n_gradients <- gasdata %>% dplyr::ungroup() %>%
   dplyr::select(dplyr::any_of({{id_cols}}))  %>%
@@ -108,25 +130,31 @@ n_soilphys <- soilphys%>% dplyr::ungroup() %>%
   dplyr::distinct() %>%
   nrow()
 
+printers <-floor(seq(1,n_gradients,length.out = 11))
+
+id_cols <- c(id_cols,"mode")
+
 print("starting gradient")
-FLUX <- gasdata %>%
+FLUX <- lapply(modes,function(mode){
+  return(gasdata %>% mutate(mode = !!mode))
+}) %>%
+  bind_rows() %>%
   ungroup()%>%
   dplyr::group_by(dplyr::across(dplyr::any_of({{id_cols}}))) %>%
   dplyr::mutate(n_gr = dplyr::cur_group_id(),n_tot=n_gradients) %>%
     dplyr::group_modify(~{
-      if (.x$n_gr[1] %in% floor(seq(1,n_gradients,length.out = 11))){
+      if (.x$n_gr[1] %in% printers){
         print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
       }
-      FLUX <- lapply(modes, function(mode){
-        #print(.y$Plot)
-        #print(mode)
-        #print(.y$Date)
-        #print(.y$gas)
-      dcdz_layered(.x,layers_map[layers_map$Plot == .y$Plot[1],],mode)}) %>%
-        dplyr::bind_rows()
+      FLUX <-
+      dcdz_layered(.x,
+                   layers_map[layers_map$Plot == .y$Plot[1],],
+                   .y$mode[1],
+                   depth_steps$depth_steps[depth_steps$Plot == .y$Plot[1]])
       return(FLUX)
     })
 
+id_cols <-id_cols[!id_cols == "mode"]
 print("gradient complete")
 print("starting soilphys")
 
