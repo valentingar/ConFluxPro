@@ -88,8 +88,7 @@ create_return <- T
   df_ret <- lapply(1:length(upper), function(i){
     df_part <- df %>% dplyr::filter(depth <= !!upper[i],
                                     depth >= !!lower[i])
-    df_ret <- data.frame(mode = mode,
-                         layer = layers[i],
+    df_ret <- data.frame(layer = layers[i],
                          upper = upper[i],
                          lower = lower[i])
 
