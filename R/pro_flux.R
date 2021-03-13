@@ -70,7 +70,8 @@ pro_flux <- function(gasdata,
     dplyr::filter(depth == min(prod_depth)) %>%
     dplyr::ungroup() %>%
     dplyr::select({{id_cols}}) %>%
-    dplyr::distinct()
+    dplyr::distinct() %>%
+    dplyr::mutate(prof_id = row_number())
 
   #select relevant profiles from soilphys
 
@@ -85,54 +86,40 @@ pro_flux <- function(gasdata,
                               boundary_nearest =F,
                               id_cols = c("Plot","gas","Date"))
 
+  #select relevant profiles from soilphys
+  soilphys <- profiles %>% dplyr::left_join(soilphys)
 
+  #sorting production depths
+  prod_depth <- sort(prod_depth)
 
+  #arranging soilphys_tmp and creating id of steps
+  soilphys <- soilphys  %>%
+    dplyr::arrange(upper) %>%
+    dplyr::group_by(prof_id) %>%
+    dplyr::mutate(step_id = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(na_flag = ifelse(is.na(DS) | is.na(rho_air) | is.na(upper) | is.na(lower),T,F)) %>%
+    dplyr::mutate(height = (upper-lower)/100) %>%
+    dplyr::mutate(pmap =  findInterval(depth,!!prod_depth))
 
+  #only work with functioning profiles
+  profiles <-
+  soilphys %>%
+    dplyr::filter(na_flag == F) %>%
+    dplyr::select(prof_id) %>%
+    dplyr::distinct() %>%
+    dplyr::left_join(profiles)
 
-  #per-profile calculation
-  proflux<- lapply(1:nrow(profiles),function(i){
+  gasdata <- profiles %>%
+    dplyr::left_join(gasdata)
 
-    prof <- profiles[i,]
+  soilphys <- as.data.frame(soilphys)
+  gasdata <- as.data.frame(gasdata)
 
-    print(paste(prof,collapse = " | "))
-
-
-  gasdata_tmp <-  suppressMessages(prof %>% dplyr::left_join(gasdata))
-  soilphys_tmp <- suppressMessages(prof %>% dplyr::left_join(soilphys))
 
   #sorting prod_depth and getting lower end of model
   prod_depth <- sort(prod_depth)
   lower_depth <- prod_depth[1]
-
-  #arranging soilphys_tmp and creating id of steps
-  soilphys_tmp <- soilphys_tmp %>%
-    dplyr::arrange(upper) %>%
-    dplyr::mutate(step_id = dplyr::row_number())
-
-  if (anyNA(soilphys_tmp %>% ungroup() %>%select(upper,lower,DS,rho_air))){
-    return(NULL)
-  }
-
-
-  #mapping productions to soilphys_tmp
-  pmap <- findInterval(soilphys_tmp$depth,prod_depth)
-
-  #calculating height of each step in m
-  height <- (soilphys_tmp$upper-soilphys_tmp$lower)/100
-
-  #mapping measured concentrations to soilphys_tmp
-  cmap <- unlist(lapply(gasdata_tmp$depth,function(g) ifelse(g %in% soilphys_tmp$upper,soilphys_tmp$step_id[soilphys_tmp$upper==g],NA)))
-
-  #C0 at lower end of production model
-  C0 <- median(gasdata_tmp %>%
-                 dplyr::filter(depth == lower_depth) %>%
-                 dplyr::pull(NRESULT_ppm))*soilphys_tmp$rho_air[soilphys_tmp$lower==lower_depth]
-
-  #from ppm to mumol/m^3
-  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
-
-  #storage term
-  dstor <-0
 
   #starting values
   prod_start <- rep(0,length(prod_depth)-1)
@@ -143,7 +130,44 @@ pro_flux <- function(gasdata,
   highlim_tmp <- rep(highlim,length(prod_start))
 
 
+  n_profs <- nrow(profiles)
+  printers <-floor(seq(1,nrow(profiles),length.out = 11))
+  printers<-profiles$prof_id[printers]
+  print_percent <- seq(0,100,10)
+
   F0 <- 0
+
+  #for users
+  print("started profile fitting. This may take very long. ~30 s/1000 profiles!")
+  print(paste(n_profs,"profiles"))
+  #per-profile calculation
+  proflux<- lapply(profiles$prof_id,function(i){
+
+    if (i %in% printers){
+      print(paste0(print_percent[printers == i]," %"))
+    }
+  gasdata_tmp <- gasdata[gasdata$prof_id == i,]
+  soilphys_tmp <- soilphys[soilphys$prof_id == i,]
+
+  #mapping productions to soilphys_tmp
+  pmap <- soilphys_tmp$pmap
+
+  #calculating height of each step in m
+  height <- soilphys_tmp$height
+
+  #mapping measured concentrations to soilphys_tmp
+  cmap <- unlist(lapply(gasdata_tmp$depth,function(g) ifelse(g %in% soilphys_tmp$upper,soilphys_tmp$step_id[soilphys_tmp$upper==g],NA)))
+
+  #C0 at lower end of production model
+  dmin <- min(gasdata_tmp$depth)
+  C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
+
+  #from ppm to mumol/m^3
+  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
+
+  #storage term
+  dstor <-0
+
   #optimisation with error handling returning NA
   pars <- tryCatch({
   prod_optimised<-optim(par=prod_start,
