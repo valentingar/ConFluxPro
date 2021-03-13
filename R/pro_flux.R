@@ -30,16 +30,17 @@
 #'
 #'
 #' @import dplyr
+#' @import data.table
 #' @export
 
 pro_flux <- function(gasdata,
-                     soilphys,
-                     prod_depth,
-                     storage_term = F,
-                     zero_flux = T,
-                     highlim,
-                     lowlim,
-                     id_cols){
+                      soilphys,
+                      prod_depth,
+                      storage_term = F,
+                      zero_flux = T,
+                      highlim,
+                      lowlim,
+                      id_cols){
 
   #filtering out problematic measurements
   gasdata <- gasdata %>% filter(!is.na(depth),
@@ -104,7 +105,7 @@ pro_flux <- function(gasdata,
 
   #only work with functioning profiles
   profiles <-
-  soilphys %>%
+    soilphys %>%
     dplyr::filter(na_flag == F) %>%
     dplyr::select(prof_id) %>%
     dplyr::distinct() %>%
@@ -113,9 +114,14 @@ pro_flux <- function(gasdata,
   gasdata <- profiles %>%
     dplyr::left_join(gasdata)
 
-  soilphys <- as.data.frame(soilphys)
-  gasdata <- as.data.frame(gasdata)
+  soilphys_backup <- soilphys
+  soilphys <- as.data.table(soilphys %>%
+                              dplyr::select(prof_id,height,DS, rho_air,upper,lower,step_id,pmap))
+  gasdata <- as.data.table(gasdata %>%
+                             dplyr::select(prof_id,depth,NRESULT_ppm))
 
+  setkey(soilphys,prof_id)
+  setkey(gasdata,prof_id)
 
   #sorting prod_depth and getting lower end of model
   prod_depth <- sort(prod_depth)
@@ -137,6 +143,7 @@ pro_flux <- function(gasdata,
 
   F0 <- 0
 
+
   #for users
   print("started profile fitting. This may take very long. ~30 s/1000 profiles!")
   print(paste(n_profs,"profiles"))
@@ -146,71 +153,76 @@ pro_flux <- function(gasdata,
     if (i %in% printers){
       print(paste0(print_percent[printers == i]," %"))
     }
-  gasdata_tmp <- gasdata[gasdata$prof_id == i,]
-  soilphys_tmp <- soilphys[soilphys$prof_id == i,]
+    #gasdata_tmp <- gasdata[gasdata$prof_id == i,]
+    #soilphys_tmp <- soilphys[soilphys$prof_id == i,]
 
-  #mapping productions to soilphys_tmp
-  pmap <- soilphys_tmp$pmap
+    gasdata_tmp <- gasdata[J(i),]
+    soilphys_tmp <- soilphys[J(i),]
 
-  #calculating height of each step in m
-  height <- soilphys_tmp$height
+    #mapping productions to soilphys_tmp
+    pmap <- soilphys_tmp$pmap
 
-  #mapping measured concentrations to soilphys_tmp
-  cmap <- unlist(lapply(gasdata_tmp$depth,function(g) ifelse(g %in% soilphys_tmp$upper,soilphys_tmp$step_id[soilphys_tmp$upper==g],NA)))
+    #calculating height of each step in m
+    height <- soilphys_tmp$height
 
-  #C0 at lower end of production model
-  dmin <- min(gasdata_tmp$depth)
-  C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
+    #mapping measured concentrations to soilphys_tmp
+    cmap <- unlist(lapply(gasdata_tmp$depth,function(g) ifelse(g %in% soilphys_tmp$upper,soilphys_tmp$step_id[soilphys_tmp$upper==g],NA)))
 
-  #from ppm to mumol/m^3
-  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
+    #C0 at lower end of production model
+    dmin <- min(gasdata_tmp$depth)
+    C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
 
-  #storage term
-  dstor <-0
+    #from ppm to mumol/m^3
+    conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
 
-  #optimisation with error handling returning NA
-  pars <- tryCatch({
-  prod_optimised<-optim(par=prod_start,
-                        fn = prod_optim,
-                        lower = lowlim_tmp,
-                        upper = highlim_tmp,
-                        method = "L-BFGS-B",
-                        height = height,
-                        DS = soilphys_tmp$DS,
-                        C0 = C0,
-                        pmap = pmap,
-                        cmap = cmap,
-                        conc = conc,
-                        dstor = dstor,
-                        zero_flux=zero_flux
-  )
-  pars <-(prod_optimised$par)
-  },error = function(e) {return(rep(NA, length(prod_start)))})
+    #storage term
+    dstor <-0
 
-
-
-  if(zero_flux == T){
-    prods <- pars
-  } else {
-    F0 <- pars[1]
-    prods <- pars[-1]
-  }
+    #optimisation with error handling returning NA
+    pars <- tryCatch({
+      prod_optimised<-optim(par=prod_start,
+                            fn = prod_optim,
+                            lower = lowlim_tmp,
+                            upper = highlim_tmp,
+                            method = "L-BFGS-B",
+                            height = height,
+                            DS = soilphys_tmp$DS,
+                            C0 = C0,
+                            pmap = pmap,
+                            cmap = cmap,
+                            conc = conc,
+                            dstor = dstor,
+                            zero_flux=zero_flux
+      )
+      pars <-(prod_optimised$par)
+    },error = function(e) {return(rep(NA, length(prod_start)))})
 
 
-  #mapping production to correct steps in soilphys
-  prod <-prods[pmap]
 
-  #calculating flux
-  fluxs <- prod_mod_flux(prod,height,F0)
+    if(zero_flux == T){
+      prods <- pars
+    } else {
+      F0 <- pars[1]
+      prods <- pars[-1]
+    }
 
-  #generating return data_frame
-  soilphys_tmp$flux <- fluxs
-  soilphys_tmp$F0 <- F0
-  soilphys_tmp$prod <-prod
 
-  return(soilphys_tmp)
-})
+    #mapping production to correct steps in soilphys
+    prod <-prods[pmap]
 
-df_ret <- bind_rows(proflux)
-return(df_ret)
+    #calculating flux
+    fluxs <- prod_mod_flux(prod,height,F0)
+
+    #generating return data_frame
+    soilphys_tmp$flux <- fluxs
+    soilphys_tmp$F0 <- F0
+    soilphys_tmp$prod <-prod
+
+    return(soilphys_tmp)
+  })
+
+  df_ret <- dplyr::bind_rows(proflux)
+  df_ret <- df_ret %>% dplyr::left_join(soilphys_backup %>%
+                                          dplyr::select(-dplyr::any_of(c("flux","prod","F0"))),)
+  return(df_ret)
 }
