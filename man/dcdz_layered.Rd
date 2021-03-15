@@ -4,7 +4,7 @@
 \alias{dcdz_layered}
 \title{dcdz_layered}
 \usage{
-dcdz_layered(df, layers_map, mode)
+dcdz_layered(df, layers_map, mode, depth_steps)
 }
 \arguments{
 \item{df}{(dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot ).}

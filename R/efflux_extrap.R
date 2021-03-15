@@ -81,7 +81,7 @@ efflux_extrap <-function(FLUX,
     stop("Not all id_cols are present in FLUX.")
   }
 
-  id_cols <- c(id_cols,"gas","mode","Plot")
+  id_cols <- unique(c(id_cols,"gas","mode","Plot"))
 
 
 if(method == "lm"){
@@ -101,7 +101,7 @@ if(method == "lm"){
     })
 } else if (method == "linextrap"){
   EFFLUX <- FLUX %>%
-    dplyr::filter(layer %in% layers) %>%
+    dplyr::filter(layer %in% !!layers) %>%
     dplyr::ungroup() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
     dplyr::group_modify(~{
