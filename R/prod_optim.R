@@ -34,17 +34,27 @@ prod_optim<- function(X,
                       cmap,
                       conc,
                       dstor,
-                      zero_flux=T){
+                      zero_flux=T,
+                      known_flux = NA,
+                      known_flux_factor = 0,
+                      Ds_optim = F){
 
   #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer
   if (zero_flux == F){
     F0 <- X[1]
     X <- X[-1]
   }
+  if(Ds_optim == T){
+    Ds_f <- X[((length(X)/2)+1):length(X)]
+    X<-X[1:length(X)/2]
+    Ds_factors <- Ds_f[pmap]
+    DS <- Ds_factors * DS
+
+  }
 
   #assign production values to steps (pmap provided in function call)
   prod <- X[pmap]
-
+  #print(prod)
   #add storage term to production
   prod <- prod+dstor
 
@@ -63,7 +73,10 @@ prod_optim<- function(X,
   #penalty for too different production rates
   RMSE <- RMSE + mean(abs(diff(X)))*10
 
+  #penalty for not meeting known_flux
+  if(is.na(known_flux) ==F){
+    RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
+  }
 
-  #print(RMSE)
   return(RMSE)
 }
