@@ -68,10 +68,10 @@ prod_optim<- function(X,
 
   #print(conc_mod)
   #calculate RMSE
-  RMSE <- sqrt(mean((conc-conc_mod)^2,na.rm = T))
+  RMSE <- sqrt(mean(((conc-conc_mod)^2),na.rm = T))
 
   #penalty for too different production rates
-  RMSE <- RMSE + mean(abs(diff(X)))*10
+  RMSE <- RMSE + mean(abs(diff(X)))*100
 
   #penalty for not meeting known_flux
   if(is.na(known_flux) ==F){
