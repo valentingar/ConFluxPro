@@ -66,7 +66,7 @@ pro_flux <- function(gasdata,
     prod_depth <- prod_depth %>%
     dplyr::select(dplyr::any_of({id_tmp})) %>%
     dplyr::distinct() %>%
-      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
       dplyr::mutate(group_id = dplyr::cur_group_id()) %>%
       dplyr::mutate(join_help = 1)
 
@@ -91,7 +91,7 @@ pro_flux <- function(gasdata,
 
   profiles <- gasdata %>%
     dplyr::ungroup() %>%
-    dplyr::select({{id_cols}}) %>%
+    dplyr::select(dplyr::any_of({id_cols})) %>%
     dplyr::distinct() %>%
     dplyr::mutate(prof_id = row_number())
 
@@ -132,10 +132,10 @@ pro_flux <- function(gasdata,
     dplyr::left_join(gasdata)
 
   soilphys_backup <- soilphys
-  soilphys <- as.data.table(soilphys %>%
+  soilphys <- data.table::as.data.table(soilphys %>%
                               dplyr::ungroup() %>%
-                              dplyr::select(prof_id,depth,height,DS, rho_air,upper,lower,step_id,pmap))
-  gasdata <- as.data.table(gasdata %>%
+                              dplyr::select(prof_id,depth,height,DS, rho_air,upper,lower,step_id))
+  gasdata <- data.table::as.data.table(gasdata %>%
                              dplyr::select(prof_id,depth,NRESULT_ppm))
 
 
