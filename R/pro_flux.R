@@ -213,8 +213,8 @@ pro_flux <- function(gasdata,
   print(paste0("group ",gr,"/",n_gr))
   print(paste(n_profs,"profiles"))
 
-  #per-profile calculation
-  proflux<- lapply(profiles_tmp$prof_id,function(i){
+  #function for per profile optimisation
+  prof_optim <- function(i,prod_start,return_pars = F){
 
     if (i %in% printers){
       print(paste0(print_percent[printers == i]," %"))
@@ -222,12 +222,12 @@ pro_flux <- function(gasdata,
 
     #for known_flux b.c.
     if(is.null(known_flux)==F){
-      known_flux_df <-known_flux[J(i),]
+      known_flux_df <-known_flux[J(i),nomatch = 0L]
       known_flux_tmp <- known_flux_df$flux
     }
 
-    gasdata_tmp <- gasdata_gr[J(i),]
-    soilphys_tmp <- soilphys_gr[J(i),]
+    gasdata_tmp <- gasdata_gr[J(i),nomatch = 0L]
+    soilphys_tmp <- soilphys_gr[J(i), nomatch = 0L]
 
     #mapping productions to soilphys_tmp
     pmap <- soilphys_tmp$pmap
@@ -264,6 +264,7 @@ pro_flux <- function(gasdata,
                             conc = conc,
                             dstor = dstor,
                             zero_flux=zero_flux,
+                            F0 = F0,
                             known_flux = known_flux_tmp,
                             known_flux_factor = known_flux_factor,
                             Ds_optim = Ds_optim
@@ -272,6 +273,9 @@ pro_flux <- function(gasdata,
     },error = function(e) {return(rep(NA, length(prod_start)))})
 
 
+    if(return_pars == T){
+      return(pars)
+    }
 
     if(zero_flux == T){
       prods <- pars
@@ -296,10 +300,23 @@ pro_flux <- function(gasdata,
     soilphys_tmp$F0 <- F0
     soilphys_tmp$prod <-prod
     if(Ds_optim ==T){
-    soilphys_tmp$Ds_f <- Ds_f[pmap]
+      soilphys_tmp$Ds_f <- Ds_f[pmap]
     }
     return(soilphys_tmp)
-  })
+  }
+
+  #getting good initial guesses from 1 profile
+  prod_start <- prof_optim(1,
+                           prod_start,
+                           return_pars = T)
+
+  if (any(is.na(prod_start))){
+    prod_start <- rep(0,length(prod_start))
+  }
+
+  #per-profile calculation
+  proflux<- lapply(profiles_tmp$prof_id,
+                   function(i) prof_optim(i,prod_start,return_pars = F))
 
   df_ret <- dplyr::bind_rows(proflux)
   return(df_ret)

@@ -15,6 +15,7 @@
 #' @param C0 (numeric) The concentration at the bottom of the lowermost step.
 #' @param zero_flux (logical) Applies the zero-flux boundary condition(T)? If FALSE, the first value in X
 #' represents the incoming flux to the lowest layer.
+#' @param F0 (numeric) flux into lowest layer.
 #'
 #' @param RMSE real mean square error of the modeled and measured concentration.
 #'
@@ -35,6 +36,7 @@ prod_optim<- function(X,
                       conc,
                       dstor,
                       zero_flux=T,
+                      F0 = 0,
                       known_flux = NA,
                       known_flux_factor = 0,
                       Ds_optim = F){
@@ -68,10 +70,12 @@ prod_optim<- function(X,
 
   #print(conc_mod)
   #calculate RMSE
-  RMSE <- sqrt(mean(((conc-conc_mod)^2),na.rm = T))
+  k <-(conc-conc_mod)^2
+  k <- k[!is.na(k)]
+  RMSE <- sqrt(sum(k)/length(k))
 
   #penalty for too different production rates
-  RMSE <- RMSE + mean(abs(diff(X)))*100
+  RMSE <- RMSE + mean(abs(X[-1]-X[-length(X)]))*100
 
   #penalty for not meeting known_flux
   if(is.na(known_flux) ==F){
