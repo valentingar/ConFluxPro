@@ -47,10 +47,9 @@ prod_optim<- function(X,
     X <- X[-1]
   }
   if(Ds_optim == T){
-    Ds_f <- X[((length(X)/2)+1):length(X)]
+    Ds_fit <- X[((length(X)/2)+1):length(X)]
     X<-X[1:length(X)/2]
-    Ds_factors <- Ds_f[pmap]
-    DS <- Ds_factors * DS
+    DS <- Ds_fit[pmap]
 
   }
 

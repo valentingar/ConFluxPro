@@ -10,15 +10,27 @@
 #' @param gasdata (dataframe)
 #' @param soilphys (dataframe)
 #'
-#' @param target_depth (numeric vector) This vector determines the depths of the interfaces between
-#' different production values to be fitted. This allows for an adaptive model with an individual
-#' number variables and hence degrees-of-freedom. So for three different production values,
-#' two depths that mark the intersection must be given.
+#' @param layers_map (dataframe) That defines the layers of homogenous production as well as the upper and lower limits of production rate.
+#'
+#' @param id_cols (character vector) The names of the columns that together uniquely identify one profile. Must be present in gasdata.
+#'
 #' @param storage_term (logical) Should changes in storage be accounted for? Default is F.
 #' Only works if data is present in a temporal dimension as well and is probably only
 #' representative for a high temporal resolution (hours).
+#'
 #' @param zero_flux (logical) Applies the zero-flux boundary condition? If FALSE, the first value in X
 #' represents the incoming flux to the lowest layer.
+#'
+#' @param zero_limits (numeric vector) a vector of length 2 defining the lower and upper limit of the lowest flux if zero_flux = F.
+#'
+#' @param known_flux (dataframe) a dataframe that gives a known efflux for each profile defined by id_cols.
+#' If this is provided, the productions are optimised to meet this flux as well as the concentration measurements provided.
+#'
+#' @param known_flux_factor (numeric)
+#' a numeric value > 0 that represents a weight for the error calculation with the known flux. A higher value means that the optimisation will weigh the error to the efflux more than in regard to the concentration measurements.
+#' Must be determined manually by trying out!
+#'
+#' @param Ds_optim (logical) If True, the diffusion coefficient (DS) values are also object to optimisation together with the production. The fit values are given as Ds_fit in the return table. Only makes sense to use in combination with known_flux.
 #'
 #' @examples pro_flux(gasdata,
 #' soilphys,
@@ -36,21 +48,18 @@
 pro_flux <- function(gasdata,
                      soilphys,
                      layers_map,
+                     id_cols,
                      storage_term = F,
                      zero_flux = T,
                      zero_limits = c(-Inf,Inf),
                      known_flux = NULL,
-                     Ds_optim = F,
                      known_flux_factor = 0,
-                     id_cols){
+                     Ds_optim = F){
 
   #filtering out problematic measurements
-  gasdata <- gasdata %>% filter(!is.na(depth),
-                                !is.na(gas),
-                                !is.na(Plot),
-                                !is.na(NRESULT_ppm))
-
-
+  gasdata <-
+  gasdata %>%
+  dplyr::filter(!dplyr::across(dplyr::any_of({c("gas","depth","NRESULT_ppm","id_cols")}),~is.na(.x)))
 
   #adapting layers_map to only contain target columns
   id_tmp <- c(id_cols,"upper","lower","layer","highlim","lowlim")
@@ -316,7 +325,7 @@ pro_flux <- function(gasdata,
       prods <- pars[-1]
     }
     if(Ds_optim == T){
-      Ds_f <- prods[-c(1:length(prods)/2)]
+      Ds_fit <- prods[-c(1:length(prods)/2)]
       prods <- prods[1:(length(prods)/2)]
     }
 
@@ -332,7 +341,7 @@ pro_flux <- function(gasdata,
     soilphys_tmp$F0 <- F0
     soilphys_tmp$prod <-prod
     if(Ds_optim ==T){
-      soilphys_tmp$Ds_f <- Ds_f[pmap]
+      soilphys_tmp$Ds_fit <- Ds_fit[pmap]
     }
     return(soilphys_tmp)
   }
