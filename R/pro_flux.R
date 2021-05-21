@@ -219,21 +219,22 @@ pro_flux <- function(gasdata,
 
   #starting values
   prod_start <- rep(0,length(prod_depth_v)-1)
-  if(Ds_optim == T){
-    prod_start <- c(prod_start,prod_start)
-  }
+
   lowlim_tmp <- layers_map$lowlim[layers_map$group_id== group_id]
   highlim_tmp <- layers_map$highlim[layers_map$group_id== group_id]
+  if(Ds_optim == T){
+    prod_start <- c(prod_start,rep(1e-8,length(prod_start)))
+    lowlim_tmp <- c(lowlim_tmp,rep(1e-13,length(lowlim_tmp)))
+    highlim_tmp <- c(highlim_tmp,rep(1e-4,length(highlim_tmp)))
+    #prevent Ds_optim to put out negative values
+    #lowlim_tmp <- lowlim_tmp<-c(lowlim_tmp[1:ceiling(length(lowlim_tmp)/2)],rep(1e-13,floor(length(lowlim_tmp)/2)))
+    #prod_start <- prod_start<-c(prod_start[1:ceiling(length(prod_start)/2)],rep(1e-8,floor(length(prod_start)/2)))
+    #highlim_tmp <- highlim_tmp<-c(lowlim_tmp[1:ceiling(length(lowlim_tmp)/2)],rep(1e-4,floor(length(lowlim_tmp)/2)))
+  }
   if (zero_flux == F){
     prod_start <- c(0,prod_start)
     lowlim_tmp <- c(min(zero_limits),lowlim_tmp)
     highlim_tmp <- c(max(zero_limits),highlim_tmp)
-  }
-  if(Ds_optim == T){
-    #prevent Ds_optim to put out negative values
-    lowlim_tmp <- lowlim_tmp<-c(lowlim_tmp[1:ceiling(length(lowlim_tmp)/2)],rep(0.0001,floor(length(lowlim_tmp)/2)))
-    prod_start <- prod_start<-c(prod_start[1:ceiling(length(prod_start)/2)],rep(1,floor(length(prod_start)/2)))
-
   }
   print(prod_start)
   print(lowlim_tmp)
