@@ -39,7 +39,9 @@ prod_optim<- function(X,
                       F0 = 0,
                       known_flux = NA,
                       known_flux_factor = 0,
-                      Ds_optim = F){
+                      Ds_optim = F,
+                      layer_couple,
+                      wmap){
 
   #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer
   if (zero_flux == F){
@@ -70,12 +72,16 @@ prod_optim<- function(X,
   #print(conc_mod)
   #calculate RMSE
   k <-(conc-conc_mod)^2
+  k<-  k*wmap#weigh the observations that depend on higher degrees of freedom more
   k <- k[!is.na(k)]
-  RMSE <- sqrt(sum(k)/length(k))
+  conc <- conc[!is.na(conc)]
+  RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
-  RMSE <- RMSE + mean(abs(X[-1]-X[-length(X)]))*100
-
+  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X)-1)))
+  if(is.nan(prod_penal)==F){
+  RMSE <- RMSE + prod_penal
+  }
   #penalty for not meeting known_flux
   if(is.na(known_flux) ==F){
     RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
