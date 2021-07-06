@@ -201,9 +201,11 @@ pro_flux <- function(gasdata,
     prod_depth_df <- prod_depth[prod_depth$group_id == group_id,]
     prod_depth_v <- prod_depth_df$depth
 
-    profiles_tmp <-profiles %>% dplyr::right_join(prod_depth_df %>%
-                                                    dplyr::select(dplyr::any_of({c(id_cols,"join_help")})) %>%
-                                                    dplyr::distinct())
+    #filtering only relevant profiles for the group
+    profiles_tmp <-
+    group_map %>%
+      filter(group_id == !!group_id) %>%
+      left_join(profiles)
 
    #sorting prod_depth and getting lower end of model
     prod_depth_v <- sort(prod_depth_v)
@@ -406,5 +408,8 @@ pro_flux <- function(gasdata,
 
   df_ret <- df_ret %>% dplyr::left_join(soilphys_backup %>%
                                           dplyr::select(-dplyr::any_of(c("flux","prod","F0"))),)
+  rm(soilphys_backup)
+  rm(gasdata)
+  rm(soilphys)
   return(df_ret)
 }
