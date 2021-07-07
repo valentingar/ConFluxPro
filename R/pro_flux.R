@@ -62,7 +62,7 @@ pro_flux <- function(gasdata,
   dplyr::filter(!dplyr::across(dplyr::any_of({c("gas","depth","NRESULT_ppm","id_cols")}),~is.na(.x)))
 
   #adapting layers_map to only contain target columns
-  id_tmp <- c(id_cols,"upper","lower","layer","highlim","lowlim")
+  id_tmp <- c(id_cols,"upper","lower","layer","highlim","lowlim","layer_couple")
 
   #filtering unnecessary columns, making unique and adding grouping id
   layers_map <- layers_map %>%
@@ -201,9 +201,11 @@ pro_flux <- function(gasdata,
     prod_depth_df <- prod_depth[prod_depth$group_id == group_id,]
     prod_depth_v <- prod_depth_df$depth
 
-    profiles_tmp <-profiles %>% dplyr::right_join(prod_depth_df %>%
-                                                    dplyr::select(dplyr::any_of({c(id_cols,"join_help")})) %>%
-                                                    dplyr::distinct())
+    #filtering only relevant profiles for the group
+    profiles_tmp <-
+    group_map %>%
+      filter(group_id == !!group_id) %>%
+      left_join(profiles)
 
    #sorting prod_depth and getting lower end of model
     prod_depth_v <- sort(prod_depth_v)
@@ -222,6 +224,11 @@ pro_flux <- function(gasdata,
 
   lowlim_tmp <- layers_map$lowlim[layers_map$group_id== group_id]
   highlim_tmp <- layers_map$highlim[layers_map$group_id== group_id]
+
+  layer_couple_tmp <- layers_map$layer_couple[layers_map$group_id== group_id]
+  layer_couple_tmp <- layer_couple_tmp[-1]
+  print(paste("layer_couple:",paste(layer_couple_tmp,collapse = " ")))
+
   if(Ds_optim == T){
     prod_start <- c(prod_start,rep(1e-8,length(prod_start)))
     lowlim_tmp <- c(lowlim_tmp,rep(1e-13,length(lowlim_tmp)))
@@ -280,6 +287,13 @@ pro_flux <- function(gasdata,
     #mapping measured concentrations to soilphys_tmp
     cmap <- unlist(lapply(gasdata_tmp$depth,function(g) ifelse(g %in% soilphys_tmp$upper,soilphys_tmp$step_id[soilphys_tmp$upper==g],NA)))
 
+    #weigh the observations based on the degrees of freedom
+    deg_free_obs <- pmap[cmap]
+    n_obs_deg_free <- tabulate(deg_free_obs )
+    deg_free_ids <- sort(as.numeric(unique(deg_free_obs)))
+    weights <- deg_free_ids^2/n_obs_deg_free
+    wmap <- weights[deg_free_obs]
+
     #C0 at lower end of production model
     dmin <- min(gasdata_tmp$depth)
     C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
@@ -309,7 +323,9 @@ pro_flux <- function(gasdata,
                             F0 = F0,
                             known_flux = known_flux_tmp,
                             known_flux_factor = known_flux_factor,
-                            Ds_optim = Ds_optim
+                            Ds_optim = Ds_optim,
+                            layer_couple = layer_couple_tmp,
+                            wmap = wmap
       )
       pars <-(prod_optimised$par)
     },error = function(e) {return(rep(NA, length(prod_start)))})
@@ -336,11 +352,13 @@ pro_flux <- function(gasdata,
 
     #calculating flux
     fluxs <- prod_mod_flux(prod,height,F0)
+    conc_mod <- prod_mod_conc(prod,height,soilphys_tmp$DS,F0,C0)
 
     #generating return data_frame
     soilphys_tmp$flux <- fluxs
     soilphys_tmp$F0 <- F0
     soilphys_tmp$prod <-prod
+    soilphys_tmp$conc <- conc_mod
     if(Ds_optim ==T){
       soilphys_tmp$Ds_fit <- Ds_fit[pmap]
     }
@@ -390,5 +408,8 @@ pro_flux <- function(gasdata,
 
   df_ret <- df_ret %>% dplyr::left_join(soilphys_backup %>%
                                           dplyr::select(-dplyr::any_of(c("flux","prod","F0"))),)
+  rm(soilphys_backup)
+  rm(gasdata)
+  rm(soilphys)
   return(df_ret)
 }
