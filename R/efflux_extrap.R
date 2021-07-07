@@ -110,7 +110,7 @@ if(method == "lm"){
       #print(.x$flux)
       #print(.x$layer)
       h<-.x$topheight[1]
-      efflux <- lin_extrap(.x$depth,.x$flux,h)
+      efflux <- tryCatch(lin_extrap(.x$depth,.x$flux,h),error = function(x) NA)
       df <- data.frame(efflux=efflux)
       return(df)
       })
