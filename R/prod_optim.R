@@ -15,6 +15,7 @@
 #' @param C0 (numeric) The concentration at the bottom of the lowermost step.
 #' @param zero_flux (logical) Applies the zero-flux boundary condition(T)? If FALSE, the first value in X
 #' represents the incoming flux to the lowest layer.
+#' @param F0 (numeric) flux into lowest layer.
 #'
 #' @param RMSE real mean square error of the modeled and measured concentration.
 #'
@@ -34,17 +35,29 @@ prod_optim<- function(X,
                       cmap,
                       conc,
                       dstor,
-                      zero_flux=T){
+                      zero_flux=T,
+                      F0 = 0,
+                      known_flux = NA,
+                      known_flux_factor = 0,
+                      Ds_optim = F,
+                      layer_couple,
+                      wmap){
 
   #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer
   if (zero_flux == F){
     F0 <- X[1]
     X <- X[-1]
   }
+  if(Ds_optim == T){
+    Ds_fit <- X[((length(X)/2)+1):length(X)]
+    X<-X[1:length(X)/2]
+    DS <- Ds_fit[pmap]
+
+  }
 
   #assign production values to steps (pmap provided in function call)
   prod <- X[pmap]
-
+  #print(prod)
   #add storage term to production
   prod <- prod+dstor
 
@@ -58,12 +71,21 @@ prod_optim<- function(X,
 
   #print(conc_mod)
   #calculate RMSE
-  RMSE <- sqrt(mean((conc-conc_mod)^2,na.rm = T))
+  k <-(conc-conc_mod)^2
+  k<-  k*wmap#weigh the observations that depend on higher degrees of freedom more
+  k <- k[!is.na(k)]
+  conc <- conc[!is.na(conc)]
+  RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
-  RMSE <- RMSE + mean(abs(diff(X)))*10
+  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X)-1)))
+  if(is.nan(prod_penal)==F){
+  RMSE <- RMSE + prod_penal
+  }
+  #penalty for not meeting known_flux
+  if(is.na(known_flux) ==F){
+    RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
+  }
 
-
-  #print(RMSE)
   return(RMSE)
 }
