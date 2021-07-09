@@ -43,6 +43,9 @@
 #'
 #' @import dplyr
 #' @import data.table
+#' @import ddpcr
+
+#'
 #' @export
 
 pro_flux <- function(gasdata,
@@ -134,12 +137,93 @@ pro_flux <- function(gasdata,
 
   # splitting soilphys so that the each slice is homogenous
   # and the gas measurements are at the intersections
-  soilphys <-discretize_depth(soilphys,
-                              param = sp_names,
-                              method = "boundary",
-                              depth_target = target_depths,
-                              boundary_nearest =F,
-                              id_cols = c(id_cols, "gas"))
+  depth_filler <- function(.x,.y){
+
+    #getting depths of gasdata at that plot
+    g_depths <-
+      gasdata %>%
+      dplyr::right_join(.y) %>%
+      dplyr::pull(depth) %>%
+      unique()
+
+    l_depths <-
+      layers_map %>%
+      dplyr::right_join(.y) %>%
+      dplyr::pull(upper) %>%
+      unique()
+
+    #getting interfaces of soilphys at that plot
+    s_highs <- .x%>%
+      dplyr::pull(upper) %>%
+      unique()
+    s_lows <- .x %>%
+      dplyr::pull(lower) %>%
+      unique()
+    s_depths <- c(s_highs,s_lows)
+
+    #creating union of the two + sorting
+    depths <- sort(unique(c(g_depths,s_depths,l_depths)))
+
+    #find which depths need to be inserted
+    to_int <- sort(depths[depths %in% s_depths ==F])
+
+    #generate a map for the different layers with id
+    k_map <-
+      .x %>%
+      dplyr::select(upper,lower) %>%
+      dplyr::distinct() %>%
+      dplyr::mutate(k_id = row_number())
+
+    #find layer id for depths to be inserted
+    k_ind <- unlist(lapply(to_int,function(i){
+      k_id <- k_map$k_id[k_map$upper>i & k_map$lower<i]
+      if(length(k_id) == 0) k_id <- NA
+      return(k_id)
+    }))
+
+    #resizing depth to only include those that work
+    depths <- depths [!depths %in% to_int[is.na(k_ind)]]
+
+    #counting how often each layer needs to be in the final product
+    k_map <- k_map %>%
+      dplyr::mutate(k_count = unlist(lapply(k_id,function(i) length(which(i %in% !!k_ind == T))))+1)
+
+    #expanding to final map and adding the correct boundaries
+    k_map_n <- k_map %>%
+      tidyr::uncount(k_count) %>%
+      dplyr::mutate(lower = !!depths[-length(!!depths)],
+             upper = !!depths[-1])
+
+    #final product
+    .x <- .x %>%
+      dplyr::left_join(k_map) %>%
+      dplyr::select(!dplyr::any_of(c("upper","lower")))%>%
+      dplyr::left_join(k_map_n) %>%
+      dplyr::select(!dplyr::any_of({c("k_id","k_count")}))
+
+    return(.x)
+  }
+
+  id_cols_fill <- id_cols[id_cols %in% names(gasdata) &
+                            id_cols %in% names(soilphys) &
+                            id_cols %in% names(layers_map) ]
+
+
+  soilphys <-
+    soilphys %>%
+    dplyr::mutate(r_id = dplyr::row_number())
+
+  soilphys<-
+    soilphys %>%
+    dplyr::select(dplyr::any_of(c(id_cols,"upper","lower","r_id"))) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols_fill}))) %>%
+    dplyr::group_modify(~{
+      ddpcr::quiet(.x <-  depth_filler(.x,.y))
+      return(.x)
+    }) %>%
+    dplyr::left_join(soilphys %>%
+                       dplyr::select(!any_of(c("upper","lower")))
+    )
 
 
   #adding prof_id
@@ -366,13 +450,16 @@ pro_flux <- function(gasdata,
   }
 
   #getting good initial guesses from 1 profile
-  prod_start <- prof_optim(1,
-                           prod_start,
-                           return_pars = T)
+  #prod_start <- prof_optim(1,
+  #                         prod_start,
+  #                         return_pars = T)
+  #
+  #if (any(is.na(prod_start))){
+  #  prod_start <- rep(0,length(prod_start))
+  #}
 
-  if (any(is.na(prod_start))){
-    prod_start <- rep(0,length(prod_start))
-  }
+  #the above is not helpful. for now:
+  prod_start <-rep(0,length(prod_start))
 
   #per-profile calculation
   proflux<- lapply(profiles_tmp$prof_id,
