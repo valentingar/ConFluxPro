@@ -275,8 +275,8 @@ pro_flux <- function(gasdata,
   }
 
   #Initialising prof_id column for fast subsetting
-  setkey(soilphys,prof_id)
-  setkey(gasdata,prof_id)
+  data.table::setkey(soilphys,prof_id)
+  data.table::setkey(gasdata,prof_id)
 
 
 
@@ -328,9 +328,9 @@ pro_flux <- function(gasdata,
     lowlim_tmp <- c(min(zero_limits),lowlim_tmp)
     highlim_tmp <- c(max(zero_limits),highlim_tmp)
   }
-  print(prod_start)
-  print(lowlim_tmp)
-  print(highlim_tmp)
+  #print(prod_start)
+  #print(lowlim_tmp)
+  #print(highlim_tmp)
 
   n_profs <- nrow(profiles_tmp)
   printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
