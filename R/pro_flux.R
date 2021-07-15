@@ -131,7 +131,8 @@ pro_flux <- function(gasdata,
     dplyr::mutate(prof_id = row_number())
 
   #select relevant profiles from soilphys
-  soilphys <- profiles %>% dplyr::left_join(soilphys)
+  soilphys <- profiles %>%
+    dplyr::inner_join(soilphys)
 
 
 
