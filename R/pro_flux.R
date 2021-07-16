@@ -44,6 +44,7 @@
 #' @import dplyr
 #' @import data.table
 #' @import ddpcr
+#' @import purrr
 
 #'
 #' @export
@@ -348,20 +349,22 @@ pro_flux <- function(gasdata,
   print(paste(n_profs,"profiles"))
 
   #function for per profile optimisation
-  prof_optim <- function(i,prod_start,return_pars = F){
+  prof_optim <- function(gasdata_tmp,soilphys_tmp,prod_start,return_pars = F){
+
+    i <- gasdata_tmp$prof_id[1]
 
     if (i %in% printers){
       print(paste0(print_percent[printers == i]," %"))
     }
-
     #for known_flux b.c.
     if(is.null(known_flux)==F){
       known_flux_df <-known_flux[list(i)]
       known_flux_tmp <- known_flux_df$flux
     }
 
-    gasdata_tmp <- gasdata_gr[list(i)]
-    soilphys_tmp <- soilphys_gr[list(i)]
+    #gasdata_tmp <- gasdata_gr[list(i)]
+    #soilphys_tmp <- soilphys_gr[list(i)]
+
 
     #mapping productions to soilphys_tmp
     pmap <- soilphys_tmp$pmap
@@ -370,13 +373,14 @@ pro_flux <- function(gasdata,
     height <- soilphys_tmp$height
 
     #mapping measured concentrations to soilphys_tmp
-    cmap <- unlist(lapply(gasdata_tmp$depth,function(g) ifelse(g %in% soilphys_tmp$upper,soilphys_tmp$step_id[soilphys_tmp$upper==g],NA)))
+    cmap <- soilphys_tmp$step_id[match(gasdata_tmp$depth,
+                                       soilphys_tmp$upper)]
 
     #weigh the observations based on the degrees of freedom
     deg_free_obs <- pmap[cmap]
     n_obs_deg_free <- tabulate(deg_free_obs )
     deg_free_ids <- sort(as.numeric(unique(deg_free_obs)))
-    weights <- deg_free_ids^2/n_obs_deg_free
+    weights <- deg_free_ids^2/n_obs_deg_free[deg_free_ids]
     wmap <- weights[deg_free_obs]
 
     #C0 at lower end of production model
@@ -463,10 +467,18 @@ pro_flux <- function(gasdata,
   prod_start <-rep(0,length(prod_start))
 
   #per-profile calculation
-  proflux<- lapply(profiles_tmp$prof_id,
-                   function(i) prof_optim(i,prod_start,return_pars = F))
+  #proflux<- lapply(profiles_tmp$prof_id,
+  #                 function(i) prof_optim(i,prod_start,return_pars = F))
 
-  df_ret <- dplyr::bind_rows(proflux)
+  #df_ret <- dplyr::bind_rows(proflux)
+  df_ret <-
+  purrr::map2(split(gasdata_gr %>% arrange(prof_id),
+                    gasdata_gr$prof_id),
+       split(soilphys_gr%>% arrange(prof_id),
+             soilphys_gr$prof_id),
+       prod_start = prod_start,
+       prof_optim) %>%
+    bind_rows()
   return(df_ret)
   }
 
