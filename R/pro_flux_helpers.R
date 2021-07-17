@@ -97,7 +97,7 @@ profile_stack <-
   ){
 
   #choose correct prod_depth!
-  prod_depth_df <- prod_depth[prod_depth$group_id == group_id,]
+  prod_depth_df <- prod_depth[prod_depth$group_id == group_id, ]
   prod_depth_v <- prod_depth_df$depth
 
   #filtering only relevant profiles for the group

@@ -204,10 +204,10 @@ pro_flux <- function(gasdata,
   if(is.null(known_flux)==F){
     known_flux <- known_flux %>%
       dplyr::filter(is.na(flux)==F) %>%
-      dplyr::select(dplyr::any_of({c(id_cols,"flux")})) %>%
+      dplyr::select(dplyr::any_of({c(id_cols, "flux")})) %>%
       dplyr::right_join(profiles) %>%
-      as.data.table()
-    setkey(known_flux,prof_id)
+      data.table::as.data.table()
+    data.table::setkey(known_flux, prof_id)
   }
 
   #Initialising prof_id column for fast subsetting
@@ -226,6 +226,7 @@ pro_flux <- function(gasdata,
 
   groups <- unique(prod_depth$group_id)
   n_gr <- length(groups)
+
 
   #for users patience
   message("started profile fitting. This may take very long. ~30 s/1000 profiles!")
@@ -254,7 +255,7 @@ pro_flux <- function(gasdata,
 
   df_ret <- df_ret %>%
     dplyr::left_join(soilphys_backup,
-      by = join_names)
+                     by = join_names)
 
   #removing all unecessary data
   rm(soilphys_backup)
