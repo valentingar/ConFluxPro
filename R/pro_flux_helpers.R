@@ -241,12 +241,15 @@ prof_optim <- function(gasdata_tmp,
   #mapping measured concentrations to soilphys_tmp
   cmap <- soilphys_tmp$step_id[match(gasdata_tmp$depth,
                                      soilphys_tmp$upper)]
+  #shortening to valid cmaps
+  conc <- conc[is.finite(cmap)]
+  cmap <- cmap[is.finite(cmap)]
 
   #weigh the observations based on the degrees of freedom
   deg_free_obs <- pmap[cmap]
   n_obs_deg_free <- tabulate(deg_free_obs )
-  deg_free_ids <- sort(as.numeric(unique(deg_free_obs)))
-  weights <- deg_free_ids^2/n_obs_deg_free[deg_free_ids]
+  deg_free_ids <- sort(as.numeric(unique(pmap)))
+  weights <- deg_free_ids^2/n_obs_deg_free
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model

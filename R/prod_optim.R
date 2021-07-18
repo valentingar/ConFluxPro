@@ -74,7 +74,6 @@ prod_optim<- function(X,
   k <- (conc-conc_mod)^2
   k <- k*wmap #weigh the observations that depend on higher degrees of freedom more
   k <- k[is.finite(k)]
-  conc <- conc[is.finite(conc)]
   RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
