@@ -89,3 +89,16 @@ prod_optim<- function(X,
 
   return(RMSE)
 }
+
+
+
+## ---- HELPERS ----------------------
+
+prod_optim_call_cpp <- function(...){
+  RMSE <- prod_optim_cpp(...)
+  gc()
+  RMSE
+}
+
+
+

@@ -238,6 +238,9 @@ prof_optim <- function(gasdata_tmp,
   #calculating height of each step in m
   height <- soilphys_tmp$height
 
+  #from ppm to mumol/m^3
+  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
+
   #mapping measured concentrations to soilphys_tmp
   cmap <- soilphys_tmp$step_id[match(gasdata_tmp$depth,
                                      soilphys_tmp$upper)]
@@ -256,9 +259,6 @@ prof_optim <- function(gasdata_tmp,
   dmin <- min(gasdata_tmp$depth)
   C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
 
-  #from ppm to mumol/m^3
-  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
-
   #storage term
   dstor <-0
 
@@ -266,7 +266,7 @@ prof_optim <- function(gasdata_tmp,
   #optimisation with error handling returning NA
   pars <- tryCatch({
     prod_optimised<-optim(par=prod_start,
-                          fn = prod_optim,
+                          fn = prod_optim_call_cpp,
                           lower = lowlim_tmp,
                           upper = highlim_tmp,
                           method = "L-BFGS-B",
