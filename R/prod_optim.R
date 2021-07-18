@@ -73,17 +73,17 @@ prod_optim<- function(X,
   #calculate RMSE
   k <- (conc-conc_mod)^2
   k <- k*wmap #weigh the observations that depend on higher degrees of freedom more
-  k <- k[is.finite(k)]
+  #k <- k[is.finite(k)]
   RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
-  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X)-1)))
-  if (is.finite(prod_penal)){
+  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))))
+  #if (is.finite(prod_penal)){
     RMSE <- RMSE + prod_penal
-  }
+  #}
 
   #penalty for not meeting known_flux
-  if (!is.na(known_flux)){
+  if (is.finite(known_flux)){
     RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
   }
 

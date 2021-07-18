@@ -172,11 +172,7 @@ profile_stack <-
   #the above is not helpful. for now:
   prod_start <-rep(0,length(prod_start))
 
-  #per-profile calculation
-  #proflux<- lapply(profiles_tmp$prof_id,
-  #                 function(i) prof_optim(i,prod_start,return_pars = F))
 
-  #df_ret <- dplyr::bind_rows(proflux)
   df_ret <-
     purrr::map2(split(gasdata_gr %>% dplyr::arrange(prof_id),
                       gasdata_gr$prof_id),
@@ -241,6 +237,10 @@ prof_optim <- function(gasdata_tmp,
   #mapping measured concentrations to soilphys_tmp
   cmap <- soilphys_tmp$step_id[match(gasdata_tmp$depth,
                                      soilphys_tmp$upper)]
+
+  #from ppm to mumol/m^3
+  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
+
   #shortening to valid cmaps
   conc <- conc[is.finite(cmap)]
   cmap <- cmap[is.finite(cmap)]
@@ -256,12 +256,8 @@ prof_optim <- function(gasdata_tmp,
   dmin <- min(gasdata_tmp$depth)
   C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
 
-  #from ppm to mumol/m^3
-  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
-
   #storage term
   dstor <-0
-
 
   #optimisation with error handling returning NA
   pars <- tryCatch({
