@@ -153,7 +153,7 @@ pro_flux <- function(gasdata,
     dplyr::select(dplyr::any_of(c(id_cols,"upper","lower","r_id"))) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of({id_cols_fill}))) %>%
     dplyr::group_modify(~{
-      ddpcr::quiet(.x <-  depth_filler(.x,.y))
+      ddpcr::quiet(.x <-  depth_filler(.x,.y,gasdata,layers_map))
       return(.x)
     }) %>%
     dplyr::left_join(soilphys %>%
@@ -274,7 +274,7 @@ pro_flux <- function(gasdata,
 
 # splitting soilphys so that the each slice is homogenous
 # and the gas measurements are at the intersections
-depth_filler <- function(.x,.y){
+depth_filler <- function(.x,.y,gasdata,layers_map){
 
   #getting depths of gasdata at that plot
   g_depths <-
