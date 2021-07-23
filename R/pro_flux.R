@@ -158,7 +158,8 @@ pro_flux <- function(gasdata,
     }) %>%
     dplyr::left_join(soilphys %>%
                        dplyr::select(!any_of(c("upper","lower")))
-    )
+    ) %>%
+    dplyr::select(!r_id)
 
 
   #adding prof_id
