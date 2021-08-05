@@ -79,6 +79,14 @@ pro_flux <- function(gasdata,
                      known_flux_factor = 0,
                      Ds_optim = F){
 
+  # all data frame inputs should be data frames
+  # this prevents duplication issues from
+  # inherited groups etc.
+  gasdata <- as.data.frame(gasdata)
+  soilphys <- as.data.frame(soilphys)
+  layers_map <- as.data.frame(layers_map)
+
+
   #filtering out problematic measurements
   gasdata <-
   gasdata %>%
