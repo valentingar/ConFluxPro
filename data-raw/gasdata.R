@@ -35,8 +35,8 @@ reps_b <- c(1,3,3,3,3)
 gas <- "CO2"
 
 #mean concentration per depth relative to atmosphere
-mean_conc_a <- c(1,1.1,1.5,2,4)
-mean_conc_b <- c(1,1.1,1.2,1.3,2.8)
+mean_conc_a <- c(1,4.2,8,10,17)
+mean_conc_b <- c(1,4.5,7,10,16)
 
 #a standard deviation to mimic natural data in ppm
 sd_conc_a <- c(20,40,60,100,150)
