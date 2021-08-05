@@ -1,36 +1,55 @@
 #' @title pro_flux
 #'
 #' @description This implements an inverse modeling approach which optimizes
-#' vertically resolved production (or consumption) of the gases in question to fit
-#' a modeled concentration profile to observed data.
+#'   vertically resolved production (or consumption) of the gases in question to
+#'   fit a modeled concentration profile to observed data.
 #'
-#' One boundary condition of this model is, that there is no incoming or outgoing flux at the bottom of the lowest layer
-#' of the profile. If this boundary condition is not met, the flux must be optimised as well. This can be set in "zero_fluix"
+#'   One boundary condition of this model is, that there is no incoming or
+#'   outgoing flux at the bottom of the lowest layer of the profile. If this
+#'   boundary condition is not met, the flux must be optimised as well. This can
+#'   be set in "zero_fluix"
 #'
 #' @param gasdata (dataframe)
 #' @param soilphys (dataframe)
 #'
-#' @param layers_map (dataframe) That defines the layers of homogenous production as well as the upper and lower limits of production rate.
+#' @param layers_map (dataframe) That defines the layers of homogeneous
+#'   production as well as the upper and lower limits of production rate. \ Must
+#'   include \itemize{ \item the relevant id_cols (see below) \item the upper
+#'   and lower boundaries of each layer (upper, lower) \item upper and lower
+#'   limits of the production rate to be modeled in \eqn{\mu mol m^{-3}}
+#'   (highlim, lowlim) \item the parameter layer_couple, that indicates how
+#'   strongly the layer should be linked to the one below it (0 for no coupling)
+#'   }
 #'
-#' @param id_cols (character vector) The names of the columns that together uniquely identify one profile. Must be present in gasdata.
+#' @param id_cols (character vector) The names of the columns that together
+#'   uniquely identify one profile. Must be present in gasdata.
 #'
-#' @param storage_term (logical) Should changes in storage be accounted for? Default is F.
-#' Only works if data is present in a temporal dimension as well and is probably only
-#' representative for a high temporal resolution (hours).
+#' @param storage_term (logical) Should changes in storage be accounted for?
+#'   Default is F. Only works if data is present in a temporal dimension as well
+#'   and is probably only representative for a high temporal resolution (hours).
 #'
-#' @param zero_flux (logical) Applies the zero-flux boundary condition? If FALSE, the first value in X
-#' represents the incoming flux to the lowest layer.
+#' @param zero_flux (logical) Applies the zero-flux boundary condition? If
+#'   FALSE, the first value in X represents the incoming flux to the lowest
+#'   layer.
 #'
-#' @param zero_limits (numeric vector) a vector of length 2 defining the lower and upper limit of the lowest flux if zero_flux = F.
+#' @param zero_limits (numeric vector) a vector of length 2 defining the lower
+#'   and upper limit of the lowest flux if zero_flux = F.
 #'
-#' @param known_flux (dataframe) a dataframe that gives a known efflux for each profile defined by id_cols.
-#' If this is provided, the productions are optimised to meet this flux as well as the concentration measurements provided.
+#' @param known_flux (dataframe) a dataframe that gives a known efflux for each
+#'   profile defined by id_cols. If this is provided, the productions are
+#'   optimised to meet this flux as well as the concentration measurements
+#'   provided.
 #'
-#' @param known_flux_factor (numeric)
-#' a numeric value > 0 that represents a weight for the error calculation with the known flux. A higher value means that the optimisation will weigh the error to the efflux more than in regard to the concentration measurements.
-#' Must be determined manually by trying out!
+#' @param known_flux_factor (numeric) a numeric value > 0 that represents a
+#'   weight for the error calculation with the known flux. A higher value means
+#'   that the optimisation will weigh the error to the efflux more than in
+#'   regard to the concentration measurements. Must be determined manually by
+#'   trying out!
 #'
-#' @param Ds_optim (logical) If True, the diffusion coefficient (DS) values are also object to optimisation together with the production. The fit values are given as Ds_fit in the return table. Only makes sense to use in combination with known_flux.
+#' @param Ds_optim (logical) If True, the diffusion coefficient (DS) values are
+#'   also object to optimisation together with the production. The fit values
+#'   are given as Ds_fit in the return table. Only makes sense to use in
+#'   combination with known_flux.
 #'
 #' @examples pro_flux(gasdata,
 #' soilphys,

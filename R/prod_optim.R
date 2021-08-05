@@ -77,7 +77,7 @@ prod_optim<- function(X,
   RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
-  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))))
+  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) / (abs(sum(prod*height))+0.000001) )
   #if (is.finite(prod_penal)){
     RMSE <- RMSE + prod_penal
   #}
