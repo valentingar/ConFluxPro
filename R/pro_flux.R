@@ -217,7 +217,7 @@ pro_flux <- function(gasdata,
   #making copy of unaltered soilphys
   soilphys_backup <- soilphys %>%
     dplyr::select(-dplyr::any_of(c("flux","prod","F0"))) %>%
-    dplyr::select(-dplyr::any_of(c("depth","height","DS","rho_air","upper","lower","step_id")))
+    dplyr::select(-dplyr::any_of(c("depth","height","DS","rho_air","upper","lower")))
 
   #turning data into data.table for fast subsetting
   # this radically improves performance
