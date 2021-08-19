@@ -41,7 +41,8 @@ prod_optim<- function(X,
                       known_flux_factor = 0,
                       Ds_optim = F,
                       layer_couple,
-                      wmap){
+                      wmap,
+                      evenness_factor){
 
   #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer
   if (!zero_flux){
@@ -81,6 +82,12 @@ prod_optim<- function(X,
   #if (is.finite(prod_penal)){
     RMSE <- RMSE + prod_penal
   #}
+
+  #penalty to prevent zero_fluxes
+  pmax = max(X,na.rm=T)
+  evenness_penal = evenness_factor*sum(pmax^2 / (abs(prod/height) + 0.00001))
+
+  RMSE <- RMSE + evenness_penal
 
   #penalty for not meeting known_flux
   if (is.finite(known_flux)){

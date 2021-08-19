@@ -77,7 +77,8 @@ pro_flux <- function(gasdata,
                      zero_limits = c(-Inf,Inf),
                      known_flux = NULL,
                      known_flux_factor = 0,
-                     Ds_optim = F){
+                     Ds_optim = F,
+                     evenness_factor = 0){
 
   # all data frame inputs should be data frames
   # this prevents duplication issues from
@@ -273,7 +274,8 @@ pro_flux <- function(gasdata,
                       known_flux,
                       prod_depth,
                       profiles,
-                      groups_map)
+                      groups_map,
+                      evenness_factor)
     return(df)
   }) %>%
     dplyr::bind_rows()
@@ -284,6 +286,34 @@ pro_flux <- function(gasdata,
   df_ret <- df_ret %>%
     dplyr::left_join(soilphys_backup,
                      by = join_names)
+
+  #adding layer variable from layers_map
+
+  #find id_cols in layers_map + add helper variable (if no id_cols in layers_map)
+  id_cols_lmap <- id_cols[id_cols %in% names(layers_map)]
+  id_cols_lmap <- c("helpyhelp",id_cols_lmap)
+
+  df_ret <-
+  layers_map %>%
+    dplyr::select(dplyr::any_of({c(id_cols_lmap,"upper","layer")})) %>%
+    dplyr::mutate(helpyhelp = "HELP") %>%
+    dplyr::group_by(dplyr::across({id_cols_lmap})) %>%
+    dplyr::arrange(upper) %>%
+    dplyr::mutate(pmap = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(!dplyr::any_of(c("helpyhelp","upper"))) %>%
+    dplyr::right_join(df_ret)
+
+  #removing unnecessary columns
+  df_ret <-
+    df_ret %>%
+    dplyr::select(
+      !dplyr::any_of(
+        {c("prof_id",
+           "step_id",
+           "na_flag",
+           "j_help")
+        }))
 
   #removing all unecessary data
   rm(soilphys_backup)
@@ -386,7 +416,8 @@ profile_stack <-
     known_flux,
     prod_depth,
     profiles,
-    groups_map
+    groups_map,
+    evenness_factor
   ){
 
     #choose correct prod_depth!
@@ -484,6 +515,7 @@ profile_stack <-
                   layer_couple_tmp = layer_couple_tmp,
                   lowlim_tmp = lowlim_tmp,
                   highlim_tmp = highlim_tmp,
+                  evenness_factor = evenness_factor,
                   prof_optim) %>%
       dplyr::bind_rows()
     return(df_ret)
@@ -504,7 +536,8 @@ prof_optim <- function(gasdata_tmp,
                        known_flux_factor,
                        layer_couple_tmp,
                        lowlim_tmp,
-                       highlim_tmp){
+                       highlim_tmp,
+                       evenness_factor){
 
   i <- gasdata_tmp$prof_id[1]
 
@@ -574,7 +607,8 @@ prof_optim <- function(gasdata_tmp,
                           known_flux_factor = known_flux_factor,
                           Ds_optim = Ds_optim,
                           layer_couple = layer_couple_tmp,
-                          wmap = wmap
+                          wmap = wmap,
+                          evenness_factor = evenness_factor
     )
     pars <-(prod_optimised$par)
   },error = function(e) {return(rep(NA, length(prod_start)))})
