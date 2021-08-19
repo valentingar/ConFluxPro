@@ -55,6 +55,7 @@ gasdata <- data.frame(Date = rep(dates,each=10),
 
 # expand data per replication and mimic natural data by
 # calling rnorm
+set.seed(42)
 gasdata <-
 gasdata %>%
   dplyr::mutate(mean_conc = date_factor*(mean_conc-1)*420+420,

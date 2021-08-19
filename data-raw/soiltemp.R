@@ -21,6 +21,8 @@ depth_b <- c(7,0,-20,-30,-100)
 
 depth_factors <- c(12,11,9,8,5)
 
+set.seed(42)
+
 soiltemp <- data.frame(site = rep(sites,each = 5),
                        depth = c(depth_a,depth_b),
                        depth_factor = rep(depth_factors,

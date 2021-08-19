@@ -66,6 +66,8 @@ soilwater %>%
             TPS = rep(TPS),
             sd_swc = rep(sd_swc))
 
+set.seed(42)
+
 soilwater <-
 soilwater %>%
   rowwise() %>%
