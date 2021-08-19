@@ -5,8 +5,22 @@ Version: 1.0.0
 Author: Valentin Gartiser
 Maintainer: Valentin Gartiser <valentin.gartiser@uni-tuebingen.de>
 Description: This package is a collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation and includes a model for production-based flux estimation.
-Imports: lubridate,dplyr,magrittr,splines,tidyr,data.table
+Imports: 
+    lubridate,
+    dplyr,
+    magrittr,
+    splines,
+    tidyr,
+    data.table,
+    purrr,
+    rlang,
+    ddpcr,
+    Rcpp
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: false
 RoxygenNote: 7.1.1
+LinkingTo: 
+    Rcpp
+Depends: 
+    R (>= 2.10)

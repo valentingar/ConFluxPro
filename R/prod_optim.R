@@ -41,17 +41,18 @@ prod_optim<- function(X,
                       known_flux_factor = 0,
                       Ds_optim = F,
                       layer_couple,
-                      wmap){
+                      wmap,
+                      evenness_factor){
 
   #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer
-  if (zero_flux == F){
+  if (!zero_flux){
     F0 <- X[1]
     X <- X[-1]
   }
-  if(Ds_optim == T){
-    Ds_fit <- X[((length(X)/2)+1):length(X)]
-    X<-X[1:length(X)/2]
-    DS <- Ds_fit[pmap]
+  if(Ds_optim){
+    Ds_fit <- X[((length(X) / 2) + 1):length(X)]
+    X <- X[1:length(X) / 2]
+    DS <-  Ds_fit[pmap]
 
   }
 
@@ -63,7 +64,7 @@ prod_optim<- function(X,
 
   #print(prod)
   #calculate concentration using the values provided
-  conc_mod<-prod_mod_conc(prod,height,DS,F0,C0)
+  conc_mod <- prod_mod_conc(prod,height,DS,F0,C0)
 
   #print(conc_mod)
   #assign moddeled concentrations to match observations
@@ -71,19 +72,25 @@ prod_optim<- function(X,
 
   #print(conc_mod)
   #calculate RMSE
-  k <-(conc-conc_mod)^2
-  k<-  k*wmap#weigh the observations that depend on higher degrees of freedom more
-  k <- k[!is.na(k)]
-  conc <- conc[!is.na(conc)]
+  k <- (conc-conc_mod)^2
+  k <- k*wmap #weigh the observations that depend on higher degrees of freedom more
+  #k <- k[is.finite(k)]
   RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
-  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X)-1)))
-  if(is.nan(prod_penal)==F){
-  RMSE <- RMSE + prod_penal
-  }
+  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) / (abs(sum(prod*height))+0.000001) )
+  #if (is.finite(prod_penal)){
+    RMSE <- RMSE + prod_penal
+  #}
+
+  #penalty to prevent zero_fluxes
+  pmax = max(X,na.rm=T)
+  evenness_penal = evenness_factor*sum(pmax^2 / (abs(prod/height) + 0.00001))
+
+  RMSE <- RMSE + evenness_penal
+
   #penalty for not meeting known_flux
-  if(is.na(known_flux) ==F){
+  if (is.finite(known_flux)){
     RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
   }
 
