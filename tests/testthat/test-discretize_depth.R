@@ -123,3 +123,32 @@ test_that("boundary creates correct NAs",{
 
 
           })
+
+
+test_that("depth_target can be a vector",{
+  df <- discretize_depth(
+    data.frame(upper = c(10,0),
+               lower = c(0,-100),
+               value = c("A","B"),
+               site = "A") ,
+    depth_target = c(10,0,-10,-50),
+    method = "boundary",
+    param = "value",
+    id_cols = "site")
+
+  expect_equal(nrow(df),3)
+})
+
+
+test_that("id_cols can be left blank",{
+  df <- discretize_depth(
+    data.frame(upper = c(10,0),
+               lower = c(0,-100),
+               value = c("A","B")) ,
+    depth_target = c(10,0,-10,-50),
+    method = "boundary",
+    param = "value")
+
+  expect_equal(nrow(df),3)
+})
+
