@@ -7,6 +7,9 @@ output:
     number_sections: true 
     fig_width: 7
     fig_height: 4
+    toc: true
+    toc_depth: 3
+
     
 vignette: >
   %\VignetteIndexEntry{gradient-flux-workflow}
@@ -22,7 +25,12 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction
-Hello and welcome to ConFluxPro - a toolkit for soil gas analysis. The goal of this package was to implement the gradient-flux approach for modelling soil gas fluxes based on concentration measurements. A good starting point to get an idea of the setup and ideas behind this method is our paper Maier et al. (2020).
+
+```{r logo,out.width='25%', fig.align='left',echo=F}
+knitr::include_graphics("../logo.svg")
+```
+
+Hello and welcome to ConFluxPro - a toolkit for soil gas analysis. The goal of this package was to implement the gradient-flux approach for modeling soil gas fluxes based on concentration measurements. A good starting point to get an idea of the setup and ideas behind this method is our paper Maier et al. (2020).
 
 This vignette is a starting point to introduce the general structure of the package and show the workflow of the gradient-flux approach. We will use the (synthetic) example data that is included in the package. We will format the data into the structure we need for the model, calculate necessary parameters and finally calculate the fluxes using different approaches.
 
@@ -70,7 +78,7 @@ The data follows a typical seasonal development for soil CO2 concentrations with
 Three different functions are implemented to help to fix different problems with the gas dataset: `balance_correction()`, `series_cleaner`, `offset_correction`.
 
 #### balance_correction()
-`balance_correction()` is useful for gas data that are measured using gas samples and quantitive analysis (e.g. via GC) of the complete samples. If all the relevant gases of the sample are quantified, the sum of their concentration should equal 1. If the sum is less than one, not the complete sample was measured. This is a common problem when samples are collected passively via diffusive exchange of helium-filled gas vials. This correction is especially necessary if the gases to be moddeled are not only present in trace amounts. For instance, small relative deviations in the absolute concentration of oxygen can be of similar magnitude as the gradients within the soil. This can lead to smaller fitted gradients and, therfore, underestimated fluxes.
+`balance_correction()` is useful for gas data that are measured using gas samples and quantitative analysis (e.g. via GC) of the complete samples. If all the relevant gases of the sample are quantified, the sum of their concentration should equal 1. If the sum is less than one, not the complete sample was measured. This is a common problem when samples are collected passively via diffusive exchange of helium-filled gas vials. This correction is especially necessary if the gases to be modeled are not only present in trace amounts. For instance, small relative deviations in the absolute concentration of oxygen can be of similar magnitude as the gradients within the soil. This can lead to smaller fitted gradients and, therefore, underestimated fluxes.
 
 To apply the correction, `SAMPLE_NO` must be supplied in `gasdata`, which is a unique identifier (e.g. an integer) for each sample, grouping together the different gases of each sample. In the function call, the gases used for summation (`gases`) must be supplied. For easy filtering of incomplete samples, "Obligatory" gases (`gases_ob`) that must be non-NA for the correction to work properly can be defined as well. If any of `gases_ob` are missing in the sample to be corrected, the sample is flagged and the concentrations not corrected. For all the `gases` provided, expected concentration (i.e. atmospheric concentration) `gases_std` must be provided to also correct incomplete samples. Below is an example how the function works for a very simple dataset of only one sample. However, the dataset can have any number of samples, provided `SAMPLE_NO` is given. An important aspect is, that the resulting dataset should be checked for integrity after the correction. For example duplicates may significantly disturb the result.
 
@@ -81,7 +89,7 @@ df <- data.frame(SAMPLE_NO = 1,
                  NRESULT_ppm = c(0.78158,0.209,0.009,0.00042))
 df$NRESULT_ppm <- df$NRESULT_ppm*1e6
 
-# immitate 20 % mass difference
+# imitate 20 % mass difference
 df$NRESULT_ppm <- 0.8*df$NRESULT_ppm
 
 # show sum of all gases is different to 1
@@ -90,7 +98,7 @@ sum(df$NRESULT_ppm)/1e6
 #apply balance correction
 df_balcor <-
   balance_correction(df,
-                     limits = c(0.6,1.2), # if sum is larger than/maller than limits, sample is flagged
+                     limits = c(0.6,1.2), # if sum is larger than/smaller than limits, sample is flagged
                      gases = c("N2","O2","Ar","CO2"),
                      gases_std = c(0.78158,0.209,0.009,0.00042),
                      gases_ob = c("N2","O2"),
@@ -121,7 +129,7 @@ TODO
 
 The `soilphys` dataset is the counterpart of the complete model. It contains all the necessary information of the physical properties of the soil, and especially diffusivity. For the calculation of gas fluxes, the specific diffusion coefficient `DS` must be known. It can be estimated from the air filled pore space `AFPS` and the normal diffusion coefficient of the specific gas in air `D0`, which is pressure and temperature dependent. Because different parameters that are needed for the calculation of the diffusion coefficient may come from different sources with different spatial resolutions, a function is provided to help discretise the different parameters to match a common spatial resolution (`discretize_depth()`). To calculate the diffusion coefficient from the necessary parameters, the function `complete_soilphys()` was implemented. Afterwards, the dataset can be checked for model readiness by applying `check_soilphys()`.
 
-#### Discretisation of different data sources
+#### Discretisation of different data sources {#discr}
 
 In the following, datasets of soil water content `SWC`, soil total pore space `TPS` and fitting parameters of diffusion models `a` and `b`, temperature `Temp` and pressure `p` will be discretised to match a common depth resolution using the function `discretize_depth()`. The goal is to have a dataset, where each soil profile is divided into layers with no gaps in between and for each layer the different parameters are discretised.
 
@@ -150,11 +158,12 @@ head(dt)
 ```
 
 Now we can start discretising the other datasets. Because the target discretisation is the same as that of `soilwater`, no additional manipulation is needed here. Let's start with `soildiff`.
-```{r}
-soildiff
+```{r,echo = F}
+knitr::kable(soildiff,
+              caption = "soildiff")
 ```
 
-`soildiff` has distinct layers that are defined with an `upper` and `lower` boundary. These layers represent the horizons of the soil that are assumed homogenous. Hence, we will only map the discrete values of these layers to the new layers. For this, we will use the `boundary` method. Important is, that no new layer lays over the intersection of an old layer - otherwise this layer will have only NAs. The `id_cols` are added to identify each unique profile. Here, this is only the `site` column.
+`soildiff` has distinct layers that are defined with an `upper` and `lower` boundary. These layers represent the horizons of the soil that are assumed homogeneous. Hence, we will only map the discrete values of these layers to the new layers. For this, we will use the `boundary` method. Important is, that no new layer lays over the intersection of an old layer - otherwise this layer will have only NAs. The `id_cols` are added to identify each unique profile. Here, this is only the `site` column.
 
 ```{r}
 soildiff_dis <- 
@@ -164,7 +173,10 @@ soildiff_dis <-
                    depth_target = dt, # the target discretisation
                    id_cols = "site" # the columns that, together, identify one profile uniquely 
                    )
-soildiff_dis
+```
+
+```{r,echo = F}
+knitr::kable(soildiff_dis,caption = "soildiff_dis")
 ```
 
 A new data.frame was created with the mapped parameters, as well as the `upper` and `lower` bounds of each layer and its mean `depth`.
@@ -192,7 +204,7 @@ soilphys <-
   left_join(soiltemp_dis)
 ```
 
-We will assume a constant pressure for the whole dataset, however measurements could be easily added via a simple join or following the worklfow above. 
+We will assume a constant pressure for the whole dataset, however measurements could be easily added via a simple join or following the workflow above. 
 ```{r}
 
 soilphys$p <-1013 # in hPa
@@ -214,27 +226,28 @@ soilphys_complete <-
                     gases = "CO2")
 ```
 
-But let's untangle what's happening in the background. soilphys_complete will create the columns `AFPS`, `DSD0`,`D0`, `DS`, and `rho_air`. `AFPS` is the air filled pore space and is calculated as the difference bewtween the total pore space `TPS` and the soil water content `SWC`.
-
-$AFPS = TPS - SWC$
-
+But let's untangle what's happening in the background. soilphys_complete will create the columns `AFPS`, `DSD0`,`D0`, `DS`, and `rho_air`. `AFPS` is the air filled pore space and is calculated as the difference between the total pore space `TPS` and the soil water content `SWC`.
+$$
+AFPS = TPS - SWC
+$$
 `DSD0` is the diffusivity and is calculated using the formula provided in the function call `DSD0`. Here, the diffusion model fitting parameter `a` and `b` are used in an exponential model, however different formulas can be provided _in plain text_, i.e. no variables outside soilphys can be referenced. `D0` is the diffusion coefficient in air and is calculated following Massman (1998) as
-
-$D_0 = a\cdot ((Temp+273.15) / 273.15)^b \cdot 1013/p$.
+$$
+D_0 = a\cdot ((Temp+273.15) / 273.15)^b \cdot 1013/p
+$$
 
 With Temp given in _°C_ and p in _hPa_. 
 
 The specific diffusion coefficient `DS` is then calculated as the product of `DSD0` and `D0`: 
-
-$D_S =D_S/D_0 \cdot D_0$
-
-Because `D0` is different for different gases, for any gas provided as a character vector in `gases`, a different `D0` is calculated. This means that the resulting data.frame of `soilphys_complete()` has $m\cdot n_{gases}$ rows, if the input data.frame had _m_ rows. Keep this in mind if very large datasets are to be modelled and only calculate diffusion coefficients for the gases needed. 
+$$
+D_S =D_S/D_0 \cdot D_0
+$$
+Because `D0` is different for different gases, for any gas provided as a character vector in `gases`, a different `D0` is calculated. This means that the resulting data.frame of `soilphys_complete()` has $m\cdot n_{gases}$ rows, if the input data.frame had _m_ rows. Keep this in mind if very large datasets are to be modeled and only calculate diffusion coefficients for the gases needed. 
 
 Finally, the number density of air `rho_air` is calculated in mol m^-3^ as 
-
-$\rho_{air} = 100*p/(8.314\cdot (Temp+ 273.15))$
-
-Of course `DS` (e.g. from on site measurements) can also be added manually. However, it is recommended that `complete_soilphys()` is run nonetheless with a dummy `DSD0_formula` and the values overwritten afterwards to ensure that the structure of the dataframe is ready for the model. To check this, we can run 
+$$
+\rho_{air} = 100*p/(8.314\cdot (Temp+ 273.15))
+$$
+Of course `DS` (e.g. from on site measurements) can also be added manually. However, it is recommended that `complete_soilphys()` is run nonetheless with a dummy `DSD0_formula` and the values overwritten afterwards to ensure that the structure of the  is ready for the model. To check this, we can run 
 
 ```{r,eval=FALSE}
 check_soilphys(soilphys_complete)
@@ -259,7 +272,8 @@ The other part of the calculate_flux is to average `DS` for the flux calculation
 
 ## Examples 
 
-First, we must define homogenous layers for both sites for which we assume the flux to be constant. For this, we create the `layers_map` data.frame that is different for both sites of the example dataset (because the Humus height is different). We can use the depths of the `gasdata` dataset as reference. For simplicity, we will only consider two different layers: the Humus and mineral soil layers.
+### Initial Approach using LL and LS
+First, we must define homogeneous layers for both sites for which we assume the flux to be constant. For this, we create the `layers_map` data.frame that is different for both sites of the example dataset (because the Humus height is different). We can use the depths of the `gasdata` dataset as reference. For simplicity, we will only consider two different layers: the Humus and mineral soil layers.
 
 ```{r}
 layers_map <-
@@ -287,7 +301,203 @@ FLUX <-
                  id_cols = c("site","Date"))
 ```
 
+Note that you need to define the parameters `param` that should be averaged for each layer. Obligatory are `DS` and `rho_air`, as these are needed in the flux calculation.
+The flux calculation is complete and we can now take a first look at the data produced.
+```{r}
+head(FLUX)
+```
+
+`calculate_flux()` created a new data.frame where each row contains the `flux` calculated for one layer defined by `layers_map` and each combination of the `id_cols`. Additionally, there is information on the `upper` and `lower` bounds of the layer, as well as its mean `depth`, the concentration gradient `dcdz_ppm` with uncertainty-estimate `dcdz_sd`, as well as the absolute concentration difference across the layer `dc_ppm` and the R^2^ of the model (`r2`). Means of any parameters given in `param` in the function call will be added as well. The uncertainty of the flux estimate `flux_sd` is derived from `dcdz_sd` via
+$$
+\Delta_{flux} = flux \cdot \Delta_{dcdz}/ dcdz
+$$
+Because we defined multiple modes in the function call with `modes = c("LL","LS")`, each gradient is actually present twice in `FLUX` the different modes are identified in the column `mode`. We can now make a first visualisation of the result.
+
+```{r}
+FLUX %>%
+  ggplot(aes(x=Date,y=flux,col = layer,linetype = mode))+
+  geom_line()+
+  facet_wrap(~site)
+```
+
+The different modes are shown as solid or dashed lines, the different layers in different colors. The linear spline approach "LS" seems to produce larger gradients in the Humus layer so that it is apparent that the different approaches can have significant effects on the fluxes calculated. It is recommended to try out different approaches and vary some parameters to get a feeling what approach fits your data best.
+
+### Add second layer in mineral soil
+
+For example, we could introduce a second mineral soil layer that goes from 0 to -20 cm. Because the [discretisation we chose before](#discr), when creating the `soilphys` data.frame, we will need to cut the layer of "site_a" between -15 and -23 cm in two, so that the interface aligns with the layers for the flux calculation. Luckily, this is done quite fast by using `discretize_depth()` again on the `soilphys_complete` dataset.
+
+```{r}
+#create new target depth from old structure
+dt_new <- dt %>%
+  add_row(depth = -20, site = "site_a")
+
+#create list off all parameters to be interpolated
+params <- names(soilphys_complete)
+params <- params[!params %in% c("site","Date","upper","lower","depth")]
+
+soilphys_complete_add20 <-
+soilphys_complete %>%
+  discretize_depth(param = params,
+                   method = "boundary",
+                   depth_target = dt_new,
+                   id_cols = c("Date","site"))
+```
+Now we can run `calculate_flux()` again and look at the differences this made.
+
+```{r}
+
+layers_map_add20 <-
+  gasdata %>% select(site,depth) %>%
+  distinct() %>%
+  group_by(site) %>%
+  slice_max(depth) %>% # get the humus height
+  summarise(upper = c(depth,0,-20), #add upper = 0 and lower = -100 for mineral soil layer
+            lower = c(0,-20,-100),
+            layer = c("HU","M1","M2")) %>%
+  ungroup()
+
+FLUX_add20 <-
+  calculate_flux(gasdata = gasdata,
+                 soilphys = soilphys_complete_add20,
+                 layers_map = layers_map_add20,
+                 gases = "CO2",
+                 modes = c("LL","LS"),
+                 param = c("DS","rho_air"),
+                 funs = c("harm","arith"),
+                 id_cols = c("site","Date"))
+
+FLUX_add20 %>%
+  ggplot(aes(x=Date,y=flux,col = layer,linetype = mode))+
+  geom_line()+
+  facet_wrap(~site)
+```
+
+The two different approaches now show little difference, which is to be expected as we increase the degrees of freedom for the "LL" approach.
+
+### Complete profile approach (LR)
+
+Another possibility could be to assume uniform flux in the complete profile and only apply one linear regression function on the complete profile. For this, we can "hijack" the "LL" approach by only providing a single layer from top to bottom. This robust approach may be useful if gradients are really small (e.g.: N~2~O). 
+
+```{r}
+layers_map_LR <-
+  gasdata %>%
+  select(site,depth) %>%
+  distinct() %>%
+  group_by(site) %>%
+  slice_max(depth) %>%
+  ungroup() %>%
+  rename(upper = depth) %>%
+  mutate(lower = -100,
+         layer = "LR")
+
+FLUX_LR <-
+   calculate_flux(gasdata = gasdata,
+                 soilphys = soilphys_complete,
+                 layers_map = layers_map_LR,
+                 gases = "CO2",
+                 modes = c("LL"),
+                 param = c("DS","rho_air"),
+                 funs = c("harm","arith"),
+                 id_cols = c("site","Date"))
+
+FLUX_LR %>%
+  ggplot(aes(x=Date,y=flux,col = layer))+
+  geom_line()+
+  facet_wrap(~site)
+
+```
+
+As we can see, this approach is not really suited for our data, as the gradients produced are flat and the fluxes, thus, really low. 
+
+### Exponential function
+
+The last approach implemented, so far, is the exponential approach. Here an exponential function of type 
+$$
+C = a + b \cdot z^c
+$$
+is fitted against the concentration profile (with $z$ being the distance from the bottom of the profile). Then, gradients are calculated as the first derivative at the midpoints of each layer provided:
+$$
+dcdz = c \cdot b \cdot z^{c-1} 
+$$
+Let's try it out using the original setup:
+```{r}
+FLUX_EF <-
+  calculate_flux(gasdata = gasdata,
+                 soilphys = soilphys_complete,
+                 layers_map = layers_map,
+                 gases = "CO2",
+                 modes = "EF",
+                 param = c("DS","rho_air"),
+                 funs = c("harm","arith"),
+                 id_cols = c("site","Date"))
+
+FLUX_EF %>%
+  ggplot(aes(x=Date,y=flux,col = layer))+
+  geom_line()+
+  facet_wrap(~site)
+```
+However, caucion is advised - this mode is prone to errors and the implementation isn't yet optimal, so that some datasets cannot be automatically optimized. 
 
 ## Extrapolation 
 
+The last step of the gradient-flux approach is the extrapolation of the calculated fluxes _within_ the soil to the surface. For this, the function `efflux_extrap()` can be used, that provides two different extrapolation options: "`lm`" and "`linextrap`". The former fits a liner regression model to the fluxes and extrapolates to the soil/atmosphere interface, the former applies linear extrapolation using _two_ layers that must be user defined. Finally, if you don't trust that fluxes _can_ be extrapolated in the first place, you can also simply take the flux from the topmost layer by using the method `nearest` and providing the layer to be used in `layers`.
+
+For this purpose, the depth of the atmosphere/soil interface must be provided in the FLUX dataframe as the variable `topheight`. Here different scenarios are run for the linear model (LM), two differen linear extrapolations using the Humus layer and the different mineral soil layers (L1, L2) as well as simply taking the value of the Humus layer (N). We will use the version with the second mineral sil layer from before (`FLUX_add20`).
+
+```{r}
+topheights <- 
+  gasdata %>% 
+  select(site, depth) %>%
+  distinct() %>%
+  group_by(site) %>%
+  slice_max(depth) %>%
+  rename(topheight = depth) %>%
+  ungroup()
+
+EFFLUX_lm <-
+  FLUX_add20 %>%
+  left_join(topheights) %>%
+  efflux_extrap(method = "lm",
+                modename = "LM",
+                id_cols = c("site","Date","mode")
+                )
+
+EFFLUX_l1 <-
+  FLUX_add20 %>%
+  left_join(topheights) %>%
+  efflux_extrap(method = "linextrap",
+                layers = c("HU","M1"),
+                modename = "L1",
+                id_cols = c("site","Date","mode")
+                )
+
+EFFLUX_l2 <-
+  FLUX_add20 %>%
+  left_join(topheights) %>%
+  efflux_extrap(method = "linextrap",
+                layers = c("HU","M2"),
+                modename = "L2",
+                id_cols = c("site","Date","mode")
+                )
+
+EFFLUX_nearest <-
+  FLUX_add20 %>%
+  left_join(topheights) %>%
+  efflux_extrap(method = "nearest",
+                layers = "HU",
+                modename = "N",
+                id_cols = c("site","Date","mode")
+                )
+
+EFFLUX <- 
+  bind_rows(list(EFFLUX_lm,EFFLUX_l1,EFFLUX_l2,EFFLUX_nearest))
+
+EFFLUX %>%
+  ggplot(aes(x=Date,y=efflux,col = extrapmode))+
+  geom_line()+
+  facet_grid(cols = vars(site),
+             rows = vars(mode))
+   
+  
+```
 

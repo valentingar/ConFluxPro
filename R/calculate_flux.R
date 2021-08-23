@@ -158,8 +158,10 @@ FLUX <- lapply(modes,function(mode){
       dcdz_layered(.x,
                    .y %>% dplyr::left_join(layers_map,by = id_lmap),
                    .y$mode[1],
-                   .y %>% dplyr::left_join(depth_steps,by = id_lmap) %>% dplyr::pull(depth_steps))
-      FLUX <- FLUX %>% dplyr::select(!dplyr::any_of(c("j_help","gas","mode")))
+                   .y %>% dplyr::left_join(depth_steps,by = id_lmap) %>%
+                     dplyr::pull(depth_steps))
+      FLUX <- FLUX %>%
+        dplyr::select(!dplyr::any_of(c("j_help","gas","mode",id_cols)))
     })
 
 id_cols <-id_cols[!id_cols == "mode"]
@@ -184,7 +186,9 @@ FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
   dplyr::mutate(flux = -DS*rho_air*dcdz_ppm) %>%
   dplyr::mutate(depth = (upper+lower)/2) %>%
-  dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm)))
+  dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm))) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(!j_help)
 print("flux calculation complete")
 return(FLUX)
 }
