@@ -38,8 +38,8 @@
 
 #' }
 #' @family soilphys
+#' @importFrom magrittr %>%
 #'
-#' @import dplyr
 #' @export
 
 

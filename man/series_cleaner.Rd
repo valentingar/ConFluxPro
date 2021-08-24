@@ -36,6 +36,8 @@ This function corrects time series of gas concentrations within
 {
 data("gasdata")
 
+library(dplyr)
+
 gasdata \%>\%
   filter(depth == 0) \%>\% #only to make example smaller
   mutate(MST_ID = repetition,

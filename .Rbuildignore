@@ -3,4 +3,5 @@
 ^data-raw$
 ^doc$
 ^Meta$
-^extra$
+^inst/logo_draft.odg$
+^inst/data_structure.xlsx$

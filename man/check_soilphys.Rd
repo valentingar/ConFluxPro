@@ -4,13 +4,16 @@
 \alias{check_soilphys}
 \title{check_soilphys}
 \usage{
-check_soilphys(df, extra_vars = c())
+check_soilphys(df, extra_vars = c(), id_cols)
 }
 \arguments{
 \item{df}{(dataframe) the soilphys dataframe}
 
 \item{extra_vars}{(character vector) column names of additional variables to be
 checked.}
+
+\item{id_cols}{(character vector) the columns that, together, identify a
+profile uniquely}
 }
 \value{
 data frame of 'suspicious' parameter/depth combinations, where all
@@ -26,7 +29,10 @@ This function analyses the soilphys dataframe before the flux
   "upper","lower","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS"
 }
 \examples{
-check_soilphys(soilphys)
+{
+data("soilphys")
+check_soilphys(soilphys,id_cols = c("site","Date"))
+}
 
 }
 \seealso{

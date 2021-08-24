@@ -27,15 +27,32 @@
 #'
 #' @return df (dataframe) The corr_map dataframe used in the offset_correction() function
 #'
-#' @examples offset_subsetting(df = gasdata,
-#'                             gas = "O2",
-#'                             depth_cal = "ATM",
-#'                             start = as.Date(c("2020-11-03" ,"2020-12-23")),
-#'                             end =  as.Date(c("2020-12-24" ,"2021-01-201")),
-#'                             mode = c("lin","const"))
+#' @examples {
+#' data("gasdata")
 #'
+#' library(dplyr)
+#'
+#' gasdata <- gasdata %>%
+#'   mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+#'          SAMPLE_NO = row_number())
+#'
+#' cmap <-
+#'   offset_subsetting(gasdata,
+#'                     gas = "CO2",
+#'                     depth_cal = "HU",
+#'                     start = "2021-01-01",
+#'                     end = "2022-01-01",
+#'                     mode = "const")
+#'
+#' offset_correction(gasdata,
+#'                   corr_map = cmap,
+#'                   gases = "CO2",
+#'                   gases_std = 400,
+#'                   depth_cal = "HU")
+#'
+#' }
 #' @import dplyr
-#' @import lubridate
+#' @importFrom magrittr %>%
 #'
 #' @family gasdata
 #'

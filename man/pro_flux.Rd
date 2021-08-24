@@ -85,11 +85,28 @@ This implements an inverse modeling approach which optimizes
   be set in \code{zero_flux}.
 }
 \examples{
-pro_flux(gasdata,
-soilphys,
-target_depth,
-storage_term = F,
-zero_flux = T)
+{
+data("gasdata")
+data("soilphys")
+
+library(dplyr)
+
+lmap <- soilphys \%>\%
+  select(upper,site) \%>\%
+  distinct() \%>\%
+  group_by(site) \%>\%
+  slice_max(upper) \%>\%
+  summarise(upper = c(upper,0),
+            lower = c(0,-100),
+            lowlim = 0,
+            highlim = 1000,
+            layer_couple = 0)
+PROFLUX <-
+  pro_flux(gasdata,
+           soilphys,
+           lmap,
+           c("site","Date"))
+}
 
 }
 \seealso{

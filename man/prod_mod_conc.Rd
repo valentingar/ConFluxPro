@@ -11,15 +11,15 @@ prod_mod_conc(prod, height, DS, F0, C0)
 prod_mod_flux(prod, height, F0)
 }
 \arguments{
+\item{prod}{the production assinged to this step production in \eqn{\mu~mol/s/m^3}}
+
+\item{height}{the height of each step in m}
+
+\item{DS}{the diffusion coefficient DS in \eqn{m^2/s}}
+
 \item{F0}{(numeric) Incoming flux to lowest step in \eqn{\mu mol/m^2/s}}
 
 \item{C0}{(numeric) Concentration at the lower end of the lowest step in \eqn{\mu mol/m^3}.}
-
-\item{height:}{the height of each step in m}
-
-\item{prod:}{the production assinged to this step production in \eqn{\mu~mol/s/m^3}}
-
-\item{DS:}{the diffusion coefficient DS in \eqn{m^2/s}}
 }
 \value{
 \code{conc} at top of each step in \eqn{\mu mol/m^3}
@@ -28,7 +28,7 @@ prod_mod_flux(prod, height, F0)
 }
 \description{
 These functions calculates flux or concentration profile of a gas based on
-fixed production and known diffsuion coefficient Ds. The basis is a stepwise
+fixed production and known diffusion coefficient Ds. The basis is a stepwise
 calculation beginning from the bottom-most layer with incoming flux F0 and
 known concentration C0 at the lower end of the step.
 
@@ -39,9 +39,14 @@ The functions are designed to be used in optimization and are hence as fast as p
 }
 \section{Functions}{
 \itemize{
-\item \code{prod_mod_conc}: For concentration
+\item \code{prod_mod_flux}: flux output only
 
-\item \code{prod_mod_flux}: For flux
+examples{
+prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
+              height = c(0.5,0.2,0.1,0.03,0.02),
+              F0=0
+              )
+}
 }}
 
 \examples{
@@ -50,12 +55,7 @@ prod_mod_conc(prod = c(0.01,0.02,0.65,0.5,0.4),
               height = c(0.5,0.2,0.1,0.03,0.02),
               DS = c(rep(2.5E-7,3),rep(1E-6,2)),
               F0=0,
-              C0=48000E-6)
-
-prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
-              height = c(0.5,0.2,0.1,0.03,0.02),
-              F0=0
-              )}
+              C0=48000E-6)}
 }
 \seealso{
 Other proflux: 

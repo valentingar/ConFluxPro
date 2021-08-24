@@ -63,21 +63,34 @@
 #' all productions, the higher it is penalised. The \code{evenness_factor} then
 #' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
 #'
-#' @examples pro_flux(gasdata,
-#' soilphys,
-#' target_depth,
-#' storage_term = F,
-#' zero_flux = T)
+#' @examples {
+#' data("gasdata")
+#' data("soilphys")
+#'
+#' library(dplyr)
+#'
+#' lmap <- soilphys %>%
+#'   select(upper,site) %>%
+#'   distinct() %>%
+#'   group_by(site) %>%
+#'   slice_max(upper) %>%
+#'   summarise(upper = c(upper,0),
+#'             lower = c(0,-100),
+#'             lowlim = 0,
+#'             highlim = 1000,
+#'             layer_couple = 0)
+#' PROFLUX <-
+#'   pro_flux(gasdata,
+#'            soilphys,
+#'            lmap,
+#'            c("site","Date"))
+#' }
 #'
 #' @family proflux
 #'
 #'
 #' @import dplyr
-#' @import data.table
-#' @import ddpcr
-#' @import purrr
-#' @import stats
-
+#' @importFrom  ddpcr quiet
 #'
 #' @export
 
@@ -448,8 +461,8 @@ profile_stack <-
     lower_depth <- prod_depth_v[1]
 
     #subset soilphys and gasdata accordingly
-    gasdata_gr <- gasdata[gasdata$prof_id %in% profiles_tmp$prof_id]
-    soilphys_gr <- soilphys[soilphys$prof_id %in% profiles_tmp$prof_id]
+    gasdata_gr <- gasdata[gasdata$prof_id %in% profiles_tmp$prof_id,]
+    soilphys_gr <- soilphys[soilphys$prof_id %in% profiles_tmp$prof_id,]
 
     soilphys_gr <- soilphys_gr  %>%
       dplyr::mutate(pmap =  findInterval(depth,!!prod_depth_v))

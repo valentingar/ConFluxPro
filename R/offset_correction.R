@@ -33,16 +33,34 @@
 #'
 #' @return df (dataframe)
 #'
-#' @examples offset_correction(gasdata,
-#'                             corr_map = data.frame(gas = c("O2","O2","O2",...),
-#'                                                   SAMPLE_NO = c(123,124,125,...),
-#'                                                   section = c(1,1,2,...),
-#'                                                   mode = c("lin","lin","const",...)),
-#'                             gases = "O2",
-#'                             gases_std = 0.208,
-#'                             depth_cal = "ATM"))
+#' @examples {
+#' data("gasdata")
+#'
+#' library(dplyr)
+#'
+#' gasdata <- gasdata %>%
+#'   mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+#'          SAMPLE_NO = row_number())
+#'
+#' cmap <-
+#'   offset_subsetting(gasdata,
+#'                     gas = "CO2",
+#'                     depth_cal = "HU",
+#'                     start = "2021-01-01",
+#'                     end = "2022-01-01",
+#'                     mode = "const")
+#'
+#' offset_correction(gasdata,
+#'                   corr_map = cmap,
+#'                   gases = "CO2",
+#'                   gases_std = 400,
+#'                   depth_cal = "HU")
+#'
+#' }
 #'
 #' @import dplyr
+#' @importFrom lubridate %within%
+#'
 #' @family gasdata
 #' @export
 
@@ -59,8 +77,6 @@ if (length(un_mod)>0){
   stop(paste("wrong mode in corr_map:",un_mod ))
 }
 
-corr_map <- corr_map %>%
-  dplyr::mutate(SAMPLE_NO = as.character(SAMPLE_NO))
 
 if(any(is.na(corr_map$mode))){
   warning("NAs in corr_map$mode. Not changing these samples.")

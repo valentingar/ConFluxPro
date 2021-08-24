@@ -18,12 +18,42 @@
 #' @return corr_map (dataframe) The corr_map dataframe used in the
 #'   offset_correction function with overridden SAMPLE_NO.
 #'
-#' @examples offset_override(corr_map = corr_map,
-#' SAMPLE_NO = c(3023,5612,405,"blackforest27"),
-#' section = c(6,2,9,3))
+#' @examples {
+#' data("gasdata")
+#'
+#' library(dplyr)
+#'
+#' gasdata <- gasdata %>%
+#'   mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+#'          SAMPLE_NO = row_number())
+#'
+#' cmap <-
+#'   offset_subsetting(gasdata,
+#'                     gas = "CO2",
+#'                     depth_cal = "HU",
+#'                     start = "2021-01-01",
+#'                     end = "2022-01-01",
+#'                     mode = "const")
+#' new_section <-
+#'   cmap$SAMPLE_NO[cmap$Date == "2021-01-01"]
+#'
+#' cmap <-
+#'   offset_override(cmap,new_section,2)
+#'
+#' cmap$mode[cmap$section==2] <- "const"
+#'
+#' offset_correction(gasdata,
+#'                   corr_map = cmap,
+#'                   gases = "CO2",
+#'                   gases_std = 400,
+#'                   depth_cal = "HU")
+#'
+#' }
 #'
 #' @family gasdata
+#'
 #' @import dplyr
+#'
 #' @seealso offset_subsetting
 #' @seealso offset_correction
 #' @export

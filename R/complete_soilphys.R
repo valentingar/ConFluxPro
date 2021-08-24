@@ -16,7 +16,6 @@
 #' @examples soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
 #'
 #' @import dplyr
-#' @import rlang
 #'
 #' @seealso D0_massman
 #'

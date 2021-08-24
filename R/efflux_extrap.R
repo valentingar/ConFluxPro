@@ -32,15 +32,23 @@
 #'
 #'@return EFFLUX
 #'@family FLUX
-#' @examples efflux_extrap(FLUX,
-#'                         gases = c("CO2","O2"),
-#'                         method = "linextrap",
-#'                         layers = c("MIN1","MIN2"),
-#'                         modename = "Hirano",
-#'                         id_cols = c("Date"))
+#' @examples {
 #'
+#' df <- data.frame(depth = rep(c(2.5,-10,-60),times = 2),
+#'                  flux = c(6,4,1,5,3,0.5),
+#'                  layer = rep(c("HU","M1","M2"),times = 2),
+#'                  topheight = 5,
+#'                  Date = c(1,2),
+#'                  gas = "CO2")
+#'
+#' efflux_extrap(df,
+#'               "CO2",
+#'               method = "lm",
+#'               modename = "LM",
+#'               id_cols = "Date")
+#'
+#' }
 #'@import dplyr
-#'@import stats
 #'@export
 
 efflux_extrap <-function(FLUX,
@@ -60,7 +68,7 @@ efflux_extrap <-function(FLUX,
       stop(paste0("invalid number of layers! Must be 2!"))
     }
     if(all(layers %in% unique(FLUX$layer))==F){
-     l_nv <- layers[!layers %in% FLUX$layer]
+      l_nv <- layers[!layers %in% FLUX$layer]
       stop(paste0("The following layers are not present in the FLUX dataframe provided! ",l_nv))
     }
   }
@@ -86,44 +94,44 @@ efflux_extrap <-function(FLUX,
   id_cols <- unique(c(id_cols,"gas","mode","Plot"))
 
 
-if(method == "lm"){
-  EFFLUX <- FLUX %>%
-    dplyr::ungroup() %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
-    dplyr::group_modify(~{
-      h<-.x$topheight[1]
-      #print(paste(.y$Plot,.y$Date))
-      if (nrow(.x %>% dplyr::filter(is.na(depth)==F,is.na(flux)==F))<2){
-        efflux <- NA
-      } else {
-      mod <- lm(flux~depth,data = .x)
-      efflux <- predict(mod,newdata = list(depth = h))
-      }
-      return(data.frame(efflux = efflux))
-    })
-} else if (method == "linextrap"){
-  EFFLUX <- FLUX %>%
-    dplyr::filter(layer %in% !!layers) %>%
-    dplyr::ungroup() %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
-    dplyr::group_modify(~{
-      #print(paste(.y$Plot,.y$Date,.y$gas,.y$mode))
-      #print(.x$depth)
-      #print(.x$flux)
-      #print(.x$layer)
-      h<-.x$topheight[1]
-      efflux <- tryCatch(lin_extrap(.x$depth,.x$flux,h),error = function(x) NA)
-      df <- data.frame(efflux=efflux)
-      return(df)
+  if(method == "lm"){
+    EFFLUX <- FLUX %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+      dplyr::group_modify(~{
+        h<-.x$topheight[1]
+        #print(paste(.y$Plot,.y$Date))
+        if (nrow(.x %>% dplyr::filter(is.na(depth)==F,is.na(flux)==F))<2){
+          efflux <- NA
+        } else {
+          mod <- lm(flux~depth,data = .x)
+          efflux <- predict(mod,newdata = list(depth = h))
+        }
+        return(data.frame(efflux = efflux))
+      })
+  } else if (method == "linextrap"){
+    EFFLUX <- FLUX %>%
+      dplyr::filter(layer %in% !!layers) %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+      dplyr::group_modify(~{
+        #print(paste(.y$Plot,.y$Date,.y$gas,.y$mode))
+        #print(.x$depth)
+        #print(.x$flux)
+        #print(.x$layer)
+        h<-.x$topheight[1]
+        efflux <- tryCatch(lin_extrap(.x$depth,.x$flux,h),error = function(x) NA)
+        df <- data.frame(efflux=efflux)
+        return(df)
       })
 
-} else if (method == "nearest"){
-  EFFLUX <- FLUX %>% dplyr::filter(layer == layers) %>% dplyr::rename(efflux = flux)
-}
+  } else if (method == "nearest"){
+    EFFLUX <- FLUX %>% dplyr::filter(layer == layers) %>% dplyr::rename(efflux = flux)
+  }
   if (is.na(modename)==T){
     modename<-paste0(stats::na.omit(c(method,layers)),collapse = "_")
   }
   EFFLUX$extrapmode <- modename
-return(EFFLUX)
+  return(EFFLUX)
 }
 

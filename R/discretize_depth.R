@@ -71,11 +71,26 @@
 #'
 #' @import dplyr
 #' @import splines
-#' @import stats
+#' @importFrom magrittr %>%
 #'
-#' @examples { discretize_depth(df = soilphys, param = c("TPS","a","b"), method =
-#' "boundary", depth_target = depth_target, boundary_nearest = T, id_cols =
-#' c("Plot","Date"))}
+#' @examples {
+#'
+#' data("soiltemp")
+#' library(dplyr)
+#'
+#' dt <- soiltemp %>%
+#'   select(site,depth) %>%
+#'   distinct() %>%
+#'   group_by(site) %>%
+#'   slice_max(depth) %>%
+#'   summarise(depth = c(depth,seq(0,-100,-10)))
+#'
+#' discretize_depth(soiltemp,
+#'                  "Temp",
+#'                  "linear",
+#'                  dt,c(
+#'                    "site","Date"))
+#' }
 #'
 #' @export
 

@@ -44,18 +44,26 @@ This function extrapolates fluxes calculated with the layers
  grouped by Plot,Date,gas,mode.
 }
 \examples{
-efflux_extrap(FLUX,
-                        gases = c("CO2","O2"),
-                        method = "linextrap",
-                        layers = c("MIN1","MIN2"),
-                        modename = "Hirano",
-                        id_cols = c("Date"))
+{
 
+df <- data.frame(depth = rep(c(2.5,-10,-60),times = 2),
+                 flux = c(6,4,1,5,3,0.5),
+                 layer = rep(c("HU","M1","M2"),times = 2),
+                 topheight = 5,
+                 Date = c(1,2),
+                 gas = "CO2")
+
+efflux_extrap(df,
+              "CO2",
+              method = "lm",
+              modename = "LM",
+              id_cols = "Date")
+
+}
 }
 \seealso{
 Other FLUX: 
 \code{\link{calculate_flux}()},
-\code{\link{dcdz_ef}()},
 \code{\link{dcdz_layered}()}
 }
 \concept{FLUX}

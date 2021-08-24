@@ -35,13 +35,30 @@ This function helps to create the corr_map dataframe for the offset correction.
 Based on the Date input, it creates a new section variable and maps it to all SAMPLE_NO.
 }
 \examples{
-offset_subsetting(df = gasdata,
-                            gas = "O2",
-                            depth_cal = "ATM",
-                            start = as.Date(c("2020-11-03" ,"2020-12-23")),
-                            end =  as.Date(c("2020-12-24" ,"2021-01-201")),
-                            mode = c("lin","const"))
+{
+data("gasdata")
 
+library(dplyr)
+
+gasdata <- gasdata \%>\%
+  mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+         SAMPLE_NO = row_number())
+
+cmap <-
+  offset_subsetting(gasdata,
+                    gas = "CO2",
+                    depth_cal = "HU",
+                    start = "2021-01-01",
+                    end = "2022-01-01",
+                    mode = "const")
+
+offset_correction(gasdata,
+                  corr_map = cmap,
+                  gases = "CO2",
+                  gases_std = 400,
+                  depth_cal = "HU")
+
+}
 }
 \seealso{
 offset_correction

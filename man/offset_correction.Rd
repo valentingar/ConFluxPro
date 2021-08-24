@@ -45,14 +45,30 @@ A function for the correction of offsets in the whole
   NRESULT_ppm values are then multiplied by that factor.
 }
 \examples{
+{
+data("gasdata")
+
+library(dplyr)
+
+gasdata <- gasdata \%>\%
+  mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+         SAMPLE_NO = row_number())
+
+cmap <-
+  offset_subsetting(gasdata,
+                    gas = "CO2",
+                    depth_cal = "HU",
+                    start = "2021-01-01",
+                    end = "2022-01-01",
+                    mode = "const")
+
 offset_correction(gasdata,
-                            corr_map = data.frame(gas = c("O2","O2","O2",...),
-                                                  SAMPLE_NO = c(123,124,125,...),
-                                                  section = c(1,1,2,...),
-                                                  mode = c("lin","lin","const",...)),
-                            gases = "O2",
-                            gases_std = 0.208,
-                            depth_cal = "ATM"))
+                  corr_map = cmap,
+                  gases = "CO2",
+                  gases_std = 400,
+                  depth_cal = "HU")
+
+}
 
 }
 \seealso{

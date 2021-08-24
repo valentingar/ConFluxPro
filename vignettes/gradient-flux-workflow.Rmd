@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 # Introduction
 
 ```{r logo,out.width='25%', fig.align='left',echo=F}
-knitr::include_graphics("../extra/logo.svg")
+knitr::include_graphics("../inst/logo.svg")
 ```
 
 Hello and welcome to ConFluxPro - a toolkit for soil gas analysis. The goal of this package was to implement the gradient-flux approach for modeling soil gas fluxes based on concentration measurements. A good starting point to get an idea of the setup and ideas behind this method is our paper Maier et al. (2020).

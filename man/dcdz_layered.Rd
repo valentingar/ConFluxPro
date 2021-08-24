@@ -43,13 +43,26 @@ r2 (linearised) R^2 for the model.
 This function calculates concentration gradients using different approaches.
 }
 \examples{
-dcdz_layered(df,layers_map,"LL",depth_steps)
+{
+df <- data.frame(depth = c(10,0,-100),
+                 NRESULT_ppm = c(400,800,5000))
+
+lmap <- data.frame(upper = c(10,0),
+                   lower = c(0,-100),
+                   layer = c("HU","MIN"))
+dcdz_layered(df,
+             lmap,
+             mode = "LL",
+             depth_steps = c(0) #interface depths
+)
+
+
+}
 
 }
 \seealso{
 Other FLUX: 
 \code{\link{calculate_flux}()},
-\code{\link{dcdz_ef}()},
 \code{\link{efflux_extrap}()}
 }
 \concept{FLUX}

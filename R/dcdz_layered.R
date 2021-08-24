@@ -23,7 +23,21 @@
 #' @return dc_ppm (numeric) concentration difference in ppm.
 #' @return r2 (linearised) R^2 for the model.
 #'
-#' @examples dcdz_layered(df,layers_map,"LL",depth_steps)
+#' @examples {
+#' df <- data.frame(depth = c(10,0,-100),
+#'                  NRESULT_ppm = c(400,800,5000))
+#'
+#' lmap <- data.frame(upper = c(10,0),
+#'                    lower = c(0,-100),
+#'                    layer = c("HU","MIN"))
+#' dcdz_layered(df,
+#'              lmap,
+#'              mode = "LL",
+#'              depth_steps = c(0) #interface depths
+#' )
+#'
+#'
+#' }
 #'
 #' @family FLUX
 #' @import dplyr
@@ -171,8 +185,8 @@ create_return <- T
       #print("aftermod")
       #print(mod)
       #a <- coef(mod)[1]
-      b <- coef(mod)[1]
-      c <- coef(mod)[2]
+      b <- stats::coef(mod)[1]
+      c <- stats::coef(mod)[2]
       d <- lower-diff(depths)/2-min(depths)
 
       db <- summary(mod)$coefficients[1,2]

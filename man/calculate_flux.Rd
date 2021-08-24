@@ -51,14 +51,40 @@ This function takes the soilphys-dataframe as well as the
   for each layer defined in layers map and are given in mumol/m^2/s.
 }
 \examples{
+{
+data("gasdata")
+data("soilphys")
+
+library(dplyr)
+
+layers_map <-
+  gasdata \%>\%
+  select(site,depth) \%>\%
+  distinct() \%>\%
+  group_by(site) \%>\%
+  slice_max(depth) \%>\%
+  summarise(upper = c(depth,0),
+            lower = c(0,-100),
+            layer = c("HU","M1"))
+
+gasdata <- gasdata \%>\%
+  dplyr::filter(Date == "2021-01-01")
+
+soilphys <- soilphys \%>\%
+  dplyr::filter(Date == "2021-01-01")
+
 calculate_flux(gasdata,
-               soilphys_complete,
-               layers_map = layers_map ,
-               gases = c("CO2","CH4","O2"),
-               modes =c("LL","LS","EF"),
-               param = c("DSD0","DS","SWC","Temp","p"),
-               funs = c("harm","harm","arith","arith","arith"),
-               id_cols = c(Date))
+               soilphys,
+               layers_map,
+               gases = "CO2",
+               modes = "LL",
+               param = c("DS","rho_air"),
+               funs = c("harm","arith"),
+               id_cols = c("site","Date"))
+
+
+
+}
 
 }
 \seealso{
@@ -67,7 +93,6 @@ calculate_flux(gasdata,
 \code{\link{dcdz_layered}}
 
 Other FLUX: 
-\code{\link{dcdz_ef}()},
 \code{\link{dcdz_layered}()},
 \code{\link{efflux_extrap}()}
 }

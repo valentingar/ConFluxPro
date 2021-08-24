@@ -25,6 +25,8 @@
 #' @examples {
 #' data("gasdata")
 #'
+#' library(dplyr)
+#'
 #' gasdata %>%
 #'   filter(depth == 0) %>% #only to make example smaller
 #'   mutate(MST_ID = repetition,
@@ -35,9 +37,8 @@
 #'
 #' @family gasdata
 #'
-#' @import lubridate
 #' @import dplyr
-#' @import stats
+#' @importFrom magrittr %>%
 #'
 #' @export
 
@@ -101,7 +102,7 @@ series_cleaner<-function(df,
     dplyr::filter(!s>0 & is.na(s)==F) %>% #only use days with full obs
     dplyr::select(!contains(c("n","m","s"))) %>%
     dplyr::left_join(df_new) %>%
-    dplyr::mutate(month=month(Date)) %>%
+    dplyr::mutate(month=lubridate::month(Date)) %>%
     dplyr::group_by(MST_ID,month) %>%
     dplyr::summarise(mean_diff=mean(NRESULT_ppm-mean),sd_diff=stats::sd(NRESULT_ppm-mean),depth=depth[1]) #calculate mean diff to mean for each MST and Month
 
@@ -127,7 +128,7 @@ series_cleaner<-function(df,
 
     i <- as.numeric(df$i[1])
     depth <- df$depth[1]
-    mon <- month(df$Date[1])
+    mon <- lubridate::month(df$Date[1])
 
     if (i %in% round(seq(1,n_groups,length.out = 11))){
       print(paste(depth,df$Date[1],round(i/n_groups,digits = 2)*100,"%"))
@@ -173,7 +174,7 @@ series_cleaner<-function(df,
     return(df)
   }
 
-  ##recalculate mean with offset correction
+  ##recalculate mean with offset corrections
   df_new <- df_new %>%
     dplyr::left_join(df_new %>%
                        dplyr::group_by(Date) %>%
@@ -191,7 +192,7 @@ series_cleaner<-function(df,
     if(length(which(is.na(Ndiff)==F))<2){
       return(Ndiff)
     } else {
-      return(approxfun(Date,Ndiff)(Date))
+      return(stats::approxfun(Date,Ndiff)(Date))
     }
   }
 

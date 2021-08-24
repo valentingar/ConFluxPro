@@ -16,8 +16,6 @@
 #'
 #' @examples season(as.Date(c("1955-01-15","1985-06-15","2015-10-15")))
 #'
-#' @import lubridate
-#'
 #' @export
 
 

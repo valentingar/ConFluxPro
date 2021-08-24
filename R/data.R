@@ -61,3 +61,17 @@
 #'   \item{Temp}{temperature in °C}
 #' }
 "soiltemp"
+
+#' soilphys
+#'
+#' An example dataset for \code{soilphys} based on the sets
+#' \code{soiltemp}, \code{soilwater} and \code{soildiff}
+#'
+#' @format A tibble with 120 rows and 4 variables:
+#' \describe{
+#'   \item{site}{name of the site}
+#'   \item{Date}{Date in the format "YYYY-MM-DD"}
+#'   \item{depth}{depth in cm}
+#'   \item{Temp}{temperature in °C}
+#' }
+"soilphys"
