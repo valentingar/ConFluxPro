@@ -4,35 +4,52 @@
 \alias{soilphys_layered}
 \title{soilphys_layered}
 \usage{
-soilphys_layered(
-  soilphys,
-  layers_map,
-  param = c("TPS", "SWC", "AFPS", "T", "p", "DSD0", "D0", "DS"),
-  funs = c("arith", "arith", "arith", "arith", "arith", "harm", "harm", "harm"),
-  id_cols
-)
+soilphys_layered(soilphys, layers_map, param, funs, id_cols)
 }
 \arguments{
 \item{soilphys}{(dataframe) the soilphys dataframe}
 
-\item{layers_map}{(dataframe) containing the following parameters: \n
-"Plot"\n
-"layer"=name of the layer\n
-"upper"=upper limit of layer in cm \n
-"lower" = lower limit of the layer in cm \n
- Must be the same
- dataframe as the input of the same name in dcdz_layered().}
+\item{layers_map}{(dataframe) containing the following parameters:
+\describe{
+  \item{upper}{upper limit of the layer in cm}
+  \item{lower}{lower limit of the layer in cm}
+  \item{layer}{the name of the layer}
+  \item{...}{any \code{id_cols} necessary}
+  }}
 
-\item{param}{(character vector) A vector containing the names of the variables in soilphys to be carried over}
+\item{param}{(character vector) A vector containing the names of the
+variables in soilphys to be carried over}
 
-\item{funs}{(character vector) A vector defining the type of mean to be used. One of "arith" or "harm"}
+\item{funs}{(character vector) A vector defining the type of mean to be used.
+One of "arith" or "harm"}
+
+\item{id_cols}{(character vector) A list of all columns, that, together,
+uniquely identify one profile.}
 }
 \value{
+soilphys, reduced to any \code{id_cols} and \code{param} columns and
+summarised to the layers provided in \code{layers_map}
 
+#' @examples {data(soildiff)
+layers_map <- data.frame(site = rep(c("site_a",
+                                      "site_b"),each = 2),
+                         upper = c(5,0,7,0),
+                         lower = c(0,-100,0,-100),
+                         layer = rep(c("HU","M1"),times = 2)
+)
+
+soildiff$depth <- (soildiff$upper + soildiff$lower) / 2
+
+soilphys_layered(soilphys = soildiff,
+                 layers_map = layers_map,
+                 param = c("TPS","a"),
+                 funs = c("harm","arith"),
+                 id_cols = c("site"))
+}
 }
 \description{
-This function calculates (harmonic-) means of the soilphys dataframe per layer
-for the flux calculation.
+This function calculates (harmonic-) means of the soilphys
+  dataframe per layer for the flux calculation.
 }
 \seealso{
 Other soilphys: 

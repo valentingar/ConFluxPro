@@ -1,15 +1,18 @@
 #' @title dcdz_ef
 #'
-#' @description This function calculates concentration gradients for complete profiles with different approaches.
+#' @description This function calculates concentration gradients for complete
+#'   profiles with different approaches.
 #'
 #'
-#' @param df (dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot).
-#' @param topheight (numeric) Depth at the Atmosphere/Soil interface. (e.g. Height of Humus).
+#' @param df (dataframe) the gasdata dataframe, filtered to one profile (e.g. 1
+#'   day & one Plot).
+#' @param topheight (numeric) Depth at the Atmosphere/Soil interface. (e.g.
+#'   Height of Humus).
 #' @param mode (character) how should the concentration gradient be calculated?
-#' One of ("EF","LR"). \n
-#' "EF" fits an exponential model of form a+b*depth^c to the data and takes the corresponding gradient from the derivative
-#' at the depth defined in "topheight" \n
-#' "LR" fits a linear regression model of form a*depth+c to the data and takes a as gradient.
+#'   One of ("EF","LR"). \cr "EF" fits an exponential model of form
+#'   \eqn{a+b*depth^c} to the data and takes the corresponding gradient from the
+#'   derivative at the depth defined in "topheight" \cr "LR" fits a linear
+#'   regression model of form a*depth+c to the data and takes a as gradient.
 #'
 #'
 #' @return df (dataframe) with the following columns:
@@ -19,10 +22,11 @@
 #' @return dcdz_sd (numeric) standard error in ppm/cm.
 #' @return r2 (linearised) R^2 for the model.
 #'
-#' @examples
+#' @examples dcdz_ef(df,topheight = 6,mode = "EF")
 #' @family FLUX
 #' @import dplyr
 #' @import splines
+#' @import stats
 #'
 #' @export
 
@@ -54,20 +58,20 @@ dcdz_ef <- function(df,
       return_na <- T
     } else{
 
-      mod <- lm(NRESULT_ppm ~depth, data = df)
-      dcdz <- as.numeric(coef(mod)[2])*100 #gradient in ppm/m
+      mod <- stats::lm(NRESULT_ppm ~depth, data = df)
+      dcdz <- as.numeric(stats::coef(mod)[2])*100 #gradient in ppm/m
       dcdz_sd <- as.numeric(summary(mod)$coefficients[2,2])*100 #error of gradient in ppm/m
       r2 <- summary(mod)$r.squared
     }
   }else if (mode == "EF"){
 
     if(nrow(df)>1){
-      starts<-coef(lm(NRESULT_ppm~I((depth-min(depths))^1.1),data=df))
+      starts<-stats::coef(stats::lm(NRESULT_ppm~I((depth-min(depths))^1.1),data=df))
     } else {
       starts <- NA
     }
     #If all values are basically the same, problems arise, this checks for the relative difference of all values being less than 1e-10
-    sing_flag <- mean(abs(na.omit(df$NRESULT_ppm)-mean(df$NRESULT_ppm,na.rm=T)))/mean(df$NRESULT_ppm,na.rm=T) < 1e-10
+    sing_flag <- mean(abs(stats::na.omit(df$NRESULT_ppm)-mean(df$NRESULT_ppm,na.rm=T)))/mean(df$NRESULT_ppm,na.rm=T) < 1e-10
 
     if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){ #preventing model errors before they occur and replacing with NA
       return_na <- T
@@ -78,13 +82,13 @@ dcdz_ef <- function(df,
       #print("premod")
       #exponential model
 
-      mod <- try(nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
+      mod <- try(stats::nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
                      data = df,
                      start = list(#"a"=as.numeric(starts[1]),
-                       "b"=as.numeric(starts[2])*rnorm(1,1,0.01),
-                       "c"=1.1*rnorm(1,1,0.01)),
+                       "b"=as.numeric(starts[2])*stats::rnorm(1,1,0.01),
+                       "c"=1.1*stats::rnorm(1,1,0.01)),
                      algorithm = "plinear",
-                     control = nls.control(warnOnly = T)),silent = T)
+                     control = stats::nls.control(warnOnly = T)),silent = T)
 
       #check for convergence
       conv_flag <- ifelse(class(mod) == "nls",conv_flag <- !mod$convInfo$isConv,F)
@@ -95,9 +99,9 @@ dcdz_ef <- function(df,
       } else {
         #print("aftermod")
         #print(mod)
-        #a <- coef(mod)[1]
-        b <- coef(mod)[1]
-        c <- coef(mod)[2]
+        #a <- stats::coef(mod)[1]
+        b <- stats::coef(mod)[1]
+        c <- stats::coef(mod)[2]
         d <- topheight
 
         db <- summary(mod)$coefficients[1,2]
@@ -107,7 +111,7 @@ dcdz_ef <- function(df,
         #calculating dcdz via the 1st derivative of the exponential Function.
         dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
         dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
-        r2 <- summary(lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
+        r2 <- summary(stats::lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
 
       }
 

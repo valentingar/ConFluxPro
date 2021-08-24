@@ -11,6 +11,7 @@
 #' \item "upper"=upper limit of layer in cm;
 #' \item "lower" = lower limit of the layer in cm;}
 #' @param mode (character) One of ("LL","LS","EF").
+#' @param depth_steps (numeric) The interfaces between the layers
 #'
 #' @return df (dataframe) same structure as layer_map with folowing columns:
 #' @return mode (character) the used gradient method.
@@ -22,7 +23,8 @@
 #' @return dc_ppm (numeric) concentration difference in ppm.
 #' @return r2 (linearised) R^2 for the model.
 #'
-#' @examples
+#' @examples dcdz_layered(df,layers_map,"LL",depth_steps)
+#'
 #' @family FLUX
 #' @import dplyr
 #' @import splines
@@ -63,13 +65,13 @@ if (nrow(df)<length(depths) | ls_flag){
   return_na <- T
 } else {
 #spline model
-mod<-lm(NRESULT_ppm~bs(depth,knots=depth_steps,#depth_steps,
+mod<-stats::lm(NRESULT_ppm~splines::bs(depth,knots=depth_steps,#depth_steps,
                        degree = 1
 ),
 data=df)
 
 # dc = the difference in concentration in ppm
-dc <- -diff(predict(mod,newdata = data.frame(depth =depths)))
+dc <- -diff(stats::predict(mod,newdata = data.frame(depth =depths)))
 # dcdz = the concentration gradient in ppm/m
 dcdz <- dc / -diff(depths) *100 #from cm^-1 to m^-1
 
@@ -104,8 +106,8 @@ create_return <- T
     if (any(d_flag,val_flag)){
       return(df_ret)
     } else{
-    mod <- lm(NRESULT_ppm ~depth, data = df_part)
-    dcdz <- as.numeric(coef(mod)[2])*100 #gradient in ppm/m
+    mod <- stats::lm(NRESULT_ppm ~depth, data = df_part)
+    dcdz <- as.numeric(stats::coef(mod)[2])*100 #gradient in ppm/m
     dc <- dcdz * (abs(diff(c(upper[i],lower[i]))) / 100)
     dcdz_sd <- as.numeric(summary(mod)$coefficients[2,2])*100 #error of gradient in ppm/m
     r2 <- summary(mod)$r.squared
@@ -132,7 +134,7 @@ create_return <- T
 } else if (mode == "EF"){
 
   if(nrow(df)>1){
-  starts<-coef(lm(NRESULT_ppm~I((depth-min(depths))^1.5),data=df))
+  starts<-stats::coef(stats::lm(NRESULT_ppm~I((depth-min(depths))^1.5),data=df))
   } else {
     starts <- NA
   }
@@ -151,13 +153,13 @@ create_return <- T
     #print("premod")
     #exponential model
 
-    mod <- try(nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
+    mod <- try(stats::nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
                data = df,
                start = list(#"a"=as.numeric(starts[1]),
-                            "b"=as.numeric(starts[2])*rnorm(1,1,0.01),
-                            "c"=1.1*rnorm(1,1,0.01)),
+                            "b"=as.numeric(starts[2])*stats::rnorm(1,1,0.01),
+                            "c"=1.1*stats::rnorm(1,1,0.01)),
                algorithm = "plinear",
-               control = nls.control(warnOnly = T)),silent = T)
+               control = stats::nls.control(warnOnly = T)),silent = T)
 
     #check for convergence
     conv_flag <- ifelse(class(mod) == "nls",conv_flag <- !mod$convInfo$isConv,F)
@@ -181,7 +183,7 @@ create_return <- T
       dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
       dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
       dc<--diff(starts[1]+(b*((depths-min(depths))^c)))
-      r2 <- summary(lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
+      r2 <- summary(stats::lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
 
       create_return <- T
     }

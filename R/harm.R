@@ -1,31 +1,24 @@
-#' @title harm
+#'@title harm
 #'
-#' @description This function calculates harmonic mean of a vector and can be used analogous to the
-#' base functions mean() or median()
+#'@description This function calculates harmonic mean of a vector and can be
+#'  used analogous to the base functions mean() or median()
 #'
-#' @param x (numeric vector)
-#' @param w (numeric vector) optional vector of weights corresponding to x. Default is 1 for all.
-#' @param na.rm (logical) If TRUE, then NA values are omitted and the mean calculated with the remaining values.
-#' If FALSE (default) then returns NA if x contains NA values.
+#'@param x (numeric vector)
+#'@param w (numeric vector) optional vector of weights corresponding to x.
+#'  Default is 1 for all.
+#'@param na.rm (logical) If TRUE, then NA values are omitted and the mean
+#'  calculated with the remaining values. If FALSE (default) then returns NA if
+#'  x contains NA values.
 #'
-#' @return (numeric) harmonic mean of x
+#'@return (numeric) harmonic mean of x
 #'
-#'@examples
-#'
-#' No weights:
-#' x <- c(1:10)
-#' hmean_noweights <- harm(x)
-#' hmean_noweights
-#' [1] 3.414172
-#'
-#' With weights
-#' w <- c(10:1)
-#' hmean_weighted <- harm(x,w)
-#' hmean_weighted
-#' [1] 2.475398
+#'@examples {
+#'  harm(c(1:10))
+#'  harm(c(1:10),c(10:1))
+#'}
 #'
 #'
-#' @export
+#'@export
 
 harm <- function(x,w=1,na.rm=F){
   if (length(w) == 1){

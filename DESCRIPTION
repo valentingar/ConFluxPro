@@ -1,12 +1,14 @@
 Package: ConFluxPro
 Type: Package
-Title: A toolkit for soil gas analysis.
+Title: A toolkit for soil gas analysis
 Version: 1.0.0
 Author: Valentin Gartiser
 Maintainer: Valentin Gartiser <valentin.gartiser@uni-tuebingen.de>
 Description: This package is a collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation and includes a model for production-based flux estimation.
 Imports: 
+    stats,
     lubridate,
+    tibble,
     dplyr,
     magrittr,
     splines,
@@ -18,9 +20,14 @@ Imports:
     Rcpp
 License: CC BY 4.0
 Encoding: UTF-8
-LazyData: false
+LazyData: true
 RoxygenNote: 7.1.1
-LinkingTo: 
-    Rcpp
 Depends: 
     R (>= 2.10)
+Suggests: 
+    rmarkdown,
+    knitr,
+    testthat (>= 3.0.0),
+    ggplot2
+Config/testthat/edition: 3
+VignetteBuilder: knitr

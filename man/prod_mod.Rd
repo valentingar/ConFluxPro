@@ -2,48 +2,60 @@
 % Please edit documentation in R/prod_mod.R
 \name{prod_mod_conc}
 \alias{prod_mod_conc}
+\alias{prod_mod}
+\alias{prod_mod_flux}
 \title{prod_mod}
 \usage{
 prod_mod_conc(prod, height, DS, F0, C0)
+
+prod_mod_flux(prod, height, F0)
 }
 \arguments{
-\item{F0}{(numeric) Incoming flux to lowest step in mumol/s/m^2}
+\item{F0}{(numeric) Incoming flux to lowest step in \eqn{\mu mol/m^2/s}}
 
-\item{C0}{(numeric) Concentration at the lower end of the lowest step in mumol/m^3.}
+\item{C0}{(numeric) Concentration at the lower end of the lowest step in \eqn{\mu mol/m^3}.}
 
 \item{height:}{the height of each step in m}
 
-\item{prod:}{the production assinged to this step production in mumol/s/m^3}
+\item{prod:}{the production assinged to this step production in \eqn{\mu~mol/s/m^3}}
 
-\item{DS:}{the diffusion coefficient DS in m^2/s}
+\item{DS:}{the diffusion coefficient DS in \eqn{m^2/s}}
 }
 \value{
-concentration at top of each step in mumol/m^3
+\code{conc} at top of each step in \eqn{\mu mol/m^3}
 
-flux at top of each step in mumol/m^2/s
+\code{flux} at top of each step in \eqn{\mu mol/m^2/s}
 }
 \description{
 These functions calculates flux or concentration profile of a gas based on
 fixed production and known diffsuion coefficient Ds. The basis is a stepwise
 calculation beginning from the bottom-most layer with incoming flux F0 and
-known concentration C0 at the lower end of the step. \n
+known concentration C0 at the lower end of the step.
+
+
 The following input parameters must be vectors sorted from the lowest depth of the profile to the highest.
-Note that the assigned units are examples. However, units should be concise and match over all parameters. \n
+Note that the assigned units are examples. However, units should be concise and match over all parameters.
 The functions are designed to be used in optimization and are hence as fast as possible.
 }
+\section{Functions}{
+\itemize{
+\item \code{prod_mod_conc}: For concentration
+
+\item \code{prod_mod_flux}: For flux
+}}
+
 \examples{
+{
 prod_mod_conc(prod = c(0.01,0.02,0.65,0.5,0.4),
               height = c(0.5,0.2,0.1,0.03,0.02),
               DS = c(rep(2.5E-7,3),rep(1E-6,2)),
               F0=0,
               C0=48000E-6)
-[1] 43000 37400 20800 18355 16495
 
 prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
               height = c(0.5,0.2,0.1,0.03,0.02),
               F0=0
-              )
-[1] 0.005 0.009 0.074 0.089 0.097
+              )}
 }
 \seealso{
 Other proflux: 

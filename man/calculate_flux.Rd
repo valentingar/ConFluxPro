@@ -12,34 +12,43 @@ calculate_flux(
   modes,
   param,
   funs,
-  id_cols
+  id_cols = NULL
 )
 }
 \arguments{
 \item{gasdata}{(dataframe) The gasdata dataframe}
 
-\item{soilphys}{(dataframe) The soilphys dataframe after discretisation and completion.}
+\item{soilphys}{(dataframe) The soilphys dataframe after discretisation and
+completion.}
 
-\item{layers_map}{(dataframe) containing the following parameters: "layer"=name of the layer;
-"upper"=upper limit of layer in cm; "lower" = lower limit of the layer in cm;}
+\item{layers_map}{(dataframe) containing the following parameters:
+"layer"=name of the layer; "upper"=upper limit of layer in cm; "lower" =
+lower limit of the layer in cm;}
 
-\item{modes}{(character) A character vector specifying mode(s) for dcdz calculation. Can be "LL","LS","EF".}
+\item{gases}{(character) A character vector defining the gases for which
+gluxes shall be calulated.}
 
-\item{param}{(character) A vector containing the the parameters of soilphys, for which means should be calculated,
-must contain "rho_air" and "DS", more parameters help interpretation}
+\item{modes}{(character) A character vector specifying mode(s) for dcdz
+calculation. Can be "LL","LS","EF".}
 
-\item{funs}{(character) A vector defining the type of mean to be used. One of "arith" or "harm"}
+\item{param}{(character) A vector containing the the parameters of soilphys,
+for which means should be calculated, must contain "rho_air" and "DS", more
+parameters help interpretation}
 
-\item{id_cols}{(character) A vector defining the id-columns uniquely identifying each profile.
-Usually this includes Date but might also include any variations considered.}
+\item{funs}{(character) A vector defining the type of mean to be used. One of
+"arith" or "harm"}
+
+\item{id_cols}{(character) A vector defining the id-columns uniquely
+identifying each profile. Usually this includes Date but might also include
+any variations considered.}
 }
 \value{
 FLUX
 }
 \description{
-This function takes the soilphys-dataframe as well as the gasdata-dataframe
-and calculates fluxes accordingly. Fluxes are calculated for each layer defined in
-layers map and are given in mumol/m^2/s.
+This function takes the soilphys-dataframe as well as the
+  gasdata-dataframe and calculates fluxes accordingly. Fluxes are calculated
+  for each layer defined in layers map and are given in mumol/m^2/s.
 }
 \examples{
 calculate_flux(gasdata,
@@ -53,9 +62,9 @@ calculate_flux(gasdata,
 
 }
 \seealso{
-soilphys_layered
+\code{\link{soilphys_layered}}
 
-dcdz_layered
+\code{\link{dcdz_layered}}
 
 Other FLUX: 
 \code{\link{dcdz_ef}()},

@@ -1,25 +1,29 @@
 #' @title check_soilphys
 #'
-#' @description This function analyses the soilphys dataframe before the flux calculation. It presents a
-#' warning, if there are variables missing and also looks for suspicious patterns that suggest an error
-#' in the interpolation made by discretize_depth.
-#' \n
-#' Mainly checks if ceratain columns are present and if they are missing, if they can be calcluated from the
-#' data present. Looks for the following columns by default:
-#' "depth","upper","lower","Date","Plot","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS"
+#' @description This function analyses the soilphys dataframe before the flux
+#'   calculation. It presents a warning, if there are variables missing and also
+#'   looks for suspicious patterns that suggest an error in the interpolation
+#'   made by discretize_depth. Mainly checks if ceratain columns are present
+#'   and if they are missing, if they can be calcluated from the data present.
+#'   Looks for the following columns by default:
+#'   "upper","lower","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS"
+#'
 #'
 #' @param df (dataframe) the soilphys dataframe
-#' @param vars (character vector) column names of additional variables to be checked.
 #'
-#' @return data frame of 'suspicious' parameter/depth combinations, where all values are NA.
+#' @param extra_vars (character vector) column names of additional variables to be
+#'   checked.
+#'
+#' @return data frame of 'suspicious' parameter/depth combinations, where all
+#'   values are NA.
 #'
 #' @examples check_soilphys(soilphys)
 #'
 #' @family soilphys
 #'
 #' @import dplyr
-#' @impot tidyr
-
+#' @import tidyr
+#'
 #' @export
 
 check_soilphys <-function(df,extra_vars=c()){
@@ -27,7 +31,7 @@ check_soilphys <-function(df,extra_vars=c()){
   df_names <- names(df)
 
   #defining a vector of obligatory parameter names
-  param_names <-  c("depth","upper","lower","Date","Plot","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS",extra_vars)
+  param_names <-  c("upper","lower","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS",extra_vars)
 
   param_missing <- param_names[!param_names %in% df_names] #missing parameters in df
 
@@ -65,11 +69,17 @@ check_soilphys <-function(df,extra_vars=c()){
   }
 
   #checking for suspicious NAs
-
   susp <-df %>% dplyr::group_by(Plot,depth) %>%
     dplyr::summarise(across(any_of(param_names),is.na)) %>%
-    dplyr::summarise(across(any_of(param_names),all)) %>%
-    tidyr::pivot_longer(where(is.logical),"param","value") %>%
+    dplyr::summarise(across(any_of(param_names),all))
+
+  #finding column names of suspects
+  pars_susp <- names(susp)[unlist(lapply(1:ncol(gasdata),function(i){
+    is.logical(gasdata[1,i])
+  }))]
+
+  susp <-
+    tidyr::pivot_longer(pars_susp,"param","value") %>%
     dplyr::filter(value == T)
 
 

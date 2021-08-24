@@ -1,20 +1,28 @@
 #' @title calculate_flux
 #'
-#' @description This function takes the soilphys-dataframe as well as the gasdata-dataframe
-#' and calculates fluxes accordingly. Fluxes are calculated for each layer defined in
-#' layers map and are given in mumol/m^2/s.
+#' @description This function takes the soilphys-dataframe as well as the
+#'   gasdata-dataframe and calculates fluxes accordingly. Fluxes are calculated
+#'   for each layer defined in layers map and are given in mumol/m^2/s.
 #'
 #'
 #' @param gasdata (dataframe) The gasdata dataframe
-#' @param soilphys (dataframe) The soilphys dataframe after discretisation and completion.
-#' @param layers_map (dataframe) containing the following parameters: "layer"=name of the layer;
-#' "upper"=upper limit of layer in cm; "lower" = lower limit of the layer in cm;
-#' @param modes (character) A character vector specifying mode(s) for dcdz calculation. Can be "LL","LS","EF".
-#' @param param (character) A vector containing the the parameters of soilphys, for which means should be calculated,
-#' must contain "rho_air" and "DS", more parameters help interpretation
-#' @param funs (character) A vector defining the type of mean to be used. One of "arith" or "harm"
-#' @param id_cols (character) A vector defining the id-columns uniquely identifying each profile.
-#' Usually this includes Date but might also include any variations considered.
+#' @param soilphys (dataframe) The soilphys dataframe after discretisation and
+#'   completion.
+#' @param layers_map (dataframe) containing the following parameters:
+#'   "layer"=name of the layer; "upper"=upper limit of layer in cm; "lower" =
+#'   lower limit of the layer in cm;
+#' @param gases (character) A character vector defining the gases for which
+#' gluxes shall be calulated.
+#' @param modes (character) A character vector specifying mode(s) for dcdz
+#'   calculation. Can be "LL","LS","EF".
+#' @param param (character) A vector containing the the parameters of soilphys,
+#'   for which means should be calculated, must contain "rho_air" and "DS", more
+#'   parameters help interpretation
+#' @param funs (character) A vector defining the type of mean to be used. One of
+#'   "arith" or "harm"
+#' @param id_cols (character) A vector defining the id-columns uniquely
+#'   identifying each profile. Usually this includes Date but might also include
+#'   any variations considered.
 #'
 #' @family FLUX
 #'
@@ -31,8 +39,8 @@
 #'
 #' @import dplyr
 #'
-#' @seealso soilphys_layered
-#' @seealso dcdz_layered
+#' @seealso \code{\link{soilphys_layered}}
+#' @seealso \code{\link{dcdz_layered}}
 #'
 #' @export
 calculate_flux <- function(gasdata,

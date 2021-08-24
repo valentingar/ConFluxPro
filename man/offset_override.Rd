@@ -7,19 +7,24 @@
 offset_override(corr_map, SAMPLE_NO, section)
 }
 \arguments{
-\item{corr_map}{(dataframe) The corr_map dataframe created by offset_subsetting}
+\item{corr_map}{(dataframe) The corr_map dataframe created by
+offset_subsetting}
 
 \item{SAMPLE_NO}{(character) A vector of the SAMPLE_NO to change section}
 
-\item{section}{(vector, numeric) A vector in the same order as SAMPLE_No specifying the target section.}
+\item{section}{(vector, numeric) A vector in the same order as SAMPLE_No
+specifying the target section.}
 }
 \value{
-corr_map (dataframe) The corr_map dataframe used in the offset_correction function with overridden SAMPLE_NO.
+corr_map (dataframe) The corr_map dataframe used in the
+  offset_correction function with overridden SAMPLE_NO.
 }
 \description{
-This function helps overriding the Date-based subsetting of offset_subsetting().
-It modifies an existing corr_map by editing the section of a list of SAMPLE_NO. Check the section numbering of corr_map first.
-If a new section is manually introduced this way, a mode will have to be added manually.
+This function helps overriding the Date-based subsetting of
+  offset_subsetting(). It modifies an existing corr_map by editing the
+  section of a list of SAMPLE_NO. Check the section numbering of corr_map
+  first. If a new section is manually introduced this way, a mode will have
+  to be added manually.
 }
 \examples{
 offset_override(corr_map = corr_map,

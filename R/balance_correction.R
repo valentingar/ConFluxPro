@@ -1,32 +1,39 @@
 #' @title balance_correction
 #'
-#' @description A function to correct the measured values for non-complete gas exchange.
-#' Per sample, a total balance (b_tot) is obtained by adding the measurements of all gases and, if necessary,
-#' corrected for missing gases. \n
-#' Theoretically, bal is between (0;1), however values over 1 can result from calibration errors.
-#' Values over 1 are treated the same and are corrected.
-#' Then, each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
+#' @description A function to correct the measured values for non-complete gas
+#'   exchange. Per sample, a total balance (b_tot) is obtained by adding the
+#'   measurements of all gases and, if necessary, corrected for missing gases.
+#'   \cr Theoretically, bal is between (0;1), however values over 1 can result
+#'   from calibration errors. Values over 1 are treated the same and are
+#'   corrected. Then, each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
 #'
-#' @param df (dataframe) The gasdata-dataframe. The dataframe will be altered in the process of the
-#' function, so that it has to be overwritten (see examples below).
+#' @param df (dataframe) The gasdata-dataframe. The dataframe will be altered in
+#'   the process of the function, so that it has to be overwritten (see examples
+#'   below).
 #'
-#' @param limits (vector, numeric) A vector of two that contains the upper and lower limits for b_tot, above and below which NRESULT_ppm are flagged and set NA, if set_na is TRUE.
+#' @param limits (vector, numeric) A vector of two that contains the upper and
+#'   lower limits for b_tot, above and below which NRESULT_ppm are flagged and
+#'   set NA, if set_na is TRUE.
 #'
-#' @param gases (vector, character) A character vector of the gases that should be used in the balance approach.
-#' Default are the four most abundant atmospheric gases (N2, O2, Ar, CO2).
-#' Spelling must match the spelling of the gas-column in gasdata exactly.
+#' @param gases (vector, character) A character vector of the gases that should
+#'   be used in the balance approach. Default are the four most abundant
+#'   atmospheric gases (N2, O2, Ar, CO2). Spelling must match the spelling of
+#'   the gas-column in gasdata exactly.
 #'
-#' @param gases_std (vector, numeric) A numeric vector of standard values to be used for
-#' missing gases as fraction of total volume. Values of b_tot recalculated to account for
-#' the missing gases based on the gases present and these standard values. This is achieved by assuming a balance of
-#' the gases present first and recalculating gases_st accordingly. \n
-#' Order must match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))
+#' @param gases_std (vector, numeric) A numeric vector of standard values to be
+#'   used for missing gases as fraction of total volume. Values of b_tot
+#'   recalculated to account for the missing gases based on the gases present
+#'   and these standard values. This is achieved by assuming a balance of the
+#'   gases present first and recalculating gases_st accordingly. \cr Order must
+#'   match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))
 #'
-#' @param gases_ob (vector, character) A vector of obligatory gases that must be present for correct
-#' balance calculation. NRESULT_ppm of samples missing any of these gases will be flagged in bal_flag
-#' and not corrected or set NA. Defaults to c("N2","O2").
+#' @param gases_ob (vector, character) A vector of obligatory gases that must be
+#'   present for correct balance calculation. NRESULT_ppm of samples missing any
+#'   of these gases will be flagged in bal_flag and not corrected or set NA.
+#'   Defaults to c("N2","O2").
 #'
-#' @param set_na (logical) Should flagged values be set to NA (bal_flag == T)? Default is F.
+#' @param set_na (logical) Should flagged values be set to NA (bal_flag == T)?
+#'   Default is F.
 #'
 #' @return gasdata (dataframe) With added columns
 #' @return bal = balance
@@ -35,17 +42,32 @@
 #'
 #' @family gasdata
 #'
-#' @examples
-#' gasdata <- balance_correction(gasdata,
-#'                               limits = c(0.6,1.05),
-#'                               gases = c("N2","O2","Ar"),
-#'                               gases_std = c(0.78,0.2,0.0093),
-#'                               gases_ob = c("N2","O2"),
-#'                               set_na = T
-#'                               )
+#' @examples {
+#' data("gasdata")
+#
+# gasdata <-
+#   gasdata %>%
+#   bind_rows(gasdata %>%
+#               mutate(gas = "N2",
+#                      NRESULT_ppm = 0.78e6))%>%
+#   bind_rows(gasdata %>%
+#               mutate(gas = "O2",
+#                      NRESULT_ppm = 0.21e6)) %>%
+#   group_by(site,Date,depth,repetition) %>%
+#   mutate(SAMPLE_NO = cur_group_id())
+#
+# balance_correction(gasdata,
+#                    limits = c(0.6,1.05),
+#                    gases = c("N2","O2"),
+#                    gases_std = c(0.78,0.2),
+#                    gases_ob = c("N2","O2"),
+#                    set_na = TRUE
+# )
+#'                               }
 #'
 #'
 #' @import dplyr
+#' @importFrom stats na.omit
 #'
 #' @export
 

@@ -1,56 +1,50 @@
 #' @title series_correction
 #'
-#' @description This function corrects time series of gas concentrations within a certain depth at one site.
-#' The basic assumption is that gas data of different samplers within a depth are strictly ordered due to spatial
-#' heterogeneity or differences in the exact installation depth, i.e. always one sampler shows the highest
-#' concentration, so that the difference of each sampler on each day to the respective mean
-#' of all samplers is more or less the same.
+#' @description This function corrects time series of gas concentrations within
+#'   a certain depth at one site. The basic assumption is that gas data of
+#'   different samplers within a depth are strictly ordered due to spatial
+#'   heterogeneity or differences in the exact installation depth, i.e. always
+#'   one sampler shows the highest concentration, so that the difference of each
+#'   sampler on each day to the respective mean of all samplers is more or less
+#'   the same.
 #'
-#' This function does not apply if the data either has only one observation per depth or if
-#' the data does not show any intrinsic ordering inside each depth. Check these preconditions first.
+#'   This function does not apply if the data either has only one observation
+#'   per depth or if the data does not show any intrinsic ordering inside each
+#'   depth. Check these preconditions first.
 #'
-#' The function outputs a dataframe that has the same structure as the input, so that the original input can be removed.
-#' The function can be used using dplyr group_modify()-function
+#'   The function outputs a dataframe that has the same structure as the input,
+#'   so that the original input can be removed. The function can be used using
+#'   dplyr group_modify()-function
 #'
-#' @param
-#' df (dataframe)
-#' @param
-#' mode (character) "data" returns the corrected dataset. "plots" returns before / after plots.
-#'
+#' @param df (dataframe)
+#' @param mode (character) "data" returns the corrected dataset. "plots" returns
+#' before / after plots.
 #'
 #' @return dataframe
 #'
-#' @examples
-#' co2_clean<-gasdata %>%
-#' dplyr::filter(gas == "CO2") %>%
-#' dplyr::group_by(Plot,depth_cat) %>%
-#' dplyr::group_modify(~series_cleaner(.x))
+#' @examples {
+#' data("gasdata")
 #'
-#' gasdata<-gasdata %>%
-#' dplyr::filter(!gas == "CO2") %>%
-#' dplyr::bind_rows(co2_clean)
-#'
-#' %Exactly the same but editing data directly
-#' gasdata <- gasdata %>%
-#' dplyr::group_by(Plot,depth_cat,gas) %>%
-#' dplyr::group_modify(~{
-#'            if(.y$gas == "CO2"){
-#'                df <- series_cleaner(.x)
-#'            } else {
-#'                df <- .x}
-#'            return(df)
-#'                       })
+#' gasdata %>%
+#'   filter(depth == 0) %>% #only to make example smaller
+#'   mutate(MST_ID = repetition,
+#'          depth_cat = depth) %>%
+#'   group_by(site,depth_cat) %>%
+#'   group_modify(~series_cleaner(.x))}
+
 #'
 #' @family gasdata
 #'
 #' @import lubridate
 #' @import dplyr
+#' @import stats
 #'
 #' @export
 
 
 
-series_cleaner<-function(df,mode="data"){
+series_cleaner<-function(df,
+                         mode="data"){
 
   #backup of input df
   df_orig <- df
@@ -73,7 +67,7 @@ series_cleaner<-function(df,mode="data"){
       #calculating mean difference
       dplyr::left_join(df %>%
                          dplyr::group_by(Date,depth) %>%
-                         dplyr::summarise(med_diff=median(Ndiff,na.rm=T))) %>%
+                         dplyr::summarise(med_diff=stats::median(Ndiff,na.rm=T))) %>%
       #calculating relative difference to mean difference
       dplyr::mutate(diff_sd=Ndiff/med_diff)
     return(df)
@@ -109,7 +103,7 @@ series_cleaner<-function(df,mode="data"){
     dplyr::left_join(df_new) %>%
     dplyr::mutate(month=month(Date)) %>%
     dplyr::group_by(MST_ID,month) %>%
-    dplyr::summarise(mean_diff=mean(NRESULT_ppm-mean),sd_diff=sd(NRESULT_ppm-mean),depth=depth[1]) #calculate mean diff to mean for each MST and Month
+    dplyr::summarise(mean_diff=mean(NRESULT_ppm-mean),sd_diff=stats::sd(NRESULT_ppm-mean),depth=depth[1]) #calculate mean diff to mean for each MST and Month
 
 
   #counts number of groups for offset correction

@@ -7,7 +7,7 @@
 #'   One boundary condition of this model is, that there is no incoming or
 #'   outgoing flux at the bottom of the lowest layer of the profile. If this
 #'   boundary condition is not met, the flux must be optimised as well. This can
-#'   be set in "zero_fluix"
+#'   be set in \code{zero_flux}.
 #'
 #' @param gasdata (dataframe)
 #' @param soilphys (dataframe)
@@ -56,6 +56,13 @@
 #'   are given as Ds_fit in the return table. Only makes sense to use in
 #'   combination with known_flux.
 #'
+#' @param evenness_factor (numeric) A user defined factor used to penalise strong
+#' differences between the optimised production rates. This must be identified by
+#' trial-and-error and can help prevent that production rates are simply set to zero
+#' basically the lower a production is relative to the the maximum of the absolute of
+#' all productions, the higher it is penalised. The \code{evenness_factor} then
+#' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
+#'
 #' @examples pro_flux(gasdata,
 #' soilphys,
 #' target_depth,
@@ -69,6 +76,7 @@
 #' @import data.table
 #' @import ddpcr
 #' @import purrr
+#' @import stats
 
 #'
 #' @export
@@ -587,33 +595,33 @@ prof_optim <- function(gasdata_tmp,
 
   #C0 at lower end of production model
   dmin <- min(gasdata_tmp$depth)
-  C0 <- median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
+  C0 <- stats::median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
 
   #storage term
   dstor <-0
 
   #optimisation with error handling returning NA
   pars <- tryCatch({
-    prod_optimised<-optim(par=prod_start,
-                          fn = prod_optim,
-                          lower = lowlim_tmp,
-                          upper = highlim_tmp,
-                          method = "L-BFGS-B",
-                          height = height,
-                          DS = soilphys_tmp$DS,
-                          C0 = C0,
-                          pmap = pmap,
-                          cmap = cmap,
-                          conc = conc,
-                          dstor = dstor,
-                          zero_flux=zero_flux,
-                          F0 = F0,
-                          known_flux = known_flux_tmp,
-                          known_flux_factor = known_flux_factor,
-                          Ds_optim = Ds_optim,
-                          layer_couple = layer_couple_tmp,
-                          wmap = wmap,
-                          evenness_factor = evenness_factor
+    prod_optimised<-stats::optim(par=prod_start,
+                                 fn = prod_optim,
+                                 lower = lowlim_tmp,
+                                 upper = highlim_tmp,
+                                 method = "L-BFGS-B",
+                                 height = height,
+                                 DS = soilphys_tmp$DS,
+                                 C0 = C0,
+                                 pmap = pmap,
+                                 cmap = cmap,
+                                 conc = conc,
+                                 dstor = dstor,
+                                 zero_flux=zero_flux,
+                                 F0 = F0,
+                                 known_flux = known_flux_tmp,
+                                 known_flux_factor = known_flux_factor,
+                                 Ds_optim = Ds_optim,
+                                 layer_couple = layer_couple_tmp,
+                                 wmap = wmap,
+                                 evenness_factor = evenness_factor
     )
     pars <-(prod_optimised$par)
   },error = function(e) {return(rep(NA, length(prod_start)))})
