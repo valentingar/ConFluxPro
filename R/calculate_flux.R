@@ -42,7 +42,7 @@ calculate_flux <- function(gasdata,
                            modes,
                            param,
                            funs,
-                           id_cols){
+                           id_cols = NULL){
 if(!"DS" %in% param){
   stop("cannot calculate flux: 'DS' is missing in param!")
 }
@@ -62,37 +62,36 @@ if(!length(which(id_cols %in% names(gasdata)))== length(id_cols)){
   if(!"gas" %in% id_cols){
     id_cols <- c(id_cols,"gas")
   }
-  if(!"Plot" %in% id_cols){
-    id_cols <- c(id_cols,"Plot")
-  }
+
+# finding combinations of id_cols that are not present
+# in both layers_map and gasdata
+if (any(id_cols %in% names(layers_map)) == T ){
+id_nomatch <-
+layers_map %>%
+  dplyr::select(dplyr::any_of(id_cols)) %>%
+  dplyr::distinct() %>%
+  dplyr::anti_join(gasdata %>%
+                     dplyr::select(dplyr::any_of(id_cols)) %>%
+                     dplyr::distinct())
 
 
-g_plots <- unique(gasdata$Plot)
-s_plots <- unique(soilphys$Plot)
-if ("Plot" %in% names(layers_map)){
-l_plots <- unique(layers_map$Plot)
-
-if(!all(g_plots %in% l_plots)){
-  no_plots <- g_plots[!g_plots %in% l_plots]
-  #print(no_plots)
-  warning(paste("The following Plots are not represented in layers_map, skipping: "),paste(no_plots,collapse = " ,"))
-  gasdata <- gasdata %>% dplyr::filter(!Plot %in% no_plots)
-}
-
-
-
-}else{
-  layers_map <- lapply(g_plots,function(Plot){
-    df <- layers_map %>% dplyr::filter(Plot == !!Plot)
-  }) %>% bind_rows()
-
-}
+# warning for skipped id_cols and subsetting of gasdata
+if(nrow(id_nomatch) > 0){
+  warning(paste("The following values of id_cols are not represented
+                in layers_map or gasdata, skipping: "))
+  print(id_nomatch)
+  gasdata <- gasdata %>%
+    dplyr::anti_join(id_nomatch)
+}}
 
 #subset gasdata to relevant gases
-gasdata <- gasdata %>% dplyr::filter(gas %in% gases)
+gasdata <- gasdata %>%
+  dplyr::filter(gas %in% gases)
 
 #removing points without data
-gasdata <- gasdata %>% dplyr::filter(!is.na(NRESULT_ppm),!is.na(depth))
+gasdata <- gasdata %>%
+  dplyr::filter(!is.na(NRESULT_ppm),
+                !is.na(depth))
 
 if(nrow(gasdata) < 2){
   stop("gasdata is empty for given gases - check your input and data!")
@@ -103,10 +102,10 @@ layers_map <- layers_map %>%
   dplyr::arrange(dplyr::desc(upper))
 
 depth_steps <- layers_map %>% #depths between the layers from top to bottom
-  group_by(Plot) %>%
-  slice(n = -1) %>%
-  mutate(depth_steps = upper) %>%
-  select(Plot,depth_steps)
+  dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+  dplyr::slice(n = -1) %>%
+  dplyr::mutate(depth_steps = upper) %>%
+  dplyr::select(dplyr::any_of(c(id_cols,"depth_steps")))
 
 
 
@@ -118,14 +117,20 @@ gasdata <- gasdata %>%
   dplyr::filter(is.na(NRESULT_ppm)==F,is.na(depth) == F)
 
 
+#if there is only one group in layers_map, this ensures correct joins
+# when calculating the fluxes
+layers_map$j_help <- 1
+depth_steps$j_help <- 1
 
 
 #for progress tracking
-n_gradients <- gasdata %>% dplyr::ungroup() %>%
+n_gradients <- gasdata %>%
+  dplyr::ungroup() %>%
   dplyr::select(dplyr::any_of({{id_cols}}))  %>%
   dplyr::distinct() %>%
   nrow()
-n_soilphys <- soilphys%>% dplyr::ungroup() %>%
+n_soilphys <- soilphys%>%
+  dplyr::ungroup() %>%
   dplyr::select(dplyr::any_of({{id_cols}}))  %>%
   dplyr::distinct() %>%
   nrow()
@@ -133,37 +138,45 @@ n_soilphys <- soilphys%>% dplyr::ungroup() %>%
 printers <-floor(seq(1,n_gradients,length.out = 11))
 
 id_cols <- c(id_cols,"mode")
+id_lmap <- c(id_cols[id_cols %in% names(layers_map)],"j_help")
 
 print("starting gradient")
 FLUX <- lapply(modes,function(mode){
   return(gasdata %>% mutate(mode = !!mode))
 }) %>%
-  bind_rows() %>%
-  ungroup()%>%
-  dplyr::group_by(dplyr::across(dplyr::any_of({{id_cols}}))) %>%
-  dplyr::mutate(n_gr = dplyr::cur_group_id(),n_tot=n_gradients) %>%
+  dplyr::bind_rows() %>%
+  dplyr::ungroup()%>%
+  dplyr::mutate(j_help = 1) %>%
+  dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"j_help")}))) %>%
+  dplyr::mutate(n_gr = dplyr::cur_group_id(),
+                n_tot=n_gradients) %>%
     dplyr::group_modify(~{
       if (.x$n_gr[1] %in% printers){
         print(paste0(round(.x$n_gr[1] /n_gradients*100)," %"))
       }
       FLUX <-
       dcdz_layered(.x,
-                   layers_map[layers_map$Plot == .y$Plot[1],],
+                   .y %>% dplyr::left_join(layers_map,by = id_lmap),
                    .y$mode[1],
-                   depth_steps$depth_steps[depth_steps$Plot == .y$Plot[1]])
-      return(FLUX)
+                   .y %>% dplyr::left_join(depth_steps,by = id_lmap) %>%
+                     dplyr::pull(depth_steps))
+      FLUX <- FLUX %>%
+        dplyr::select(!dplyr::any_of(c("j_help","gas","mode",id_cols)))
     })
 
 id_cols <-id_cols[!id_cols == "mode"]
 print("gradient complete")
 print("starting soilphys")
 
+if(length(id_cols[id_cols %in% names(soilphys)])>0){
+soilphys <-
+gasdata %>% #decreasing size of soilphys to relevant subset
+  dplyr::ungroup() %>%
+  dplyr::select(dplyr::any_of({id_cols})) %>%
+  dplyr::distinct() %>%
+  dplyr::left_join(soilphys)}
 
-soilphys_layers <-soilphys_layered(gasdata %>% #decreasing size of soilphys to relevant subset
-                                     dplyr::ungroup() %>%
-                                     dplyr::select(dplyr::any_of({id_cols})) %>%
-                                     dplyr::distinct() %>%
-                                     dplyr::left_join(soilphys),
+soilphys_layers <-soilphys_layered(soilphys,
                                    layers_map,
                                    param,
                                    funs,
@@ -173,7 +186,9 @@ FLUX <- FLUX %>%
   dplyr::left_join(soilphys_layers) %>%
   dplyr::mutate(flux = -DS*rho_air*dcdz_ppm) %>%
   dplyr::mutate(depth = (upper+lower)/2) %>%
-  dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm)))
+  dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm))) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(!j_help)
 print("flux calculation complete")
 return(FLUX)
 }

@@ -3,9 +3,13 @@
 #' @description This function calculates concentration gradients using different approaches.
 #'
 #'
-#' @param df (dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot ).
-#' @param layers_map (dataframe) containing the following parameters: "layer"=name of the layer;
-#' "upper"=upper limit of layer in cm; "lower" = lower limit of the layer in cm;
+#' @param df (dataframe) the gasdata dataframe, filtered to one profile
+#'  (e.g. 1 day & one Plot ).
+#' @param layers_map (dataframe) containing the following parameters:
+#' \itemize{
+#' \item "layer"=name of the layer;
+#' \item "upper"=upper limit of layer in cm;
+#' \item "lower" = lower limit of the layer in cm;}
 #' @param mode (character) One of ("LL","LS","EF").
 #'
 #' @return df (dataframe) same structure as layer_map with folowing columns:
@@ -128,14 +132,17 @@ create_return <- T
 } else if (mode == "EF"){
 
   if(nrow(df)>1){
-  starts<-coef(lm(NRESULT_ppm~I((depth-min(depths))^1.1),data=df))
+  starts<-coef(lm(NRESULT_ppm~I((depth-min(depths))^1.5),data=df))
   } else {
     starts <- NA
-    }
-  #If all values are basically the same, problems arise, this checks for the relative difference of all values being less than 1e-10
+  }
+  #If all values are basically the same,
+  #problems arise, this checks for the relative
+  #difference of all values being less than 1e-10
   sing_flag <- mean(abs(na.omit(df$NRESULT_ppm)-mean(df$NRESULT_ppm,na.rm=T)))/mean(df$NRESULT_ppm,na.rm=T) < 1e-10
 
-  if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){ #preventing model errors before they occur and replacing with NA
+  if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){
+    #preventing model errors before they occur and replacing with NA
     return_na <- T
   } else {
     #print(df$NRESULT_ppm)

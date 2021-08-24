@@ -30,17 +30,6 @@ soilphys_layered<-function(soilphys,
 
   id_cols_s <- c(id_cols,"layer")
 
-  set_layer <-function(Plot,depth){
-    unlist(lapply(1:length(Plot),function(i){
-      if(any(is.na(depth[i]),is.na(Plot[i]))){
-        return(NA)
-      } else {
-        l<-layers_map$layer[layers_map$Plot == Plot[i] & layers_map$upper > depth[i] & layers_map$lower < depth[i]]
-        return(l)
-      }
-   }))
-  }
-
   param_arith <- param[funs == "arith"]
   param_harm <- param[funs == "harm"]
 
@@ -49,7 +38,7 @@ soilphys_layered<-function(soilphys,
   }
 
   soilphys<-soilphys %>%
-    dplyr::mutate(layer = set_layer(Plot,depth) ) %>%
+    set_layer(layers_map = layers_map,id_cols = id_cols)%>%
     dplyr::ungroup() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of({id_cols_s}))) %>%
     dplyr::mutate(height = abs(upper-lower))
@@ -64,3 +53,26 @@ soilphys_layered<-function(soilphys,
   soilphys <- dplyr::left_join(soilphys,layers_map)
   return(soilphys)
 }
+
+
+
+## helpers -------------
+
+set_layer <- function(df,layers_map,id_cols){
+  layers_map$j_help <- 1
+  id_lmap <- c(id_cols[id_cols %in% names(layers_map)],"j_help")
+
+  df %>%
+    mutate(j_help = 1) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_lmap))) %>%
+    dplyr::group_modify(~{
+      l_tmp <- .y %>% dplyr::left_join(layers_map,by = id_lmap)
+      .x %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(layer = l_tmp$layer[l_tmp$upper > depth & l_tmp$lower < depth] )
+    })
+}
+
+
+
+
