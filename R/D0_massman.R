@@ -1,18 +1,18 @@
 #' @title D0_Massman
 #'
-#' @description This function calculates the Diffusion coefficients of different gases in air at set
-#' temperature and pressure.
+#' @description This function calculates the Diffusion coefficients of different
+#'   gases in air at set temperature and pressure.
 #'
 #'
 #'
 #' @param gas (character) One of "CO2","CH4","N2O","O2","N2"
-#' @param t (numeric) temperature in °C
+#' @param Temp (numeric) temperature in °C
 #' @param p (numeric) pressure in hpa
 #'
 #' @return D0 in m^2/s
 #' @references Massman, W. J. A review of the molecular diffusivities of H2O,
-#' CO2, CH4, CO, O3, SO2, NH3, N2O, NO, and NO2 in air, O2 and N2 near STP.
-#' Atmospheric Environment 1998, 32(6), 1111–1127
+#'   CO2, CH4, CO, O3, SO2, NH3, N2O, NO, and NO2 in air, O2 and N2 near STP.
+#'   Atmospheric Environment 1998, 32(6), 1111–1127
 #' @export
 
 D0_massman <- function(gas, Temp, p){

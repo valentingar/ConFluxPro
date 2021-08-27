@@ -4,26 +4,71 @@
 \alias{prod_optim}
 \title{prod_optim}
 \usage{
-prod_optim(X, height, DS, C0, pmap, cmap, conc, dstor, zero_flux = T)
+prod_optim(
+  X,
+  height,
+  DS,
+  C0,
+  pmap,
+  cmap,
+  conc,
+  dstor,
+  zero_flux = T,
+  F0 = 0,
+  known_flux = NA,
+  known_flux_factor = 0,
+  Ds_optim = F,
+  layer_couple,
+  wmap,
+  evenness_factor
+)
 }
 \arguments{
 \item{X}{(numeric vector) specifying the productions to be optimized}
 
-\item{C0}{(numeric) The concentration at the bottom of the lowermost step.}
+\item{height}{(numeric vector) giving the height of each step}
+
+\item{DS}{(numeric vector) giving the DS of each step}
+
+\item{C0}{(numeric) The concentration at the
+bottom of the lowermost step.}
 
 \item{pmap}{(integer vector) assigning a production from X to each step}
 
-\item{cmap}{(integer vector) assigning the modeled concentrations to the observed concentrations
-as there can be multiple observations per depth}
+\item{cmap}{(integer vector) assigning the modeled concentrations to the
+observed concentrations as there can be multiple observations per depth}
 
-\item{conc}{(numeric) the observed concentrations (in the same unit as the modelled concentrations).}
+\item{conc}{(numeric) the observed concentrations (in the same unit as
+the modelled concentrations).}
 
-\item{dstor}{(numeric) storage changes per step (same unit as the productions given in X).}
+\item{dstor}{(numeric) storage changes per step (same unit as the
+productions given in X).}
 
-\item{zero_flux}{(logical) Applies the zero-flux boundary condition(T)? If FALSE, the first value in X
+\item{zero_flux}{(logical) Applies the zero-flux boundary
+condition(T)? If FALSE, the first value in X
 represents the incoming flux to the lowest layer.}
 
-\item{RMSE}{real mean square error of the modeled and measured concentration.}
+\item{F0}{(numeric) flux into lowest layer.}
+
+\item{known_flux}{(numeric) known surface flux to be matched}
+
+\item{known_flux_factor}{(numeric) a factor defining how much the known flux
+should weigh in the RMSE calculation}
+
+\item{Ds_optim}{(logical) should \code{DS} be optimised as well?}
+
+\item{layer_couple}{(numeric vector) A vector defining the weights that bind
+the different layers together. If all is zero, no penalisation for stark differences
+between the optimised production rates of adjecent layers takes place}
+
+\item{wmap}{(numeric) A vector defining the weights of the different concentration
+measurements in the RMSE calculation}
+
+\item{evenness_factor}{(numeric) Defines strong should stark differences between
+the production rates and very small production rates be penalised.}
+}
+\value{
+RMSE real mean square error of the modeled and measured concentration.
 }
 \description{
 This is the optimizer-function that is minimized for the inverse,
@@ -31,9 +76,6 @@ production based model. It takes as input a vector of the influx, as well as the
 values of the production to be optimized.
 
 This function is embedded in pro_flux and is not intended to be used manually.
-}
-\examples{
-
 }
 \seealso{
 Other proflux: 

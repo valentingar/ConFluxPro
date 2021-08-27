@@ -11,20 +11,21 @@ offset_subsetting(df, gas, depth_cal, start, end, mode)
 
 \item{gas}{(character) A character defining the gas to be corrected.}
 
-\item{depth_cal}{(character (-vector)) A character (-vector) of the same depth categories (depth_cat)
-used in offset_correction(), i.e. the values of "depth_cat" that correspond to atmospheric concentration.}
+\item{depth_cal}{(character (-vector)) A character (-vector) of the same
+depth categories (depth_cat) used in offset_correction(), i.e. the values
+of "depth_cat" that correspond to atmospheric concentration.}
 
 \item{start}{(vector, Date) A vector of type Date that specifies the starting
 date of each section (the starting date is included in the section!).}
 
 \item{end}{(vector, Date) A vector of type Date that specifies the end date
-of each section (the end date is included in the section!).
-The start date of element i should be the end date of (i-1) +1 day.}
+of each section (the end date is included in the section!). The start date
+of element i should be the end date of (i-1) +1 day.}
 
 \item{mode}{(vector, character) A vector of type character that specifies the
-correction method to be used in each section. Valid methods are \n
-"const", here the median value is being used as a constant factor, and \n
-"lin", where a linear model is fit against time, to account for an temporal drift.}
+correction method to be used in each section. Valid methods are "const",
+here the median value is being used as a constant factor, and "lin", where
+a linear model is fit against time, to account for an temporal drift.}
 }
 \value{
 df (dataframe) The corr_map dataframe used in the offset_correction() function
@@ -34,13 +35,30 @@ This function helps to create the corr_map dataframe for the offset correction.
 Based on the Date input, it creates a new section variable and maps it to all SAMPLE_NO.
 }
 \examples{
-offset_subsetting(df = gasdata,
-                            gas = "O2",
-                            depth_cal = "ATM",
-                            start = as.Date(c("2020-11-03" ,"2020-12-23")),
-                            end =  as.Date(c("2020-12-24" ,"2021-01-201")),
-                            mode = c("lin","const"))
+{
+data("gasdata")
 
+library(dplyr)
+
+gasdata <- gasdata \%>\%
+  mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+         SAMPLE_NO = row_number())
+
+cmap <-
+  offset_subsetting(gasdata,
+                    gas = "CO2",
+                    depth_cal = "HU",
+                    start = "2021-01-01",
+                    end = "2022-01-01",
+                    mode = "const")
+
+offset_correction(gasdata,
+                  corr_map = cmap,
+                  gases = "CO2",
+                  gases_std = 400,
+                  depth_cal = "HU")
+
+}
 }
 \seealso{
 offset_correction

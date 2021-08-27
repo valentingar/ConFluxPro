@@ -7,12 +7,15 @@
 pro_flux(
   gasdata,
   soilphys,
-  prod_depth,
+  layers_map,
+  id_cols,
   storage_term = F,
   zero_flux = T,
-  highlim,
-  lowlim,
-  id_cols
+  zero_limits = c(-Inf, Inf),
+  known_flux = NULL,
+  known_flux_factor = 0,
+  Ds_optim = F,
+  evenness_factor = 0
 )
 }
 \arguments{
@@ -20,32 +23,90 @@ pro_flux(
 
 \item{soilphys}{(dataframe)}
 
-\item{storage_term}{(logical) Should changes in storage be accounted for? Default is F.
-Only works if data is present in a temporal dimension as well and is probably only
-representative for a high temporal resolution (hours).}
+\item{layers_map}{(dataframe) That defines the layers of homogeneous
+production as well as the upper and lower limits of production rate. \ Must
+include
+\itemize{
+\item the relevant id_cols (see below)
+\item the upper
+and lower boundaries of each layer (upper, lower)
+\item upper and lower
+limits of the production rate to be modeled in \eqn{\mu mol m^{-3}}
+(highlim, lowlim)
+\item the parameter layer_couple, that indicates how
+strongly the layer should be linked to the one below it (0 for no coupling)
+}}
 
-\item{zero_flux}{(logical) Applies the zero-flux boundary condition? If FALSE, the first value in X
-represents the incoming flux to the lowest layer.}
+\item{id_cols}{(character vector) The names of the columns that together
+uniquely identify one profile. Must be present in gasdata.}
 
-\item{target_depth}{(numeric vector) This vector determines the depths of the interfaces between
-different production values to be fitted. This allows for an adaptive model with an individual
-number variables and hence degrees-of-freedom. So for three different production values,
-two depths that mark the intersection must be given.}
+\item{storage_term}{(logical) Should changes in storage be accounted for?
+Default is F. Only works if data is present in a temporal dimension as well
+and is probably only representative for a high temporal resolution (hours).}
+
+\item{zero_flux}{(logical) Applies the zero-flux boundary condition? If
+FALSE, the first value in X represents the incoming flux to the lowest
+layer.}
+
+\item{zero_limits}{(numeric vector) a vector of length 2 defining the lower
+and upper limit of the lowest flux if zero_flux = F.}
+
+\item{known_flux}{(dataframe) a dataframe that gives a known efflux for each
+profile defined by id_cols. If this is provided, the productions are
+optimised to meet this flux as well as the concentration measurements
+provided.}
+
+\item{known_flux_factor}{(numeric) a numeric value > 0 that represents a
+weight for the error calculation with the known flux. A higher value means
+that the optimisation will weigh the error to the efflux more than in
+regard to the concentration measurements. Must be determined manually by
+trying out!}
+
+\item{Ds_optim}{(logical) If True, the diffusion coefficient (DS) values are
+also object to optimisation together with the production. The fit values
+are given as Ds_fit in the return table. Only makes sense to use in
+combination with known_flux.}
+
+\item{evenness_factor}{(numeric) A user defined factor used to penalise strong
+differences between the optimised production rates. This must be identified by
+trial-and-error and can help prevent that production rates are simply set to zero
+basically the lower a production is relative to the the maximum of the absolute of
+all productions, the higher it is penalised. The \code{evenness_factor} then
+defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.}
 }
 \description{
 This implements an inverse modeling approach which optimizes
-vertically resolved production (or consumption) of the gases in question to fit
-a modeled concentration profile to observed data.
+  vertically resolved production (or consumption) of the gases in question to
+  fit a modeled concentration profile to observed data.
 
-One boundary condition of this model is, that there is no incoming or outgoing flux at the bottom of the lowest layer
-of the profile. If this boundary condition is not met, the flux must be optimised as well. This can be set in "zero_fluix"
+  One boundary condition of this model is, that there is no incoming or
+  outgoing flux at the bottom of the lowest layer of the profile. If this
+  boundary condition is not met, the flux must be optimised as well. This can
+  be set in \code{zero_flux}.
 }
 \examples{
-pro_flux(gasdata,
-soilphys,
-target_depth,
-storage_term = F,
-zero_flux = T)
+{
+data("gasdata")
+data("soilphys")
+
+library(dplyr)
+
+lmap <- soilphys \%>\%
+  select(upper,site) \%>\%
+  distinct() \%>\%
+  group_by(site) \%>\%
+  slice_max(upper) \%>\%
+  summarise(upper = c(upper,0),
+            lower = c(0,-100),
+            lowlim = 0,
+            highlim = 1000,
+            layer_couple = 0)
+PROFLUX <-
+  pro_flux(gasdata,
+           soilphys,
+           lmap,
+           c("site","Date"))
+}
 
 }
 \seealso{

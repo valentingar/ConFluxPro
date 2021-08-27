@@ -7,12 +7,18 @@
 dcdz_layered(df, layers_map, mode, depth_steps)
 }
 \arguments{
-\item{df}{(dataframe) the gasdata dataframe, filtered to one profile (e.g. 1 day & one Plot ).}
+\item{df}{(dataframe) the gasdata dataframe, filtered to one profile
+(e.g. 1 day & one Plot ).}
 
-\item{layers_map}{(dataframe) containing the following parameters: "layer"=name of the layer;
-"upper"=upper limit of layer in cm; "lower" = lower limit of the layer in cm;}
+\item{layers_map}{(dataframe) containing the following parameters:
+\itemize{
+\item "layer"=name of the layer;
+\item "upper"=upper limit of layer in cm;
+\item "lower" = lower limit of the layer in cm;}}
 
 \item{mode}{(character) One of ("LL","LS","EF").}
+
+\item{depth_steps}{(numeric) The interfaces between the layers}
 }
 \value{
 df (dataframe) same structure as layer_map with folowing columns:
@@ -36,10 +42,27 @@ r2 (linearised) R^2 for the model.
 \description{
 This function calculates concentration gradients using different approaches.
 }
+\examples{
+{
+df <- data.frame(depth = c(10,0,-100),
+                 NRESULT_ppm = c(400,800,5000))
+
+lmap <- data.frame(upper = c(10,0),
+                   lower = c(0,-100),
+                   layer = c("HU","MIN"))
+dcdz_layered(df,
+             lmap,
+             mode = "LL",
+             depth_steps = c(0) #interface depths
+)
+
+
+}
+
+}
 \seealso{
 Other FLUX: 
 \code{\link{calculate_flux}()},
-\code{\link{dcdz_ef}()},
 \code{\link{efflux_extrap}()}
 }
 \concept{FLUX}

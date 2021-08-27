@@ -7,20 +7,36 @@
 #' This function is embedded in pro_flux and is not intended to be used manually.
 #'
 #' @param X (numeric vector) specifying the productions to be optimized
+#' @param height (numeric vector) giving the height of each step
+#' @param DS (numeric vector) giving the DS of each step
 #' @param pmap (integer vector) assigning a production from X to each step
-#' @param cmap (integer vector) assigning the modeled concentrations to the observed concentrations
-#' as there can be multiple observations per depth
-#' @param conc (numeric) the observed concentrations (in the same unit as the modelled concentrations).
-#' @param dstor (numeric) storage changes per step (same unit as the productions given in X).
-#' @param C0 (numeric) The concentration at the bottom of the lowermost step.
-#' @param zero_flux (logical) Applies the zero-flux boundary condition(T)? If FALSE, the first value in X
+#' @param cmap (integer vector) assigning the modeled concentrations to the
+#' observed concentrations as there can be multiple observations per depth
+#' @param conc (numeric) the observed concentrations (in the same unit as
+#' the modelled concentrations).
+#' @param dstor (numeric) storage changes per step (same unit as the
+#' productions given in X).
+#' @param C0 (numeric) The concentration at the
+#' bottom of the lowermost step.
+#' @param zero_flux (logical) Applies the zero-flux boundary
+#' condition(T)? If FALSE, the first value in X
 #' represents the incoming flux to the lowest layer.
 #' @param F0 (numeric) flux into lowest layer.
+#' @param known_flux (numeric) known surface flux to be matched
+#' @param known_flux_factor (numeric) a factor defining how much the known flux
+#' should weigh in the RMSE calculation
+#' @param Ds_optim (logical) should \code{DS} be optimised as well?
+#' @param layer_couple (numeric vector) A vector defining the weights that bind
+#' the different layers together. If all is zero, no penalisation for stark differences
+#' between the optimised production rates of adjecent layers takes place
+#' @param wmap (numeric) A vector defining the weights of the different concentration
+#' measurements in the RMSE calculation
+#' @param evenness_factor (numeric) Defines strong should stark differences between
+#' the production rates and very small production rates be penalised.
 #'
-#' @param RMSE real mean square error of the modeled and measured concentration.
 #'
-#' @examples
-#'
+#' @return RMSE real mean square error of the modeled and measured concentration.
+
 #' @family proflux
 #'
 #' @export

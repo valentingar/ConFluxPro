@@ -9,55 +9,61 @@ efflux_extrap(FLUX, gases = "all", method, layers = NA, modename = NA, id_cols)
 \arguments{
 \item{FLUX}{(dataframe) the FLUX dataframe}
 
-\item{gases}{(character vector) A (vector) of gases to be extrapolated as stated
-in the function call. Fefaults to all gases.}
+\item{gases}{(character vector) A (vector) of gases to be extrapolated as
+stated in the function call. Fefaults to all gases.}
 
-\item{method}{(character) A string defining the method to be used for extrapolation.
-Must be called multiple times for different methods. \n
-Possible methods are: \n
-"lm" implements a linear model approach. Here a linear model is fit to
-flux ~ depth and the value for the surface estimated \n
-"linextrap" implements a linear extrapolation approach.
-Here, two layer names must be given using the control parameters below,
-that will then be used for an linear extrapolation.
-This can be used to implement a Hirano et al. (2003) or Tang et al. (2005) approach (see Maier & Schack_Kirchner (2014) below).}
+\item{method}{(character) A string defining the method to be used for
+ extrapolation. Must be called multiple times for different methods. \cr
+
+ Possible methods are:
+ \describe{
+ \item{lm}{implements a linear model
+ approach. Here a linear model is fit to flux ~ depth and the value for the
+ surface estimated}
+ \item{linextrap}{implements a linear extrapolation
+ approach. Here, two layer names must be given using the control parameters
+ below, that will then be used for an linear extrapolation. }
+ }}
 
 \item{layers}{(character vector) layers to be used in the linextrap-approach.}
 
-\item{modename}{(character) A character defining the value of the variable "mode" in the returned dataframe.}
+\item{modename}{(character) A character defining the value of the variable
 
-\item{id_cols}{(character) A character vector defining the columns that uniquely identify one profile.}
+ "mode" in the returned dataframe.}
+
+\item{id_cols}{(character) A character vector defining the columns that
+uniquely identify one profile.}
 }
 \value{
 EFFLUX
 }
 \description{
-This function extrapolates fluxes calculated with the layers approach to
-the surface with different methods.
-To see the different approaches implemented check the "method" parameter below. The values are grouped by
-Plot,Date,gas,mode.
+This function extrapolates fluxes calculated with the layers
+ approach to the surface with different methods. To see the different
+ approaches implemented check the "method" parameter below. The values are
+ grouped by Plot,Date,gas,mode.
 }
 \examples{
-efflux_extrap(FLUX,
-                        gases = c("CO2","O2"),
-                        method = "linextrap",
-                        layers = c("MIN1","MIN2"),
-                        modename = "Hirano";
-                        id_cols = c("Date"))
+{
 
+df <- data.frame(depth = rep(c(2.5,-10,-60),times = 2),
+                 flux = c(6,4,1,5,3,0.5),
+                 layer = rep(c("HU","M1","M2"),times = 2),
+                 topheight = 5,
+                 Date = c(1,2),
+                 gas = "CO2")
 
-
+efflux_extrap(df,
+              "CO2",
+              method = "lm",
+              modename = "LM",
+              id_cols = "Date")
 
 }
-\references{
-M. Maier, H. Schack-Kirchner,
-Using the gradient method to determine soil gas flux: A review,
-Agricultural and Forest Meteorology,Volumes 192–193,2014,Pages 78-95, https://doi.org/10.1016/j.agrformet.2014.03.006.
 }
 \seealso{
 Other FLUX: 
 \code{\link{calculate_flux}()},
-\code{\link{dcdz_ef}()},
 \code{\link{dcdz_layered}()}
 }
 \concept{FLUX}

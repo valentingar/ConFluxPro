@@ -71,10 +71,26 @@
 #'
 #' @import dplyr
 #' @import splines
+#' @importFrom magrittr %>%
 #'
-#' @example discretize_depth(df = soilphys, param = c("TPS","a","b"), method =
-#' "boundary", depth_target = depth_target, boundary_nearest = T, id_cols =
-#' c("Plot","Date))
+#' @examples {
+#'
+#' data("soiltemp")
+#' library(dplyr)
+#'
+#' dt <- soiltemp %>%
+#'   select(site,depth) %>%
+#'   distinct() %>%
+#'   group_by(site) %>%
+#'   slice_max(depth) %>%
+#'   summarise(depth = c(depth,seq(0,-100,-10)))
+#'
+#' discretize_depth(soiltemp,
+#'                  "Temp",
+#'                  "linear",
+#'                  dt,c(
+#'                    "site","Date"))
+#' }
 #'
 #' @export
 
@@ -85,8 +101,7 @@ discretize_depth<- function(df,
                           id_cols = NULL,
                           boundary_nearest = F,
                           int_depth = 0.5,
-                          knots = NULL,
-                          ...){
+                          knots = NULL){
 
 
 #make knots into a list if it isnt.
@@ -414,7 +429,7 @@ linear_intdisc<-function(param,depth_target,int_depth,depth){
   #Linear interpolation
 
   depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
-  param_int <- approxfun(depth,param)(depth_target_tmp)
+  param_int <- stats::approxfun(depth,param)(depth_target_tmp)
   return(param_int)
 }
 
@@ -430,8 +445,8 @@ boundary_intdisc<-function(param,indices){
 linspline_intdisc<-function(param,depth_target,int_depth,knots,depth){
   #Linear spline interpolation
   depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
-  param_int <- predict(
-    lm(
+  param_int <- stats::predict(
+    stats::lm(
       param ~ splines::bs(depth,knots=knots,degree=1)),
     newdata = list(depth =depth_target_tmp))
   return(param_int)

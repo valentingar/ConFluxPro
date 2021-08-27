@@ -17,13 +17,12 @@ lin_extrap(x, y, x_new)
 y_new
 }
 \description{
-This function linearly extrapolates based on two value-pairs (x1|y1),(X2|y2) to a third point of x (x_new).
+This function linearly extrapolates based on
+two value-pairs (x1|y1),(x2|y2) to a third point of x (x_new).
 }
 \examples{
+{
 lin_extrap(c(3,4),c(10,20),5)
-[1] 30
-
 lin_extrap(c(3,4),c(10,20),c(5,-5))
-[1]  30 -70
-
+}
 }

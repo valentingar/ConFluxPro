@@ -1,45 +1,55 @@
-#' @title efflux_extrap
+#'@title efflux_extrap
 #'
-#' @description This function extrapolates fluxes calculated with the layers approach to
-#' the surface with different methods.
-#' To see the different approaches implemented check the "method" parameter below. The values are grouped by
-#' Plot,Date,gas,mode.
+#'@description This function extrapolates fluxes calculated with the layers
+#'  approach to the surface with different methods. To see the different
+#'  approaches implemented check the "method" parameter below. The values are
+#'  grouped by Plot,Date,gas,mode.
 #'
-#' @param FLUX (dataframe) the FLUX dataframe
-#' @param gases (character vector) A (vector) of gases to be extrapolated as stated
-#' in the function call. Fefaults to all gases.
-#' @param method (character) A string defining the method to be used for extrapolation.
-#' Must be called multiple times for different methods. \n
-#' Possible methods are: \n
-#' "lm" implements a linear model approach. Here a linear model is fit to
-#' flux ~ depth and the value for the surface estimated \n
-#' "linextrap" implements a linear extrapolation approach.
-#' Here, two layer names must be given using the control parameters below,
-#' that will then be used for an linear extrapolation.
-#' This can be used to implement a Hirano et al. (2003) or Tang et al. (2005) approach (see Maier & Schack_Kirchner (2014) below).
+#'@param FLUX (dataframe) the FLUX dataframe
 #'
-#' @param layers (character vector) layers to be used in the linextrap-approach.
-#' @param modename (character) A character defining the value of the variable "mode" in the returned dataframe.
-#' @param id_cols (character) A character vector defining the columns that uniquely identify one profile.
+#'@param gases (character vector) A (vector) of gases to be extrapolated as
+#'  stated in the function call. Fefaults to all gases.
 #'
-#' @return EFFLUX
-#' @family FLUX
-#' @examples efflux_extrap(FLUX,
-#'                         gases = c("CO2","O2"),
-#'                         method = "linextrap",
-#'                         layers = c("MIN1","MIN2"),
-#'                         modename = "Hirano";
-#'                         id_cols = c("Date"))
+#'@param method (character) A string defining the method to be used for
+#'  extrapolation. Must be called multiple times for different methods. \cr
 #'
+#'  Possible methods are:
+#'  \describe{
+#'  \item{lm}{implements a linear model
+#'  approach. Here a linear model is fit to flux ~ depth and the value for the
+#'  surface estimated}
+#'  \item{linextrap}{implements a linear extrapolation
+#'  approach. Here, two layer names must be given using the control parameters
+#'  below, that will then be used for an linear extrapolation. }
+#'  }
+#'@param layers (character vector) layers to be used in the linextrap-approach.
 #'
+#'@param modename (character) A character defining the value of the variable
 #'
+#'  "mode" in the returned dataframe.
+#'@param id_cols (character) A character vector defining the columns that
+#'  uniquely identify one profile.
 #'
-#' @references M. Maier, H. Schack-Kirchner,
-#' Using the gradient method to determine soil gas flux: A review,
-#' Agricultural and Forest Meteorology,Volumes 192–193,2014,Pages 78-95, https://doi.org/10.1016/j.agrformet.2014.03.006.
+#'@return EFFLUX
+#'@family FLUX
+#' @examples {
 #'
-#' @import dplyr
-#' @export
+#' df <- data.frame(depth = rep(c(2.5,-10,-60),times = 2),
+#'                  flux = c(6,4,1,5,3,0.5),
+#'                  layer = rep(c("HU","M1","M2"),times = 2),
+#'                  topheight = 5,
+#'                  Date = c(1,2),
+#'                  gas = "CO2")
+#'
+#' efflux_extrap(df,
+#'               "CO2",
+#'               method = "lm",
+#'               modename = "LM",
+#'               id_cols = "Date")
+#'
+#' }
+#'@import dplyr
+#'@export
 
 efflux_extrap <-function(FLUX,
                          gases = "all",
@@ -58,7 +68,7 @@ efflux_extrap <-function(FLUX,
       stop(paste0("invalid number of layers! Must be 2!"))
     }
     if(all(layers %in% unique(FLUX$layer))==F){
-     l_nv <- layers[!layers %in% FLUX$layer]
+      l_nv <- layers[!layers %in% FLUX$layer]
       stop(paste0("The following layers are not present in the FLUX dataframe provided! ",l_nv))
     }
   }
@@ -84,44 +94,44 @@ efflux_extrap <-function(FLUX,
   id_cols <- unique(c(id_cols,"gas","mode","Plot"))
 
 
-if(method == "lm"){
-  EFFLUX <- FLUX %>%
-    dplyr::ungroup() %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
-    dplyr::group_modify(~{
-      h<-.x$topheight[1]
-      #print(paste(.y$Plot,.y$Date))
-      if (nrow(.x %>% dplyr::filter(is.na(depth)==F,is.na(flux)==F))<2){
-        efflux <- NA
-      } else {
-      mod <- lm(flux~depth,data = .x)
-      efflux <- predict(mod,newdata = list(depth = h))
-      }
-      return(data.frame(efflux = efflux))
-    })
-} else if (method == "linextrap"){
-  EFFLUX <- FLUX %>%
-    dplyr::filter(layer %in% !!layers) %>%
-    dplyr::ungroup() %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
-    dplyr::group_modify(~{
-      #print(paste(.y$Plot,.y$Date,.y$gas,.y$mode))
-      #print(.x$depth)
-      #print(.x$flux)
-      #print(.x$layer)
-      h<-.x$topheight[1]
-      efflux <- tryCatch(lin_extrap(.x$depth,.x$flux,h),error = function(x) NA)
-      df <- data.frame(efflux=efflux)
-      return(df)
+  if(method == "lm"){
+    EFFLUX <- FLUX %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+      dplyr::group_modify(~{
+        h<-.x$topheight[1]
+        #print(paste(.y$Plot,.y$Date))
+        if (nrow(.x %>% dplyr::filter(is.na(depth)==F,is.na(flux)==F))<2){
+          efflux <- NA
+        } else {
+          mod <- lm(flux~depth,data = .x)
+          efflux <- predict(mod,newdata = list(depth = h))
+        }
+        return(data.frame(efflux = efflux))
+      })
+  } else if (method == "linextrap"){
+    EFFLUX <- FLUX %>%
+      dplyr::filter(layer %in% !!layers) %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+      dplyr::group_modify(~{
+        #print(paste(.y$Plot,.y$Date,.y$gas,.y$mode))
+        #print(.x$depth)
+        #print(.x$flux)
+        #print(.x$layer)
+        h<-.x$topheight[1]
+        efflux <- tryCatch(lin_extrap(.x$depth,.x$flux,h),error = function(x) NA)
+        df <- data.frame(efflux=efflux)
+        return(df)
       })
 
-} else if (method == "nearest"){
-  EFFLUX <- FLUX %>% dplyr::filter(layer == layers) %>% dplyr::rename(efflux = flux)
-}
+  } else if (method == "nearest"){
+    EFFLUX <- FLUX %>% dplyr::filter(layer == layers) %>% dplyr::rename(efflux = flux)
+  }
   if (is.na(modename)==T){
-    modename<-paste0(na.omit(c(method,layers)),collapse = "_")
+    modename<-paste0(stats::na.omit(c(method,layers)),collapse = "_")
   }
   EFFLUX$extrapmode <- modename
-return(EFFLUX)
+  return(EFFLUX)
 }
 
