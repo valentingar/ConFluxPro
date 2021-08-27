@@ -336,43 +336,6 @@ discretize <- function(df,
                        param){
 
 
-
-  #create interpolation indices for boundary method, if a parameter is to be interpolated by boundary
-  if("boundary" %in% method){
-
-    upper_orig <- df$upper
-    lower_orig <- df$lower
-
-    #if boundary_nearest is FALSE, NA is returned for not fitting steps
-    if(boundary_nearest[1] == F){
-      indices<-unlist(
-        lapply(2:length(depth_target),function(i){
-          id<-which(upper_orig >= depth_target[i] & lower_orig<= depth_target[i-1])
-          if(length(id)==0){
-            id <- NA
-          }
-          return(id)})
-      )
-      #if boundary nearest is T, then the highest (or lowest) value is returned instead
-    } else {
-      indices<-
-        unlist(
-          lapply(2:length(depth_target),function(i){
-            id <-which(upper_orig >= depth_target[i] & lower_orig<= depth_target[i-1])
-            if (length(id)==0){
-              if(boundary_nearest ==F){
-                id<-NA
-              } else if(depth_target[i]>max(upper_orig)){
-                id <- length(upper_orig)
-              } else {
-                id <- 1
-              }
-
-            }
-            return(id)}
-          ))
-    }
-  }
   #create depth variable if linear is in methods
   if (any(c("linear","linspline") %in% method)){
     depth <- df$depth
@@ -384,9 +347,13 @@ discretize <- function(df,
     meth_tmp <- method[i]
 
     if(meth_tmp == "boundary"){
-      boundary_nearest <- boundary_nearest[i]
-      param_intdisc <- boundary_intdisc(param = param_tmp,
-                                        indices = indices)
+      boundary_nearest_tmp <- boundary_nearest[i]
+      param_intdisc <- boundary_intdisc(lower = df$lower,
+                                        upper = df$upper,
+                                        param = param_tmp,
+                                        depth_target = depth_target,
+                                        boundary_nearest = boundary_nearest_tmp)
+
     } else if(meth_tmp == "linear"){
 
       int_depth_tmp <- int_depth[i]
@@ -434,12 +401,72 @@ linear_intdisc<-function(param,depth_target,int_depth,depth){
 }
 
 
+boundary_intdisc <- function(lower,
+                             upper,
+                             param,
+                             depth_target,
+                             boundary_nearest){
+  #everything must be sorted low2high
 
-boundary_intdisc<-function(param,indices){
-  #Boundary interpolation (nearest neighbor)
-  param_int <- param[indices]
+  #assinging upper / lower bounds of region
+  l <- length(upper)
+  upper_max <- upper[l]
+  lower_min <- lower[1]
 
-  return(param_int)
+  #looping over all new depth-steps
+  sapply(1:(length(depth_target)-1), FUN = function(i){
+
+    #assinging new upper/lower boundary
+    upper_new <- depth_target[i+1]
+    lower_new <- depth_target[i]
+
+    #find ideal fit
+    id <- which(upper >= upper_new &
+                  lower <= lower_new
+    )
+
+    if (length(id) == 1){
+      #return ideal fit
+      return(param[id])
+
+    } else if (boundary_nearest == F) {
+      # return NA if no ideal fit & boundary_nearest == F
+      return(NA)
+
+    } else if (upper_new>upper_max){
+      #return upper bound value if layer above region
+      return(param[l])
+
+    } else if (lower_new<lower_min) {
+      #return lower bound value if layer below region
+      return(param[1])
+
+    } else if (is.numeric(param) == F){
+      # return NA if param is not numeric
+      # (cant average discrete values)
+      return(NA)
+
+    }else {
+
+      #find upper (u) lower (l) or middle (m) layers
+      id_u <-which(upper >= upper_new &
+                     lower < upper_new)
+      id_l <-which(upper > lower_new &
+                     lower <= lower_new)
+      id_m <- which(upper < upper_new &
+                      lower > lower_new)
+
+      # get value and weigh with height of old layer
+      # in new layer
+      p_u <- param[id_u]*(upper_new-lower[id_u])
+      p_l <- param[id_l]*(upper[id_l]-lower_new)
+      p_m <- param[id_m]*(upper[id_m]-lower[id_m])
+
+      # sum up and normalise to layer height
+      # (counterpart to weights)
+      p <- sum(p_u,p_l,p_m)/(upper_new-lower_new)
+    }
+  })
 }
 
 linspline_intdisc<-function(param,depth_target,int_depth,knots,depth){

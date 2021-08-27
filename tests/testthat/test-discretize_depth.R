@@ -153,19 +153,24 @@ test_that("id_cols can be left blank",{
 })
 
 
-test_that("method boundary_average"){
+test_that("method boundary_average",{
   df <- data.frame(upper = c(10,0),
                    lower = c(0,-10),
                    value = c(1,2))
   dt <- c(10,5,-5,-10)
 
-  discretize_depth(df,"value","boundary",dt)
-
-  expect_equal(discretize_depth(df,"value","boundary_average",dt),
-               data.frame(value = c(2,1.5,1),
-                          depth = c(-7.5,0,7.5),
-                          upper = c(-5,5,10),
-                          lower = -10,-5,0)
-  )
-}
+  df_test <-
+  discretize_depth(df,
+                   "value",
+                   "boundary",
+                   dt,
+                   boundary_nearest = T)
+  df_res <-
+    data.frame(value = c(2,1.5,1),
+               depth = c(-7.5,0,7.5),
+               upper = c(-5,5,10),
+               lower = c(-10,-5,5)
+    )
+  expect_equal(df_test,df_res)
+})
 
