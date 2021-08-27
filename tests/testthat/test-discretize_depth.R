@@ -164,7 +164,9 @@ test_that("method boundary_average",{
                    "value",
                    "boundary",
                    dt,
-                   boundary_nearest = T)
+                   boundary_nearest = T,
+                   boundary_average = "arith")
+
   df_res <-
     data.frame(value = c(2,1.5,1),
                depth = c(-7.5,0,7.5),

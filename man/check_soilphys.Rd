@@ -13,7 +13,7 @@ check_soilphys(df, extra_vars = c(), id_cols)
 checked.}
 
 \item{id_cols}{(character vector) the columns that, together, identify a
-profile uniquely}
+site uniquely (e.g. site, repetition)}
 }
 \value{
 data frame of 'suspicious' parameter/depth combinations, where all
@@ -31,7 +31,7 @@ This function analyses the soilphys dataframe before the flux
 \examples{
 {
 data("soilphys")
-check_soilphys(soilphys,id_cols = c("site","Date"))
+check_soilphys(soilphys,id_cols = c("site"))
 }
 
 }

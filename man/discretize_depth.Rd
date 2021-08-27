@@ -11,6 +11,7 @@ discretize_depth(
   depth_target,
   id_cols = NULL,
   boundary_nearest = F,
+  boundary_average = "none",
   int_depth = 0.5,
   knots = NULL
 )
@@ -24,13 +25,12 @@ interpolated.}
 
 \item{method}{(character vector) a character (-vector) specifying the methods
 to be used for interpolation. Must be in the same order as param. One of
-\itemize{
-\item "linear" = linear interpolation.
-\item "boundary" = mapping values to any
-depth within the boundarys. Suited for discrete variables.
-\item "linspline" =
-fits a linear spline. similar to linear interpolation but with knots
-defined in "knots".
+\describe{
+\item{linear}{linear interpolation.}
+\item{boundary}{mapping values to any
+depth within the boundarys. Suited for discrete variables.}
+\item{linspline}{fits a linear spline. similar to linear interpolation but with knots
+defined in "knots"}.
 }}
 
 \item{depth_target}{(numeric vector or data frame) specifying the format of
@@ -46,6 +46,14 @@ by, i.e. uniquely identifying one profile (e.g. c('Plot','Date')).}
 \item{boundary_nearest}{(logical) = TRUE/FALSE if it is TRUE then for target
 depth steps (partially) outside of the parameter boundaries, the neirest
 neighbor is returned, else returns NA. Default is FALSE.}
+
+\item{boundary_average}{("character) Defines what happens iff the
+new layer contains multiple old layers. one of
+\describe{
+\item{none}{= the deafult \cr the new layer is set to NA}
+\item{arith}{the new layer is calculated as the arithmetic mean of the old}
+\item{harm}{the new layer is calculated as the harmonic mean of the old}
+}}
 
 \item{int_depth}{(numeric vector)  = value between 0 and 1 for 1 =
 interpolation takes the top of each depth step, 0.5 = middle and 0= bottom.
