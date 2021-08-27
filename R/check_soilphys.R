@@ -15,14 +15,14 @@
 #'   checked.
 #'
 #' @param id_cols (character vector) the columns that, together, identify a
-#' profile uniquely
+#' site uniquely (e.g. site, repetition)
 #'
 #' @return data frame of 'suspicious' parameter/depth combinations, where all
 #'   values are NA.
 #'
 #' @examples {
 #' data("soilphys")
-#' check_soilphys(soilphys,id_cols = c("site","Date"))
+#' check_soilphys(soilphys,id_cols = c("site"))
 #' }
 #'
 #' @family soilphys
@@ -76,16 +76,18 @@ check_soilphys <-function(df,
     }
   }
 
+  params_grouping <- param_names[!param_names == "upper"]
+
   #checking for suspicious NAs
-  susp <-df %>% dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"depth")}))) %>%
-    dplyr::summarise(across(any_of(param_names),is.na)) %>%
-    dplyr::summarise(across(any_of(param_names),all))
+  susp <-df %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"upper")}))) %>%
+    dplyr::summarise(across(any_of(params_grouping),is.na),.groups = "keep") %>%
+    dplyr::summarise(across(any_of(params_grouping),all))
 
   #finding column names of suspects
-  is_susp <- unlist(lapply(1:ncol(gasdata),function(i){
-    is.logical(gasdata[1,i])
-  }))
-  pars_susp <- names(susp)[is_susp]
+  class_susp <- sapply(susp, class)
+  is_susp <- class_susp == "logical"
+  pars_susp <- names(susp)[is_susp ==T]
 
   if(length(pars_susp)>0){
   susp <-
@@ -95,9 +97,17 @@ check_soilphys <-function(df,
                         values_to = "value") %>%
     dplyr::filter(value == T)
 
+  if(anyNA(df$upper)){
+    susp <- susp %>%
+      dplyr::add_row(param = "upper",
+                     value = TRUE)
+  }
+
   } else {
   susp <- NA
 }
+
+
 
 
   green<-function(txt){
@@ -111,30 +121,68 @@ check_soilphys <-function(df,
   }
 
 
-  sp_ready <-ifelse(length(param_missing) == 0,T,F)
-  sp_fixable <- ifelse(length(param_missing) == length(to_fix),T,F)
+
+  sp_ready <- ifelse(length(param_missing) == 0, T, F)
+  sp_fixable <- ifelse(length(param_missing) == length(to_fix), T, F)
 
 
-  cat(paste0("--------------------------------------------------------","\n"))
-  cat(paste0("your soilphys-dataframe is","\n"),
-      ifelse(sp_ready == T,green("ready"),red("!!not ready!!")),"\n")
-  if(sp_ready == F){
-  cat(paste0("the dataframe ",ifelse(sp_fixable == T,green("can"),red("cannot")) ," be fixed by complete_soilphys()","\n"))
+  cat(paste0(
+    "--------------------------------------------------------",
+    "\n"
+  ))
+  cat(paste0("your soilphys-dataframe is", "\n"),
+      ifelse(sp_ready == T, green("ready"), red("!!not ready!!")),
+      "\n")
+  if (sp_ready == F) {
+    cat(paste0(
+      "the dataframe ",
+      ifelse(sp_fixable == T, green("can"), red("cannot")) ,
+      " be fixed by complete_soilphys()",
+      "\n"
+    ))
   }
-  if(sp_fixable ==F){
-  cat(paste0("please provide the following parameters to the dataframe first:","\n",paste0(param_missing[!param_missing %in% c(to_fix,not_to_fix)],collapse = " , "),"\n"))
+  if (sp_fixable == F) {
+    cat(
+      paste0(
+        "please provide the following parameters to the dataframe first:",
+        "\n",
+        paste0(param_missing[!param_missing %in% c(to_fix, not_to_fix)], collapse = " , "),
+        "\n"
+      )
+    )
   } else {
-  cat(paste0("the following parameters are still missing: ","\n",paste0(param_missing,collapse = " , "),"\n",
-             "please note that for DSD0 calculation, there may be individual prerequesits of the fitting parameters you applied.","\n"))
+    cat(
+      paste0(
+        "the following parameters are still missing: ",
+        "\n",
+        paste0(param_missing, collapse = " , "),
+        "\n",
+        "please note that for DSD0 calculation,
+        there may be individual prerequesits of the
+        fitting parameters you applied. (If so: provide extra_vars = c('my variable'))",
+        "\n"
+      )
+    )
   }
-  if(!is.na(susp)){
-  cat("\n")
-  cat(yellow(paste0("the following parameters have depths with all NA","\n"," please check if they were discretized correctly","\n")))
+  if (is.data.frame(susp)) {
+    cat("\n")
+    cat(yellow(
+      paste0(
+        "the following parameters have depths with all NA",
+        "\n",
+        "please check if they were discretized correctly",
+        "\n"
+      )
+    ))
 
-  susp
+
   }
-  cat(paste0("--------------------------------------------------------","\n"))
-
+  cat(paste0(
+    "--------------------------------------------------------",
+    "\n"
+  ))
+list(result = sp_fixable,
+     suspects = susp)
 }
 
 
