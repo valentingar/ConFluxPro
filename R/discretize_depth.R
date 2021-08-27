@@ -117,7 +117,7 @@ l_int <- length(int_depth)
 l_knots <- length(knots)
 
 #check for correct input and warn if problems arise
-warn_names <- c("methods","boundary_nearest","int_depth","knots")
+warn_names <- c("method","boundary_nearest","int_depth","knots")
 warn_lengths <- c(l_meth,l_incl,l_int,l_knots)
 
 for (i in 1:3){
@@ -127,7 +127,7 @@ for (i in 1:3){
   if(!l == l_param & !l == 1 ){
     stop(paste0("'",warn_name,"' must be the same length of param or of length 1"))
   } else if (l == 1 & !l_param ==1){
-    warning(paste("applying the same '",warn_name,"' to all parameters"))
+    message(paste("applying the same '",warn_name,"' to all parameters"))
   }
 }
 
