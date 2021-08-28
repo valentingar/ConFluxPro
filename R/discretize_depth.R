@@ -505,7 +505,7 @@ boundary_intdisc <- function(lower,
       # (counterpart to weights)
       if (boundary_average == "arith"){
         ## arithmetic
-      p <- sum(c(w_u*p_u,w_l*p_l,w_m*p_m))/(upper_new-lower_new)
+      p <- sum(c(w_u*p_u,w_l*p_l,w_m*p_m))/sum(c(w_u,w_l,w_m))
       } else {
         ## harmonic (Add condition if more averages are implemented)
       p <- harm(c(p_u,p_l,p_m),c(w_u,w_l,w_m))
