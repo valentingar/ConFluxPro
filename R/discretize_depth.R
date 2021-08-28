@@ -21,7 +21,7 @@
 #'   step within these limits.
 #'   \item
 #'   A linear spline interpolation fits a linear
-#'   spline model to the data with knots defined in "knots". It is
+#'   spline model to the data with knots defined in  \code{knots}. It is
 #'   possible to provide multiple parameters to be discretized. In this case it
 #'   is also possible to define specific controls for each parameter
 #'   individually. However, if only one value is given for method, int_depth,
@@ -37,9 +37,13 @@
 #'   \describe{
 #'   \item{linear}{linear interpolation.}
 #'   \item{boundary}{mapping values to any
-#'   depth within the boundarys. Suited for discrete variables.}
-#'   \item{linspline}{fits a linear spline. similar to linear interpolation but with knots
-#'   defined in "knots"}.
+#'   depth within the boundary. Suited for discrete variables.}
+#'   \item{linspline}{fits a linear spline. similar to \code{linear} interpolation
+#'   but with knots defined in \code{knots}}.
+#'   \item{nearest}{finds the nearest value and sets that. int_depth applies.}
+#'   \item{harmonic}{similar to \code{linear} but instead, harmonic means are calculated,
+#'   using the distance of the counterpart as weight. I.e.: new depth = 2.5, old depths = c(0,10)
+#'   tehn weights are 7.5 (for depth == 0) and 2.5 (for depth == 10)}
 #'   }
 #'
 #' @param depth_target (numeric vector or data frame) specifying the format of
@@ -155,8 +159,7 @@ if (is.vector(depth_target)){
 }
 
 #checking if depth is present if method = "linear"/"linspline
-if ("linear" %in% method |
-    "linspline" %in% method){
+if (any(c("linear","linspline","nearest","harmonic") %in% method)){
   if(!("depth" %in% df_names)){
     stop("for this method, variable 'depth' must be present in df")
   }
@@ -355,12 +358,6 @@ discretize <- function(df,
                        param){
 
 
-  #create depth variable if linear is in methods
-  if (any(c("linear","linspline") %in% method)){
-    depth <- df$depth
-
-  }
-
   df_discretized <- lapply(1:l_param, function(i){
     param_tmp <- unlist(df[,param[i]])
     meth_tmp <- method[i]
@@ -383,7 +380,7 @@ discretize <- function(df,
       param_intdisc <- linear_intdisc(param_tmp,
                                       depth_target,
                                       int_depth_tmp,
-                                      depth)
+                                      df$depth)
 
     } else if(meth_tmp == "linspline"){
       int_depth_tmp <- int_depth[i]
@@ -392,7 +389,23 @@ discretize <- function(df,
                                          depth_target,
                                          int_depth_tmp,
                                          knots_tmp,
-                                         depth)
+                                         df$depth)
+
+    } else if(meth_tmp == "nearest"){
+
+      int_depth_tmp <- int_depth[i]
+      param_intdisc <- nearest_intdisc(param_tmp,
+                                      depth_target,
+                                      int_depth_tmp,
+                                      df$depth)
+
+    } else if(meth_tmp == "harmonic"){
+
+      int_depth_tmp <- int_depth[i]
+      param_intdisc <- harmonic_intdisc(param_tmp,
+                                       depth_target,
+                                       int_depth_tmp,
+                                       df$depth)
 
     } else if(meth_tmp == "asdasfdfg"){
       #for future interpolation methods
@@ -417,9 +430,40 @@ linear_intdisc<-function(param,depth_target,int_depth,depth){
 
   depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
   param_int <- stats::approxfun(depth,param)(depth_target_tmp)
-  return(param_int)
+  }
+
+
+### nearest interpolation ###
+
+nearest_intdisc <- function(param,depth_target,int_depth,depth){
+  #Linear interpolation
+
+  depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
+  sapply(depth_target_tmp,function(i) param[which.min(abs(depth-i))])
 }
 
+
+### linear harmonic function ###
+
+harmonic_intdisc <-function(param,depth_target,int_depth,depth){
+  #Linear interpolation
+
+  depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
+  upper <- depth[-1]
+  lower <- depth[-length(depth)]
+
+  sapply(depth_target_tmp,function(i) {
+    # identify the correct interval
+    int_id <- which(upper >= i & lower < i)
+
+    # harmonic mean of respective values with
+    # the distance (of the counterpart) as
+    # weight (i.e. the further away the __other__
+    # boundary is, the higher the weight)
+    p <- harm(c(param[int_id],param[int_id+1]),
+              abs(i-c(upper[int_id],lower[int_id])))
+  })
+}
 
 
 
@@ -526,6 +570,7 @@ linspline_intdisc<-function(param,depth_target,int_depth,knots,depth){
     newdata = list(depth =depth_target_tmp))
   return(param_int)
 }
+
 
 
 
