@@ -152,3 +152,87 @@ test_that("id_cols can be left blank",{
   expect_equal(nrow(df),3)
 })
 
+
+test_that("method boundary_average",{
+  df <- data.frame(upper = c(10,0),
+                   lower = c(0,-10),
+                   value = c(1,2))
+  dt <- c(10,5,-5,-10)
+
+  df_test <-
+  discretize_depth(df,
+                   "value",
+                   "boundary",
+                   dt,
+                   boundary_nearest = T,
+                   boundary_average = "arith")
+
+  df_res <-
+    data.frame(value = c(2,1.5,1),
+               depth = c(-7.5,0,7.5),
+               upper = c(-5,5,10),
+               lower = c(-10,-5,5)
+    )
+  expect_equal(df_test,df_res)
+})
+
+
+test_that("method nearest",{
+  df <- data.frame(depth = c(-10,-8,0,10),
+                   value = c(1,4,1,2))
+  dt <- c(10,7,-5,-10)
+
+  df_test <-
+    discretize_depth(df,
+                     "value",
+                     "nearest",
+                     dt,
+                     int_depth = 0.5)
+
+  df_test2 <-
+    discretize_depth(df,
+                     "value",
+                     "nearest",
+                     dt,
+                     int_depth = 0)
+
+  df_test3 <-
+    discretize_depth(df,
+                     "value",
+                     "nearest",
+                     dt,
+                     int_depth = 1)
+
+  df_res <-
+    data.frame(value = c(4,1,2),
+               depth = c(-7.5,1,8.5),
+               upper = c(-5,7,10),
+               lower = c(-10,-5,7)
+    )
+  expect_equal(df_test,df_res)
+  expect_equal(df_test2$value,c(1,4,2))
+  expect_equal(df_test3$value,c(4,2,2))
+})
+
+test_that("method harmonic",{
+  df <- data.frame(depth = c(-10,0,10),
+                   value = c(1,1,2))
+  dt <- c(10,5,-5,-10)
+
+  df_test <-
+    discretize_depth(df,
+                     "value",
+                     "harmonic",
+                     dt,
+                     int_depth = 0.5)
+
+  df_res <-
+    data.frame(value = c(1,1,1.6),
+               depth = c(-7.5,0,7.5),
+               upper = c(-5,5,10),
+               lower = c(-10,-5,5)
+    )
+  expect_equal(df_test,df_res)
+})
+
+
