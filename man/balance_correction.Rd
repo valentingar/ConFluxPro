@@ -69,7 +69,6 @@ data("gasdata")
 \seealso{
 Other gasdata: 
 \code{\link{offset_correction}()},
-\code{\link{offset_override}()},
 \code{\link{offset_subsetting}()},
 \code{\link{series_cleaner}()}
 }
