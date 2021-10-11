@@ -121,9 +121,36 @@ df_balcor$NRESULT_ppm[df_balcor$gas == "O2"]
 
 TODO
 
-#### offset_correction()
+#### offset_correction() & recalibrate()
 
-TODO
+The atmospheric concentration of gases can be used as a proxy to 'calibrate' time series after the fact. This could be caused by a badly calibrated chromatography setup or drifts therein. There are two functions implemented in ConFluxPro that can help mitigate such effects that both use the atmospheric concentration of gases as a means to re-calibrate the gas measurements.
+
+For long-term trends in `gasdata`, the function `offset_correction` can be used. Using the helper-function `offset_subsetting`, the data is subdivided into sections based on their Date. For each sections a `mode` of correction can be set. This must be one of "const" or "lin". In `offset_correction`, the `gases` to be corrected, their assumed concentration in `gases_std`, as well as the `depth_cat` of the atmospheric concentrations must be provided. Then for each section, the concentration data is corrected following the mode provided in `offset_subsetting`. For "constant", the `gases_std` concentration is divided by the median value of all atmospheric measurements. For "lin" it is divided by the prediction of a linear model against time of the same data. This factor is then multiplied by _all_ the concentration measurements in the relevant section.
+
+```{r}
+data("gasdata")
+
+library(dplyr)
+
+gasdata <- gasdata %>%
+  mutate(depth_cat = ifelse(depth>0,"HU","MIN"),
+         SAMPLE_NO = row_number())
+
+cmap <-
+  offset_subsetting(gasdata,
+                    start = "2021-01-01",
+                    end = "2022-01-01",
+                    mode = "const")
+
+offset_correction(gasdata,
+                  corr_map = cmap,
+                  gases = "CO2",
+                  gases_std = 400e-6,
+                  depth_cal = "HU")
+
+```
+
+
 
 ### soilphys
 

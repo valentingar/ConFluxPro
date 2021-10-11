@@ -22,10 +22,10 @@ to be corrected. Spelling must match gasdata$gas.}
 
 \item{gases_std}{(vector, numeric) A numeric vector with standard
 concentrations of the gases in the atmosphere. Unit is fraction of Volume
-(e.g. N2 = 0.78). Must match the order of "gases".}
+(e.g. N2 = 0.78). Must match the order of \code{gases}.}
 
 \item{depth_cal}{(character) A character (-vector) containing the value(s) of
-"depth_cat" of the gasdata dataframe to be used for the calculation of the
+\code{depth_cat} of the gasdata dataframe to be used for the calculation of the
 correction factor. Should be the depth_cat of the air concentration.}
 }
 \value{
@@ -56,8 +56,6 @@ gasdata <- gasdata \%>\%
 
 cmap <-
   offset_subsetting(gasdata,
-                    gas = "CO2",
-                    depth_cal = "HU",
                     start = "2021-01-01",
                     end = "2022-01-01",
                     mode = "const")
@@ -65,7 +63,7 @@ cmap <-
 offset_correction(gasdata,
                   corr_map = cmap,
                   gases = "CO2",
-                  gases_std = 400,
+                  gases_std = 400e-6,
                   depth_cal = "HU")
 
 }
@@ -74,7 +72,6 @@ offset_correction(gasdata,
 \seealso{
 Other gasdata: 
 \code{\link{balance_correction}()},
-\code{\link{offset_override}()},
 \code{\link{offset_subsetting}()},
 \code{\link{series_cleaner}()}
 }
