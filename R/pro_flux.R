@@ -213,7 +213,8 @@ pro_flux <- function(gasdata,
     dplyr::left_join(soilphys %>%
                        dplyr::select(!any_of(c("upper","lower")))
     ) %>%
-    dplyr::select(!r_id)
+    dplyr::select(!r_id) %>%
+    mutate(depth = (upper+lower)/2) #recreate depth variable!!
 
 
   #adding prof_id
