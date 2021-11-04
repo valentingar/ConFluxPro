@@ -7,17 +7,10 @@
 pf_efflux(PROFLUX, ...)
 }
 \arguments{
-\item{PROFLUX}{The data.frame returned by pro_flux()}
+\item{PROFLUX}{The PFres object returned by pro_flux()}
 
-\item{target}{Character string defining the type of parameter to be
-extracted / aggregated.
-One of:
-\describe{
-  \item{efflux}{Extract the efflux at the atmosphere/soil interface.
-This is the flux at the topmost position.}
-\item{prod_layer}{Extract the total production per layer defined in the function call
-of pro_flux()}
-}}
+\item{id_cols}{The id_cols used in the function call(only needed
+if PROFLUX is not a PFres object).}
 }
 \value{
 data.frame
