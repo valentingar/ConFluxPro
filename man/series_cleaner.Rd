@@ -50,7 +50,6 @@ gasdata \%>\%
 Other gasdata: 
 \code{\link{balance_correction}()},
 \code{\link{offset_correction}()},
-\code{\link{offset_override}()},
 \code{\link{offset_subsetting}()}
 }
 \concept{gasdata}

@@ -7,12 +7,6 @@
 #'
 #' @param df (dataframe) The gasdata-dataframe.
 #'
-#' @param gas (character) A character defining the gas to be corrected.
-#'
-#' @param depth_cal (character (-vector)) A character (-vector) of the same
-#'   depth categories (depth_cat) used in offset_correction(), i.e. the values
-#'   of "depth_cat" that correspond to atmospheric concentration.
-#'
 #' @param start (vector, Date) A vector of type Date that specifies the starting
 #'   date of each section (the starting date is included in the section!).
 #'
@@ -38,8 +32,6 @@
 #'
 #' cmap <-
 #'   offset_subsetting(gasdata,
-#'                     gas = "CO2",
-#'                     depth_cal = "HU",
 #'                     start = "2021-01-01",
 #'                     end = "2022-01-01",
 #'                     mode = "const")
@@ -47,12 +39,14 @@
 #' offset_correction(gasdata,
 #'                   corr_map = cmap,
 #'                   gases = "CO2",
-#'                   gases_std = 400,
+#'                   gases_std = 400e-6,
 #'                   depth_cal = "HU")
 #'
 #' }
 #' @import dplyr
 #' @importFrom magrittr %>%
+#' @importFrom lubridate %within%
+
 #'
 #' @family gasdata
 #'
@@ -64,8 +58,6 @@
 
 
 offset_subsetting <- function(df,
-                              gas,
-                              depth_cal,
                               start,
                               end,
                               mode) {
@@ -80,15 +72,10 @@ offset_subsetting <- function(df,
     return(mod)
   }
 
-  corr_map <- df %>% dplyr::filter(gas == !!gas) %>%
+  corr_map <- df %>%
     dplyr::select(Date, SAMPLE_NO) %>%
-    dplyr::mutate(section = unlist(lapply(Date, function(d) {
-      res <- which(d %within% date_map$int)
-      if (length(res) == 0) {
-        res <- NA
-      }
-      return(res)
-    }))) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(section = which(Date %within% date_map$int)) %>%
     dplyr::mutate(mode = mode_selector(section))
   return(corr_map)
 }

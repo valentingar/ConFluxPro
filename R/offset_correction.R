@@ -14,6 +14,7 @@
 #'
 #'
 #' @param df (dataframe) The gasdata-dataframe.
+#'
 #' @param corr_map (dataframe) A dataframe of four columns
 #'   ("gas","SAMPLE_NO","section","mode") mapping each pair of \code{gases} and
 #'   sample-id \code{SAMPLE_NO} of the \code{gasdata} data.frame to a subsection-number
@@ -24,11 +25,13 @@
 #'
 #' @param gases (vector, character) A vector containing the names of the gases
 #'   to be corrected. Spelling must match gasdata$gas.
+#'
 #' @param gases_std (vector, numeric) A numeric vector with standard
 #'   concentrations of the gases in the atmosphere. Unit is fraction of Volume
-#'   (e.g. N2 = 0.78). Must match the order of "gases".
+#'   (e.g. N2 = 0.78). Must match the order of \code{gases}.
+#'
 #' @param depth_cal (character) A character (-vector) containing the value(s) of
-#'   "depth_cat" of the gasdata dataframe to be used for the calculation of the
+#'   \code{depth_cat} of the gasdata dataframe to be used for the calculation of the
 #'   correction factor. Should be the depth_cat of the air concentration.
 #'
 #' @return df (dataframe)
@@ -44,8 +47,6 @@
 #'
 #' cmap <-
 #'   offset_subsetting(gasdata,
-#'                     gas = "CO2",
-#'                     depth_cal = "HU",
 #'                     start = "2021-01-01",
 #'                     end = "2022-01-01",
 #'                     mode = "const")
@@ -53,7 +54,7 @@
 #' offset_correction(gasdata,
 #'                   corr_map = cmap,
 #'                   gases = "CO2",
-#'                   gases_std = 400,
+#'                   gases_std = 400e-6,
 #'                   depth_cal = "HU")
 #'
 #' }
@@ -95,16 +96,16 @@ df<-df %>%
   if(is.na(.x$mode[1])){
     med = 1
     grad = 0
-  }else  if(.x$mode[1] == "const"){
-      med = median(.x$NRESULT_ppm,na.rm=T)
+  } else  if(.x$mode[1] == "const"){
+      med = stats::median(.x$NRESULT_ppm,na.rm=T)
       grad = 0
   } else if (.x$mode[1]=="lin"){
     if (.x %>% dplyr::filter(!is.na(Date),!is.na(NRESULT_ppm)) %>% nrow() <2){
       stop(paste("section",.y$section[1],"does not have enough non-NA cases (>=2)"))
     }
-    mod <- lm(NRESULT_ppm ~ Date,data = .x)
-    med <- coef(mod)[1]
-    grad <- coef(mod)[2]
+    mod <- stats::lm(NRESULT_ppm ~ Date,data = .x)
+    med <- stats::coef(mod)[1]
+    grad <- stats::coef(mod)[2]
   }
     return(.x %>% dplyr::mutate(corr_med = med,corr_grad = grad))
   }) %>%

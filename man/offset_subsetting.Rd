@@ -4,16 +4,10 @@
 \alias{offset_subsetting}
 \title{offset_subsetting}
 \usage{
-offset_subsetting(df, gas, depth_cal, start, end, mode)
+offset_subsetting(df, start, end, mode)
 }
 \arguments{
 \item{df}{(dataframe) The gasdata-dataframe.}
-
-\item{gas}{(character) A character defining the gas to be corrected.}
-
-\item{depth_cal}{(character (-vector)) A character (-vector) of the same
-depth categories (depth_cat) used in offset_correction(), i.e. the values
-of "depth_cat" that correspond to atmospheric concentration.}
 
 \item{start}{(vector, Date) A vector of type Date that specifies the starting
 date of each section (the starting date is included in the section!).}
@@ -46,8 +40,6 @@ gasdata <- gasdata \%>\%
 
 cmap <-
   offset_subsetting(gasdata,
-                    gas = "CO2",
-                    depth_cal = "HU",
                     start = "2021-01-01",
                     end = "2022-01-01",
                     mode = "const")
@@ -55,7 +47,7 @@ cmap <-
 offset_correction(gasdata,
                   corr_map = cmap,
                   gases = "CO2",
-                  gases_std = 400,
+                  gases_std = 400e-6,
                   depth_cal = "HU")
 
 }
@@ -68,7 +60,6 @@ offset_override
 Other gasdata: 
 \code{\link{balance_correction}()},
 \code{\link{offset_correction}()},
-\code{\link{offset_override}()},
 \code{\link{series_cleaner}()}
 }
 \concept{gasdata}
