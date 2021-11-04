@@ -113,6 +113,16 @@ pro_flux <- function(gasdata,
   soilphys <- as.data.frame(soilphys)
   layers_map <- as.data.frame(layers_map)
 
+  #if missing: add dummy "layer" variable to layers_map
+  if (!"layer" %in% names(layers_map)){
+    layers_map <-
+      layers_map %>%
+        dplyr::arrange(desc(upper)) %>%
+        dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+        dplyr::mutate(layer = LETTERS[dplyr::row_number()]) %>%
+        as.data.frame()
+  }
+
 
   #filtering out problematic measurements
   gasdata <-
@@ -347,7 +357,16 @@ pro_flux <- function(gasdata,
   rm(soilphys)
 
   message("Done :)")
-  return(df_ret)
+  df_ret <- PFres(df_ret,
+                  layers_map,
+                  id_cols,
+                  storage_term,
+                  zero_flux,
+                  zero_limits,
+                  known_flux_factor,
+                  Ds_optim,
+                  evenness_factor
+                  )
 }
 
 #################################################
