@@ -107,6 +107,13 @@ pro_flux <- function(gasdata,
                      evenness_factor = 0){
 
 
+  # only work with complete cases these are stored in
+  # this data frame and everything is cut to size.
+  profiles <- get_profiles(gasdata,
+                           soilphys,
+                           layers_map,
+                           id_cols)
+
   #remove uneccessary columns & create gr_id variable
   layers_map <- prepare_lmap(layers_map,
                              id_cols)
@@ -114,15 +121,6 @@ pro_flux <- function(gasdata,
   #remove rows with NAs in relevant columns
   gasdata <- prepare_gasdata(gasdata,
                              id_cols)
-
-
-  # here the present profiles are identified based on the
-  # id_cols provided
-  profiles <- gasdata %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({id_cols})) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(prof_id = row_number())
 
 
   soilphys <- prepare_soilphys(soilphys,
@@ -151,15 +149,6 @@ pro_flux <- function(gasdata,
     dplyr::distinct()
 
 
-
-  #only work with functioning profiles
-  profiles <-
-    soilphys %>%
-    dplyr::filter(na_flag == F) %>%
-    dplyr::select(prof_id) %>%
-    dplyr::distinct() %>%
-    dplyr::left_join(profiles) %>%
-    dplyr::mutate(join_help = 1)
 
   #shrinking gasdata to relevant profiles
   gasdata <- profiles %>%
@@ -193,15 +182,6 @@ pro_flux <- function(gasdata,
   data.table::setkey(soilphys,prof_id)
   data.table::setkey(gasdata,prof_id)
 
-
-  id_tmp <- id_cols[id_cols %in% names(prod_depth)]
-
-  prod_depth <-
-  profiles %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({c(id_tmp,"join_help")})) %>%
-    dplyr::distinct() %>%
-    dplyr::left_join(prod_depth)
 
   groups <- unique(prod_depth$group_id)
   n_gr <- length(groups)
@@ -287,6 +267,70 @@ pro_flux <- function(gasdata,
 ### ------------- HELPERS -----------------------
 #################################################
 
+get_profiles <- function(gasdata,
+                         soilphys,
+                         layers_map,
+                         id_cols){
+
+  if (any(id_cols %in% names(layers_map))){
+  profiles_lm <-
+  layers_map %>%
+    as.data.frame() %>%
+    dplyr::select(dplyr::any_of(id_cols)) %>%
+    dplyr::distinct()
+  } else {
+    profiles_lm <- data.frame(j_help = 1)
+  }
+
+
+  # here the present profiles are identified based on the
+  # id_cols provided
+  profiles_gd <- gasdata %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(j_help = 1) %>%
+
+    # only take rows possible from layers_map
+    dplyr::right_join(profiles_lm) %>%
+
+    dplyr::select(dplyr::any_of({id_cols})) %>%
+    dplyr::distinct()
+
+
+  profiles_sp <-
+  layers_map %>%
+    dplyr::mutate(j_help = 1) %>%
+
+    # only take rows possible from layers_map AND gasdata
+    dplyr::right_join(profiles_gd) %>%
+
+    dplyr::group_by(dplyr::across(dplyr::any_of(c(id_cols,"j_help")))) %>%
+    summarise(upper_max = max(upper),
+              lower_min = min(lower)) %>%
+    dplyr::left_join(soilphys %>%
+                       dplyr::mutate(j_help = 1)) %>%
+    dplyr::filter(upper <= upper_max,
+                  lower >= lower_min) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(c(id_cols,"j_help")))) %>%
+    dplyr::arrange(upper) %>%
+    dplyr::mutate(h = upper-lower) %>%
+    dplyr::summarise(h_total = sum(h),
+                     h_expected = upper_max[1]-lower_min[1],
+                     no_gaps = all((upper[-length(upper)] ==  lower[-1]))) %>%
+    dplyr::filter(h_total == h_expected,
+                  no_gaps == TRUE) %>%
+    dplyr::select(dplyr::any_of(c(id_cols,"j_help"))) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(prof_id = row_number())
+
+  profiles <-
+    profiles_sp %>%
+    dplyr::left_join(profiles_gd) %>%
+    dplyr::select(dplyr::any_of(c(id_cols,"prof_id"))) %>%
+    dplyr::distinct()
+}
+
+
 
 prepare_lmap <- function(layers_map,
                          id_cols){
@@ -353,8 +397,6 @@ prepare_soilphys <- function(soilphys,
   #select relevant profiles from soilphys
   soilphys <- profiles %>%
     dplyr::inner_join(soilphys)
-
-
 
   # splitting soilphys so that the each slice is homogenous
   # and the gas measurements are at the intersections
