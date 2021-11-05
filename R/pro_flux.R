@@ -139,7 +139,13 @@ pro_flux <- function(gasdata,
   groups_map <-
     layers_map %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({c("group_id",id_cols)})) %>%
+
+    dplyr::select(
+      dplyr::any_of({
+        c("group_id",
+          id_cols)})
+    ) %>%
+
     dplyr::distinct()
 
 
@@ -147,26 +153,49 @@ pro_flux <- function(gasdata,
   #(including upper and lower bound) per group
   prod_depth <- layers_map %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({c("upper","lower","group_id","join_help")})) %>%
-    tidyr::pivot_longer(cols = c("upper","lower"),
+
+    dplyr::select(dplyr::any_of({c("upper",
+                                   "lower",
+                                   "group_id",
+                                   "join_help")})) %>%
+
+    tidyr::pivot_longer(cols = c("upper",
+                                 "lower"),
                         names_to = "type",
                         values_to = "depth") %>%
+
     dplyr::select(-type) %>%
     dplyr::distinct()
 
 
   #making copy of unaltered soilphys
   soilphys_backup <- soilphys %>%
-    dplyr::select(-dplyr::any_of(c("flux","prod","F0"))) %>%
-    dplyr::select(-dplyr::any_of(c("depth","height","DS","rho_air","upper","lower")))
+    dplyr::select(-dplyr::any_of(c("flux",
+                                   "prod",
+                                   "F0",
+                                   "depth",
+                                   "height",
+                                   "DS",
+                                   "rho_air",
+                                   "upper",
+                                   "lower")))
 
   #turning data into data.table for fast subsetting
   # this radically improves performance
   soilphys <- data.table::as.data.table(soilphys %>%
                               dplyr::ungroup() %>%
-                              dplyr::select(prof_id,depth,height,DS, rho_air,upper,lower,step_id))
+                              dplyr::select(prof_id,
+                                            depth,
+                                            height,
+                                            DS,
+                                            rho_air,
+                                            upper,
+                                            lower,
+                                            step_id))
   gasdata <- data.table::as.data.table(gasdata %>%
-                             dplyr::select(prof_id,depth,NRESULT_ppm))
+                             dplyr::select(prof_id,
+                                           depth,
+                                           NRESULT_ppm))
 
 
   #if known flux b.c. applies:
@@ -245,11 +274,6 @@ pro_flux <- function(gasdata,
            "na_flag",
            "j_help")
         }))
-
-  #removing all unecessary data
-  rm(soilphys_backup)
-  rm(gasdata)
-  rm(soilphys)
 
   message("Done :)")
   df_ret <- PFres(df_ret,
@@ -625,20 +649,7 @@ profile_stack <-
     print(paste0("group ",gr,"/",n_gr))
     print(paste(n_profs,"profiles"))
 
-    #getting good initial guesses from 1 profile
-    #prod_start <- prof_optim(1,
-    #                         prod_start,
-    #                         return_pars = T)
-    #
-    #if (any(is.na(prod_start))){
-    #  prod_start <- rep(0,length(prod_start))
-    #}
-
-    #the above is not helpful. for now:
     prod_start <-rep(0,length(prod_start))
-
-
-
 
     df_ret <-
       purrr::map2(split(gasdata_gr %>% dplyr::arrange(prof_id),
