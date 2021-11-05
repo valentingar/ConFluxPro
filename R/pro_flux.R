@@ -114,15 +114,21 @@ pro_flux <- function(gasdata,
                            layers_map,
                            id_cols)
 
-  #remove uneccessary columns & create gr_id variable
+  # remove uneccessary columns & create gr_id variable
+  # cut to size of profiles
   layers_map <- prepare_lmap(layers_map,
-                             id_cols)
+                             id_cols,
+                             profiles)
 
   #remove rows with NAs in relevant columns
+  # cut to size of profiles
   gasdata <- prepare_gasdata(gasdata,
-                             id_cols)
+                             id_cols,
+                             profiles
+                             )
 
-
+  # split steps if a gas measurement is within.
+  # cut to size of profiles
   soilphys <- prepare_soilphys(soilphys,
                                profiles,
                                layers_map,
@@ -148,11 +154,6 @@ pro_flux <- function(gasdata,
     dplyr::select(-type) %>%
     dplyr::distinct()
 
-
-
-  #shrinking gasdata to relevant profiles
-  gasdata <- profiles %>%
-    dplyr::left_join(gasdata)
 
   #making copy of unaltered soilphys
   soilphys_backup <- soilphys %>%
@@ -320,20 +321,21 @@ get_profiles <- function(gasdata,
                   no_gaps == TRUE) %>%
     dplyr::select(dplyr::any_of(c(id_cols,"j_help"))) %>%
     dplyr::ungroup() %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(prof_id = row_number())
+    dplyr::distinct()
 
   profiles <-
     profiles_sp %>%
     dplyr::left_join(profiles_gd) %>%
-    dplyr::select(dplyr::any_of(c(id_cols,"prof_id"))) %>%
-    dplyr::distinct()
+    dplyr::select(dplyr::any_of(c(id_cols))) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(prof_id = row_number())
 }
 
 
 
 prepare_lmap <- function(layers_map,
-                         id_cols){
+                         id_cols,
+                         profiles){
 
 
   layers_map <- as.data.frame(layers_map)
@@ -357,10 +359,22 @@ prepare_lmap <- function(layers_map,
               "lowlim",
               "layer_couple")
 
+  prof_lmap <-
+    profiles %>%
+    dplyr::mutate(j_help = 1) %>%
+    dplyr::select(dplyr::any_of(c(names(layers_map),"j_help"))) %>%
+    dplyr::distinct()
+
   #filtering unnecessary columns, making unique and adding grouping id
   layers_map <- layers_map %>%
     dplyr::select(dplyr::any_of({id_tmp})) %>%
     dplyr::distinct() %>%
+    dplyr::mutate(j_help = 1) %>%
+
+    #only relevant profiles
+    dplyr::inner_join(prof_lmap) %>%
+    dplyr::select(!j_help) %>%
+
     dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
     dplyr::mutate(group_id = dplyr::cur_group_id()) %>%
     dplyr::mutate(join_help = 1) %>%
@@ -370,18 +384,32 @@ prepare_lmap <- function(layers_map,
 
 
 prepare_gasdata <- function(gasdata,
-                            id_cols){
+                            id_cols,
+                            profiles){
 
   gasdata <- as.data.frame(gasdata)
+
+  prof_gd <-
+    profiles %>%
+    dplyr::mutate(j_help = 1) %>%
+    dplyr::select(dplyr::any_of(c(names(gasdata),"j_help","prof_id"))) %>%
+    dplyr::distinct()
 
   #filtering out problematic measurements
   gasdata <-
     gasdata %>%
+
+    #only relevant profiles
+    dplyr::mutate(j_help = 1) %>%
+    dplyr::inner_join(prof_gd) %>%
+
+    #remove any problematic values
     dplyr::filter(!dplyr::across(dplyr::any_of({c("gas",
                                                   "depth",
                                                   "NRESULT_ppm",
                                                   id_cols)}),
-                                 ~is.na(.x)))
+                                 ~is.na(.x))) %>%
+    dplyr::select(!j_help)
 }
 
 prepare_soilphys <- function(soilphys,
@@ -426,7 +454,8 @@ prepare_soilphys <- function(soilphys,
 
 
   #adding prof_id
-  soilphys <- profiles %>% dplyr::left_join(soilphys)
+  soilphys <- profiles %>%
+    dplyr::left_join(soilphys)
 
   #arranging soilphys and creating id of steps
   soilphys <- soilphys  %>%
