@@ -1,16 +1,40 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # ConFluxPro
-A toolkit for soil gas analysis
 
-### Purpose
-This is a package under development to facilitate flux calculation of soil gas concentration profiles using the gradient approach.
+<!-- badges: start -->
 
-So far, it is still in an early development phase, not yet sufficiently tested and still has many-a-bugs.
-Although I would not recommend building your research project on it at this point, feel free to download and test it yourselves.
-I am very much looking forward to seeing your feedback.
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ConFluxPro)](https://CRAN.R-project.org/package=ConFluxPro)
+<!-- badges: end -->
 
-### Author:
-Valentin Gartiser 
+ConFluxPro helps calculating and modelling gas fluxes from soil gas data
+using the flux-gradient approach (FGA) or using inverse modelling. It
+provides different functions that help prepare the different datasets
+required and modelling fluxes.
 
-Forest Research Institute Baden-Württemberg GER
+The package is still under development and syntax could change
+significantly in the future. Keep this in mind when using it for your
+own projects.
 
-valentin.gartiser@forst.bwl.de
+## Installation
+
+Currently it is only possible to install the development version from
+GitHub:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("valentingar/ConFluxPro")
+```
+
+However it is planned to get the package ready for CRAN in the future.
+
+## Contact
+
+This package is being developed by Valentin Gartiser: valentin.gartiser
+(at) forst.bwl.de
+
+If you have problems or questions of any kind feel free to contact me.
