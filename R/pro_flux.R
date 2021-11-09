@@ -106,171 +106,89 @@ pro_flux <- function(gasdata,
                      Ds_optim = F,
                      evenness_factor = 0){
 
-  # all data frame inputs should be data frames
-  # this prevents duplication issues from
-  # inherited groups etc.
-  gasdata <- as.data.frame(gasdata)
-  soilphys <- as.data.frame(soilphys)
-  layers_map <- as.data.frame(layers_map)
 
-  #if missing: add dummy "layer" variable to layers_map
-  if (!"layer" %in% names(layers_map)){
-    layers_map <-
-      layers_map %>%
-        dplyr::arrange(desc(upper)) %>%
-        dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
-        dplyr::mutate(layer = LETTERS[dplyr::row_number()]) %>%
-        as.data.frame()
-  }
+  # only work with complete cases these are stored in
+  # this data frame and everything is cut to size.
+  profiles <- get_profiles(gasdata,
+                           soilphys,
+                           layers_map,
+                           id_cols)
 
+  # remove uneccessary columns & create gr_id variable
+  # cut to size of profiles
+  layers_map <- prepare_lmap(layers_map,
+                             id_cols,
+                             profiles)
 
-  #filtering out problematic measurements
-  gasdata <-
-  gasdata %>%
-  dplyr::filter(!dplyr::across(dplyr::any_of({c("gas","depth","NRESULT_ppm","id_cols")}),~is.na(.x)))
+  #remove rows with NAs in relevant columns
+  # cut to size of profiles
+  gasdata <- prepare_gasdata(gasdata,
+                             id_cols,
+                             profiles
+                             )
 
-  #adapting layers_map to only contain target columns
-  id_tmp <- c(id_cols,"upper","lower","layer","highlim","lowlim","layer_couple")
+  # split steps if a gas measurement is within.
+  # cut to size of profiles
+  soilphys <- prepare_soilphys(soilphys,
+                               profiles,
+                               layers_map,
+                               id_cols,
+                               gasdata)
 
-  #filtering unnecessary columns, making unique and adding grouping id
-  layers_map <- layers_map %>%
-    dplyr::select(dplyr::any_of({id_tmp})) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
-    dplyr::mutate(group_id = dplyr::cur_group_id()) %>%
-    dplyr::mutate(join_help = 1) %>%
-    dplyr::arrange(lower)
 
   #this maps the groups to any relevant id_cols
   groups_map <-
     layers_map %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({c("group_id",id_cols)})) %>%
-    dplyr::distinct()
 
-  #this is the subset of id_cols that is relevant for the groups
-  id_cols_groups <- id_cols[id_cols %in% names(groups_map)]
-
-  #this represents the production model depths
-  #(including upper and lower bound) per group
-  prod_depth <- layers_map %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({c("upper","lower","group_id","join_help")})) %>%
-    tidyr::pivot_longer(cols = c("upper","lower"),
-                        names_to = "type",
-                        values_to = "depth") %>%
-    dplyr::select(-type) %>%
-    dplyr::distinct()
-
-
-  # getting depths for soilphys adaption
-  # this is to make sure that each "slice" of the soil
-  # is homogenous and that the measured concentrations are
-  # at a border between slices.
-  target_depths <- gasdata %>%
-    dplyr::ungroup() %>%
-    dplyr::select(any_of({c(id_cols_groups,"depth")})) %>%
-    dplyr::distinct() %>%
-    dplyr::full_join(soilphys %>%
-                       dplyr::ungroup() %>%
-                       dplyr::select(any_of({c("upper","lower",id_cols)})) %>%
-                       tidyr::pivot_longer(cols = c("upper","lower"),values_to = "depth") %>%
-                       dplyr::select(any_of({c(id_cols_groups,"depth")})) %>%
-                       dplyr::distinct()
-
+    dplyr::select(
+      dplyr::any_of({
+        c("group_id",
+          id_cols)})
     ) %>%
-    dplyr::bind_rows(prod_depth %>%
-                left_join(groups_map) %>%
-                select(-c("join_help","group_id"))) %>%
+
     dplyr::distinct()
 
-  sp_names <- names(soilphys)
-  sp_names <- sp_names[!sp_names %in% c(id_cols,"gas","depth","upper","lower")]
-
-  # here the present profiles are identified based on the
-  # id_cols provided
-  profiles <- gasdata %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({id_cols})) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(prof_id = row_number())
-
-  #select relevant profiles from soilphys
-  soilphys <- profiles %>%
-    dplyr::inner_join(soilphys)
-
-
-
-  # splitting soilphys so that the each slice is homogenous
-  # and the gas measurements are at the intersections
-  id_cols_fill <- id_cols[id_cols %in% names(gasdata) &
-                            id_cols %in% names(soilphys) &
-                            id_cols %in% names(layers_map) ]
-
-
-  soilphys <-
-    soilphys %>%
-    dplyr::mutate(r_id = dplyr::row_number())
-
-  soilphys<-
-    soilphys %>%
-    dplyr::select(dplyr::any_of(c(id_cols,"upper","lower","r_id"))) %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols_fill}))) %>%
-    dplyr::group_modify(~{
-      ddpcr::quiet(.x <-  depth_filler(.x,.y,gasdata,layers_map))
-      return(.x)
-    }) %>%
-    dplyr::left_join(soilphys %>%
-                       dplyr::select(!any_of(c("upper","lower")))
-    ) %>%
-    dplyr::select(!r_id) %>%
-    mutate(depth = (upper+lower)/2) #recreate depth variable!!
-
-
-  #adding prof_id
-  soilphys <- profiles %>% dplyr::left_join(soilphys)
-
-  #arranging soilphys and creating id of steps
-  soilphys <- soilphys  %>%
-    dplyr::arrange(upper) %>%
-    dplyr::group_by(prof_id) %>%
-    dplyr::mutate(step_id = dplyr::row_number()) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(na_flag = ifelse(is.na(DS) | is.na(rho_air) | is.na(upper) | is.na(lower),T,F)) %>%
-    dplyr::mutate(height = (upper-lower)/100)
-
-  #only work with functioning profiles
-  profiles <-
-    soilphys %>%
-    dplyr::filter(na_flag == F) %>%
-    dplyr::select(prof_id) %>%
-    dplyr::distinct() %>%
-    dplyr::left_join(profiles) %>%
-    dplyr::mutate(join_help = 1)
-
-  #shrinking gasdata to relevant profiles
-  gasdata <- profiles %>%
-    dplyr::left_join(gasdata)
 
   #making copy of unaltered soilphys
   soilphys_backup <- soilphys %>%
-    dplyr::select(-dplyr::any_of(c("flux","prod","F0"))) %>%
-    dplyr::select(-dplyr::any_of(c("depth","height","DS","rho_air","upper","lower")))
+    dplyr::select(-dplyr::any_of(c("flux",
+                                   "prod",
+                                   "F0",
+                                   "depth",
+                                   "height",
+                                   "DS",
+                                   "rho_air",
+                                   "upper",
+                                   "lower")))
 
   #turning data into data.table for fast subsetting
   # this radically improves performance
   soilphys <- data.table::as.data.table(soilphys %>%
                               dplyr::ungroup() %>%
-                              dplyr::select(prof_id,depth,height,DS, rho_air,upper,lower,step_id))
+                              dplyr::select(prof_id,
+                                            depth,
+                                            height,
+                                            DS,
+                                            rho_air,
+                                            upper,
+                                            lower,
+                                            step_id))
   gasdata <- data.table::as.data.table(gasdata %>%
-                             dplyr::select(prof_id,depth,NRESULT_ppm))
+                             dplyr::select(prof_id,
+                                           depth,
+                                           NRESULT_ppm))
 
 
   #if known flux b.c. applies:
   if(is.null(known_flux)==F){
     known_flux <- known_flux %>%
       dplyr::filter(is.na(flux)==F) %>%
-      dplyr::select(dplyr::any_of({c(id_cols, "flux")})) %>%
+      dplyr::select(
+        dplyr::any_of(
+          {c(id_cols, "flux")}
+        )
+      ) %>%
       dplyr::right_join(profiles) %>%
       data.table::as.data.table()
     data.table::setkey(known_flux, prof_id)
@@ -280,17 +198,7 @@ pro_flux <- function(gasdata,
   data.table::setkey(soilphys,prof_id)
   data.table::setkey(gasdata,prof_id)
 
-
-  id_tmp <- id_cols[id_cols %in% names(prod_depth)]
-
-  prod_depth <-
-  profiles %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of({c(id_tmp,"join_help")})) %>%
-    dplyr::distinct() %>%
-    dplyr::left_join(prod_depth)
-
-  groups <- unique(prod_depth$group_id)
+  groups <- unique(groups_map$group_id)
   n_gr <- length(groups)
 
 
@@ -298,21 +206,48 @@ pro_flux <- function(gasdata,
   message("started profile fitting. This may take very long. ~30 s/1000 profiles!")
   message(paste(nrow(profiles),"profiles total"))
 
-  df_ret <- lapply(1:n_gr,function(gr){
-    group <- groups[gr]
-    df<-profile_stack(group,
-                      gr,
-                      n_gr,
-                      gasdata,
-                      soilphys,
-                      layers_map,
-                      Ds_optim,
-                      zero_flux,
+  df_ret <- lapply(groups,function(gr){
+    group_id <- groups[gr]
+
+    #c utting everything down to match the current group
+    group_tmp <-
+      groups_map[groups_map$group_id == group_id,]
+
+    profiles_tmp <-
+      profiles %>%
+      dplyr::right_join(group_tmp)
+
+    layers_map_tmp <-
+      layers_map %>%
+      dplyr::right_join(group_tmp)
+
+    gasdata_gr <-
+      gasdata %>%
+      dplyr::right_join(profiles_tmp)%>%
+      dplyr::arrange(prof_id)
+
+    soilphys_gr <-
+      soilphys %>%
+      dplyr::right_join(profiles_tmp)%>%
+      dplyr::arrange(prof_id)
+
+    n_profs <- length(unique(profiles_tmp$prof_id))
+
+    print(paste0("group ",group_id,"/",n_gr))
+    print(paste(n_profs,"profiles"))
+
+    # prepare and calculate fluxes group-wise
+    df<-profile_stack(gasdata_gr,
+                      soilphys_gr,
+                      layers_map_tmp,
                       known_flux,
-                      prod_depth,
-                      profiles,
-                      groups_map,
-                      evenness_factor)
+                      profiles_tmp,
+                      args = list(
+                        evenness_factor = evenness_factor,
+                        Ds_optim = Ds_optim,
+                        zero_flux = zero_flux
+                      )
+    )
     return(df)
   }) %>%
     dplyr::bind_rows()
@@ -352,11 +287,6 @@ pro_flux <- function(gasdata,
            "j_help")
         }))
 
-  #removing all unecessary data
-  rm(soilphys_backup)
-  rm(gasdata)
-  rm(soilphys)
-
   message("Done :)")
   df_ret <- PFres(df_ret,
                   layers_map,
@@ -374,6 +304,204 @@ pro_flux <- function(gasdata,
 ### ------------- HELPERS -----------------------
 #################################################
 
+get_profiles <- function(gasdata,
+                         soilphys,
+                         layers_map,
+                         id_cols){
+
+  if (any(id_cols %in% names(layers_map))){
+  profiles_lm <-
+  layers_map %>%
+    as.data.frame() %>%
+    dplyr::select(dplyr::any_of(id_cols)) %>%
+    dplyr::distinct()
+  } else {
+    profiles_lm <- data.frame(j_help = 1)
+  }
+
+
+  # here the present profiles are identified based on the
+  # id_cols provided
+  profiles_gd <- gasdata %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(j_help = 1) %>%
+
+    # only take rows possible from layers_map
+    dplyr::right_join(profiles_lm) %>%
+
+    dplyr::select(dplyr::any_of({id_cols})) %>%
+    dplyr::distinct()
+
+
+  profiles_sp <-
+  layers_map %>%
+    dplyr::mutate(j_help = 1) %>%
+
+    # only take rows possible from layers_map AND gasdata
+    dplyr::right_join(profiles_gd) %>%
+
+    dplyr::group_by(dplyr::across(dplyr::any_of(c(id_cols,"j_help")))) %>%
+    summarise(upper_max = max(upper),
+              lower_min = min(lower)) %>%
+    dplyr::left_join(soilphys %>%
+                       dplyr::mutate(j_help = 1)) %>%
+    dplyr::filter(upper <= upper_max,
+                  lower >= lower_min) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(c(id_cols,"j_help")))) %>%
+    dplyr::arrange(upper) %>%
+    dplyr::mutate(h = upper-lower) %>%
+    dplyr::summarise(h_total = sum(h),
+                     h_expected = upper_max[1]-lower_min[1],
+                     no_gaps = all((upper[-length(upper)] ==  lower[-1]))) %>%
+    dplyr::filter(h_total == h_expected,
+                  no_gaps == TRUE) %>%
+    dplyr::select(dplyr::any_of(c(id_cols,"j_help"))) %>%
+    dplyr::ungroup() %>%
+    dplyr::distinct()
+
+  profiles <-
+    profiles_sp %>%
+    dplyr::left_join(profiles_gd) %>%
+    dplyr::select(dplyr::any_of(c(id_cols))) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(prof_id = row_number())
+}
+
+
+
+prepare_lmap <- function(layers_map,
+                         id_cols,
+                         profiles){
+
+
+  layers_map <- as.data.frame(layers_map)
+
+  #if missing: add dummy "layer" variable to layers_map
+  if (!"layer" %in% names(layers_map)){
+    layers_map <-
+      layers_map %>%
+      dplyr::arrange(desc(upper)) %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+      dplyr::mutate(layer = LETTERS[dplyr::row_number()]) %>%
+      as.data.frame()
+  }
+
+  #adapting layers_map to only contain target columns
+  id_tmp <- c(id_cols,
+              "upper",
+              "lower",
+              "layer",
+              "highlim",
+              "lowlim",
+              "layer_couple")
+
+  prof_lmap <-
+    profiles %>%
+    dplyr::mutate(j_help = 1) %>%
+    dplyr::select(dplyr::any_of(c(names(layers_map),"j_help"))) %>%
+    dplyr::distinct()
+
+  #filtering unnecessary columns, making unique and adding grouping id
+  layers_map <- layers_map %>%
+    dplyr::select(dplyr::any_of({id_tmp})) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(j_help = 1) %>%
+
+    #only relevant profiles
+    dplyr::inner_join(prof_lmap) %>%
+    dplyr::select(!j_help) %>%
+
+    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols}))) %>%
+    dplyr::mutate(group_id = dplyr::cur_group_id()) %>%
+    dplyr::mutate(join_help = 1) %>%
+    dplyr::arrange(lower)
+}
+
+
+
+prepare_gasdata <- function(gasdata,
+                            id_cols,
+                            profiles){
+
+  gasdata <- as.data.frame(gasdata)
+
+  prof_gd <-
+    profiles %>%
+    dplyr::mutate(j_help = 1) %>%
+    dplyr::select(dplyr::any_of(c(names(gasdata),"j_help","prof_id"))) %>%
+    dplyr::distinct()
+
+  #filtering out problematic measurements
+  gasdata <-
+    gasdata %>%
+
+    #only relevant profiles
+    dplyr::mutate(j_help = 1) %>%
+    dplyr::inner_join(prof_gd) %>%
+
+    #remove any problematic values
+    dplyr::filter(!dplyr::across(dplyr::any_of({c("gas",
+                                                  "depth",
+                                                  "NRESULT_ppm",
+                                                  id_cols)}),
+                                 ~is.na(.x))) %>%
+    dplyr::select(!j_help)
+}
+
+prepare_soilphys <- function(soilphys,
+                             profiles,
+                             layers_map,
+                             id_cols,
+                             gasdata){
+
+
+
+  soilphys <- as.data.frame(soilphys)
+
+  #select relevant profiles from soilphys
+  soilphys <- profiles %>%
+    dplyr::inner_join(soilphys)
+
+  # splitting soilphys so that the each slice is homogenous
+  # and the gas measurements are at the intersections
+  id_cols_fill <- id_cols[id_cols %in% names(gasdata) &
+                            id_cols %in% names(soilphys) &
+                            id_cols %in% names(layers_map) ]
+
+
+  soilphys <-
+    soilphys %>%
+    dplyr::mutate(r_id = dplyr::row_number())
+
+
+  soilphys<-
+    soilphys %>%
+    dplyr::select(dplyr::any_of(c(id_cols,"upper","lower","r_id"))) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of({id_cols_fill}))) %>%
+    dplyr::group_modify(~{
+      ddpcr::quiet(.x <-  depth_filler(.x,.y,gasdata,layers_map))
+      return(.x)
+    }) %>%
+    dplyr::left_join(soilphys %>%
+                       dplyr::select(!any_of(c("upper","lower")))
+    ) %>%
+    dplyr::select(!r_id) %>%
+    mutate(depth = (upper+lower)/2) #recreate depth variable!!
+
+
+  #adding prof_id
+  soilphys <- profiles %>%
+    dplyr::left_join(soilphys)
+
+  #arranging soilphys and creating id of steps
+  soilphys <- soilphys  %>%
+    dplyr::arrange(upper) %>%
+    dplyr::group_by(prof_id) %>%
+    dplyr::mutate(step_id = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(na_flag = ifelse(is.na(DS) | is.na(rho_air) | is.na(upper) | is.na(lower),T,F)) %>%
+    dplyr::mutate(height = (upper-lower)/100)
+}
 
 
 # splitting soilphys so that the each slice is homogenous
@@ -447,121 +575,84 @@ depth_filler <- function(.x,.y,gasdata,layers_map){
 
 
 
+
+
 ## Function to perform preparation for each
 ## group and then run prof_optim on all.
-profile_stack <-
-  function(
-    group_id,
-    gr,
-    n_gr,
-    gasdata,
-    soilphys,
-    layers_map,
-    Ds_optim,
-    zero_flux,
+profile_stack <-  function(
+    gasdata_gr,
+    soilphys_gr,
+    layers_map_tmp,
     known_flux,
-    prod_depth,
-    profiles,
-    groups_map,
-    evenness_factor
-  ){
+    profiles_tmp,
+    args){
 
-    #choose correct prod_depth!
-    prod_depth_df <- prod_depth[prod_depth$group_id == group_id, ]
-    prod_depth_v <- prod_depth_df$depth
 
-    #filtering only relevant profiles for the group
-    profiles_tmp <-
-      groups_map %>%
-      dplyr::filter(group_id == !!group_id) %>%
-      dplyr::left_join(profiles)
+    #this represents the production model depths
+    #(including upper and lower bound) per group
+    prod_depth_v <-
+      c(layers_map_tmp$upper,layers_map_tmp$lower) %>%
+      unique() %>%
+      sort()
 
-    #sorting prod_depth and getting lower end of model
-    prod_depth_v <- sort(prod_depth_v)
+
+    #getting lower end of model
     lower_depth <- prod_depth_v[1]
 
-    #subset soilphys and gasdata accordingly
-    gasdata_gr <- gasdata[gasdata$prof_id %in% profiles_tmp$prof_id,]
-    soilphys_gr <- soilphys[soilphys$prof_id %in% profiles_tmp$prof_id,]
-
-    soilphys_gr <- soilphys_gr  %>%
+    # Add pmap to soilphys. This represents the map of
+    # the independently optimised production rates to
+    # the depth steps in soilphys
+    soilphys_gr <-
+      soilphys_gr  %>%
       dplyr::mutate(pmap =  findInterval(depth,!!prod_depth_v))
-
 
     #starting values
     prod_start <- rep(0,length(prod_depth_v)-1)
 
-    lowlim_tmp <- layers_map$lowlim[layers_map$group_id== group_id]
-    highlim_tmp <- layers_map$highlim[layers_map$group_id== group_id]
+    #initialising boundary conditions
+    F0 <- 0
+    lowlim_tmp <- layers_map_tmp$lowlim
+    highlim_tmp <- layers_map_tmp$highlim
 
-    layer_couple_tmp <- layers_map$layer_couple[layers_map$group_id== group_id]
-    layer_couple_tmp <- layer_couple_tmp[-1]
-    #print(paste("layer_couple:",paste(layer_couple_tmp,collapse = " ")))
+    layer_couple_tmp <- layers_map_tmp$layer_couple[-1]
 
-    if(Ds_optim == T){
+
+    # If either the DS or the F0 are optimised as well,
+    # more starting parameters need to be set!
+    if(args$Ds_optim == T){
       prod_start <- c(prod_start,rep(1e-8,length(prod_start)))
       lowlim_tmp <- c(lowlim_tmp,rep(1e-13,length(lowlim_tmp)))
       highlim_tmp <- c(highlim_tmp,rep(1e-4,length(highlim_tmp)))
-      #prevent Ds_optim to put out negative values
-      #lowlim_tmp <- lowlim_tmp<-c(lowlim_tmp[1:ceiling(length(lowlim_tmp)/2)],rep(1e-13,floor(length(lowlim_tmp)/2)))
-      #prod_start <- prod_start<-c(prod_start[1:ceiling(length(prod_start)/2)],rep(1e-8,floor(length(prod_start)/2)))
-      #highlim_tmp <- highlim_tmp<-c(lowlim_tmp[1:ceiling(length(lowlim_tmp)/2)],rep(1e-4,floor(length(lowlim_tmp)/2)))
     }
-    if (zero_flux == F){
+    if (args$zero_flux == F){
       prod_start <- c(0,prod_start)
       lowlim_tmp <- c(min(zero_limits),lowlim_tmp)
       highlim_tmp <- c(max(zero_limits),highlim_tmp)
     }
-    #print(prod_start)
-    #print(lowlim_tmp)
-    #print(highlim_tmp)
 
-    n_profs <- nrow(profiles_tmp)
-    printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
-    printers<-profiles_tmp$prof_id[printers]
-    print_percent <- seq(0,100,10)
 
-    #initialising boundary conditions
-    F0 <- 0
 
-    #print(is.null(known_flux))
-
-    #for users
-    print(paste0("group ",gr,"/",n_gr))
-    print(paste(n_profs,"profiles"))
-
-    #getting good initial guesses from 1 profile
-    #prod_start <- prof_optim(1,
-    #                         prod_start,
-    #                         return_pars = T)
-    #
-    #if (any(is.na(prod_start))){
-    #  prod_start <- rep(0,length(prod_start))
-    #}
-
-    #the above is not helpful. for now:
-    prod_start <-rep(0,length(prod_start))
-
+    # progress tracking
+      n_profs <- nrow(profiles_tmp)
+      printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
+      printers<-profiles_tmp$prof_id[printers]
 
 
 
     df_ret <-
-      purrr::map2(split(gasdata_gr %>% dplyr::arrange(prof_id),
+      purrr::map2(split(gasdata_gr ,
                         gasdata_gr$prof_id),
-                  split(soilphys_gr%>% dplyr::arrange(prof_id),
+                  split(soilphys_gr,
                         soilphys_gr$prof_id),
                   prod_start = prod_start,
                   printers = printers,
-                  print_percent = print_percent,
                   known_flux = known_flux,
-                  zero_flux = zero_flux,
-                  Ds_optim = Ds_optim,
                   F0 = F0,
                   known_flux_factor = known_flux_factor,
                   layer_couple_tmp = layer_couple_tmp,
                   lowlim_tmp = lowlim_tmp,
                   highlim_tmp = highlim_tmp,
-                  evenness_factor = evenness_factor,
+                  args = args,
                   prof_optim) %>%
       dplyr::bind_rows()
     return(df_ret)
@@ -574,21 +665,18 @@ prof_optim <- function(gasdata_tmp,
                        prod_start,
                        return_pars = F,
                        printers,
-                       print_percent,
                        known_flux,
-                       zero_flux,
-                       Ds_optim,
                        F0,
                        known_flux_factor,
                        layer_couple_tmp,
                        lowlim_tmp,
                        highlim_tmp,
-                       evenness_factor){
+                       args){
 
   i <- gasdata_tmp$prof_id[1]
 
   if (i %in% printers){
-    print(paste0(print_percent[printers == i]," %"))
+    print(paste0(seq(0,100,10)[printers == i]," %"))
   }
   #for known_flux b.c.
   if(is.null(known_flux)==F){
@@ -598,8 +686,9 @@ prof_optim <- function(gasdata_tmp,
     known_flux_tmp <- NA
   }
 
-  #gasdata_tmp <- gasdata_gr[list(i)]
-  #soilphys_tmp <- soilphys_gr[list(i)]
+  Ds_optim <- args$Ds_optim
+  evenness_factor <- args$evenness_factor
+  zero_flux <- args$zero_flux
 
 
   #mapping productions to soilphys_tmp

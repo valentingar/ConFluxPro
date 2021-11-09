@@ -55,3 +55,36 @@ test_that("pro_flux correct mapping",{
              c("site"))
   expect_equal(PROFLUX$pmap,c(rep(1,10),rep(2,7),3,3,4,4))
 })
+
+test_that("pro_flux missing in soilphys",{
+
+
+  data("gasdata")
+  data("soilphys")
+
+  lmap <- soilphys %>%
+    select(upper,site) %>%
+    distinct() %>%
+    group_by(site) %>%
+    slice_max(upper) %>%
+    summarise(upper = c(upper,0),
+              lower = c(0,-100),
+              lowlim = 0,
+              highlim = 1000,
+              layer_couple = 0)
+
+  gasdata$NRESULT_ppm[141:143] <- NA
+  soilphys$DS[1] <- NA
+  soilphys <- soilphys[-130,]
+
+  PROFLUX <-
+    pro_flux(gasdata,
+             soilphys,
+             lmap,
+             c("site","Date"))
+
+  expect_equal(nrow(PROFLUX),207)
+  expect_equal(round(PROFLUX$flux[100],digits = 3),0.047)
+  expect_true(is.na(PROFLUX$flux[1]))
+  expect_true(is.na(PROFLUX$flux[41]))
+})
