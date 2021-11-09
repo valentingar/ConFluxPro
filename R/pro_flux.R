@@ -207,15 +207,41 @@ pro_flux <- function(gasdata,
   message(paste(nrow(profiles),"profiles total"))
 
   df_ret <- lapply(groups,function(gr){
-    group <- groups[gr]
+    group_id <- groups[gr]
 
-    df<-profile_stack(group,
-                      gasdata,
-                      soilphys,
-                      layers_map,
+    #c utting everything down to match the current group
+    group_tmp <-
+      groups_map[groups_map$group_id == group_id,]
+
+    profiles_tmp <-
+      profiles %>%
+      dplyr::right_join(group_tmp)
+
+    layers_map_tmp <-
+      layers_map %>%
+      dplyr::right_join(group_tmp)
+
+    gasdata_gr <-
+      gasdata %>%
+      dplyr::right_join(profiles_tmp)%>%
+      dplyr::arrange(prof_id)
+
+    soilphys_gr <-
+      soilphys %>%
+      dplyr::right_join(profiles_tmp)%>%
+      dplyr::arrange(prof_id)
+
+    n_profs <- length(unique(profiles_tmp$prof_id))
+
+    print(paste0("group ",group_id,"/",n_gr))
+    print(paste(n_profs,"profiles"))
+
+    # prepare and calculate fluxes group-wise
+    df<-profile_stack(gasdata_gr,
+                      soilphys_gr,
+                      layers_map_tmp,
                       known_flux,
-                      profiles,
-                      groups_map,
+                      profiles_tmp,
                       args = list(
                         evenness_factor = evenness_factor,
                         Ds_optim = Ds_optim,
@@ -478,9 +504,6 @@ prepare_soilphys <- function(soilphys,
 }
 
 
-
-
-
 # splitting soilphys so that the each slice is homogenous
 # and the gas measurements are at the intersections
 depth_filler <- function(.x,.y,gasdata,layers_map){
@@ -552,39 +575,18 @@ depth_filler <- function(.x,.y,gasdata,layers_map){
 
 
 
+
+
 ## Function to perform preparation for each
 ## group and then run prof_optim on all.
-profile_stack <-
-  function(
-    group_id,
-    gasdata,
-    soilphys,
-    layers_map,
+profile_stack <-  function(
+    gasdata_gr,
+    soilphys_gr,
+    layers_map_tmp,
     known_flux,
-    profiles,
-    groups_map,
-    args
-  ){
+    profiles_tmp,
+    args){
 
-    #cutting everything down to match the current group
-    group_tmp <-
-      groups_map[groups_map$group_id == group_id,]
-
-    profiles_tmp <-
-      profiles %>%
-      dplyr::right_join(group_tmp)
-
-    layers_map_tmp <-
-      layers_map %>%
-      dplyr::right_join(group_tmp)
-
-    gasdata_gr <-
-      gasdata %>%
-      dplyr::right_join(profiles_tmp)
-
-    soilphys_gr <-
-      soilphys %>%
-      dplyr::right_join(profiles_tmp)
 
     #this represents the production model depths
     #(including upper and lower bound) per group
@@ -597,9 +599,12 @@ profile_stack <-
     #getting lower end of model
     lower_depth <- prod_depth_v[1]
 
-    soilphys_gr <- soilphys_gr  %>%
+    # Add pmap to soilphys. This represents the map of
+    # the independently optimised production rates to
+    # the depth steps in soilphys
+    soilphys_gr <-
+      soilphys_gr  %>%
       dplyr::mutate(pmap =  findInterval(depth,!!prod_depth_v))
-
 
     #starting values
     prod_start <- rep(0,length(prod_depth_v)-1)
@@ -612,38 +617,35 @@ profile_stack <-
     layer_couple_tmp <- layers_map_tmp$layer_couple[-1]
 
 
+    # If either the DS or the F0 are optimised as well,
+    # more starting parameters need to be set!
     if(args$Ds_optim == T){
       prod_start <- c(prod_start,rep(1e-8,length(prod_start)))
       lowlim_tmp <- c(lowlim_tmp,rep(1e-13,length(lowlim_tmp)))
       highlim_tmp <- c(highlim_tmp,rep(1e-4,length(highlim_tmp)))
     }
-
     if (args$zero_flux == F){
       prod_start <- c(0,prod_start)
       lowlim_tmp <- c(min(zero_limits),lowlim_tmp)
       highlim_tmp <- c(max(zero_limits),highlim_tmp)
     }
 
-    n_profs <- nrow(profiles_tmp)
-    printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
-    printers<-profiles_tmp$prof_id[printers]
-    print_percent <- seq(0,100,10)
-
-    #for users
-    print(paste0("group ",group_id,"/",max(groups_map$group_id)))
-    print(paste(n_profs,"profiles"))
 
 
-    prod_start <-rep(0,length(prod_start))
+    # progress tracking
+      n_profs <- nrow(profiles_tmp)
+      printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
+      printers<-profiles_tmp$prof_id[printers]
+
+
 
     df_ret <-
-      purrr::map2(split(gasdata_gr %>% dplyr::arrange(prof_id),
+      purrr::map2(split(gasdata_gr ,
                         gasdata_gr$prof_id),
-                  split(soilphys_gr%>% dplyr::arrange(prof_id),
+                  split(soilphys_gr,
                         soilphys_gr$prof_id),
                   prod_start = prod_start,
                   printers = printers,
-                  print_percent = print_percent,
                   known_flux = known_flux,
                   F0 = F0,
                   known_flux_factor = known_flux_factor,
@@ -663,7 +665,6 @@ prof_optim <- function(gasdata_tmp,
                        prod_start,
                        return_pars = F,
                        printers,
-                       print_percent,
                        known_flux,
                        F0,
                        known_flux_factor,
@@ -675,7 +676,7 @@ prof_optim <- function(gasdata_tmp,
   i <- gasdata_tmp$prof_id[1]
 
   if (i %in% printers){
-    print(paste0(print_percent[printers == i]," %"))
+    print(paste0(seq(0,100,10)[printers == i]," %"))
   }
   #for known_flux b.c.
   if(is.null(known_flux)==F){
