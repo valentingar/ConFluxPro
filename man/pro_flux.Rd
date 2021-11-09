@@ -14,7 +14,7 @@ pro_flux(
   zero_limits = c(-Inf, Inf),
   known_flux = NULL,
   known_flux_factor = 0,
-  Ds_optim = F,
+  DSD0_optim = F,
   evenness_factor = 0
 )
 }
@@ -62,9 +62,10 @@ that the optimisation will weigh the error to the efflux more than in
 regard to the concentration measurements. Must be determined manually by
 trying out!}
 
-\item{Ds_optim}{(logical) If True, the diffusion coefficient (DS) values are
-also object to optimisation together with the production. The fit values
-are given as Ds_fit in the return table. Only makes sense to use in
+\item{DSD0_optim}{(logical) If True, the diffusion coefficient (DSD0) values are
+also object to optimisation together with the production. DSD0 is varied between
+values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
+are given as DSD0_fit in the return table. Only makes sense to use in
 combination with known_flux.}
 
 \item{evenness_factor}{(numeric) A user defined factor used to penalise strong

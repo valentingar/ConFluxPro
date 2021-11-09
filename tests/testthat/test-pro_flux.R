@@ -88,3 +88,54 @@ test_that("pro_flux missing in soilphys",{
   expect_true(is.na(PROFLUX$flux[1]))
   expect_true(is.na(PROFLUX$flux[41]))
 })
+
+
+test_that("DSD0 optim works", {
+
+
+
+  data("gasdata")
+  data("soilphys")
+
+  dates <- as.Date(c("2021-01-01",
+           "2021-02-01"))
+
+  gasdata <-
+  gasdata %>%
+    filter(Date %in% dates)
+
+  soilphys <-
+    soilphys %>%
+    filter(Date %in% dates)
+
+  known_flux <- data.frame(
+    site = rep(c("site_a","site_b"),each = 2),
+    Date = rep(dates,times = 2),
+    flux = c(0.76,1.39,0.57,0.89)
+  )
+
+  lmap <- soilphys %>%
+    select(upper,site) %>%
+    distinct() %>%
+    group_by(site) %>%
+    slice_max(upper) %>%
+    summarise(upper = c(upper,0),
+              lower = c(0,-100),
+              lowlim = 0,
+              highlim = 1000,
+              layer_couple = 0)
+   PROFLUX <-
+     pro_flux(gasdata,
+              soilphys,
+              lmap,
+              known_flux = known_flux,
+              known_flux_factor = 5000,
+              DSD0_optim = F,
+              c("site","Date"))
+
+
+   EFFLUX <- PROFLUX %>% pf_efflux()
+
+  expect_equal(round(EFFLUX$efflux,digits = 2),
+               round(known_flux$flux,digits = 2))
+})

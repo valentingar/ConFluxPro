@@ -8,6 +8,7 @@ prod_optim(
   X,
   height,
   DS,
+  D0,
   C0,
   pmap,
   cmap,
@@ -17,7 +18,7 @@ prod_optim(
   F0 = 0,
   known_flux = NA,
   known_flux_factor = 0,
-  Ds_optim = F,
+  DSD0_optim = F,
   layer_couple,
   wmap,
   evenness_factor
@@ -55,7 +56,7 @@ represents the incoming flux to the lowest layer.}
 \item{known_flux_factor}{(numeric) a factor defining how much the known flux
 should weigh in the RMSE calculation}
 
-\item{Ds_optim}{(logical) should \code{DS} be optimised as well?}
+\item{DSD0_optim}{(logical) should \code{DSD0} be optimised as well?}
 
 \item{layer_couple}{(numeric vector) A vector defining the weights that bind
 the different layers together. If all is zero, no penalisation for stark differences
