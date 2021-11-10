@@ -51,9 +51,10 @@
 #'   regard to the concentration measurements. Must be determined manually by
 #'   trying out!
 #'
-#' @param Ds_optim (logical) If True, the diffusion coefficient (DS) values are
-#'   also object to optimisation together with the production. The fit values
-#'   are given as Ds_fit in the return table. Only makes sense to use in
+#' @param DSD0_optim (logical) If True, the diffusion coefficient (DSD0) values are
+#'   also object to optimisation together with the production. DSD0 is varied between
+#'   values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
+#'   are given as DSD0_fit in the return table. Only makes sense to use in
 #'   combination with known_flux.
 #'
 #' @param evenness_factor (numeric) A user defined factor used to penalise strong
@@ -103,7 +104,7 @@ pro_flux <- function(gasdata,
                      zero_limits = c(-Inf,Inf),
                      known_flux = NULL,
                      known_flux_factor = 0,
-                     Ds_optim = F,
+                     DSD0_optim = F,
                      evenness_factor = 0){
 
 
@@ -158,6 +159,7 @@ pro_flux <- function(gasdata,
                                    "depth",
                                    "height",
                                    "DS",
+                                   "D0",
                                    "rho_air",
                                    "upper",
                                    "lower")))
@@ -166,14 +168,17 @@ pro_flux <- function(gasdata,
   # this radically improves performance
   soilphys <- data.table::as.data.table(soilphys %>%
                               dplyr::ungroup() %>%
-                              dplyr::select(prof_id,
-                                            depth,
-                                            height,
-                                            DS,
-                                            rho_air,
-                                            upper,
-                                            lower,
-                                            step_id))
+                              dplyr::select(
+                                dplyr::any_of(c("prof_id",
+                                            "depth",
+                                            "height",
+                                            "DS",
+                                            "D0",
+                                            "rho_air",
+                                            "upper",
+                                            "lower",
+                                            "step_id"))))
+
   gasdata <- data.table::as.data.table(gasdata %>%
                              dplyr::select(prof_id,
                                            depth,
@@ -181,17 +186,15 @@ pro_flux <- function(gasdata,
 
 
   #if known flux b.c. applies:
-  if(is.null(known_flux)==F){
+  if(is.null(known_flux) == FALSE){
     known_flux <- known_flux %>%
-      dplyr::filter(is.na(flux)==F) %>%
+      dplyr::filter(is.na(flux) == FALSE) %>%
       dplyr::select(
         dplyr::any_of(
           {c(id_cols, "flux")}
         )
       ) %>%
-      dplyr::right_join(profiles) %>%
-      data.table::as.data.table()
-    data.table::setkey(known_flux, prof_id)
+      dplyr::right_join(profiles)
   }
 
   #Initialising prof_id column for fast subsetting
@@ -231,6 +234,16 @@ pro_flux <- function(gasdata,
       dplyr::right_join(profiles_tmp)%>%
       dplyr::arrange(prof_id)
 
+    if (is.null(known_flux) == FALSE){
+    known_flux_gr <-
+      known_flux %>%
+      dplyr::right_join(profiles_tmp)%>%
+      dplyr::arrange(prof_id)
+
+    } else {
+      known_flux_gr <- NULL
+    }
+
     n_profs <- length(unique(profiles_tmp$prof_id))
 
     print(paste0("group ",group_id,"/",n_gr))
@@ -240,12 +253,13 @@ pro_flux <- function(gasdata,
     df<-profile_stack(gasdata_gr,
                       soilphys_gr,
                       layers_map_tmp,
-                      known_flux,
+                      known_flux_gr,
                       profiles_tmp,
                       args = list(
                         evenness_factor = evenness_factor,
-                        Ds_optim = Ds_optim,
-                        zero_flux = zero_flux
+                        DSD0_optim = DSD0_optim,
+                        zero_flux = zero_flux,
+                        known_flux_factor = known_flux_factor
                       )
     )
     return(df)
@@ -295,7 +309,7 @@ pro_flux <- function(gasdata,
                   zero_flux,
                   zero_limits,
                   known_flux_factor,
-                  Ds_optim,
+                  DSD0_optim,
                   evenness_factor
                   )
 }
@@ -583,7 +597,7 @@ profile_stack <-  function(
     gasdata_gr,
     soilphys_gr,
     layers_map_tmp,
-    known_flux,
+    known_flux_gr,
     profiles_tmp,
     args){
 
@@ -619,10 +633,10 @@ profile_stack <-  function(
 
     # If either the DS or the F0 are optimised as well,
     # more starting parameters need to be set!
-    if(args$Ds_optim == T){
-      prod_start <- c(prod_start,rep(1e-8,length(prod_start)))
-      lowlim_tmp <- c(lowlim_tmp,rep(1e-13,length(lowlim_tmp)))
-      highlim_tmp <- c(highlim_tmp,rep(1e-4,length(highlim_tmp)))
+    if(args$DSD0_optim == T){
+      prod_start <- c(prod_start,rep(0.5,length(prod_start)))
+      lowlim_tmp <- c(lowlim_tmp,rep(0,length(lowlim_tmp)))
+      highlim_tmp <- c(highlim_tmp,rep(1,length(highlim_tmp)))
     }
     if (args$zero_flux == F){
       prod_start <- c(0,prod_start)
@@ -631,12 +645,10 @@ profile_stack <-  function(
     }
 
 
-
     # progress tracking
       n_profs <- nrow(profiles_tmp)
       printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
       printers<-profiles_tmp$prof_id[printers]
-
 
 
     df_ret <-
@@ -646,9 +658,8 @@ profile_stack <-  function(
                         soilphys_gr$prof_id),
                   prod_start = prod_start,
                   printers = printers,
-                  known_flux = known_flux,
+                  known_flux_gr = known_flux_gr,
                   F0 = F0,
-                  known_flux_factor = known_flux_factor,
                   layer_couple_tmp = layer_couple_tmp,
                   lowlim_tmp = lowlim_tmp,
                   highlim_tmp = highlim_tmp,
@@ -665,9 +676,8 @@ prof_optim <- function(gasdata_tmp,
                        prod_start,
                        return_pars = F,
                        printers,
-                       known_flux,
+                       known_flux_gr,
                        F0,
-                       known_flux_factor,
                        layer_couple_tmp,
                        lowlim_tmp,
                        highlim_tmp,
@@ -679,16 +689,17 @@ prof_optim <- function(gasdata_tmp,
     print(paste0(seq(0,100,10)[printers == i]," %"))
   }
   #for known_flux b.c.
-  if(is.null(known_flux)==F){
-    known_flux_df <-known_flux[list(i)]
+  if(is.null(known_flux_gr) == FALSE){
+    known_flux_df <-known_flux_gr[known_flux_gr$prof_id == i,]
     known_flux_tmp <- known_flux_df$flux
   } else {
-    known_flux_tmp <- NA
+    known_flux_tmp <- NULL
   }
 
-  Ds_optim <- args$Ds_optim
+  DSD0_optim <- args$DSD0_optim
   evenness_factor <- args$evenness_factor
   zero_flux <- args$zero_flux
+  known_flux_factor <- args$known_flux_factor
 
 
   #mapping productions to soilphys_tmp
@@ -722,6 +733,15 @@ prof_optim <- function(gasdata_tmp,
   #storage term
   dstor <-0
 
+  #DS and D0
+  DS <- soilphys_tmp$DS
+  if (is.null(known_flux_tmp) == FALSE){
+    D0 <- soilphys_tmp$D0
+  } else {
+    D0 <- rep(NA,length(DS))
+  }
+
+
   #optimisation with error handling returning NA
   pars <- tryCatch({
     prod_optimised<-stats::optim(par=prod_start,
@@ -730,7 +750,8 @@ prof_optim <- function(gasdata_tmp,
                                  upper = highlim_tmp,
                                  method = "L-BFGS-B",
                                  height = height,
-                                 DS = soilphys_tmp$DS,
+                                 DS = DS,
+                                 D0 = D0,
                                  C0 = C0,
                                  pmap = pmap,
                                  cmap = cmap,
@@ -740,7 +761,7 @@ prof_optim <- function(gasdata_tmp,
                                  F0 = F0,
                                  known_flux = known_flux_tmp,
                                  known_flux_factor = known_flux_factor,
-                                 Ds_optim = Ds_optim,
+                                 DSD0_optim = DSD0_optim,
                                  layer_couple = layer_couple_tmp,
                                  wmap = wmap,
                                  evenness_factor = evenness_factor
@@ -759,8 +780,8 @@ prof_optim <- function(gasdata_tmp,
     F0 <- pars[1]
     prods <- pars[-1]
   }
-  if(Ds_optim == T){
-    Ds_fit <- prods[-c(1:length(prods)/2)]
+  if(DSD0_optim == T){
+    DSD0_fit <- prods[-c(1:length(prods)/2)]
     prods <- prods[1:(length(prods)/2)]
   }
 
@@ -777,8 +798,8 @@ prof_optim <- function(gasdata_tmp,
   soilphys_tmp$F0 <- F0
   soilphys_tmp$prod <-prod
   soilphys_tmp$conc <- conc_mod
-  if(Ds_optim ==T){
-    soilphys_tmp$Ds_fit <- Ds_fit[pmap]
+  if(DSD0_optim ==T){
+    soilphys_tmp$DSD0_fit <- DSD0_fit[pmap]
   }
   return(soilphys_tmp)
 }

@@ -25,7 +25,7 @@
 #' @param known_flux (numeric) known surface flux to be matched
 #' @param known_flux_factor (numeric) a factor defining how much the known flux
 #' should weigh in the RMSE calculation
-#' @param Ds_optim (logical) should \code{DS} be optimised as well?
+#' @param DSD0_optim (logical) should \code{DSD0} be optimised as well?
 #' @param layer_couple (numeric vector) A vector defining the weights that bind
 #' the different layers together. If all is zero, no penalisation for stark differences
 #' between the optimised production rates of adjecent layers takes place
@@ -46,6 +46,7 @@
 prod_optim<- function(X,
                       height,
                       DS,
+                      D0,
                       C0,
                       pmap,
                       cmap,
@@ -55,7 +56,7 @@ prod_optim<- function(X,
                       F0 = 0,
                       known_flux = NA,
                       known_flux_factor = 0,
-                      Ds_optim = F,
+                      DSD0_optim = F,
                       layer_couple,
                       wmap,
                       evenness_factor){
@@ -65,10 +66,10 @@ prod_optim<- function(X,
     F0 <- X[1]
     X <- X[-1]
   }
-  if(Ds_optim){
-    Ds_fit <- X[((length(X) / 2) + 1):length(X)]
+  if(DSD0_optim){
+    DSD0_fit <- X[((length(X) / 2) + 1):length(X)]
     X <- X[1:length(X) / 2]
-    DS <-  Ds_fit[pmap]
+    DS <-  DSD0_fit[pmap]*D0
 
   }
 
@@ -105,8 +106,9 @@ prod_optim<- function(X,
 
   RMSE <- RMSE + evenness_penal
 
+
   #penalty for not meeting known_flux
-  if (is.finite(known_flux)){
+  if (is.null(known_flux) == FALSE){
     RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
   }
 
