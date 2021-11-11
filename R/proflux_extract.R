@@ -1,7 +1,7 @@
 #' @title proflux_extract
 #' @description Utility function for the fast extraction and aggregation of
 #' parameters exported by pro_flux
-#' @param PROFLUX The PFres object returned by pro_flux()
+#' @param PROFLUX The PFres object returned by \code{\link{pro_flux}}
 #' @param id_cols The id_cols used in the function call(only needed
 #' if PROFLUX is not a PFres object).
 #' @return data.frame
@@ -16,13 +16,13 @@
   #' @export
   pf_efflux.PFres <- function(PROFLUX,
                               ...) {
-    id_cols <- id_cols(PROFLUX)
+    id_cols <- PF_id_cols(PROFLUX)
     NextMethod(id_cols = id_cols)
   }
 
   #' @export
   pf_efflux.data.frame <- function(PROFLUX,
-                                   id_cols) {
+                                   ...) {
     #extract the topmost flux per date per id_col
     efflux <- get_efflux(PROFLUX,
                          id_cols)
@@ -37,13 +37,13 @@
   #' @export
   pf_prod.PFres <- function(PROFLUX,
                             ...) {
-    id_cols <- id_cols(PROFLUX)
+    id_cols <- PF_id_cols(PROFLUX)
     NextMethod(id_cols = id_cols)
   }
 
   #' @export
   pf_prod.data.frame <- function(PROFLUX,
-                                 id_cols) {
+                                 ...) {
     #extract the total production per layer
     prod <- get_prod(PROFLUX,
                      id_cols)

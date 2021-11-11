@@ -8,9 +8,9 @@
 #' in the attributes. This enables the extraction of additional information
 #' such as efflux and also helps keeping track of different models, similar
 #' to the \code{lm} class.
-
-
-
+#'
+#' @inheritParams pro_flux
+#'
 #' @export
 
 new_PFres <- function(tbl = list(),
@@ -19,9 +19,12 @@ new_PFres <- function(tbl = list(),
                       storage_term = logical(),
                       zero_flux = logical(),
                       zero_limits = numeric(),
+                      known_flux = list(),
                       known_flux_factor = numeric(),
-                      Ds_optim = logical(),
-                      evenness_factor = numeric()
+                      DSD0_optim = logical(),
+                      evenness_factor = numeric(),
+                      gasdata = list(),
+                      profiles = list()
                       ){
 
   stopifnot(is.list(tbl))
@@ -33,9 +36,12 @@ new_PFres <- function(tbl = list(),
             storage_term = storage_term,
             zero_flux = zero_flux,
             zero_limits = zero_limits,
+            known_flux = known_flux,
             known_flux_factor = known_flux_factor,
-            Ds_optim = Ds_optim,
-            evenness_factor = evenness_factor
+            DSD0_optim = DSD0_optim,
+            evenness_factor = evenness_factor,
+            gasdata = gasdata,
+            profiles = profiles
 
             )
   }
@@ -50,27 +56,55 @@ PFres <- function(tbl,
                   storage_term,
                   zero_flux,
                   zero_limits,
+                  known_flux,
                   known_flux_factor,
-                  Ds_optim,
-                  evenness_factor
+                  DSD0_optim,
+                  evenness_factor,
+                  gasdata,
+                  profiles
                   ) {
 
   tbl <- new_PFres(tbl,
                    layers_map,
                    id_cols,
                    storage_term,
+                   zero_flux,
                    zero_limits,
+                   known_flux,
                    known_flux_factor,
-                   Ds_optim,
-                   evenness_factor
+                   DSD0_optim,
+                   evenness_factor,
+                   gasdata,
+                   profiles
                    )
 }
 
 ##### EXTRACTOR FUNCTIONS #####
 
-id_cols <- function(x){
+PF_id_cols <- function(x){
   attr(x,"id_cols")
 }
-
-
-
+PF_gasdata <- function(x){
+  attr(x,"gasdata")
+}
+PF_layers_map <- function(x){
+  attr(x,"layers_map")
+}
+PF_storage_term <- function(x){
+  attr(x,"storage_term")
+}
+PF_known_flux <- function(x){
+  attr(x,"known_flux")
+}
+PF_known_flux_factor <- function(x){
+  attr(x,"known_flux_factor")
+}
+PF_zero_flux <- function(x){
+  attr(x,"zero_flux")
+}
+PF_evenness_factor <- function(x){
+  attr(x,"evenness_factor")
+}
+PF_profiles <- function(x){
+  attr(x,"profiles")
+}

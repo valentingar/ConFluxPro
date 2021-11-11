@@ -130,7 +130,7 @@ test_that("DSD0 optim works", {
               lmap,
               known_flux = known_flux,
               known_flux_factor = 5000,
-              DSD0_optim = F,
+              DSD0_optim = FALSE,
               c("site","Date"))
 
 

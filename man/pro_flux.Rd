@@ -9,12 +9,12 @@ pro_flux(
   soilphys,
   layers_map,
   id_cols,
-  storage_term = F,
-  zero_flux = T,
+  storage_term = FALSE,
+  zero_flux = TRUE,
   zero_limits = c(-Inf, Inf),
-  known_flux = NULL,
+  known_flux = NA,
   known_flux_factor = 0,
-  DSD0_optim = F,
+  DSD0_optim = FALSE,
   evenness_factor = 0
 )
 }
