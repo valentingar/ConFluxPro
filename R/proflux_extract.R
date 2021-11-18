@@ -5,49 +5,74 @@
 #' @param id_cols The id_cols used in the function call(only needed
 #' if PROFLUX is not a PFres object).
 #' @return data.frame
-#' @export
-#'
 
+
+#' EXPORT EFFLUX
+#' @export
   pf_efflux <- function(PROFLUX,
                         ...) {
-    UseMethod("pf_efflux")
+
+    UseMethod("pf_efflux",
+              PROFLUX
+              )
+
   }
 
-  #' @export
+
+
+#' @export
   pf_efflux.PFres <- function(PROFLUX,
                               ...) {
+
     id_cols <- PF_id_cols(PROFLUX)
+    PROFLUX <- data.frame(PROFLUX)
     NextMethod(id_cols = id_cols)
+
   }
 
-  #' @export
+
+
+#' @export
   pf_efflux.data.frame <- function(PROFLUX,
+                                   id_cols,
                                    ...) {
+
     #extract the topmost flux per date per id_col
     efflux <- get_efflux(PROFLUX,
-                         id_cols)
+                         id_cols = id_cols)
   }
 
-  #' @export
+
+#' EXPORT PROUDCTION
+#' @export
   pf_prod <- function(PROFLUX,
                       ...) {
-    UseMethod("pf_prod")
+    UseMethod("pf_prod",
+              PROFLUX
+              )
   }
 
-  #' @export
+
+
+#' @export
   pf_prod.PFres <- function(PROFLUX,
                             ...) {
     id_cols <- PF_id_cols(PROFLUX)
     NextMethod(id_cols = id_cols)
   }
 
-  #' @export
+
+
+#' @export
   pf_prod.data.frame <- function(PROFLUX,
+                                 id_cols,
                                  ...) {
     #extract the total production per layer
     prod <- get_prod(PROFLUX,
                      id_cols)
   }
+
+
 
   ####################
   ##### HELPERS ######

@@ -21,12 +21,37 @@ test_that("proflux_alternate works", {
              lmap,
              c("site","Date"))
 
+  EFFLUX <-
+    PROFLUX %>%
+    pf_efflux()
+
+  error_funs <-
+    list(gd = error_gasdata,
+         ef = error_efflux)
+
+  error_args <-
+    list(gd = list(param_cols = c("site"),
+                   normer = "sd"),
+         ef = list(EFFLUX = EFFLUX,
+                   param_cols = "site",
+                   normer = "sd")
+    )
+
+
   PF2 <-
   proflux_alternate(PROFLUX,
                     "TPS",
-                    seq(0.9,1.1,0.1),
-                    lmap %>% select(upper,lower,site),
+                    1.0,
+                    lmap %>%
+                      select(upper,lower,site),
                     no_confirm = TRUE,
-                    DSD0_formula = "a*AFPS^b")
+                    DSD0_formula = "a*AFPS^b",
+                    error_funs = error_funs,
+                    error_args = error_args)
+
+  expect_equal(nrow(PF2),8)
+  expect_equal(any(is.na(PF2$NRMSE)),FALSE)
+  expect_equal(round(PF2$NRMSE,digits = 2),
+               c(1.42,1.42,1.46,1.46,rep(0,4)))
 
 })

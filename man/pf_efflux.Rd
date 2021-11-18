@@ -14,6 +14,7 @@ if PROFLUX is not a PFres object).}
 }
 \value{
 data.frame
+EXPORT EFFLUX
 }
 \description{
 Utility function for the fast extraction and aggregation of
