@@ -108,7 +108,7 @@ prod_optim<- function(X,
 
 
   #penalty for not meeting known_flux
-  if (is.null(known_flux) == FALSE){
+  if (!is.na(known_flux)){
     RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
   }
 

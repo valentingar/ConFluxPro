@@ -7,13 +7,14 @@
 pf_efflux(PROFLUX, ...)
 }
 \arguments{
-\item{PROFLUX}{The PFres object returned by pro_flux()}
+\item{PROFLUX}{The PFres object returned by \code{\link{pro_flux}}}
 
 \item{id_cols}{The id_cols used in the function call(only needed
 if PROFLUX is not a PFres object).}
 }
 \value{
 data.frame
+EXPORT EFFLUX
 }
 \description{
 Utility function for the fast extraction and aggregation of

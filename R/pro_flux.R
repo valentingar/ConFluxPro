@@ -99,12 +99,12 @@ pro_flux <- function(gasdata,
                      soilphys,
                      layers_map,
                      id_cols,
-                     storage_term = F,
-                     zero_flux = T,
+                     storage_term = FALSE,
+                     zero_flux = TRUE,
                      zero_limits = c(-Inf,Inf),
-                     known_flux = NULL,
+                     known_flux = NA,
                      known_flux_factor = 0,
-                     DSD0_optim = F,
+                     DSD0_optim = FALSE,
                      evenness_factor = 0){
 
 
@@ -186,7 +186,7 @@ pro_flux <- function(gasdata,
 
 
   #if known flux b.c. applies:
-  if(is.null(known_flux) == FALSE){
+  if(is.list(known_flux)){
     known_flux <- known_flux %>%
       dplyr::filter(is.na(flux) == FALSE) %>%
       dplyr::select(
@@ -234,14 +234,14 @@ pro_flux <- function(gasdata,
       dplyr::right_join(profiles_tmp)%>%
       dplyr::arrange(prof_id)
 
-    if (is.null(known_flux) == FALSE){
+    if (is.list(known_flux)){
     known_flux_gr <-
       known_flux %>%
       dplyr::right_join(profiles_tmp)%>%
       dplyr::arrange(prof_id)
 
     } else {
-      known_flux_gr <- NULL
+      known_flux_gr <- NA
     }
 
     n_profs <- length(unique(profiles_tmp$prof_id))
@@ -308,9 +308,12 @@ pro_flux <- function(gasdata,
                   storage_term,
                   zero_flux,
                   zero_limits,
+                  known_flux,
                   known_flux_factor,
                   DSD0_optim,
-                  evenness_factor
+                  evenness_factor,
+                  gasdata,
+                  profiles
                   )
 }
 
@@ -474,7 +477,9 @@ prepare_soilphys <- function(soilphys,
 
   #select relevant profiles from soilphys
   soilphys <- profiles %>%
-    dplyr::inner_join(soilphys)
+    dplyr::inner_join(soilphys) %>%
+    dplyr::select(!dplyr::any_of("layer")) #remove layer variable from OG frame
+
 
   # splitting soilphys so that the each slice is homogenous
   # and the gas measurements are at the intersections
@@ -500,8 +505,7 @@ prepare_soilphys <- function(soilphys,
                        dplyr::select(!any_of(c("upper","lower")))
     ) %>%
     dplyr::select(!r_id) %>%
-    mutate(depth = (upper+lower)/2) #recreate depth variable!!
-
+    dplyr::mutate(depth = (upper+lower)/2) #recreate depth variable!!
 
   #adding prof_id
   soilphys <- profiles %>%
@@ -689,11 +693,11 @@ prof_optim <- function(gasdata_tmp,
     print(paste0(seq(0,100,10)[printers == i]," %"))
   }
   #for known_flux b.c.
-  if(is.null(known_flux_gr) == FALSE){
+  if(is.list(known_flux_gr)){
     known_flux_df <-known_flux_gr[known_flux_gr$prof_id == i,]
     known_flux_tmp <- known_flux_df$flux
   } else {
-    known_flux_tmp <- NULL
+    known_flux_tmp <- NA
   }
 
   DSD0_optim <- args$DSD0_optim
@@ -735,7 +739,7 @@ prof_optim <- function(gasdata_tmp,
 
   #DS and D0
   DS <- soilphys_tmp$DS
-  if (is.null(known_flux_tmp) == FALSE){
+  if (is.list(known_flux_tmp)){
     D0 <- soilphys_tmp$D0
   } else {
     D0 <- rep(NA,length(DS))
