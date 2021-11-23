@@ -43,16 +43,53 @@ test_that("proflux_alternate works", {
   proflux_alternate(PROFLUX,
                     "TPS",
                     1.0,
-                    lmap %>%
+                    params_map = lmap %>%
                       select(upper,lower,site),
                     no_confirm = TRUE,
                     DSD0_formula = "a*AFPS^b",
                     error_funs = error_funs,
                     error_args = error_args)
 
-  expect_equal(nrow(PF2),8)
-  expect_equal(any(is.na(PF2$NRMSE)),FALSE)
-  expect_equal(round(PF2$NRMSE,digits = 2),
-               c(1.42,1.42,1.46,1.46,rep(0,4)))
+  error_funs2 <-
+    list(MC = error_compare_models)
+
+  error_args2 <-
+    list(MC = list(PF_summary = proflux_summarise(PROFLUX),
+                   param_cols = "site"))
+
+  PF3 <-
+    proflux_alternate(PROFLUX,
+                      c("TPS"),
+                      facs = c(1.5,2),
+                      params_map = lmap %>%
+                        select(upper,lower,site),
+                      sensitivity_analysis = "OAT",
+                      no_confirm = TRUE,
+                      DSD0_formula = "a*AFPS^b",
+                      error_funs = error_funs2,
+                      error_args = error_args2)
+
+  PF4 <-
+    proflux_alternate(PROFLUX,
+                      c("TPS"),
+                      facs = c(1.5),
+                      params_map = lmap %>%
+                        select(upper,lower,site),
+                      sensitivity_analysis = "OATL",
+                      no_confirm = TRUE,
+                      DSD0_formula = "a*AFPS^b",
+                      error_funs = error_funs2,
+                      error_args = error_args2)
+
+
+  expect_equal(nrow(PF2$results),4)
+  expect_equal(any(is.na(PF2$results$NRMSE)),FALSE)
+  expect_equal(round(PF2$results$NRMSE,digits = 2),
+               c(1.42,1.46,0,0))
+
+  expect_equal(nrow(PF3$results),18)
+  expect_equal(unique(PF3$results$run_id),c(1,2,3))
+
+  expect_equal(unique(PF4$run_map$run_id),c(1,2,3))
 
 })

@@ -9,6 +9,7 @@ proflux_alternate(
   params,
   facs,
   params_map,
+  sensitivity_analysis = FALSE,
   no_confirm = FALSE,
   DSD0_formula,
   return_raw = FALSE,
@@ -40,6 +41,19 @@ PROFLUX, as well as \code{upper} and \code{lower}. For each layer enclosed
 by "upper" and "lower", the parameters in "params" will be varied
 independently. This means, that the more layer per combination of id_cols
 are provided, the more variations will be tested out.}
+
+\item{sensitivity_analysis}{How should the different values of \code{params}
+and \code{facs} be combined? Can be one of:
+\describe{
+\item{FALSE}{(default). Here, all possible combinations of \code{params},
+             \code{facs} and the respective layers of \code{params_map}
+             are run.}
+\item{OAT}{One At a Time. This means, that only one of \code{params} is
+           changed at a time for all layers, all the others will have
+           a \code{facs} of 1.}
+\item{OATL}{One At a Time Layer. Here, \code{OAT} is expanded to change
+            only one parameter \emph{and} one layer at a time.}
+}}
 
 \item{no_confirm}{If the function is used in a script, set this to TRUE to
 confirm the number of profiles without separate user input. Please ensure

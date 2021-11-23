@@ -28,6 +28,19 @@
 #'   independently. This means, that the more layer per combination of id_cols
 #'   are provided, the more variations will be tested out.
 #'
+#' @param sensitivity_analysis How should the different values of \code{params}
+#'   and \code{facs} be combined? Can be one of:
+#'   \describe{
+#'   \item{FALSE}{(default). Here, all possible combinations of \code{params},
+#'                \code{facs} and the respective layers of \code{params_map}
+#'                are run.}
+#'   \item{OAT}{One At a Time. This means, that only one of \code{params} is
+#'              changed at a time for all layers, all the others will have
+#'              a \code{facs} of 1.}
+#'   \item{OATL}{One At a Time Layer. Here, \code{OAT} is expanded to change
+#'               only one parameter \emph{and} one layer at a time.}
+#'   }
+#'
 #' @param no_confirm If the function is used in a script, set this to TRUE to
 #'   confirm the number of profiles without separate user input. Please ensure
 #'   separately if the function will evaluate in a reasonable amount of time.
@@ -55,6 +68,7 @@ proflux_alternate <- function(PROFLUX,
                               params,
                               facs,
                               params_map,
+                              sensitivity_analysis = FALSE,
                               no_confirm = FALSE,
                               DSD0_formula,
                               return_raw = FALSE,
@@ -63,6 +77,13 @@ proflux_alternate <- function(PROFLUX,
                               ){
 
   # validity test of PROFLUX (is PFres?)
+
+
+  #check sensitvity_analysis
+  if(!(sensitivity_analysis %in% c("OAT","OATL") |
+     sensitivity_analysis == FALSE)){
+    stop("sensitivity_analysis must be on of c('OAT','OATL') or FALSE.")
+  }
 
   # check error_args - is there PROFLUX ANYWHERE
   arg_names <-
@@ -106,7 +127,7 @@ proflux_alternate <- function(PROFLUX,
   total_profiles <- sum(n_runs$n_runs)
   message(paste0("The total number of single profiles is: ", total_profiles))
 
-  if (total_profiles > 1e5){
+  if (total_profiles > 1e5 & sensitivity_analysis == FALSE){
     message("Wow, thats a lot of profiles! Are you sure? (~30s / 1000 profiles)")
     t_estim <- total_profiles/1000 * c(10,50) / 60
     t_estim <- paste0(t_estim[1]," to ",t_estim[2])
@@ -151,16 +172,37 @@ proflux_alternate <- function(PROFLUX,
 
 
   ## get variables for each run
+  if(sensitivity_analysis == FALSE){
   facs_map <-
     lapply(params, function(i) facs)
   names(facs_map) <- paste0("fac_",params)
 
   facs_map <- as.data.frame(facs_map) %>%
-    expand.grid() %>%
+    expand.grid()
+  } else {
+
+    # Because 1 is added later anyways
+    facs <- facs[!facs == 1]
+
+    facs_map <-
+      lapply(params, function(i) rep(1,length(facs)+1))
+    names(facs_map) <- paste0("fac_",params)
+    facs_map <- as.data.frame(facs_map)
+
+    facs_map <-
+      lapply(1:ncol(facs_map), function(i){
+        df <- facs_map
+        df[-1,i] <- facs
+        df
+      }) %>%
+      dplyr::bind_rows()
+
+  }
+
+  facs_map <- facs_map %>%
     dplyr::mutate(perm_id = dplyr::row_number())
 
   n_perms <- nrow(facs_map)
-
 
   run_map <-
     params_map %>%
@@ -168,6 +210,10 @@ proflux_alternate <- function(PROFLUX,
     dplyr::group_modify(
       ~{
         l <- length(.x$layer_alt)
+
+        if (sensitivity_analysis == "OAT"){
+          l <- 1
+        }
 
         lapply(1:l,function(i)
           c(1:n_perms)
@@ -182,11 +228,72 @@ proflux_alternate <- function(PROFLUX,
     ) %>%
     dplyr::mutate(layer_alt = LETTERS[as.numeric(layer_alt)]) %>%
     dplyr::left_join(facs_map) %>%
-    dplyr::left_join(params_map) %>%
-    dplyr::select(!dplyr::any_of(c("upper",
-                          "lower",
-                          "gr_id")))
+    dplyr::left_join(params_map)
 
+  if(sensitivity_analysis == "OAT"){
+    run_map <-
+      facs_map %>%
+      dplyr::mutate(run_id = dplyr::row_number()) %>%
+      dplyr::full_join(params_map,
+                       by = character())
+  } else if (sensitivity_analysis == "OATL"){
+    #only take those runs where all but one parameter stays unchanged
+    run_map <-
+    params_map %>%
+      group_by(gr_id) %>%
+      group_modify(~{
+        l <- nrow(.x)
+
+        facs_map <-
+          facs_map %>%
+          dplyr::filter(!dplyr::if_all(dplyr::starts_with("fac"),~.x == TRUE))
+
+        df_l <- lapply(1:l,function(i){
+          df <- facs_map
+          df[T] <- 1
+          df$perm_id <- facs_map$perm_id
+          df
+        })
+
+        df_ret <-
+        lapply(1:l,function(i){
+        df_l[[i]] <- facs_map
+
+        df_ret <- dplyr::bind_rows(df_l)
+        df_ret$l_id <- i
+        df_ret$layer_alt <-rep(.x$layer_alt,
+                               each = nrow(facs_map))
+
+        df_ret
+        }) %>%
+          dplyr::bind_rows()
+
+        df_ret <-
+          df_ret %>%
+          dplyr::group_by(l_id,
+                   perm_id) %>%
+          dplyr::mutate(run_id = dplyr::cur_group_id()) %>%
+          dplyr::ungroup() %>%
+          dplyr::select(!dplyr::any_of(c("perm_id","l_id")))
+
+        df_one <- df_ret %>%
+          dplyr::filter(run_id == 1) %>%
+          dplyr::mutate(dplyr::across(dplyr::starts_with("fac"),~1)) %>%
+            dplyr::mutate(run_id = 0)
+
+        df_ret <- bind_rows(df_one,df_ret) %>%
+          dplyr::mutate(run_id = run_id + 1)
+
+
+        df_ret
+      }) %>%
+      dplyr::left_join(params_map)
+  }
+
+  run_map <- run_map %>%
+    dplyr::select(!dplyr::any_of(c("upper",
+                                   "lower",
+                                   "gr_id")))
 
   runs <- unique(run_map$run_id)
 
@@ -224,16 +331,7 @@ proflux_alternate <- function(PROFLUX,
     }) %>%
       dplyr::bind_rows()
 
-    name_match <- names(df_ret) %in% names(run)
-    joiner <- ifelse(any(name_match),
-                     names(df_ret)[name_match == TRUE],
-                     character()
-    )
-
-    df_ret <-
-      df_ret %>%
-      dplyr::full_join(run,
-                       by = joiner)
+    df_ret$run_id = run$run_id[1]
 
     df_ret
   })
@@ -245,8 +343,13 @@ proflux_alternate <- function(PROFLUX,
   }
 
 
+  df_ret <-
   df_ret %>%
     dplyr::bind_rows()
+
+  l <- list(results = df_ret,
+            run_map = run_map)
+  l
 }
 
 

@@ -26,5 +26,6 @@ test_that("model compare works", {
     error_compare_models(proflux_summarise(.),"site")
 
 
+  expect_equal(MC$NRMSE,rep(0,10))
 
 })
