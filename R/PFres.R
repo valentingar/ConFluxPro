@@ -10,9 +10,12 @@
 #' to the \code{lm} class.
 #'
 #' @inheritParams pro_flux
+#' @name PFres
 #'
 #' @export
+NULL
 
+#'
 new_PFres <- function(tbl = list(),
                       layers_map = list(),
                       id_cols = character(),
@@ -47,7 +50,7 @@ new_PFres <- function(tbl = list(),
   }
 
 
-#' @export
+#' @rdname PFres
 
 
 PFres <- function(tbl,
@@ -108,3 +111,10 @@ PF_evenness_factor <- function(x){
 PF_profiles <- function(x){
   attr(x,"profiles")
 }
+
+##### Methods #####
+
+
+
+
+

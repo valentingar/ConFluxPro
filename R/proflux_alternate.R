@@ -137,15 +137,17 @@ proflux_alternate <- function(PROFLUX,
     dplyr::mutate(gr_id = dplyr::cur_group_id()) %>%
     dplyr::mutate(layer = LETTERS[dplyr::row_number()])
 
-  print(params_map)
-
-  attr(PROFLUX,"tbl") <-
+  PROFLUX$layer_alt <-
     PROFLUX %>%
     dplyr::mutate(depth = (upper+lower) / 2) %>%
     dplyr::select(!dplyr::any_of("layer")) %>%
     set_layer(layers_map = params_map,
               id_cols = id_cols) %>%
-    as.data.frame()
+    pull(layer)
+
+  params_map <-
+    params_map %>%
+    dplyr::rename(layer_alt = layer)
 
 
   ## get variables for each run
@@ -165,20 +167,20 @@ proflux_alternate <- function(PROFLUX,
     dplyr::group_by(gr_id) %>%
     dplyr::group_modify(
       ~{
-        l <- length(.x$layer)
+        l <- length(.x$layer_alt)
 
         lapply(1:l,function(i)
           c(1:n_perms)
           ) %>%
           expand.grid() %>%
           tidyr::pivot_longer(cols = tidyr::starts_with("Var"),
-                              names_to = "layer",
+                              names_to = "layer_alt",
                               values_to = "perm_id",
                               names_prefix = "Var") %>%
           dplyr::mutate(run_id = rep(seq_len(n()/l),each = l))
       }
     ) %>%
-    dplyr::mutate(layer = LETTERS[as.numeric(layer)]) %>%
+    dplyr::mutate(layer_alt = LETTERS[as.numeric(layer_alt)]) %>%
     dplyr::left_join(facs_map) %>%
     dplyr::left_join(params_map) %>%
     dplyr::select(!dplyr::any_of(c("upper",
@@ -187,7 +189,6 @@ proflux_alternate <- function(PROFLUX,
 
 
   runs <- unique(run_map$run_id)
-
 
   df_ret <-
   lapply(runs,function(r_id){
@@ -297,7 +298,7 @@ proflux_rerun <- function(PROFLUX,
                "Temp",
                "p",
                "rho_air",
-               "layer",
+               "layer_alt",
                "a",
                "b")
 
@@ -306,25 +307,16 @@ proflux_rerun <- function(PROFLUX,
     dplyr::ungroup() %>%
     dplyr::select(dplyr::any_of(cols_sp))
 
-  print(run)
-
   soilphys <-
     soilphys %>%
     dplyr::left_join(run) %>%
-    dplyr::select(!layer) %>%
+    dplyr::select(!layer_alt) %>%
     dplyr::mutate(dplyr::across(params,~.x*{get(paste0("fac_",cur_column()))})) %>%
     complete_soilphys(DSD0_formula = DSD0_formula,
                       gases = unique(PROFLUX$gas),
                       overwrite = TRUE)
 
-
-  ## function(param_variation)
-  ##{
-  ### initialise soilphys
-  ### something for "topheight"
-  ### recalculate soilphys
-  ### calculate pro_flux()
-  PROFLUX_new <-
+ PROFLUX_new <-
     pro_flux(gasdata,
              soilphys,
              layers_map,

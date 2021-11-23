@@ -13,7 +13,8 @@ test_that("proflux_alternate works", {
               lower = c(0,-100),
               lowlim = 0,
               highlim = 1000,
-              layer_couple = 0)
+              layer_couple = 0,
+              layer = c(1,1))
 
   PROFLUX <-
     pro_flux(gasdata,

@@ -105,6 +105,8 @@
       dplyr::group_by(dplyr::across(dplyr::any_of({
         c(id_cols, "layer")
       }))) %>%
-      dplyr::summarise(dflux = sum(dprod))
+      dplyr::summarise(
+        prod = mean(prod,na.rm = T),
+        dflux = sum(dprod))
   }
 
