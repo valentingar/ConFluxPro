@@ -28,6 +28,12 @@
 #'   independently. This means, that the more layer per combination of id_cols
 #'   are provided, the more variations will be tested out.
 #'
+#' @param topheight_var Either FALSE (default) or a vector of numerics that define
+#'   how much the topheight should be varied in cm. Usually this corresponds to
+#'   the humus layer of a soil. The values are added to the original topheight.
+#'   Negative values are subtracted. If this results in a layer of height 0
+#'   (or negative height), it is removed from the model and a warning message displayed.
+#'
 #' @param sensitivity_analysis How should the different values of \code{params}
 #'   and \code{facs} be combined? Can be one of:
 #'   \describe{
@@ -68,6 +74,7 @@ proflux_alternate <- function(PROFLUX,
                               params,
                               facs,
                               params_map,
+                              topheight_var = FALSE,
                               sensitivity_analysis = FALSE,
                               no_confirm = FALSE,
                               DSD0_formula,
@@ -76,7 +83,6 @@ proflux_alternate <- function(PROFLUX,
                               error_args) {
 
   # validity test of PROFLUX (is PFres?)
-
 
   # check sensitvity_analysis
   if (!(sensitivity_analysis %in% c("OAT", "OATL") |
@@ -144,9 +150,13 @@ proflux_alternate <- function(PROFLUX,
     # 'fac_' will be the identifier for recalculation later
     facs_map <-
       lapply(params, function(i) facs)
+
     names(facs_map) <- paste0("fac_", params)
 
-    facs_map <- as.data.frame(facs_map) %>%
+    facs_map <- facs_map %>%
+      as.data.frame()
+
+    facs_map <- facs_map %>%
       expand.grid()
 
   } else {
@@ -158,6 +168,7 @@ proflux_alternate <- function(PROFLUX,
 
     facs_map <-
       lapply(params, function(i) rep(1, length(facs) + 1))
+
     names(facs_map) <- paste0("fac_", params)
     facs_map <- as.data.frame(facs_map)
 
@@ -168,6 +179,7 @@ proflux_alternate <- function(PROFLUX,
         df
       }) %>%
       dplyr::bind_rows()
+
   }
 
   # this makes it easier to assign different permutations to different layers.
@@ -201,13 +213,65 @@ proflux_alternate <- function(PROFLUX,
       "gr_id"
     )))
 
+
+  if (!topheight_var[1] == FALSE){
+
+    if (sensitivity_analysis == FALSE){
+
+      n_toph <- length(topheight_var)
+
+      run_map <-
+        run_map %>%
+        dplyr::select(run_id,gr_id) %>%
+        dplyr::distinct() %>%
+        dplyr::rowwise() %>%
+        dplyr::summarise(dplyr::across(dplyr::everything(),~rep(.x,n_toph)),
+                         fac_topheight = topheight_var,
+                         run_modifier = seq(1:n_toph)) %>%
+        dplyr::group_by(run_id,run_modifier) %>%
+        dplyr::mutate(run_id = dplyr::cur_group_id()) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(!run_modifier) %>%
+        dplyr::left_join(run_map %>%
+                           dplyr::select(!run_id))
+
+    } else if(sensitivity_analysis %in% c("OAT","OATL")){
+
+      # is added anyway as default
+      topheight_var <- topheight_var[!topheight_var == 0]
+      n_toph <- length(topheight_var)
+
+      run_ones <-
+      run_map %>%
+        dplyr::filter(run_id == 1) %>%
+        dplyr::mutate(dplyr::across(dplyr::starts_with("fac_"),
+                                    ~1)) %>%
+        dplyr::select(!run_id)
+
+      run_topheight <-
+      data.frame(fac_topheight = topheight_var,
+                 run_id = LETTERS[1:n_toph]) %>%
+        left_join(run_ones,by = character())
+
+      run_map <-
+      run_map %>%
+        dplyr::mutate(fac_topheight = 0) %>%
+        dplyr::mutate(run_id = as.character(run_id)) %>%
+        dplyr::bind_rows(run_topheight) %>%
+        dplyr::group_by(run_id) %>%
+        dplyr::mutate(run_id = cur_group_id())
+
+    }
+
+  }
+
   runs <- unique(run_map$run_id)
 
   # find number of profiles that will be calculated
   # confirm by user if many profiles - wrong input?
   total_profiles <- run_map %>%
     dplyr::left_join(profiles) %>%
-    dplyr::select(run_id)
+    nrow()
 
   message(paste0("The total number of single profiles is: ", total_profiles))
 
@@ -333,6 +397,10 @@ proflux_rerun <- function(PROFLUX,
     dplyr::ungroup() %>%
     dplyr::select(dplyr::any_of(cols_sp))
 
+  topheight_change <- run$fac_topheight[1]
+  run <- run %>%
+    dplyr::select(!fac_topheight)
+
   soilphys <-
     soilphys %>%
     dplyr::left_join(run) %>%
@@ -345,6 +413,54 @@ proflux_rerun <- function(PROFLUX,
       gases = unique(PROFLUX$gas),
       overwrite = TRUE
     )
+
+  if (!topheight_change == 0){
+
+    layers_map <-
+      layers_map %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+      dplyr::mutate(upper = ifelse(upper == max(upper),
+                                   upper + topheight_change,
+                                   upper)) %>%
+
+      # if this leads to invalid (or empty) layers, these are
+      # removed.
+      dplyr::filter(lower < upper)
+
+    soilphys <-
+      soilphys %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+      dplyr::mutate(upper = ifelse(upper == max(upper),
+                                   upper + topheight_change,
+                                   upper)) %>%
+
+      # if this leads to invalid (or empty) layers, these are
+      # removed.
+      dplyr::filter(lower < upper)
+
+    gasdata <-
+      gasdata %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+      dplyr::mutate(depth = ifelse(depth == max(depth),
+                                   depth + topheight_change,
+                                   depth))
+
+    # get highest value in layers_map per group and remove
+    # any entries in gasdata that are higher than that
+    # after correction (same reason as for the other datasets)
+    maxtop <-
+      layers_map %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+      dplyr::summarise(max_upper = max(upper))
+
+    gasdata <-
+      gasdata %>%
+      dplyr::left_join(maxtop) %>%
+      filter(depth <= max_upper) %>%
+      select(!max_upper)
+
+
+  }
 
   PROFLUX_new <-
     pro_flux(
@@ -377,20 +493,22 @@ make_map_allvar <- function(params_map,
       ~ {
         l <- length(.x$layer_alt)
 
-        lapply(1:l, function(i) {
-          c(1:n_perms)
-        }) %>%
-          expand.grid() %>%
+        df <-
+          gtools::combinations(n_perms,l,repeats.allowed = TRUE) %>%
+          t()
+
+        df <-
+        as.data.frame(df) %>%
+          dplyr::mutate(layer_alt = .x$layer_alt) %>%
           tidyr::pivot_longer(
-            cols = tidyr::starts_with("Var"),
-            names_to = "layer_alt",
+            cols = starts_with("V"),
+            names_to = "run_id",
             values_to = "perm_id",
-            names_prefix = "Var"
-          ) %>%
-          dplyr::mutate(run_id = rep(seq_len(n() / l), each = l))
+            names_prefix = "V") %>%
+          dplyr::mutate(run_id = as.numeric(run_id))
+
       }
     ) %>%
-    dplyr::mutate(layer_alt = LETTERS[as.numeric(layer_alt)]) %>%
     dplyr::left_join(facs_map) %>%
     dplyr::left_join(params_map)
 }

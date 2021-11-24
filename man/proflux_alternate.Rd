@@ -9,6 +9,7 @@ proflux_alternate(
   params,
   facs,
   params_map,
+  topheight_var = FALSE,
   sensitivity_analysis = FALSE,
   no_confirm = FALSE,
   DSD0_formula,
@@ -41,6 +42,12 @@ PROFLUX, as well as \code{upper} and \code{lower}. For each layer enclosed
 by "upper" and "lower", the parameters in "params" will be varied
 independently. This means, that the more layer per combination of id_cols
 are provided, the more variations will be tested out.}
+
+\item{topheight_var}{Either FALSE (default) or a vector of numerics that define
+how much the topheight should be varied in cm. Usually this corresponds to
+the humus layer of a soil. The values are added to the original topheight.
+Negative values are subtracted. If this results in a layer of height 0
+(or negative height), it is removed from the model and a warning message displayed.}
 
 \item{sensitivity_analysis}{How should the different values of \code{params}
 and \code{facs} be combined? Can be one of:
