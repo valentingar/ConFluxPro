@@ -73,85 +73,49 @@ proflux_alternate <- function(PROFLUX,
                               DSD0_formula,
                               return_raw = FALSE,
                               error_funs,
-                              error_args
-                              ){
+                              error_args) {
 
   # validity test of PROFLUX (is PFres?)
 
 
-  #check sensitvity_analysis
-  if(!(sensitivity_analysis %in% c("OAT","OATL") |
-     sensitivity_analysis == FALSE)){
+  # check sensitvity_analysis
+  if (!(sensitivity_analysis %in% c("OAT", "OATL") |
+    sensitivity_analysis == FALSE)) {
     stop("sensitivity_analysis must be on of c('OAT','OATL') or FALSE.")
   }
 
   # check error_args - is there PROFLUX ANYWHERE
   arg_names <-
-  sapply(error_args,names) %>% unlist()
+    sapply(error_args, names) %>% unlist()
 
-  if("PROFLUX" %in% arg_names){
+  if ("PROFLUX" %in% arg_names) {
     stop("error_args cannot contain PROFLUX!")
   }
 
-  #check error_funs - must be functions!
-  if(!all(sapply(error_funs,is.function))){
+  # check error_funs - must be functions!
+  if (!all(sapply(error_funs, is.function))) {
     stop("error_funs must be functions only.")
   }
-
 
   # extract all necessary data from the PFres object
   id_cols <- PF_id_cols(PROFLUX)
   profiles <- PF_profiles(PROFLUX)
 
-  # find number of profiles that will be calculated
-  # confirm by user if many profiles - wrong input?
-  ids_params_map <- id_cols[id_cols %in% names(params_map)]
-
-  n_profs <-
-    profiles %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(ids_params_map))) %>%
-    dplyr::summarise(n_profs = dplyr::n())
-
-  n_runs <-
-    params_map %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::summarise(n_layers = dplyr::n()) %>%
-    dplyr::left_join(n_profs) %>%
-    dplyr::mutate(n_runs =
-                    n_layers *
-                    n_profs *
-                    (length(facs)*
-                    length(params))^
-                    n_layers)
-
-  total_profiles <- sum(n_runs$n_runs)
-  message(paste0("The total number of single profiles is: ", total_profiles))
-
-  if (total_profiles > 1e5 & sensitivity_analysis == FALSE){
-    message("Wow, thats a lot of profiles! Are you sure? (~30s / 1000 profiles)")
-    t_estim <- total_profiles/1000 * c(10,50) / 60
-    t_estim <- paste0(t_estim[1]," to ",t_estim[2])
-    message(paste0("time estimate: ",t_estim, "minutes"))
-
-    if (!no_confirm){
-      confirmer <- readline("please enter one of to continue / stop: (y/N)")
-      if(!confirmer == "y"){
-        stop("Evaluation stopped by user. If u wanted to continue, press 'y' next time.")
-      }
-    }
-  }
-
   ## check if params are in soilphys and numeric
   p_in_sp <- params[params %in% names(PROFLUX)]
-  p_numeric <- sapply(p_in_sp, function(col){
-  ans <- PROFLUX %>% dplyr::pull(col) %>% is.numeric()
+  p_numeric <- sapply(p_in_sp, function(col) {
+    ans <- PROFLUX %>%
+      dplyr::pull(col) %>%
+      is.numeric()
   })
-  if (!length(params) == length(p_numeric)){
+  if (!length(params) == length(p_numeric)) {
     stop("Not all parameters provided in params are columns in soilphysor are not numeric.")
   }
 
   #----- manipulate the data set -----#
 
+  # params map should have a layer_alt variable to join with soilphys
+  # this is also added to PROFLUX, from which soilphys is taken.
   params_map <-
     params_map %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
@@ -160,10 +124,12 @@ proflux_alternate <- function(PROFLUX,
 
   PROFLUX$layer_alt <-
     PROFLUX %>%
-    dplyr::mutate(depth = (upper+lower) / 2) %>%
+    dplyr::mutate(depth = (upper + lower) / 2) %>%
     dplyr::select(!dplyr::any_of("layer")) %>%
-    set_layer(layers_map = params_map,
-              id_cols = id_cols) %>%
+    set_layer(
+      layers_map = params_map,
+      id_cols = id_cols
+    ) %>%
     pull(layer)
 
   params_map <-
@@ -171,184 +137,139 @@ proflux_alternate <- function(PROFLUX,
     dplyr::rename(layer_alt = layer)
 
 
-  ## get variables for each run
-  if(sensitivity_analysis == FALSE){
-  facs_map <-
-    lapply(params, function(i) facs)
-  names(facs_map) <- paste0("fac_",params)
 
-  facs_map <- as.data.frame(facs_map) %>%
-    expand.grid()
+  # get permutations in dependence of sensitivity analysis type
+  if (sensitivity_analysis == FALSE) {
+
+    # 'fac_' will be the identifier for recalculation later
+    facs_map <-
+      lapply(params, function(i) facs)
+    names(facs_map) <- paste0("fac_", params)
+
+    facs_map <- as.data.frame(facs_map) %>%
+      expand.grid()
+
   } else {
+    # for sensitivity analysis, only one parameter is changed
+    # at a time, so that not all permuations are needed.
 
     # Because 1 is added later anyways
     facs <- facs[!facs == 1]
 
     facs_map <-
-      lapply(params, function(i) rep(1,length(facs)+1))
-    names(facs_map) <- paste0("fac_",params)
+      lapply(params, function(i) rep(1, length(facs) + 1))
+    names(facs_map) <- paste0("fac_", params)
     facs_map <- as.data.frame(facs_map)
 
     facs_map <-
-      lapply(1:ncol(facs_map), function(i){
+      lapply(1:ncol(facs_map), function(i) {
         df <- facs_map
-        df[-1,i] <- facs
+        df[-1, i] <- facs
         df
       }) %>%
       dplyr::bind_rows()
-
   }
 
+  # this makes it easier to assign different permutations to different layers.
   facs_map <- facs_map %>%
     dplyr::mutate(perm_id = dplyr::row_number())
 
   n_perms <- nrow(facs_map)
 
-  run_map <-
-    params_map %>%
-    dplyr::group_by(gr_id) %>%
-    dplyr::group_modify(
-      ~{
-        l <- length(.x$layer_alt)
-
-        if (sensitivity_analysis == "OAT"){
-          l <- 1
-        }
-
-        lapply(1:l,function(i)
-          c(1:n_perms)
-          ) %>%
-          expand.grid() %>%
-          tidyr::pivot_longer(cols = tidyr::starts_with("Var"),
-                              names_to = "layer_alt",
-                              values_to = "perm_id",
-                              names_prefix = "Var") %>%
-          dplyr::mutate(run_id = rep(seq_len(n()/l),each = l))
-      }
-    ) %>%
-    dplyr::mutate(layer_alt = LETTERS[as.numeric(layer_alt)]) %>%
-    dplyr::left_join(facs_map) %>%
-    dplyr::left_join(params_map)
-
-  if(sensitivity_analysis == "OAT"){
-    run_map <-
-      facs_map %>%
-      dplyr::mutate(run_id = dplyr::row_number()) %>%
-      dplyr::full_join(params_map,
-                       by = character())
-  } else if (sensitivity_analysis == "OATL"){
-    #only take those runs where all but one parameter stays unchanged
-    run_map <-
-    params_map %>%
-      group_by(gr_id) %>%
-      group_modify(~{
-        l <- nrow(.x)
-
-        facs_map <-
-          facs_map %>%
-          dplyr::filter(!dplyr::if_all(dplyr::starts_with("fac"),~.x == TRUE))
-
-        df_l <- lapply(1:l,function(i){
-          df <- facs_map
-          df[T] <- 1
-          df$perm_id <- facs_map$perm_id
-          df
-        })
-
-        df_ret <-
-        lapply(1:l,function(i){
-        df_l[[i]] <- facs_map
-
-        df_ret <- dplyr::bind_rows(df_l)
-        df_ret$l_id <- i
-        df_ret$layer_alt <-rep(.x$layer_alt,
-                               each = nrow(facs_map))
-
-        df_ret
-        }) %>%
-          dplyr::bind_rows()
-
-        df_ret <-
-          df_ret %>%
-          dplyr::group_by(l_id,
-                   perm_id) %>%
-          dplyr::mutate(run_id = dplyr::cur_group_id()) %>%
-          dplyr::ungroup() %>%
-          dplyr::select(!dplyr::any_of(c("perm_id","l_id")))
-
-        df_one <- df_ret %>%
-          dplyr::filter(run_id == 1) %>%
-          dplyr::mutate(dplyr::across(dplyr::starts_with("fac"),~1)) %>%
-            dplyr::mutate(run_id = 0)
-
-        df_ret <- bind_rows(df_one,df_ret) %>%
-          dplyr::mutate(run_id = run_id + 1)
-
-
-        df_ret
-      }) %>%
-      dplyr::left_join(params_map)
+  if (sensitivity_analysis == FALSE) {
+    run_map <- make_map_allvar(
+      params_map,
+      facs_map,
+      n_perms
+    )
+  } else if (sensitivity_analysis == "OAT") {
+    run_map <- make_map_oat(
+      params_map,
+      facs_map
+    )
+  } else if (sensitivity_analysis == "OATL") {
+    run_map <- make_map_oatl(
+      params_map,
+      facs_map
+    )
   }
 
   run_map <- run_map %>%
-    dplyr::select(!dplyr::any_of(c("upper",
-                                   "lower",
-                                   "gr_id")))
+    dplyr::select(!dplyr::any_of(c(
+      "upper",
+      "lower",
+      "gr_id"
+    )))
 
   runs <- unique(run_map$run_id)
 
-  df_ret <-
-  lapply(runs,function(r_id){
-    run <- run_map[run_map$run_id == r_id,]
+  # find number of profiles that will be calculated
+  # confirm by user if many profiles - wrong input?
+  total_profiles <- run_map %>%
+    dplyr::left_join(profiles) %>%
+    dplyr::select(run_id)
 
-    PROFLUX_new <-
-      proflux_rerun(PROFLUX,
-                    run,
-                    params,
-                    DSD0_formula = DSD0_formula)
+  message(paste0("The total number of single profiles is: ", total_profiles))
 
-    # user can chose to export not the
-    # error summary but the raw model results instead
-    if (return_raw == TRUE){
-      return(PROFLUX_new)
+  if (total_profiles > 1e5 & sensitivity_analysis == FALSE) {
+    message("Wow, thats a lot of profiles! Are you sure? (~30s / 1000 profiles)")
+    t_estim <- total_profiles / 1000 * c(10, 50) / 60
+    t_estim <- paste0(t_estim[1], " to ", t_estim[2])
+    message(paste0("time estimate: ", t_estim, "minutes"))
+
+    if (!no_confirm) {
+      confirmer <- readline("please enter one of to continue / stop: (y/N)")
+      if (!confirmer == "y") {
+        stop("Evaluation stopped by user. If you wanted to continue, press 'y' next time.")
+      }
     }
+  }
 
-    # otherwise: error parameter are calculated
-    # and returned instead.
-    df_ret <-
-    lapply(1:length(error_funs),function(f_id){
 
-      error_args_tmp <-
-        error_args[[f_id]]
-      error_args_tmp$PROFLUX <- PROFLUX_new
+  df_ret <-
+    lapply(runs, function(r_id) {
+      run <- run_map[run_map$run_id == r_id, ]
 
-      df <-
-        do.call(error_funs[[f_id]],
-                error_args_tmp)
+      PROFLUX_new <-
+        proflux_rerun(
+          PROFLUX,
+          run,
+          params,
+          DSD0_formula = DSD0_formula
+        )
 
-      df$error_param <- names(error_funs[f_id])
-      df
-    }) %>%
-      dplyr::bind_rows()
+      # user can chose to export not the
+      # error summary but the raw model results instead
+      if (return_raw == TRUE) {
+        return(PROFLUX_new)
+      }
 
-    df_ret$run_id = run$run_id[1]
+      # otherwise: error parameter are calculated
+      # and returned instead.
+      df_ret <-
+        apply_error_funs(PROFLUX_new,
+                         error_funs,
+                         error_args)
 
-    df_ret
-  })
-
+      df_ret$run_id <- run$run_id[1]
+      df_ret
+    })
   # user can chose to export not the
   # error summary but the raw model results instead
-  if (return_raw == TRUE){
+  if (return_raw == TRUE) {
     return(df_ret)
   }
 
 
   df_ret <-
-  df_ret %>%
+    df_ret %>%
     dplyr::bind_rows()
 
-  l <- list(results = df_ret,
-            run_map = run_map)
+  l <- list(
+    results = df_ret,
+    run_map = run_map
+  )
+
   l
 }
 
@@ -359,51 +280,53 @@ proflux_alternate <- function(PROFLUX,
 ##################################
 
 PFres2env <- function(PROFLUX,
-                      env){
+                      env) {
+  obj_names <- names(attributes(new_PFres()))
+  obj_names <- obj_names[-which(obj_names == "class")]
 
-obj_names <- names(attributes(new_PFres()))
-obj_names <- obj_names[- which(obj_names == "class")]
+  l <- sapply(obj_names, function(n) {
+    attr(PROFLUX, n)
+  }, USE.NAMES = T)
 
-l <- sapply(obj_names,function(n){
-  attr(PROFLUX,n)
-},USE.NAMES = T)
+  list2env(l, environment())
 
-list2env(l, environment())
+  gasdata <-
+    gasdata %>%
+    left_join(profiles)
 
-gasdata <-
-  gasdata %>%
-  left_join(profiles)
-
-l_env <- as.list.environment(environment())
-list2env(l_env, env)
+  l_env <- as.list.environment(environment())
+  list2env(l_env, env)
 }
 
 
 proflux_rerun <- function(PROFLUX,
-              run,
-              params,
-              DSD0_formula){
-
+                          run,
+                          params,
+                          DSD0_formula) {
   env <- environment()
-  PFres2env(PROFLUX,
-            env)
+  PFres2env(
+    PROFLUX,
+    env
+  )
 
 
-  cols_sp <- c(id_cols,
-               "DS",
-               "D0",
-               "TPS",
-               "AFPS",
-               "SWC",
-               "upper",
-               "lower",
-               "depth",
-               "Temp",
-               "p",
-               "rho_air",
-               "layer_alt",
-               "a",
-               "b")
+  cols_sp <- c(
+    id_cols,
+    "DS",
+    "D0",
+    "TPS",
+    "AFPS",
+    "SWC",
+    "upper",
+    "lower",
+    "depth",
+    "Temp",
+    "p",
+    "rho_air",
+    "layer_alt",
+    "a",
+    "b"
+  )
 
   soilphys <-
     PROFLUX %>%
@@ -414,22 +337,156 @@ proflux_rerun <- function(PROFLUX,
     soilphys %>%
     dplyr::left_join(run) %>%
     dplyr::select(!layer_alt) %>%
-    dplyr::mutate(dplyr::across(params,~.x*{get(paste0("fac_",cur_column()))})) %>%
-    complete_soilphys(DSD0_formula = DSD0_formula,
-                      gases = unique(PROFLUX$gas),
-                      overwrite = TRUE)
+    dplyr::mutate(dplyr::across(params, ~ .x * {
+      get(paste0("fac_", cur_column()))
+    })) %>%
+    complete_soilphys(
+      DSD0_formula = DSD0_formula,
+      gases = unique(PROFLUX$gas),
+      overwrite = TRUE
+    )
 
- PROFLUX_new <-
-    pro_flux(gasdata,
-             soilphys,
-             layers_map,
-             id_cols,
-             storage_term,
-             zero_flux,
-             zero_limits,
-             known_flux,
-             known_flux_factor,
-             DSD0_optim,
-             evenness_factor)
+  PROFLUX_new <-
+    pro_flux(
+      gasdata,
+      soilphys,
+      layers_map,
+      id_cols,
+      storage_term,
+      zero_flux,
+      zero_limits,
+      known_flux,
+      known_flux_factor,
+      DSD0_optim,
+      evenness_factor
+    )
   ### optional:: calculate NRMSEs
 }
+
+
+#### run map design ####
+########################
+
+make_map_allvar <- function(params_map,
+                            facs_map,
+                            n_perms) {
+  run_map <-
+    params_map %>%
+    dplyr::group_by(gr_id) %>%
+    dplyr::group_modify(
+      ~ {
+        l <- length(.x$layer_alt)
+
+        lapply(1:l, function(i) {
+          c(1:n_perms)
+        }) %>%
+          expand.grid() %>%
+          tidyr::pivot_longer(
+            cols = tidyr::starts_with("Var"),
+            names_to = "layer_alt",
+            values_to = "perm_id",
+            names_prefix = "Var"
+          ) %>%
+          dplyr::mutate(run_id = rep(seq_len(n() / l), each = l))
+      }
+    ) %>%
+    dplyr::mutate(layer_alt = LETTERS[as.numeric(layer_alt)]) %>%
+    dplyr::left_join(facs_map) %>%
+    dplyr::left_join(params_map)
+}
+
+
+make_map_oat <- function(params_map,
+                         facs_map) {
+  run_map <-
+    facs_map %>%
+    dplyr::mutate(run_id = dplyr::row_number()) %>%
+    dplyr::full_join(params_map,
+      by = character()
+    )
+}
+
+
+make_map_oatl <- function(params_map,
+                          facs_map) {
+  run_map <-
+    params_map %>%
+    group_by(gr_id) %>%
+    group_modify(~ {
+      l <- nrow(.x)
+
+      facs_map <-
+        facs_map %>%
+        dplyr::filter(!dplyr::if_all(dplyr::starts_with("fac"), ~ .x == TRUE))
+
+      df_l <- lapply(1:l, function(i) {
+        df <- facs_map
+        df[T] <- 1
+        df$perm_id <- facs_map$perm_id
+        df
+      })
+
+      df_ret <-
+        lapply(1:l, function(i) {
+          df_l[[i]] <- facs_map
+
+          df_ret <- dplyr::bind_rows(df_l)
+          df_ret$l_id <- i
+          df_ret$layer_alt <- rep(.x$layer_alt,
+            each = nrow(facs_map)
+          )
+
+          df_ret
+        }) %>%
+        dplyr::bind_rows()
+
+      df_ret <-
+        df_ret %>%
+        dplyr::group_by(
+          l_id,
+          perm_id
+        ) %>%
+        dplyr::mutate(run_id = dplyr::cur_group_id()) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(!dplyr::any_of(c("perm_id", "l_id")))
+
+      df_one <- df_ret %>%
+        dplyr::filter(run_id == 1) %>%
+        dplyr::mutate(dplyr::across(dplyr::starts_with("fac"), ~1)) %>%
+        dplyr::mutate(run_id = 0)
+
+      df_ret <- bind_rows(df_one, df_ret) %>%
+        dplyr::mutate(run_id = run_id + 1)
+
+
+      df_ret
+    }) %>%
+    dplyr::left_join(params_map)
+}
+
+apply_error_funs <- function(PROFLUX_new,
+                             error_funs,
+                             error_args){
+
+
+  df_ret <-
+  lapply(1:length(error_funs), function(f_id) {
+    error_args_tmp <-
+      error_args[[f_id]]
+    error_args_tmp$PROFLUX <- PROFLUX_new
+
+    df <-
+      do.call(
+        error_funs[[f_id]],
+        error_args_tmp
+      )
+
+    df$error_param <- names(error_funs[f_id])
+    df
+  }) %>%
+    dplyr::bind_rows()
+
+  df_ret
+}
+
+

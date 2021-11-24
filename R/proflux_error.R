@@ -24,8 +24,12 @@ NULL
   ) {
     id_cols <- PF_id_cols(PROFLUX)
     gasdata <- PF_gasdata(PROFLUX)
+    profiles <- PF_profiles(PROFLUX)
+
 
     gasdata <- gasdata %>%
+      left_join(profiles) %>%
+
       dplyr::select(dplyr::any_of(
         {c(id_cols,
            "NRESULT_ppm",

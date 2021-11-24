@@ -85,7 +85,7 @@ test_that("proflux_alternate works", {
   expect_equal(nrow(PF2$results),4)
   expect_equal(any(is.na(PF2$results$NRMSE)),FALSE)
   expect_equal(round(PF2$results$NRMSE,digits = 2),
-               c(1.42,1.46,0,0))
+               c(0.21,0.24,0,0))
 
   expect_equal(nrow(PF3$results),18)
   expect_equal(unique(PF3$results$run_id),c(1,2,3))
