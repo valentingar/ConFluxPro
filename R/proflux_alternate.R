@@ -516,7 +516,8 @@ proflux_rerun <- function(PROFLUX,
     "rho_air",
     "layer_alt",
     "a",
-    "b"
+    "b",
+    "c"
   )
 
   soilphys <-
