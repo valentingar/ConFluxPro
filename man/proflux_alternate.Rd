@@ -14,6 +14,8 @@ proflux_alternate(
   no_confirm = FALSE,
   DSD0_formula,
   return_raw = FALSE,
+  write_db = FALSE,
+  con = NULL,
   error_funs,
   error_args
 )
@@ -72,6 +74,12 @@ examples below.}
 
 \item{return_raw}{If TRUE, the complete model results are returned as a list
 instead of the error summary.}
+
+\item{write_db}{If \code{TRUE}, the results (either the error parameters from error_funs
+or the raw PFres results) are written in table in the database defined in con.
+Runs are run together at 25 runs each to improve performance while preventing memory crashes.}
+
+\item{con}{The database connection to be used when write_db is \code{TRUE}.}
 
 \item{error_funs}{A named list of functions that take PROFLUX (+ further arguments)
 as input and return a \code{data.frame} of at least one column: NRMSE, as

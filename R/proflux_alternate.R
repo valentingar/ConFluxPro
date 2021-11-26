@@ -54,6 +54,12 @@
 #' @param return_raw If TRUE, the complete model results are returned as a list
 #'   instead of the error summary.
 #'
+#' @param write_db If \code{TRUE}, the results (either the error parameters from error_funs
+#'  or the raw PFres results) are written in table in the database defined in con.
+#'  Runs are run together at 25 runs each to improve performance while preventing memory crashes.
+#'
+#' @param con The database connection to be used when write_db is \code{TRUE}.
+#'
 #' @param error_funs A named list of functions that take PROFLUX (+ further arguments)
 #'   as input and return a \code{data.frame} of at least one column: NRMSE, as
 #'   well as further columns that may represent different parameters calculated
@@ -79,6 +85,8 @@ proflux_alternate <- function(PROFLUX,
                               no_confirm = FALSE,
                               DSD0_formula,
                               return_raw = FALSE,
+                              write_db = FALSE,
+                              con = NULL,
                               error_funs,
                               error_args) {
 
@@ -106,6 +114,7 @@ proflux_alternate <- function(PROFLUX,
   # extract all necessary data from the PFres object
   id_cols <- PF_id_cols(PROFLUX)
   profiles <- PF_profiles(PROFLUX)
+  layers_map <- PF_layers_map(PROFLUX)
 
   ## check if params are in soilphys and numeric
   p_in_sp <- params[params %in% names(PROFLUX)]
@@ -114,8 +123,26 @@ proflux_alternate <- function(PROFLUX,
       dplyr::pull(col) %>%
       is.numeric()
   })
+
   if (!length(params) == length(p_numeric)) {
     stop("Not all parameters provided in params are columns in soilphysor are not numeric.")
+  }
+
+
+  # check if topheight_var leads to 0 or negative layers
+  if (!topheight_var[1] == FALSE){
+    is_topheight_invalid <-
+      layers_map %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+      dplyr::slice_max(upper) %>%
+      dplyr::mutate(upper = upper + min(!!topheight_var)) %>%
+      dplyr::mutate(is_invalid = upper <= lower) %>%
+      dplyr::pull(is_invalid)
+
+    if (any(is_topheight_invalid)){
+      warning("topheight_var leads to layers of height 0 or less.")
+      warning("There, the top layer is removed. This may lead to duplicate runs.")
+    }
   }
 
   #----- manipulate the data set -----#
@@ -214,6 +241,9 @@ proflux_alternate <- function(PROFLUX,
     )))
 
 
+  #initialise value
+  run_map$fac_topheight <- 0
+
   if (!topheight_var[1] == FALSE){
 
     if (sensitivity_analysis == FALSE){
@@ -265,6 +295,12 @@ proflux_alternate <- function(PROFLUX,
 
   }
 
+  #repair fac_topheight
+  run_map <- run_map %>%
+    dplyr::mutate(fac_topheight = ifelse(is.na(fac_topheight),
+                                         0,
+                                         fac_topheight))
+
   runs <- unique(run_map$run_id)
 
   # find number of profiles that will be calculated
@@ -290,34 +326,116 @@ proflux_alternate <- function(PROFLUX,
   }
 
 
-  df_ret <-
-    lapply(runs, function(r_id) {
-      run <- run_map[run_map$run_id == r_id, ]
 
-      PROFLUX_new <-
-        proflux_rerun(
-          PROFLUX,
-          run,
-          params,
-          DSD0_formula = DSD0_formula
-        )
 
-      # user can chose to export not the
-      # error summary but the raw model results instead
-      if (return_raw == TRUE) {
-        return(PROFLUX_new)
+  #------ calculate ---------#
+
+  #initialise function for actual running.
+  fun_run <- function(run_id) {
+    run_and_summarise(r_id = run_id,
+                      run_map = run_map,
+                      PROFLUX = PROFLUX,
+                      params = params,
+                      DSD0_formula = DSD0_formula,
+                      return_raw = return_raw,
+                      error_funs = error_funs,
+                      error_args = error_args)
+    }
+
+
+  if (write_db == TRUE){
+
+    #####################
+    ### WITH DATABASE ###
+    #####################
+
+    tab_name <- ifelse(return_raw == TRUE,
+                       "PFres",
+                       "PFalt")
+
+    # have there been previous attempts?
+    # increase alt_id by one if yes
+    if (DBI::dbExistsTable(con,"alt_map")){
+      alt_id <-
+        con %>% dplyr::tbl("alt_map") %>%
+        dplyr::collect() %>%
+        dplyr::pull(alt_id) %>%
+        max()
+
+      alt_id <- alt_id + 1
+
+      if(!is.finite(alt_id)){
+        warning("corrupted alt_map in con. starting at 100 now")
+        alt_id <- 100
       }
 
-      # otherwise: error parameter are calculated
-      # and returned instead.
-      df_ret <-
-        apply_error_funs(PROFLUX_new,
-                         error_funs,
-                         error_args)
+    } else {
+      alt_id <- 1
 
-      df_ret$run_id <- run$run_id[1]
-      df_ret
-    })
+      DBI::dbCreateTable(con,
+                         "alt_map",
+                         data.frame(alt_id = alt_id,
+                                    Date = Sys.time())
+                         )
+
+    }
+
+    DBI::dbAppendTable(con,
+                       "alt_map",
+                       data.frame(alt_id = alt_id,
+                                  Date = Sys.time())
+    )
+
+    # initialise database tables and choose correct functions
+    tbl_temp <- fun_run(1)
+    tbl_temp$alt_id <- alt_id
+    tbl_temp <- tbl_temp[0, ]
+
+    if (return_raw == TRUE){
+      tab_name <- paste0("PFres_",alt_id)
+    } else {
+      tab_name <- paste0("PFalt_",alt_id)
+
+    }
+
+    DBI::dbCreateTable(con,
+                       tab_name,
+                       tbl_temp)
+
+
+    fun_proc <- function(df_ret){
+      write_database(df_ret,
+                     con,
+                     alt_id,
+                     tab_name)
+    }
+
+
+    # run alternation
+    chunk_lapply(X = runs,
+                 FUN = fun_run,
+                 fun_process = fun_proc,
+                 n_per_chunk = 25)
+
+    DBI::dbCreateTable(con,
+                       paste0("runmap_",alt_id),
+                       run_map)
+
+
+    DBI::dbDisconnect(con)
+
+  } else {
+
+  ###################
+  ### NO DATABASE ###
+  ###################
+
+
+  df_ret <-
+    lapply(runs,
+           fun_run
+           )
+
   # user can chose to export not the
   # error summary but the raw model results instead
   if (return_raw == TRUE) {
@@ -334,7 +452,8 @@ proflux_alternate <- function(PROFLUX,
     run_map = run_map
   )
 
-  l
+  return(l)
+  }
 }
 
 
@@ -398,6 +517,7 @@ proflux_rerun <- function(PROFLUX,
     dplyr::select(dplyr::any_of(cols_sp))
 
   topheight_change <- run$fac_topheight[1]
+
   run <- run %>%
     dplyr::select(!fac_topheight)
 
@@ -479,6 +599,43 @@ proflux_rerun <- function(PROFLUX,
   ### optional:: calculate NRMSEs
 }
 
+
+run_and_summarise <- function(r_id,
+                        run_map,
+                        PROFLUX,
+                        params,
+                        DSD0_formula,
+                        return_raw,
+                        error_funs,
+                        error_args){
+  run <- run_map[run_map$run_id == r_id, ]
+
+  PROFLUX_new <-
+    proflux_rerun(
+      PROFLUX,
+      run,
+      params,
+      DSD0_formula = DSD0_formula
+    )
+
+  # user can chose to export not the
+  # error summary but the raw model results instead
+  if (return_raw == TRUE) {
+
+    PROFLUX_new$run_id <- r_id
+    return(PROFLUX_new)
+  }
+
+  # otherwise: error parameter are calculated
+  # and returned instead.
+  df_ret <-
+    apply_error_funs(PROFLUX_new,
+                     error_funs,
+                     error_args)
+
+  df_ret$run_id <- r_id
+  df_ret
+}
 
 #### run map design ####
 ########################
@@ -605,6 +762,23 @@ apply_error_funs <- function(PROFLUX_new,
     dplyr::bind_rows()
 
   df_ret
+}
+
+# functions to write the results  to database connection con
+write_database <- function(df_ret,
+                               con,
+                               alt_id,
+                           tab_name){
+
+  df_ret <-
+    df_ret %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(alt_id = !!alt_id)
+
+  DBI::dbAppendTable(conn = con,
+                     name = tab_name,
+                     value = df_ret)
+
 }
 
 
