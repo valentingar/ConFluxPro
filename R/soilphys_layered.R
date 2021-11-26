@@ -98,7 +98,7 @@ set_layer <- function(df, layers_map, id_cols) {
   id_lmap <- c(id_cols[id_cols %in% names(layers_map)], "j_help")
 
   df %>%
-    mutate(j_help = 1) %>%
+    dplyr::mutate(j_help = 1) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_lmap))) %>%
     dplyr::group_modify( ~ {
       l_tmp <- .y %>% dplyr::left_join(layers_map, by = id_lmap)

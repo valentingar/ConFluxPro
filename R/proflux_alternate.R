@@ -155,15 +155,20 @@ proflux_alternate <- function(PROFLUX,
     dplyr::mutate(gr_id = dplyr::cur_group_id()) %>%
     dplyr::mutate(layer = LETTERS[dplyr::row_number()])
 
-  PROFLUX$layer_alt <-
+  pf_layer_alt <-
     PROFLUX %>%
+    dplyr::mutate(row_id_lmap = dplyr::row_number()) %>%
     dplyr::mutate(depth = (upper + lower) / 2) %>%
     dplyr::select(!dplyr::any_of("layer")) %>%
     set_layer(
       layers_map = params_map,
       id_cols = id_cols
     ) %>%
-    pull(layer)
+      select(layer,row_id_lmap)
+
+   PROFLUX$layer_alt <-
+      pf_layer_alt$layer[match(1:nrow(PROFLUX),pf_layer_alt$row_id_lmap)]
+
 
   params_map <-
     params_map %>%
@@ -383,7 +388,7 @@ proflux_alternate <- function(PROFLUX,
     DBI::dbAppendTable(con,
                        "alt_map",
                        data.frame(alt_id = alt_id,
-                                  Date = Sys.time())
+                                  Date = format(Sys.time()))
     )
 
     # initialise database tables and choose correct functions
@@ -418,6 +423,9 @@ proflux_alternate <- function(PROFLUX,
                  n_per_chunk = 25)
 
     DBI::dbCreateTable(con,
+                       paste0("runmap_",alt_id),
+                       run_map)
+    DBI::dbAppendTable(con,
                        paste0("runmap_",alt_id),
                        run_map)
 
@@ -524,7 +532,7 @@ proflux_rerun <- function(PROFLUX,
   soilphys <-
     soilphys %>%
     dplyr::left_join(run) %>%
-    dplyr::select(!layer_alt) %>%
+    #dplyr::select(!layer_alt) %>%
     dplyr::mutate(dplyr::across(params, ~ .x * {
       get(paste0("fac_", cur_column()))
     })) %>%
