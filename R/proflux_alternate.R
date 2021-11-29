@@ -211,7 +211,8 @@ proflux_alternate <- function(PROFLUX,
         df[-1, i] <- facs
         df
       }) %>%
-      dplyr::bind_rows()
+      dplyr::bind_rows() %>%
+      dplyr::distinct()
 
   }
 
@@ -627,8 +628,12 @@ run_and_summarise <- function(r_id,
                         return_raw,
                         error_funs,
                         error_args){
+  prnt_message <- paste0("progress: ",r_id,"/",max(run_map$run_id))
+  message(prnt_message)
+
   run <- run_map[run_map$run_id == r_id, ]
 
+  ddpcr::quiet(
   PROFLUX_new <-
     proflux_rerun(
       PROFLUX,
@@ -636,6 +641,7 @@ run_and_summarise <- function(r_id,
       params,
       DSD0_formula = DSD0_formula
     )
+  )
 
   # user can chose to export not the
   # error summary but the raw model results instead
@@ -707,55 +713,64 @@ make_map_oatl <- function(params_map,
     params_map %>%
     group_by(gr_id) %>%
     group_modify(~ {
+      # get the perm_id where everything does not change
+      facs_stationary <-
+      facs_map %>%
+        dplyr::filter(dplyr::if_all(dplyr::starts_with("fac_"),~.x == 1))
+
+      # if there is no changes at all, just join.
+      if(nrow(facs_stationary) == nrow(facs_map)){
+        df_ret <- .x %>%
+          dplyr::left_join(facs_map,
+                           by = character()) %>%
+          dplyr::mutate(run_id = 1)
+        return(df_ret)
+      }
+
+      # otherwise proceed
       l <- nrow(.x)
 
-      facs_map <-
+      facs_changes <-
         facs_map %>%
-        dplyr::filter(!dplyr::if_all(dplyr::starts_with("fac"), ~ .x == TRUE))
-
-      df_l <- lapply(1:l, function(i) {
-        df <- facs_map
-        df[T] <- 1
-        df$perm_id <- facs_map$perm_id
-        df
-      })
+        dplyr::anti_join(facs_stationary)
 
       df_ret <-
-        lapply(1:l, function(i) {
-          df_l[[i]] <- facs_map
+        lapply(.x$layer_alt, function(l_a){
 
-          df_ret <- dplyr::bind_rows(df_l)
-          df_ret$l_id <- i
-          df_ret$layer_alt <- rep(.x$layer_alt,
-            each = nrow(facs_map)
-          )
+        df_changes <-
+          .x %>%
+          dplyr::filter(layer_alt == l_a) %>%
+          dplyr::left_join(facs_changes,
+                           by = character()) %>%
+          dplyr::mutate(run_id = paste0(layer_alt,
+                                        dplyr::row_number()))
 
-          df_ret
-        }) %>%
-        dplyr::bind_rows()
+        df_nochange <-
+        .x %>%
+          dplyr::filter(!layer_alt == l_a) %>%
+          dplyr::left_join(facs_stationary,
+                           by = character()) %>%
+          dplyr::rowwise() %>%
+          dplyr::summarise(dplyr::across(dplyr::everything(),
+                                         ~.x),
+                           run_id = df_changes$run_id)
 
-      df_ret <-
-        df_ret %>%
-        dplyr::group_by(
-          l_id,
-          perm_id
-        ) %>%
-        dplyr::mutate(run_id = dplyr::cur_group_id()) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(!dplyr::any_of(c("perm_id", "l_id")))
+        df_ret <-
+          dplyr::bind_rows(df_changes,df_nochange)
 
-      df_one <- df_ret %>%
-        dplyr::filter(run_id == 1) %>%
-        dplyr::mutate(dplyr::across(dplyr::starts_with("fac"), ~1)) %>%
-        dplyr::mutate(run_id = 0)
-
-      df_ret <- bind_rows(df_one, df_ret) %>%
-        dplyr::mutate(run_id = run_id + 1)
-
+        df_ret
+      }) %>%
+        dplyr::bind_rows() %>%
+        dplyr::bind_rows(.x %>%
+                           dplyr::left_join(facs_stationary,
+                                     by = character()) %>%
+                           dplyr::mutate(run_id = "absolutelynochange")) %>%
+        dplyr::group_by(run_id) %>%
+        dplyr::mutate(run_id = dplyr::cur_group_id())
 
       df_ret
-    }) %>%
-    dplyr::left_join(params_map)
+    }) #%>%
+    #dplyr::left_join(params_map)
 }
 
 apply_error_funs <- function(PROFLUX_new,

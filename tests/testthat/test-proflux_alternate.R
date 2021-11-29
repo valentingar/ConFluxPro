@@ -140,3 +140,75 @@ expect_warning(
 )
 
 
+test_that("oatl map maker works",{
+
+  params_map <- data.frame(upper = c(5,0,7,0),
+                           lower = c(0,-100,0,-100),
+                           site = c("site_a","site_a","site_b","site_b"),
+                           gr_id = c(1,1,2,2),
+                           layer_alt = c("A","B","A","B"))
+
+  facs_map <- data.frame(fac_TPS = 1,
+                         perm_id = 1)
+
+  facs_map_2 <- data.frame(fac_TPS = c(1,2),
+                           perm_id = c(1,2))
+
+  run_map <- make_map_oatl(params_map,
+                           facs_map
+                           ) %>%
+    dplyr::arrange(gr_id,run_id,layer_alt)
+
+  run_map_2 <- make_map_oatl(params_map,
+                             facs_map_2) %>%
+    ungroup() %>%
+    dplyr::arrange(gr_id,run_id,layer_alt,perm_id) %>%
+    as.data.frame()
+
+  run_map_2_exp <-
+    list({params_map %>%
+        dplyr::mutate(fac_TPS =
+                        ifelse(layer_alt == "A",
+                                      2,
+                                      1),
+                      run_id = 1)},
+        {params_map %>%
+            dplyr::mutate(fac_TPS =
+                            ifelse(layer_alt == "A",
+                                          1,
+                                          2),
+                          run_id = 3)},
+        {params_map %>%
+            dplyr::mutate(fac_TPS = 1,
+                          run_id = 2)
+
+        }
+        ) %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(facs_map_2) %>%
+    dplyr::arrange(gr_id,run_id,layer_alt,perm_id)
+
+  run_map_2_exp <-
+    run_map_2_exp[,c(4,1,2,3,5,6,8,7)]
+
+  run_map_exp <-
+    params_map %>%
+    dplyr::left_join(facs_map,
+                     by = character()) %>%
+    dplyr::mutate(run_id = 1) %>%
+    dplyr::arrange(gr_id,run_id,layer_alt)
+
+  run_map_exp <-
+    run_map_exp[,c(4,1,2,3,5,6,7,8)]
+
+
+  expect_equal(run_map %>%
+                 as.data.frame(),
+               run_map_exp)
+
+  expect_identical(nrow(run_map_2),
+                   nrow(run_map_2_exp))
+
+})
+
+
