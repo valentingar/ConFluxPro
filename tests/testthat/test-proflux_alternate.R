@@ -93,3 +93,50 @@ test_that("proflux_alternate works", {
   expect_equal(unique(PF4$run_map$run_id),c(1,2,3))
 
 })
+
+test_that("proflux_alternate topheight_var",{
+
+
+
+  data("gasdata")
+  data("soilphys")
+
+  lmap <- soilphys %>%
+    select(upper,site) %>%
+    distinct() %>%
+    group_by(site) %>%
+    slice_max(upper) %>%
+    summarise(upper = c(upper,0),
+              lower = c(0,-100),
+              lowlim = 0,
+              highlim = 1000,
+              layer_couple = 0,
+              layer = c(1,1))
+
+  PROFLUX <-
+    pro_flux(gasdata,
+             soilphys,
+             lmap,
+             c("site","Date"))
+
+
+expect_warning(
+  PF2 <-
+    proflux_alternate(PROFLUX,
+                      "TPS",
+                      1.0,
+                      params_map = lmap %>%
+                        select(upper,lower,site),
+                      topheight_var = c(-10),
+                      no_confirm = TRUE,
+                      DSD0_formula = "a*AFPS^b",
+                      return_raw = TRUE,
+                      error_args = NULL,
+                      error_funs = NULL)
+ )
+
+  expect_equal(class(PF2),"list")
+}
+)
+
+

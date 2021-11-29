@@ -140,8 +140,9 @@ proflux_alternate <- function(PROFLUX,
       dplyr::pull(is_invalid)
 
     if (any(is_topheight_invalid)){
-      warning("topheight_var leads to layers of height 0 or less.")
-      warning("There, the top layer is removed. This may lead to duplicate runs.")
+      warning("topheight_var leads to layers of height 0 or less.
+              There, the top layer is removed.
+              This may lead to duplicate runs.")
     }
   }
 
@@ -238,14 +239,6 @@ proflux_alternate <- function(PROFLUX,
     )
   }
 
-  run_map <- run_map %>%
-    dplyr::select(!dplyr::any_of(c(
-      "upper",
-      "lower",
-      "gr_id"
-    )))
-
-
   #initialise value
   run_map$fac_topheight <- 0
 
@@ -261,14 +254,18 @@ proflux_alternate <- function(PROFLUX,
         dplyr::distinct() %>%
         dplyr::rowwise() %>%
         dplyr::summarise(dplyr::across(dplyr::everything(),~rep(.x,n_toph)),
-                         fac_topheight = topheight_var,
+                         fac_topheight = !!topheight_var,
                          run_modifier = seq(1:n_toph)) %>%
         dplyr::group_by(run_id,run_modifier) %>%
         dplyr::mutate(run_id = dplyr::cur_group_id()) %>%
         dplyr::ungroup() %>%
         dplyr::select(!run_modifier) %>%
         dplyr::left_join(run_map %>%
-                           dplyr::select(!run_id))
+                           dplyr::select(
+                             !dplyr::any_of(c("run_id",
+                                              "fac_topheight"))
+                             )
+        )
 
     } else if(sensitivity_analysis %in% c("OAT","OATL")){
 
@@ -307,6 +304,14 @@ proflux_alternate <- function(PROFLUX,
                                          fac_topheight))
 
   runs <- unique(run_map$run_id)
+
+
+  run_map <- run_map %>%
+    dplyr::select(!dplyr::any_of(c(
+      "upper",
+      "lower",
+      "gr_id"
+    )))
 
   # find number of profiles that will be calculated
   # confirm by user if many profiles - wrong input?
