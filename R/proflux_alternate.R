@@ -273,6 +273,11 @@ proflux_alternate <- function(PROFLUX,
       topheight_var <- topheight_var[!topheight_var == 0]
       n_toph <- length(topheight_var)
 
+      run_map <- run_map %>%
+        dplyr::select(
+          !dplyr::any_of(c("fac_topheight"))
+        )
+
       run_ones <-
       run_map %>%
         dplyr::filter(run_id == 1) %>%
