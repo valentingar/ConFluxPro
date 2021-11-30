@@ -308,8 +308,29 @@ proflux_alternate <- function(PROFLUX,
     dplyr::mutate(fac_topheight = ifelse(is.na(fac_topheight),
                                          0,
                                          fac_topheight)) %>%
-    # refill run_id
-    dplyr::mutate(run_id = rank_repl(run_id))
+
+  # remove invalid fac_topheights
+  l_uppermost <-
+    layers_map %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::slice_max(upper) %>%
+    dplyr::mutate(height_layer = upper - lower) %>%
+    dplyr::select(dplyr::any_of(c("height_layer",id_cols)))
+
+  n_both <- names(l_uppermpst)[names(l_uppermost) %in% names(run_map)]
+  n_both <- ifelse(length(n_both) == 0,
+                   character(),
+                   n_both)
+
+  run_map <-
+    run_map %>%
+      dplyr::left_join(l_uppermost) %>%
+      dplyr::filter(-fac_topheight <= height_layer) %>%
+      dplyr::select(!height_layer)
+
+
+  # refill run_id
+  dplyr::mutate(run_id = rank_repl(run_id))
 
   runs <- sort(unique(run_map$run_id))
 
@@ -547,7 +568,7 @@ proflux_rerun <- function(PROFLUX,
 
   soilphys <-
     soilphys %>%
-    dplyr::left_join(run) %>%
+    dplyr::right_join(run) %>%
     #dplyr::select(!layer_alt) %>%
     dplyr::mutate(dplyr::across(params, ~ .x * {
       get(paste0("fac_", cur_column()))
@@ -574,8 +595,10 @@ proflux_rerun <- function(PROFLUX,
     soilphys <-
       soilphys %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-      dplyr::mutate(upper = ifelse(upper == max(upper),
-                                   upper + topheight_change,
+      dplyr::mutate(umax = max(upper)) %>%
+      dplyr::mutate(unew = max(upper) + topheight_change) %>%
+      dplyr::mutate(upper = ifelse(upper > unew,
+                                   unew,
                                    upper)) %>%
 
       # if this leads to invalid (or empty) layers, these are
