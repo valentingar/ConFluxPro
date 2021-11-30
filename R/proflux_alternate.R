@@ -607,7 +607,7 @@ proflux_rerun <- function(PROFLUX,
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
       dplyr::mutate(umax = max(upper)) %>%
       dplyr::mutate(unew = max(upper) + topheight_change) %>%
-      dplyr::mutate(upper = ifelse(upper > unew,
+      dplyr::mutate(upper = ifelse(upper == umax,
                                    unew,
                                    upper)) %>%
 
