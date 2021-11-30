@@ -307,7 +307,7 @@ proflux_alternate <- function(PROFLUX,
   run_map <- run_map %>%
     dplyr::mutate(fac_topheight = ifelse(is.na(fac_topheight),
                                          0,
-                                         fac_topheight)) %>%
+                                         fac_topheight))
 
   # remove invalid fac_topheights
   l_uppermost <-
