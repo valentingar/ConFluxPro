@@ -319,6 +319,7 @@ proflux_alternate <- function(PROFLUX,
     layers_map %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(n_rmap))) %>%
     dplyr::slice_max(upper) %>%
+    dplyr::distinct() %>%
     dplyr::mutate(height_layer = upper - lower) %>%
     dplyr::select(dplyr::any_of(c("height_layer",n_rmap)))
 
