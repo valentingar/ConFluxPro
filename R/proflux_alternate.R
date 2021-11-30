@@ -310,27 +310,35 @@ proflux_alternate <- function(PROFLUX,
                                          fac_topheight))
 
   # remove invalid fac_topheights
+  n_rmap <- id_cols[id_cols %in% names(run_map)]
+  n_rmap <- ifelse(length(n_rmap) == 0,
+                   character(),
+                   n_rmap)
+
   l_uppermost <-
     layers_map %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(n_rmap))) %>%
     dplyr::slice_max(upper) %>%
     dplyr::mutate(height_layer = upper - lower) %>%
-    dplyr::select(dplyr::any_of(c("height_layer",id_cols)))
+    dplyr::select(dplyr::any_of(c("height_layer",n_rmap)))
 
-  n_both <- names(l_uppermost)[names(l_uppermost) %in% names(run_map)]
+  n_both <- n_rmap[n_rmap %in% names(l_uppermost)]
   n_both <- ifelse(length(n_both) == 0,
                    character(),
                    n_both)
 
   run_map <-
     run_map %>%
-      dplyr::left_join(l_uppermost) %>%
+      dplyr::left_join(l_uppermost,by = n_both) %>%
       dplyr::filter(-fac_topheight <= height_layer) %>%
-      dplyr::select(!height_layer) %>%
+      dplyr::select(!height_layer)
 
 
   # refill run_id
-  dplyr::mutate(run_id = rank_repl(run_id))
+  run_map <-
+    run_map %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(run_id = rank_repl(run_id))
 
   runs <- sort(unique(run_map$run_id))
 
