@@ -634,10 +634,12 @@ proflux_rerun <- function(PROFLUX,
       gasdata %>%
       dplyr::left_join(maxtop) %>%
       filter(depth <= max_upper) %>%
-      select(!max_upper)
+      select(!max_upper) %>%
+      select(!prof_id)
 
 
   }
+
 
   PROFLUX_new <-
     pro_flux(
