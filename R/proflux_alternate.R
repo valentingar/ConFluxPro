@@ -426,19 +426,21 @@ proflux_alternate <- function(PROFLUX,
                      tab_name)
     }
 
-
-    # run alternation
-    chunk_lapply(X = runs,
-                 FUN = fun_run,
-                 fun_process = fun_proc,
-                 n_per_chunk = 25)
-
+    # add run_map
     DBI::dbCreateTable(con,
                        paste0("runmap_",alt_id),
                        run_map)
     DBI::dbAppendTable(con,
                        paste0("runmap_",alt_id),
                        run_map)
+
+
+
+    # run alternation
+    chunk_lapply(X = runs,
+                 FUN = fun_run,
+                 fun_process = fun_proc,
+                 n_per_chunk = 25)
 
 
     DBI::dbDisconnect(con)
