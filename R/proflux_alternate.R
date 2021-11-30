@@ -317,7 +317,7 @@ proflux_alternate <- function(PROFLUX,
     dplyr::mutate(height_layer = upper - lower) %>%
     dplyr::select(dplyr::any_of(c("height_layer",id_cols)))
 
-  n_both <- names(l_uppermpst)[names(l_uppermost) %in% names(run_map)]
+  n_both <- names(l_uppermost)[names(l_uppermost) %in% names(run_map)]
   n_both <- ifelse(length(n_both) == 0,
                    character(),
                    n_both)
