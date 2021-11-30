@@ -326,7 +326,7 @@ proflux_alternate <- function(PROFLUX,
     run_map %>%
       dplyr::left_join(l_uppermost) %>%
       dplyr::filter(-fac_topheight <= height_layer) %>%
-      dplyr::select(!height_layer)
+      dplyr::select(!height_layer) %>%
 
 
   # refill run_id
