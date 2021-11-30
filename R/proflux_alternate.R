@@ -309,7 +309,7 @@ proflux_alternate <- function(PROFLUX,
                                          0,
                                          fac_topheight))
 
-  runs <- unique(run_map$run_id)
+  runs <- sort(unique(run_map$run_id))
 
 
   run_map <- run_map %>%
