@@ -573,7 +573,7 @@ depth_filler <- function(.x,.y,gasdata,layers_map){
 
   #counting how often each layer needs to be in the final product
   k_map <- k_map %>%
-    dplyr::mutate(k_count = unlist(lapply(k_id,function(i) length(which(i %in% !!k_ind == T))))+1)
+    dplyr::mutate(k_count = unlist(lapply(k_id,function(i) length(which(!!k_ind %in% i) == T)))+1)
 
   #expanding to final map and adding the correct boundaries
   k_map_n <- k_map %>%
