@@ -307,7 +307,9 @@ proflux_alternate <- function(PROFLUX,
   run_map <- run_map %>%
     dplyr::mutate(fac_topheight = ifelse(is.na(fac_topheight),
                                          0,
-                                         fac_topheight))
+                                         fac_topheight)) %>%
+    # refill run_id
+    dplyr::mutate(run_id = rank_repl(run_id))
 
   runs <- sort(unique(run_map$run_id))
 
@@ -815,6 +817,16 @@ write_database <- function(df_ret,
                      name = tab_name,
                      value = df_ret)
 
+}
+
+
+# rank_with_replicates
+rank_repl <- function(x){
+  x_u <- sort(unique(x))
+  x_n <- 1:length(x_u)
+
+  x <- x_n[match(x,x_u)]
+  x
 }
 
 
