@@ -478,8 +478,8 @@ prepare_soilphys <- function(soilphys,
   #select relevant profiles from soilphys
   soilphys <- profiles %>%
     dplyr::inner_join(soilphys) %>%
-    dplyr::select(!dplyr::any_of("layer")) #remove layer variable from OG frame
-
+    dplyr::select(!dplyr::any_of("layer")) %>% #remove layer variable from OG frame
+    dplyr::arrange(lower) # very important!
 
   # splitting soilphys so that the each slice is homogenous
   # and the gas measurements are at the intersections
