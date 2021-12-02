@@ -10,34 +10,36 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// prod_optim_cpp
-double prod_optim_cpp(NumericVector X, NumericVector height, NumericVector DS, double C0, NumericVector pmap, NumericVector cmap, NumericVector conc, NumericVector dstor, bool zero_flux, double F0, double known_flux, double known_flux_factor, bool Ds_optim, NumericVector layer_couple, NumericVector wmap);
-RcppExport SEXP _ConFluxPro_prod_optim_cpp(SEXP XSEXP, SEXP heightSEXP, SEXP DSSEXP, SEXP C0SEXP, SEXP pmapSEXP, SEXP cmapSEXP, SEXP concSEXP, SEXP dstorSEXP, SEXP zero_fluxSEXP, SEXP F0SEXP, SEXP known_fluxSEXP, SEXP known_flux_factorSEXP, SEXP Ds_optimSEXP, SEXP layer_coupleSEXP, SEXP wmapSEXP) {
+// cumsumcpp
+NumericVector cumsumcpp(NumericVector x);
+RcppExport SEXP _ConFluxPro_cumsumcpp(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type X(XSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type height(heightSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type DS(DSSEXP);
-    Rcpp::traits::input_parameter< double >::type C0(C0SEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type pmap(pmapSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type cmap(cmapSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type conc(concSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type dstor(dstorSEXP);
-    Rcpp::traits::input_parameter< bool >::type zero_flux(zero_fluxSEXP);
-    Rcpp::traits::input_parameter< double >::type F0(F0SEXP);
-    Rcpp::traits::input_parameter< double >::type known_flux(known_fluxSEXP);
-    Rcpp::traits::input_parameter< double >::type known_flux_factor(known_flux_factorSEXP);
-    Rcpp::traits::input_parameter< bool >::type Ds_optim(Ds_optimSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type layer_couple(layer_coupleSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type wmap(wmapSEXP);
-    rcpp_result_gen = Rcpp::wrap(prod_optim_cpp(X, height, DS, C0, pmap, cmap, conc, dstor, zero_flux, F0, known_flux, known_flux_factor, Ds_optim, layer_couple, wmap));
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(cumsumcpp(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// prod_mod_cpp
+NumericVector prod_mod_cpp(Rcpp::NumericVector prod, Rcpp::NumericVector height, Rcpp::NumericVector DS, double Fnull, double Cnull);
+RcppExport SEXP _ConFluxPro_prod_mod_cpp(SEXP prodSEXP, SEXP heightSEXP, SEXP DSSEXP, SEXP FnullSEXP, SEXP CnullSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type prod(prodSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type height(heightSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type DS(DSSEXP);
+    Rcpp::traits::input_parameter< double >::type Fnull(FnullSEXP);
+    Rcpp::traits::input_parameter< double >::type Cnull(CnullSEXP);
+    rcpp_result_gen = Rcpp::wrap(prod_mod_cpp(prod, height, DS, Fnull, Cnull));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ConFluxPro_prod_optim_cpp", (DL_FUNC) &_ConFluxPro_prod_optim_cpp, 15},
+    {"_ConFluxPro_cumsumcpp", (DL_FUNC) &_ConFluxPro_cumsumcpp, 1},
+    {"_ConFluxPro_prod_mod_cpp", (DL_FUNC) &_ConFluxPro_prod_mod_cpp, 5},
     {NULL, NULL, 0}
 };
 
