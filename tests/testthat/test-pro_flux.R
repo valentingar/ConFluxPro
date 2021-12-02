@@ -138,4 +138,13 @@ test_that("DSD0 optim works", {
 
   expect_equal(round(EFFLUX$efflux,digits = 2),
                round(known_flux$flux,digits = 2))
+
+
+  # test that there are no unexpected extra columns
+  npf <- names(PROFLUX)
+  npf <- npf[!npf %in% extracols_pf()] %>% sort()
+  nsp <- names(soilphys) %>% sort()
+
+  expect_equal(npf,nsp)
+
 })

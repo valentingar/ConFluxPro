@@ -298,7 +298,8 @@ pro_flux <- function(gasdata,
         {c("prof_id",
            "step_id",
            "na_flag",
-           "j_help")
+           "j_help",
+           "group_id")
         }))
 
   message("Done :)")
@@ -807,6 +808,21 @@ prof_optim <- function(gasdata_tmp,
   }
   return(soilphys_tmp)
 }
+
+
+###
+
+extracols_pf <- function(){
+  c("layer",
+    "pmap",
+    "height",
+    "flux",
+    "F0",
+    "prod",
+    "conc",
+    "DSD0_fit")
+}
+
 
 
 

@@ -15,7 +15,43 @@
 #' @export
 NULL
 
+
+
+#' @rdname PFres
+# helper
+PFres <- function(tbl,
+                  layers_map,
+                  id_cols,
+                  storage_term,
+                  zero_flux,
+                  zero_limits,
+                  known_flux,
+                  known_flux_factor,
+                  DSD0_optim,
+                  evenness_factor,
+                  gasdata,
+                  profiles
+                  ) {
+
+  x <- new_PFres(tbl,
+                   layers_map,
+                   id_cols,
+                   storage_term,
+                   zero_flux,
+                   zero_limits,
+                   known_flux,
+                   known_flux_factor,
+                   DSD0_optim,
+                   evenness_factor,
+                   gasdata,
+                   profiles
+                   )
+
+  validate_PFres(x)
+}
+
 #'
+# constructor
 new_PFres <- function(tbl = list(),
                       layers_map = list(),
                       id_cols = character(),
@@ -28,9 +64,17 @@ new_PFres <- function(tbl = list(),
                       evenness_factor = numeric(),
                       gasdata = list(),
                       profiles = list()
-                      ){
+){
 
   stopifnot(is.list(tbl))
+  stopifnot(is.list(layers_map))
+  stopifnot(is.logical(zero_flux))
+  stopifnot(is.numeric(zero_limits))
+  stopifnot(is.na(known_flux) | is.list(known_flux))
+  stopifnot(is.logical(DSD0_optim))
+  stopifnot(is.numeric(evenness_factor))
+  stopifnot(is.list(gasdata))
+  stopifnot(is.list(gasdata))
 
   structure(tbl,
             class = c("PFres","data.frame"),
@@ -46,69 +90,144 @@ new_PFres <- function(tbl = list(),
             gasdata = gasdata,
             profiles = profiles
 
-            )
+  )
+}
+
+# validator
+
+validate_PFres <- function(x){
+
+  stopifnot(inherits(PROFLUX,"PFres"))
+
+  # get arguments to env
+  obj_names <- names(attributes(new_PFres()))
+  obj_names <- obj_names[-which(obj_names == "class")]
+
+  l <- sapply(obj_names, function(n) {
+    attr(PROFLUX, n)
+  }, USE.NAMES = T)
+
+  list2env(l, environment())
+
+  gasdata <- pf_gasdata(x)
+
+  # check that there are no unexpected attributes
+  attr_names <- names(attributes(PROFLUX))
+  attr_names <- attr_names[-which(attr_names %in%
+                                    names(attributes(data.frame())))
+                           ]
+
+  if (!all(attr_names %in% obj_names)){
+    stop("unexpected attributes")
   }
 
+  # check if all prof_ids are present for all parameters
+  prof_ids <- profiles %>% dplyr::pull(prof_id)
+  if (!length(prof_ids) == length(unique(prof_ids))){
+    stop("prof_id in profiles not unique")
+  }
 
-#' @rdname PFres
+  tbl_ids <- x$prof_id %>% unique()
+  if (!all(tbl_ids %in% prof_ids)){
+    stop("object has prof_ids not present in profiles")
+  }
+
+  gd_ids <- gasdata$prof_id %>% unique()
+  if (!all(gd_ids %in% prof_ids)){
+    stop("gasdata has prof_ids not present in profiles")
+  }
+
+  # check that range of upper/ lower agree based on layers_map
+  id_lmap <- id_cols[id_cols %in% names(layers_map)]
+  id_lmap <- ifelse(length(id_lmap) == 0,
+                    character(),
+                    id_lmap)
+
+  drange <-
+  layers_map %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_lmap))) %>%
+    dplyr::summarise(umax = max(upper),
+                     lmin = min(lower))
 
 
-PFres <- function(tbl,
-                  layers_map,
-                  id_cols,
-                  storage_term,
-                  zero_flux,
-                  zero_limits,
-                  known_flux,
-                  known_flux_factor,
-                  DSD0_optim,
-                  evenness_factor,
-                  gasdata,
-                  profiles
-                  ) {
+  id_x <- id_lmap[id_lmap %in% names(x)]
+  x_depths_valid <-
+  drange %>%
+    dplyr::left_join(x,by = id_x) %>%
+    dplyr::mutate(valid_row = (upper > lmin & lower < umax)) %>%
+    dplyr::pull(valid_row) %>%
+    all()
 
-  tbl <- new_PFres(tbl,
-                   layers_map,
-                   id_cols,
-                   storage_term,
-                   zero_flux,
-                   zero_limits,
-                   known_flux,
-                   known_flux_factor,
-                   DSD0_optim,
-                   evenness_factor,
-                   gasdata,
-                   profiles
-                   )
+  if (!x_depths_valid){
+    stop("range of upper/ lower outside of layers_map")
+  }
+
+  id_gd <- id_lmap[id_lmap %in% names(gasdata)]
+
+  gd_depths_valid <-
+    gasdata %>%
+    dplyr::left_join(drange, by = id_gd) %>%
+    dplyr::mutate(valid_row = (depth >= lmin & depth <= umax)) %>%
+    dplyr::pull(valid_row) %>%
+    all()
+
+  if (!gd_depths_valid){
+    stop("gasdata depth range outside of layers_map")
+  }
+
+  # check for upper/ lower consistency
+
+  if (!is_ul_consistent(x,id_cols[id_cols %in% names(x)])){
+    stop("object must be upper / lower consistent.")
+  }
+
+  x
 }
 
 ##### EXTRACTOR FUNCTIONS #####
 
-PF_id_cols <- function(x){
+#' @rdname PFres
+pf_soilphys <- function(x){
+  x %>%
+    dplyr::select(!dplyr::any_of(extracols_pf()))
+}
+#' @rdname PFres
+pf_id_cols <- function(x){
   attr(x,"id_cols")
 }
-PF_gasdata <- function(x){
-  attr(x,"gasdata")
+#' @rdname PFres
+pf_gasdata <- function(x){
+  gd <- attr(x,"gasdata")
+  gd %>%
+    dplyr::left_join(pf_profiles(x)) %>%
+    dplyr::select(!prof_id)
 }
-PF_layers_map <- function(x){
+#' @rdname PFres
+pf_layers_map <- function(x){
   attr(x,"layers_map")
 }
-PF_storage_term <- function(x){
+#' @rdname PFres
+pf_storage_term <- function(x){
   attr(x,"storage_term")
 }
-PF_known_flux <- function(x){
+#' @rdname PFres
+pf_known_flux <- function(x){
   attr(x,"known_flux")
 }
-PF_known_flux_factor <- function(x){
+#' @rdname PFres
+pf_known_flux_factor <- function(x){
   attr(x,"known_flux_factor")
 }
-PF_zero_flux <- function(x){
+#' @rdname PFres
+pf_zero_flux <- function(x){
   attr(x,"zero_flux")
 }
-PF_evenness_factor <- function(x){
+#' @rdname PFres
+pf_evenness_factor <- function(x){
   attr(x,"evenness_factor")
 }
-PF_profiles <- function(x){
+#' @rdname PFres
+pf_profiles <- function(x){
   attr(x,"profiles")
 }
 

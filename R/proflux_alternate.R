@@ -112,9 +112,9 @@ proflux_alternate <- function(PROFLUX,
   }
 
   # extract all necessary data from the PFres object
-  id_cols <- PF_id_cols(PROFLUX)
-  profiles <- PF_profiles(PROFLUX)
-  layers_map <- PF_layers_map(PROFLUX)
+  id_cols <- pf_id_cols(PROFLUX)
+  profiles <- pf_profiles(PROFLUX)
+  layers_map <- pf_layers_map(PROFLUX)
 
   ## check if params are in soilphys and numeric
   p_in_sp <- params[params %in% names(PROFLUX)]

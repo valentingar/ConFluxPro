@@ -70,7 +70,8 @@ test_that("prod works", {
   PF_PROD <- PROFLUX %>%
     dplyr::mutate(dprod = prod * height) %>%
     dplyr::group_by(site,Date,layer) %>%
-    dplyr::summarise(dflux = sum(dprod))
+    dplyr::summarise(prod = mean(prod),
+      dflux = sum(dprod))
 
   PROD.PF <-
     pf_prod(PROFLUX)%>%

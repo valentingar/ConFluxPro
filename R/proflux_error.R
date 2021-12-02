@@ -22,13 +22,10 @@ NULL
     param_cols,
     normer
   ) {
-    id_cols <- PF_id_cols(PROFLUX)
-    gasdata <- PF_gasdata(PROFLUX)
-    profiles <- PF_profiles(PROFLUX)
+    id_cols <- pf_id_cols(PROFLUX)
+    gasdata <- pf_gasdata(PROFLUX)
+    profiles <- pf_profiles(PROFLUX)
 
-
-    gasdata <- gasdata %>%
-      left_join(profiles) %>%
 
       dplyr::select(dplyr::any_of(
         {c(id_cols,
@@ -74,7 +71,7 @@ NULL
                            EFFLUX,
                            normer){
 
-    id_cols <- PF_id_cols(PROFLUX)
+    id_cols <- pf_id_cols(PROFLUX)
 
     EFFLUX <-
       EFFLUX %>%
@@ -105,7 +102,7 @@ NULL
     PF_summary_new <-
       proflux_summarise(PROFLUX)
 
-    id_cols <- PF_id_cols(PROFLUX)
+    id_cols <- pf_id_cols(PROFLUX)
     id_cols <- id_cols[id_cols %in% names(PF_summary[[1]])]  %>%
       c("layer")
 

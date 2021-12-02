@@ -47,8 +47,8 @@ proflux_summarise.data.frame <- function(PROFLUX,
 proflux_summarise.PFres <- function(PROFLUX,
                           ...){
 
-  id_cols <- PF_id_cols(PROFLUX)
-  layers_map <- PF_layers_map(PROFLUX)
+  id_cols <- pf_id_cols(PROFLUX)
+  layers_map <- pf_layers_map(PROFLUX)
 
   #id_cols_tmp <- id_cols[id_cols %in% names(layers_map)]
 

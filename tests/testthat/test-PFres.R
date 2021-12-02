@@ -20,7 +20,7 @@ test_that("PFres works", {
              lmap,
              c("site","Date"))
 
-  gasdata <- PF_gasdata(PROFLUX)
-  zero_flux <- PF_zero_flux(PROFLUX)
+  gasdata <- pf_gasdata(PROFLUX)
+  zero_flux <- pf_zero_flux(PROFLUX)
 
 })
