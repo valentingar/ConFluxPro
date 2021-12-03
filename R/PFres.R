@@ -97,14 +97,14 @@ new_PFres <- function(tbl = list(),
 
 validate_PFres <- function(x){
 
-  stopifnot(inherits(PROFLUX,"PFres"))
+  stopifnot(inherits(x,"PFres"))
 
   # get arguments to env
   obj_names <- names(attributes(new_PFres()))
   obj_names <- obj_names[-which(obj_names == "class")]
 
   l <- sapply(obj_names, function(n) {
-    attr(PROFLUX, n)
+    attr(x, n)
   }, USE.NAMES = T)
 
   list2env(l, environment())
@@ -112,7 +112,7 @@ validate_PFres <- function(x){
   gasdata <- pf_gasdata(x)
 
   # check that there are no unexpected attributes
-  attr_names <- names(attributes(PROFLUX))
+  attr_names <- names(attributes(x))
   attr_names <- attr_names[-which(attr_names %in%
                                     names(attributes(data.frame())))
                            ]
@@ -153,10 +153,14 @@ validate_PFres <- function(x){
   id_x <- id_lmap[id_lmap %in% names(x)]
   x_depths_valid <-
   drange %>%
-    dplyr::left_join(x,by = id_x) %>%
+    dplyr::right_join(x,by = id_x) %>%
     dplyr::mutate(valid_row = (upper > lmin & lower < umax)) %>%
     dplyr::pull(valid_row) %>%
     all()
+
+  x_depths_valid <- ifelse(length(x_depths_valid) == 0,
+                           FALSE,
+                           x_depths_valid)
 
   if (!x_depths_valid){
     stop("range of upper/ lower outside of layers_map")

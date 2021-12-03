@@ -26,13 +26,15 @@ NULL
     gasdata <- pf_gasdata(PROFLUX)
     profiles <- pf_profiles(PROFLUX)
 
-
+    gasdata <-
+      gasdata %>%
       dplyr::select(dplyr::any_of(
         {c(id_cols,
            "NRESULT_ppm",
            "depth")})) %>%
       dplyr::rename(upper = depth,
                     conc_ref = NRESULT_ppm)
+
     PROFLUX %>%
       dplyr::select(dplyr::any_of(
         {c(id_cols,

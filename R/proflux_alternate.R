@@ -91,12 +91,11 @@ proflux_alternate <- function(PROFLUX,
                               error_args) {
 
   # validity test of PROFLUX (is PFres?)
+  PROFLUX <- validate_PFres(PROFLUX)
 
   # check sensitvity_analysis
-  if (!(sensitivity_analysis %in% c("OAT", "OATL") |
-    sensitivity_analysis == FALSE)) {
-    stop("sensitivity_analysis must be on of c('OAT','OATL') or FALSE.")
-  }
+  sensitivity_analysis <- match.arg(sensitivity_analysis,
+                                    c("OAT","OATL",FALSE))
 
   # check error_args - is there PROFLUX ANYWHERE
   arg_names <-
@@ -528,8 +527,12 @@ PFres2env <- function(PROFLUX,
   list2env(l, environment())
 
   gasdata <-
-    gasdata %>%
-    left_join(profiles)
+    PROFLUX %>%
+    pf_gasdata()
+
+  soilphys <-
+    PROFLUX %>%
+    pf_soilphys()
 
   l_env <- as.list.environment(environment())
   list2env(l_env, env)
@@ -546,30 +549,6 @@ proflux_rerun <- function(PROFLUX,
     env
   )
 
-
-  cols_sp <- c(
-    id_cols,
-    "DS",
-    "D0",
-    "TPS",
-    "AFPS",
-    "SWC",
-    "upper",
-    "lower",
-    "depth",
-    "Temp",
-    "p",
-    "rho_air",
-    "layer_alt",
-    "a",
-    "b",
-    "c"
-  )
-
-  soilphys <-
-    PROFLUX %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of(cols_sp))
 
   topheight_change <- run$fac_topheight[1]
 
