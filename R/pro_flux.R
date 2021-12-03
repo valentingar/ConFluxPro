@@ -726,7 +726,7 @@ prof_optim <- function(gasdata_tmp,
 
   #weigh the observations based on the degrees of freedom
   deg_free_obs <- pmap[cmap]
-  n_obs_deg_free <- tabulate(deg_free_obs )
+  n_obs_deg_free <- tabulate(deg_free_obs,max(pmap))
   deg_free_ids <- sort(as.numeric(unique(pmap)))
   weights <- deg_free_ids^2/n_obs_deg_free
   wmap <- weights[deg_free_obs]
