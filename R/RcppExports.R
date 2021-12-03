@@ -9,3 +9,7 @@ prod_mod_cpp <- function(prod, height, DS, Fnull, Cnull) {
     .Call('_ConFluxPro_prod_mod_cpp', PACKAGE = 'ConFluxPro', prod, height, DS, Fnull, Cnull)
 }
 
+prod_conc <- function(prod, height, DS, Fnull, Cnull) {
+    .Call('_ConFluxPro_prod_conc', PACKAGE = 'ConFluxPro', prod, height, DS, Fnull, Cnull)
+}
+

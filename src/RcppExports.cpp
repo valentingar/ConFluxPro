@@ -36,10 +36,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// prod_conc
+NumericVector prod_conc(Rcpp::NumericVector prod, Rcpp::NumericVector height, Rcpp::NumericVector DS, double Fnull, double Cnull);
+RcppExport SEXP _ConFluxPro_prod_conc(SEXP prodSEXP, SEXP heightSEXP, SEXP DSSEXP, SEXP FnullSEXP, SEXP CnullSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type prod(prodSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type height(heightSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type DS(DSSEXP);
+    Rcpp::traits::input_parameter< double >::type Fnull(FnullSEXP);
+    Rcpp::traits::input_parameter< double >::type Cnull(CnullSEXP);
+    rcpp_result_gen = Rcpp::wrap(prod_conc(prod, height, DS, Fnull, Cnull));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ConFluxPro_cumsumcpp", (DL_FUNC) &_ConFluxPro_cumsumcpp, 1},
     {"_ConFluxPro_prod_mod_cpp", (DL_FUNC) &_ConFluxPro_prod_mod_cpp, 5},
+    {"_ConFluxPro_prod_conc", (DL_FUNC) &_ConFluxPro_prod_conc, 5},
     {NULL, NULL, 0}
 };
 

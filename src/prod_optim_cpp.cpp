@@ -44,3 +44,22 @@ NumericVector prod_mod_cpp(Rcpp::NumericVector prod,
   return conc;
 }
 
+
+
+// [[Rcpp::export]]
+NumericVector prod_conc(Rcpp::NumericVector prod,
+                           Rcpp::NumericVector height,
+                           Rcpp::NumericVector DS,
+                           double Fnull,
+                           double Cnull){
+
+  NumericVector flux = ((prod)*height);
+  flux = cumsumcpp(flux);
+  flux = flux + Fnull;
+  flux.push_front(0);
+  flux.erase(flux.size());
+  NumericVector conc = -height * (((prod)/(2*DS)) * height  - flux/DS );
+  conc = cumsumcpp(conc);
+  conc = conc + Cnull;
+  return conc;
+}
