@@ -11,6 +11,7 @@ proflux_alternate(
   params_map,
   topheight_var = FALSE,
   sensitivity_analysis = FALSE,
+  n_runs = 0,
   no_confirm = FALSE,
   DSD0_formula,
   return_raw = FALSE,
@@ -62,7 +63,14 @@ and \code{facs} be combined? Can be one of:
            a \code{facs} of 1.}
 \item{OATL}{One At a Time Layer. Here, \code{OAT} is expanded to change
             only one parameter \emph{and} one layer at a time.}
+\item{RAND}{Within the range of facs, values of params are randomly
+varied. This is repeated \code{n} times}
+\item{RANDL}{The same is \code{RAND} but also allows for different values
+between layers.}
 }}
+
+\item{n_runs}{The number of runs to do for
+\code{sensitivity_analysis == c("RAND","RANDL)}.}
 
 \item{no_confirm}{If the function is used in a script, set this to TRUE to
 confirm the number of profiles without separate user input. Please ensure

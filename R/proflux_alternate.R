@@ -45,7 +45,14 @@
 #'              a \code{facs} of 1.}
 #'   \item{OATL}{One At a Time Layer. Here, \code{OAT} is expanded to change
 #'               only one parameter \emph{and} one layer at a time.}
+#'   \item{RAND}{Within the range of facs, values of params are randomly
+#'   varied. This is repeated \code{n} times}
+#'   \item{RANDL}{The same is \code{RAND} but also allows for different values
+#'   between layers.}
 #'   }
+#'
+#' @param n_runs The number of runs to do for
+#'   \code{sensitivity_analysis == c("RAND","RANDL)}.
 #'
 #' @param no_confirm If the function is used in a script, set this to TRUE to
 #'   confirm the number of profiles without separate user input. Please ensure
@@ -82,6 +89,7 @@ proflux_alternate <- function(PROFLUX,
                               params_map,
                               topheight_var = FALSE,
                               sensitivity_analysis = FALSE,
+                              n_runs = 0,
                               no_confirm = FALSE,
                               DSD0_formula,
                               return_raw = FALSE,
@@ -95,7 +103,11 @@ proflux_alternate <- function(PROFLUX,
 
   # check sensitvity_analysis
   sensitivity_analysis <- match.arg(sensitivity_analysis,
-                                    c("OAT","OATL",FALSE))
+                                    c("OAT",
+                                      "OATL",
+                                      "RAND",
+                                      "RANDL",
+                                      FALSE))
 
   # check error_args - is there PROFLUX ANYWHERE
   arg_names <-
@@ -191,7 +203,7 @@ proflux_alternate <- function(PROFLUX,
     facs_map <- facs_map %>%
       expand.grid()
 
-  } else {
+  } else if (sensitivity_analysis %in% c("OAT","OATL")){
     # for sensitivity analysis, only one parameter is changed
     # at a time, so that not all permuations are needed.
 
@@ -213,6 +225,17 @@ proflux_alternate <- function(PROFLUX,
       dplyr::bind_rows() %>%
       dplyr::distinct()
 
+  } else {
+    # for random sensitivity analysis
+    # the columns are only initialized
+
+    facs_map <-
+      lapply(params, function(i) 1)
+
+    names(facs_map) <- paste0("fac_", params)
+
+    facs_map <- facs_map %>%
+      as.data.frame()
   }
 
   # this makes it easier to assign different permutations to different layers.
@@ -220,6 +243,10 @@ proflux_alternate <- function(PROFLUX,
     dplyr::mutate(perm_id = dplyr::row_number())
 
   n_perms <- nrow(facs_map)
+
+  #for RAND and RANDL methods
+  facs_range <- range(facs)
+
 
   if (sensitivity_analysis == FALSE) {
     run_map <- make_map_allvar(
@@ -236,6 +263,20 @@ proflux_alternate <- function(PROFLUX,
     run_map <- make_map_oatl(
       params_map,
       facs_map
+    )
+  } else if (sensitivity_analysis == "RAND"){
+    run_map <- make_map_rand(
+      params_map,
+      facs_map,
+      n_runs,
+      facs_range
+    )
+  } else if (sensitivity_analysis == "RANDL"){
+    run_map <- make_map_randl(
+      params_map,
+      facs_map,
+      n_runs,
+      facs_range
     )
   }
 
@@ -267,7 +308,7 @@ proflux_alternate <- function(PROFLUX,
                              )
         )
 
-    } else if(sensitivity_analysis %in% c("OAT","OATL")){
+    } else if (sensitivity_analysis %in% c("OAT","OATL")){
 
       # is added anyway as default
       topheight_var <- topheight_var[!topheight_var == 0]
@@ -297,6 +338,24 @@ proflux_alternate <- function(PROFLUX,
         dplyr::bind_rows(run_topheight) %>%
         dplyr::group_by(run_id) %>%
         dplyr::mutate(run_id = cur_group_id())
+
+    } else if (sensitivity_analysis %in% c("RAND","RANDL")){
+
+      toph_range <- range(topheight_var)
+
+      f_toph <-
+        data.frame(run_id = seq(1,
+                                max(run_map$run_id),
+                                1)
+                   ) %>%
+        dplyr::mutate(fac_topheight = runif(n(),
+                                            toph_range[1],
+                                            toph_range[2]))
+
+      run_map <-
+        run_map %>%
+        dplyr::select(!fac_topheight) %>%
+        dplyr::left_join(f_toph)
 
     }
 
@@ -613,8 +672,7 @@ proflux_rerun <- function(PROFLUX,
       gasdata %>%
       dplyr::left_join(maxtop) %>%
       filter(depth <= max_upper) %>%
-      select(!max_upper) %>%
-      select(!prof_id)
+      select(!max_upper)
 
 
   }
@@ -790,6 +848,72 @@ make_map_oatl <- function(params_map,
     }) #%>%
     #dplyr::left_join(params_map)
 }
+
+make_map_rand <- function(params_map,
+                          facs_map,
+                          n_runs,
+                          facs_range){
+
+  facs_map <- facs_map %>%
+    dplyr::ungroup() %>%
+    dplyr::rowwise() %>%
+    dplyr::summarise(
+      dplyr::across(dplyr::everything(),
+                    ~rep(.x,n_runs))) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::starts_with("fac_"),
+        ~runif(n(),
+               facs_range[1],
+               facs_range[2]
+        )
+
+      )
+    )
+
+
+  run_map <-
+    facs_map %>%
+    dplyr::mutate(run_id = dplyr::row_number()) %>%
+    dplyr::full_join(params_map,
+                     by = character()
+    )
+}
+
+make_map_randl <- function(params_map,
+                          facs_map,
+                          n_runs,
+                          facs_range){
+
+  run_map <-
+    facs_map %>%
+    dplyr::full_join(params_map,
+                     by = character()
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::rowwise() %>%
+    dplyr::summarise(
+      dplyr::across(dplyr::everything(),
+                    ~rep(.x,n_runs)),
+      run_id = seq(1,n_runs,1)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::starts_with("fac_"),
+        ~runif(n(),
+               facs_range[1],
+               facs_range[2]
+        )
+
+      )
+    )
+}
+
+
+
+
+
 
 apply_error_funs <- function(PROFLUX_new,
                              error_funs,

@@ -153,7 +153,8 @@ validate_PFres <- function(x){
   id_x <- id_lmap[id_lmap %in% names(x)]
   x_depths_valid <-
   drange %>%
-    dplyr::right_join(x,by = id_x) %>%
+    dplyr::right_join(x %>% dplyr::select(!dplyr::any_of(c("umax","lmin"))),
+                      by = id_x) %>%
     dplyr::mutate(valid_row = (upper > lmin & lower < umax)) %>%
     dplyr::pull(valid_row) %>%
     all()
