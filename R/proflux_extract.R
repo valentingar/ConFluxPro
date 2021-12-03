@@ -24,7 +24,7 @@
   pf_efflux.PFres <- function(PROFLUX,
                               ...) {
 
-    id_cols <- PF_id_cols(PROFLUX)
+    id_cols <- pf_id_cols(PROFLUX)
     PROFLUX <- data.frame(PROFLUX)
     NextMethod(id_cols = id_cols)
 
@@ -57,7 +57,7 @@
 #' @export
   pf_prod.PFres <- function(PROFLUX,
                             ...) {
-    id_cols <- PF_id_cols(PROFLUX)
+    id_cols <- pf_id_cols(PROFLUX)
     NextMethod(id_cols = id_cols)
   }
 
@@ -105,6 +105,8 @@
       dplyr::group_by(dplyr::across(dplyr::any_of({
         c(id_cols, "layer")
       }))) %>%
-      dplyr::summarise(dflux = sum(dprod))
+      dplyr::summarise(
+        prod = mean(prod,na.rm = T),
+        dflux = sum(dprod))
   }
 

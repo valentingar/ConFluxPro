@@ -32,46 +32,59 @@ if (all(c("depth","upper","lower","TPS","SWC","Temp","p") %in% df_names)==F){
   stop("there are essential parameters missing. please run check_soilphys()")
 }
 
+gas_present_flag <- "gas" %in% names(soilphys)
 AFPS_flag <- !("AFPS" %in% df_names)
 DSD0_flag <- !("DSD0" %in% df_names)
 DS_flag <- !("DS" %in% df_names)
 D0_flag <- !("D0" %in% df_names)
 rho_air_flag <- !("rho_air" %in% df_names)
 
-if (AFPS_flag == T | overwrite == T ){
+if (AFPS_flag == TRUE | overwrite == TRUE ){
   soilphys <- soilphys %>%
     dplyr::select(!dplyr::any_of("AFPS")) %>%
     dplyr::mutate(AFPS = TPS-SWC)
 }
-if (DSD0_flag == T | overwrite == T){
+if (DSD0_flag == TRUE | overwrite == TRUE){
 
   soilphys <- soilphys %>%
     dplyr::select(!dplyr::any_of("DSD0")) %>%
     dplyr:: mutate(DSD0 = !!(rlang::parse_expr(DSD0_formula)))
 }
-if (D0_flag == T | overwrite == T){
+if (D0_flag == TRUE | overwrite == TRUE){
   print("starting D0 calculation. This may take a few seconds.")
-  soilphys <- lapply(gases, function(gas){
-    return(soilphys %>% mutate(gas = !!gas))
-  }) %>%
-    dplyr::bind_rows() %>%
+
+  # if gases is already present, no need to apply new ones!
+  if(gas_present_flag){
+    message("gas-column found in soilphys, ignoring 'gases' argument.")
+  } else {
+
+    #otherwise: for each row, add new gases
+    soilphys <- lapply(gases, function(gas){
+      return(soilphys %>% mutate(gas = !!gas))
+    }) %>%
+      dplyr::bind_rows()
+  }
+
+  # then calculate D0 based on that.
+  soilphys <-
+    soilphys %>%
     dplyr::select(!dplyr::any_of("D0")) %>%
     dplyr::mutate(D0 = D0_massman(gas,Temp,p))
 
 }
-if(DS_flag == T | overwrite == T){
+if(DS_flag == TRUE | overwrite == TRUE){
   soilphys <-soilphys %>%
     dplyr::select(!dplyr::any_of("DS")) %>%
     dplyr::mutate(DS = DSD0*D0)
 }
-if(rho_air_flag == T | overwrite == T){
+if(rho_air_flag == TRUE | overwrite == TRUE){
   soilphys <-soilphys %>%
     dplyr::select(!dplyr::any_of("rho_air")) %>%
     dplyr::mutate(rho_air = p*100 / (8.314 * (273.15+Temp)))
 }
 print("The following columns were added:")
-print(paste0(c("AFPS","DSD0","D0","DS","rho_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,rho_air_flag)==T],collapse = " "))
-if(overwrite == T){
+print(paste0(c("AFPS","DSD0","D0","DS","rho_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,rho_air_flag)==TRUE],collapse = " "))
+if(overwrite == TRUE){
   print("The following columns were overwritten:")
   print(paste0(c("AFPS","DSD0","D0","DS","rho_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,rho_air_flag)==F],collapse = " "))
 

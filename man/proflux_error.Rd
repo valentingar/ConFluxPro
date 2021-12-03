@@ -4,11 +4,14 @@
 \alias{proflux_error}
 \alias{error_gasdata}
 \alias{error_efflux}
+\alias{error_compare_models}
 \title{proflux_error}
 \usage{
 error_gasdata(PROFLUX, param_cols, normer)
 
 error_efflux(PROFLUX, param_cols, EFFLUX, normer)
+
+error_compare_models(PROFLUX, PF_summary, param_cols)
 }
 \arguments{
 \item{PROFLUX}{A PFres object, that is returned by a call

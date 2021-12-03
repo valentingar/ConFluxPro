@@ -9,9 +9,14 @@ proflux_alternate(
   params,
   facs,
   params_map,
+  topheight_var = FALSE,
+  sensitivity_analysis = FALSE,
+  n_runs = 0,
   no_confirm = FALSE,
   DSD0_formula,
   return_raw = FALSE,
+  write_db = FALSE,
+  con = NULL,
   error_funs,
   error_args
 )
@@ -41,6 +46,32 @@ by "upper" and "lower", the parameters in "params" will be varied
 independently. This means, that the more layer per combination of id_cols
 are provided, the more variations will be tested out.}
 
+\item{topheight_var}{Either FALSE (default) or a vector of numerics that define
+how much the topheight should be varied in cm. Usually this corresponds to
+the humus layer of a soil. The values are added to the original topheight.
+Negative values are subtracted. If this results in a layer of height 0
+(or negative height), it is removed from the model and a warning message displayed.}
+
+\item{sensitivity_analysis}{How should the different values of \code{params}
+and \code{facs} be combined? Can be one of:
+\describe{
+\item{FALSE}{(default). Here, all possible combinations of \code{params},
+             \code{facs} and the respective layers of \code{params_map}
+             are run.}
+\item{OAT}{One At a Time. This means, that only one of \code{params} is
+           changed at a time for all layers, all the others will have
+           a \code{facs} of 1.}
+\item{OATL}{One At a Time Layer. Here, \code{OAT} is expanded to change
+            only one parameter \emph{and} one layer at a time.}
+\item{RAND}{Within the range of facs, values of params are randomly
+varied. This is repeated \code{n} times}
+\item{RANDL}{The same is \code{RAND} but also allows for different values
+between layers.}
+}}
+
+\item{n_runs}{The number of runs to do for
+\code{sensitivity_analysis == c("RAND","RANDL")}.}
+
 \item{no_confirm}{If the function is used in a script, set this to TRUE to
 confirm the number of profiles without separate user input. Please ensure
 separately if the function will evaluate in a reasonable amount of time.}
@@ -51,6 +82,12 @@ examples below.}
 
 \item{return_raw}{If TRUE, the complete model results are returned as a list
 instead of the error summary.}
+
+\item{write_db}{If \code{TRUE}, the results (either the error parameters from error_funs
+or the raw PFres results) are written in table in the database defined in con.
+Runs are run together at 25 runs each to improve performance while preventing memory crashes.}
+
+\item{con}{The database connection to be used when write_db is \code{TRUE}.}
 
 \item{error_funs}{A named list of functions that take PROFLUX (+ further arguments)
 as input and return a \code{data.frame} of at least one column: NRMSE, as

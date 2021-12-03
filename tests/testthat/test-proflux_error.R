@@ -1,4 +1,4 @@
-test_that("PFres works", {
+test_that("model compare works", {
 
 
   data("gasdata")
@@ -13,14 +13,19 @@ test_that("PFres works", {
               lower = c(0,-100),
               lowlim = 0,
               highlim = 1000,
-              layer_couple = 0)
+              layer_couple = 0,
+              layer = c(1,2))
+
   PROFLUX <-
     pro_flux(gasdata,
              soilphys,
              lmap,
              c("site","Date"))
 
-  gasdata <- pf_gasdata(PROFLUX)
-  zero_flux <- pf_zero_flux(PROFLUX)
+  MC <- PROFLUX %>%
+    error_compare_models(proflux_summarise(.),"site")
+
+
+  expect_equal(MC$NRMSE,rep(0,10))
 
 })
