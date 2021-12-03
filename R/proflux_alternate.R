@@ -52,7 +52,7 @@
 #'   }
 #'
 #' @param n_runs The number of runs to do for
-#'   \code{sensitivity_analysis == c("RAND","RANDL)}.
+#'   \code{sensitivity_analysis == c("RAND","RANDL")}.
 #'
 #' @param no_confirm If the function is used in a script, set this to TRUE to
 #'   confirm the number of profiles without separate user input. Please ensure
