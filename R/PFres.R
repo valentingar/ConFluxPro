@@ -196,10 +196,18 @@ pf_soilphys <- function(x){
   x %>%
     dplyr::select(!dplyr::any_of(extracols_pf()))
 }
+
 #' @rdname PFres
 pf_id_cols <- function(x){
+  UseMethod("pf_id_cols")
+}
+#' @export
+pf_id_cols.default <- function(x){
   attr(x,"id_cols")
 }
+
+
+
 #' @rdname PFres
 pf_gasdata <- function(x){
   gd <- attr(x,"gasdata")
