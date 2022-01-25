@@ -192,33 +192,42 @@ validate_PFres <- function(x){
 ##### EXTRACTOR FUNCTIONS #####
 
 #' @rdname PFres
-pf_soilphys <- function(x){
+cfp_soilphys <- function(x){
   x %>%
     dplyr::select(!dplyr::any_of(extracols_pf()))
 }
 
 #' @rdname PFres
-pf_id_cols <- function(x){
-  UseMethod("pf_id_cols")
+cfp_id_cols <- function(x){
+  UseMethod("cfp_id_cols")
 }
 #' @export
-pf_id_cols.default <- function(x){
+cfp_id_cols.default <- function(x){
   attr(x,"id_cols")
 }
 
 
 
 #' @rdname PFres
-pf_gasdata <- function(x){
+cfp_gasdata <- function(x){
   gd <- attr(x,"gasdata")
   gd %>%
-    dplyr::left_join(pf_profiles(x)) %>%
+    dplyr::left_join(cfp_profiles(x)) %>%
     dplyr::select(!prof_id)
 }
+
+
 #' @rdname PFres
-pf_layers_map <- function(x){
-  attr(x,"layers_map")
+cfp_get_layers_map <- function(x){
+  UseMethod("cfp_get_layers_map")
 }
+#' @export
+cfp_get_layers_map.default <- function(x){
+  x$layers_map
+}
+
+
+
 #' @rdname PFres
 pf_storage_term <- function(x){
   attr(x,"storage_term")
@@ -239,9 +248,15 @@ pf_zero_flux <- function(x){
 pf_evenness_factor <- function(x){
   attr(x,"evenness_factor")
 }
+
 #' @rdname PFres
-pf_profiles <- function(x){
-  attr(x,"profiles")
+cfp_get_profiles <- function(x){
+  UseMethod("cfp_get_profiles")
+}
+
+#' @export
+cfp_get_profiles.default <- function(x){
+  x$profiles
 }
 
 ##### Methods #####
