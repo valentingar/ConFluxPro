@@ -62,7 +62,6 @@ validate_cfp_gasdata <- function(x){
     dplyr::summarise(n_depths = length(unique(depth[!is.na(NRESULT_ppm)]))) %>%
     dplyr::filter(n_depths < 2)
 
-  print(problem_groups)
   stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
               nrow(problem_groups) == 0 )
 
@@ -239,7 +238,13 @@ cfp_dat <- function(gasdata,
   id_cols <- unlist(id_cols_list) %>% unique()
   message(paste0("id_cols: ", paste0(id_cols, collapse = ", "), collapse = ""))
 
-  # create group_id in layers_map
+  merger_1 <- whats_in_both(id_cols_list[c(1,2)])
+  merger_2 <- list(unlist(id_cols_list[c(1,2)][[1]]),
+                   id_cols_list[[3]])%>%
+    whats_in_both()
+
+
+  # create group_id in layers_map, gd_id in gasdata and sp_id in soilphys
   layers_map <-
   layers_map %>%
     dplyr::ungroup() %>%
@@ -247,10 +252,20 @@ cfp_dat <- function(gasdata,
     dplyr::mutate(group_id = cur_group_id()) %>%
     cfp_layers_map(id_cols = id_cols_list[[3]])
 
-  merger_1 <- whats_in_both(id_cols_list[c(1,2)])
-  merger_2 <- list(unlist(id_cols_list[c(1,2)][[1]]),
-                   id_cols_list[[3]])%>%
-    whats_in_both()
+  gasdata <-
+    gasdata %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::mutate(gd_id = cur_group_id()) %>%
+    cfp_gasdata(id_cols = id_cols_list[[1]])
+
+  soilphys <-
+    soilphys %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::mutate(sp_id = cur_group_id()) %>%
+    cfp_soilphys(id_cols = id_cols_list[[2]])
+
 
   # calculating profiles
   profiles <-
@@ -259,18 +274,24 @@ cfp_dat <- function(gasdata,
     dplyr::left_join(soilphys %>% select_id_cols(id_cols), by = merger_1) %>%
     dplyr::left_join(layers_map %>% select_id_cols(id_cols), by = merger_2) %>%
     dplyr::mutate(prof_id = dplyr::row_number()) %>%
+    dplyr::left_join(layers_map[,c(id_cols_list[[3]],"group_id")],
+                     by = merger_2) %>%
+    dplyr::distinct() %>%
     as.data.frame()
+
 
   message(paste0(nrow(profiles)," unique profiles"))
 
-  # adding prof_id to other datasets, removing unnecessary columns
-  gasdata <-
-    gasdata %>%
-    dplyr::left_join(profiles, by = id_cols_list[[1]])
+  # checking if layersmap range = soilphys range
+  stopifnot("layers_map and soilphys must have the same max-min upper/lower bounds per group!" = same_range(soilphys,layers_map))
 
-  soilphys <-
-    soilphys %>%
-    dplyr::left_join(profiles, by = id_cols_list[[2]])
+
+  # splitting soilphys layers to match layers_map and gasdata
+  soilphys <- split_soilphys(soilphys,
+                             gasdata,
+                             layers_map)
+
+
 
   x <- new_cfp_dat(gasdata,
                    soilphys,
@@ -368,6 +389,161 @@ whats_in_both <- function(l){
   l[[1]][l[[1]] %in% l[[2]]]
 }
 
+same_range <- function(soilphys,
+                       layers_map){
+
+  sp_summ <- get_upper_lower_range(soilphys) %>%
+    rename(umax_x = umax,
+           lmin_x = lmin) %>%
+    left_join(get_upper_lower_range(layers_map),
+              by = whats_in_both(list(cfp_id_cols(layers_map),cfp_id_cols(soilphys)))
+    )
+
+  all((sp_summ$umax_x == sp_summ$umax) & (sp_summ$lmin_x == sp_summ$lmin))
+}
+
+get_upper_lower_range <- function(x){
+  id_cols <- cfp_id_cols(x)
+
+  x_sum <-
+  x %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::summarise(umax = max(upper),
+                     lmin = min(lower))
+  x_sum
+}
+
+
+split_soilphys <- function(soilphys,
+                           gasdata,
+                           layers_map){
+
+  #get id_cols for joining
+  sp_id_cols <- cfp_id_cols(soilphys)
+  gd_id_cols <- cfp_id_cols(gasdata)
+  lmap_id_cols <- cfp_id_cols(layers_map)
+
+  merger_1 <- whats_in_both(list(lmap_id_cols,gd_id_cols)) #to join gd to sp
+  merger_2 <- whats_in_both(list(unique(c(lmap_id_cols,gd_id_cols)), # to join lmap to both
+                                 sp_id_cols))
+
+
+  sp_bare <-
+  soilphys %>%
+    dplyr::arrange(lower) %>%
+    dplyr::mutate(row_id = dplyr::row_number())
+
+  gd_bare <-
+    gasdata %>%
+    dplyr::select(dplyr::any_of(c(gd_id_cols,"depth","prof_id"))) %>%
+    dplyr::distinct()
+
+  lmap_bare <-
+    layers_map %>%
+    dplyr::select(dplyr::any_of(c(lmap_id_cols, "upper","lower"))) %>%
+    dplyr::distinct() %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(lmap_id_cols))) %>%
+    dplyr::summarise(depth = c(upper,lower))
+
+
+  all_depths <- gd_bare %>%
+    dplyr::bind_rows(lmap_bare) %>%
+    dplyr::select(dplyr::any_of(c(sp_id_cols,"depth"))) %>%
+    dplyr::distinct()
+
+
+  sp_out <-
+    sp_bare %>%
+      dplyr::select(dplyr::any_of(c(sp_id_cols, "upper","lower","row_id"))) %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(sp_id_cols))) %>%
+      dplyr::group_modify(~add_depths(.x,
+                                      .y,
+                                      all_depths,
+                                      id_cols = merger_2
+                                      )) %>%
+    dplyr::ungroup() %>%
+      dplyr::left_join(sp_bare %>% dplyr::select(!dplyr::any_of(c("upper","lower"))),
+                       by = c(sp_id_cols,"row_id")) %>%
+      dplyr::select(!row_id) %>%
+    dplyr::mutate(height = (upper-lower)/100) %>%
+    dplyr::group_by(sp_id) %>%
+    dplyr::arrange(upper) %>%
+    dplyr::mutate(step_id = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    cfp_soilphys(id_cols = c(sp_id_cols))
+
+    sp_out
+}
+
+
+# splitting soilphys so that the each slice is homogenous
+# and the gas measurements are at the intersections
+add_depths <- function(.x,
+                       .y,
+                       all_depths,
+                       id_cols){
+
+  #getting depths of gasdata at that plot
+  more_depths <-
+    all_depths %>%
+    dplyr::right_join(.y,by = id_cols) %>%
+    dplyr::pull(depth) %>%
+    unique()
+
+  #getting interfaces of soilphys at that plot
+  s_highs <- .x%>%
+    dplyr::pull(upper) %>%
+    unique()
+  s_lows <- .x %>%
+    dplyr::pull(lower) %>%
+    unique()
+  s_depths <- c(s_highs,s_lows)
+
+  #creating union of the two + sorting
+  depths <- sort(unique(c(s_depths, more_depths)))
+
+  #find which depths need to be inserted
+  to_int <- sort(depths[depths %in% s_depths ==F])
+
+  #generate a map for the different layers with id
+  k_map <-
+    .x %>%
+    dplyr::select(upper,lower) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(k_id = row_number())
+
+  #find layer id for depths to be inserted
+  k_ind <- unlist(lapply(to_int,function(i){
+    k_id <- k_map$k_id[k_map$upper>i & k_map$lower<i]
+    if(length(k_id) == 0) k_id <- NA
+    return(k_id)
+  }))
+
+  #resizing depth to only include those that work
+  depths <- depths [!depths %in% to_int[is.na(k_ind)]]
+
+  #counting how often each layer needs to be in the final product
+  k_map <- k_map %>%
+    dplyr::mutate(k_count = unlist(lapply(k_id,function(i) length(which(!!k_ind %in% i) == T)))+1)
+
+  #expanding to final map and adding the correct boundaries
+  k_map_n <- k_map %>%
+    tidyr::uncount(k_count) %>%
+    dplyr::mutate(lower = !!depths[-length(!!depths)],
+                  upper = !!depths[-1])
+
+  #final product
+  .x <- .x %>%
+    dplyr::left_join(k_map, by = c("upper","lower")) %>%
+    dplyr::select(!dplyr::any_of(c("upper","lower")))%>%
+    dplyr::left_join(k_map_n, by = "k_id") %>%
+    dplyr::select(!dplyr::any_of({c("k_id","k_count")}))
+
+  return(.x)
+}
+
+
 
 
 # methods  -------------------
@@ -416,6 +592,12 @@ print_id_cols <- function(x){
   cat("id_cols:", id_cols, "\n")
   cat(unique_groups, " unique profiles", "\n")
 }
+
+
+
+
+
+
 
 
 

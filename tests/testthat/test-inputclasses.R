@@ -106,10 +106,10 @@ test_that("create cfp_layers_map object",{
 
   gasdata <-
     data.frame(site = rep(c("site_a","site_b"),
-                          each = 4),
-               depth = rep(c(10,0,-20,-100),
+                          each = 5),
+               depth = rep(c(10,0,-20,-30,-100),
                            times = 2),
-               NRESULT_ppm = rep(400,8),
+               NRESULT_ppm = rep(400,10),
                gas = "CO2") %>%
     cfp_gasdata(id_cols = "site")
 
