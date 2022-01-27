@@ -270,12 +270,10 @@ cfp_dat <- function(gasdata,
   # calculating profiles
   profiles <-
     gasdata %>%
-    select_id_cols(id_cols) %>%
-    dplyr::left_join(soilphys %>% select_id_cols(id_cols), by = merger_1) %>%
-    dplyr::left_join(layers_map %>% select_id_cols(id_cols), by = merger_2) %>%
+    select_id_cols(c(id_cols,"gd_id")) %>%
+    dplyr::left_join(soilphys %>% select_id_cols(c(id_cols,"sp_id")), by = merger_1) %>%
+    dplyr::left_join(layers_map %>% select_id_cols(c(id_cols,"group_id")), by = merger_2) %>%
     dplyr::mutate(prof_id = dplyr::row_number()) %>%
-    dplyr::left_join(layers_map[,c(id_cols_list[[3]],"group_id")],
-                     by = merger_2) %>%
     dplyr::distinct() %>%
     as.data.frame()
 
@@ -547,6 +545,8 @@ add_depths <- function(.x,
 
 
 # methods  -------------------
+
+# PRINTING
 #' @exportS3Method
 print.cfp_soilphys <- function(x){
   cat("\nA cfp_soilphys object \n")
@@ -593,6 +593,41 @@ print_id_cols <- function(x){
   cat(unique_groups, " unique profiles", "\n")
 }
 
+
+# SPLITTING
+
+#' @export
+split_by_group <- function(x){
+  UseMethod("split_by_group")
+}
+
+#' @exportS3Method
+split_by_group.cfp_dat <- function(x){
+
+  profiles <- x$profiles
+  groups <- unique(profiles$group_id)
+
+  out <-
+  lapply(groups, function(group_tmp){
+
+    profs_tmp <- profiles[profiles$group_id == group_tmp,]
+
+    sp <-
+    x$soilphys[x$soilphys$sp_id %in% profs_tmp$sp_id,] %>%
+      cfp_soilphys(id_cols = cfp_id_cols(x$soilphys))
+
+    gd <-
+      x$gasdata[x$gasdata$gd_id %in% profs_tmp$gd_id,] %>%
+      cfp_gasdata(id_cols = cfp_id_cols(x$gasdata))
+
+    lmap <-
+      x$layers_map[x$layers_map$group_id %in% profs_tmp$group_id,] %>%
+      cfp_layers_map(id_cols = cfp_id_cols(x$layers_map))
+
+    cfp_dat_group <- new_cfp_dat(gd,sp,lmap,profs_tmp,id_cols = cfp_id_cols(x))
+  })
+
+}
 
 
 

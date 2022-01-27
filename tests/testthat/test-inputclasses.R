@@ -80,7 +80,7 @@ test_that("create cfp_layers_map object",{
 
 
 
-test_that("create cfp_layers_map object",{
+test_that("create cfp_dat object",{
 
   lmap <- data.frame(site = rep(c("site_a","site_b"),
                               each = 2),
