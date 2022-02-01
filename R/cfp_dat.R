@@ -10,7 +10,7 @@
 #' @param layers_map A cfp_layers_map object created by running \code{cfp_layers_map}.
 #'
 #' @return A cfp_dat object with the following parameters:
-#' \description{
+#' \describe{
 #' \item{gasdata}{The gasdata object with added column "gd_id" that is unique for each profile.}
 #' \item{soilphys}{The soilphys object with added columns "sp_id" that is unique for each profile,
 #' "step_id" indicating the position of each step from the bottom up, "height" in m of each layer,
