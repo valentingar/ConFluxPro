@@ -72,7 +72,6 @@ cfp_dat <- function(gasdata,
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
     dplyr::mutate(sp_id = dplyr::cur_group_id()) %>%
     dplyr::arrange(upper) %>%
-    dplyr::mutate(pmap = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     cfp_soilphys(id_cols = id_cols_list[[2]])
 
@@ -97,7 +96,8 @@ cfp_dat <- function(gasdata,
   # splitting soilphys layers to match layers_map and gasdata
   soilphys <- split_soilphys(soilphys,
                              gasdata,
-                             layers_map)
+                             layers_map) %>%
+    sp_add_pmap(layers_map)
 
 
 
@@ -310,6 +310,31 @@ add_depths <- function(.x,
 }
 
 
+sp_add_pmap <- function(soilphys,
+                        layers_map){
+
+  id_cols_sp <- cfp_id_cols(soilphys)
+  id_cols_lmap <- cfp_id_cols(layers_map)
+  merger <- id_cols_lmap[id_cols_lmap %in% id_cols_sp]
+
+  soilphys <-
+  soilphys %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(merger))) %>%
+    dplyr::group_modify(~{
+
+      lmap <- .y %>% dplyr::left_join(layers_map,
+                                      by = names(.y))
+
+      .x$pmap <- sapply(1:nrow(.x), function(i){
+        lmap$layer[.x$upper[i] <= lmap$upper & .x$lower[i] >= lmap$lower]
+      })
+      .x
+    }) %>%
+    dplyr::ungroup() %>%
+    cfp_soilphys(id_cols = c(id_cols_sp))
+
+}
+
 
 
 # methods  -------------------
@@ -358,10 +383,43 @@ split_by_group.cfp_dat <- function(x){
       cfp_layers_map(id_cols = cfp_id_cols(x$layers_map))
 
     cfp_dat_group <- new_cfp_dat(gd,sp,lmap,profs_tmp,id_cols = cfp_id_cols(x))
+    attributes(cfp_dat_group) <- attributes(x)
+    cfp_dat_group
   })
-
+  out
 }
 
+#' @export
+split_by_prof <- function(x){
+  UseMethod("split_by_prof")
+}
+
+#' @exportS3Method
+split_by_prof.cfp_dat <- function(x){
+
+  profiles <- x$profiles
+  profs <- unique(profiles$prof_id)
+
+  out <-
+    lapply(profs, function(prof_tmp){
+
+      profs_tmp <- profiles[profiles$prof_id == prof_tmp,]
+
+      sp <-
+        x$soilphys[x$soilphys$sp_id == profs_tmp$sp_id,]
+
+      gd <-
+        x$gasdata[x$gasdata$gd_id == profs_tmp$gd_id,]
+
+      lmap <-
+        x$layers_map[x$layers_map$group_id == profs_tmp$group_id,]
+
+      cfp_dat_group <- new_cfp_dat(gd,sp,lmap,profs_tmp,id_cols = cfp_id_cols(x))
+      attributes(cfp_dat_group) <- attributes(x)
+      cfp_dat_group
+    })
+  out
+}
 
 
 

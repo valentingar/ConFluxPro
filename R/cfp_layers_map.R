@@ -60,18 +60,20 @@ cfp_layers_map <- function(layers_map,
         layers_map
       }) %>%
       dplyr::bind_rows()
+
+
+    layers_map <- add_if_missing(layers_map,
+                                 gas,
+                                 lowlim = lowlim)
+
+    layers_map <- add_if_missing(layers_map,
+                                 gas,
+                                 highlim = highlim)
+    layers_map <- add_if_missing(layers_map,
+                                 gas,
+                                 layer_couple = layer_couple)
+
   }
-
-  layers_map <- add_if_missing(layers_map,
-                               gas,
-                               lowlim = lowlim)
-
-  layers_map <- add_if_missing(layers_map,
-                               gas,
-                               highlim = highlim)
-  layers_map <- add_if_missing(layers_map,
-                               gas,
-                               layer_couple = layer_couple)
 
 
   #automated adding of "layer" column

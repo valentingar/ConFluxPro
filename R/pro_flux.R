@@ -95,7 +95,45 @@
 #'
 #' @export
 
-pro_flux <- function(gasdata,
+pro_flux <- function(x,
+                     ...){
+UseMethod("pro_flux")
+}
+
+#'@exportS3Method
+pro_flux.cfp_dat <- function(x,
+                             ...){
+  args <- list(...)
+
+  x <- cfp_pfmod(x,
+                 zero_flux = args$zero_flux,
+                 zero_limits = args$zero_limits,
+                 DSD0_optim = args$DSD0_optim,
+                 evenness_factor = args$evenness_factor,
+                 known_flux_factor = args$known_flux_factor)
+  NextMethod()
+}
+
+#'@exportS3Method
+pro_flux.cfp_pfmod <- function(x,
+                               ...){
+  # first separate groups
+  x_split <- split_by_group(x)
+
+  #apply function to all grouped cfp_pfmods
+  y <- lapply(x_split,pro_flux_group)
+
+  #combine PROFLUX result
+  y <- dplyr::bind_rows(y)
+
+  #create cfp_pfres object
+  y <- cfp_pfres(x,y)
+  y
+}
+
+
+
+pro_flux_old  <- function(gasdata,
                      soilphys,
                      layers_map,
                      id_cols,
@@ -598,19 +636,14 @@ depth_filler <- function(.x,.y,gasdata,layers_map){
 
 ## Function to perform preparation for each
 ## group and then run prof_optim on all.
-profile_stack <-  function(
-    gasdata_gr,
-    soilphys_gr,
-    layers_map_tmp,
-    known_flux_gr,
-    profiles_tmp,
-    args){
+pro_flux_group <-  function(x){
 
+  layers_map <- x$layers_map
 
     #this represents the production model depths
     #(including upper and lower bound) per group
     prod_depth_v <-
-      c(layers_map_tmp$upper,layers_map_tmp$lower) %>%
+      c(layers_map$upper,layers_map$lower) %>%
       unique() %>%
       sort()
 
@@ -618,107 +651,69 @@ profile_stack <-  function(
     #getting lower end of model
     lower_depth <- prod_depth_v[1]
 
-    # Add pmap to soilphys. This represents the map of
-    # the independently optimised production rates to
-    # the depth steps in soilphys
-    soilphys_gr <-
-      soilphys_gr  %>%
-      dplyr::mutate(pmap =  findInterval(depth,!!prod_depth_v))
-
     #starting values
     prod_start <- rep(0,length(prod_depth_v)-1)
 
     #initialising boundary conditions
     F0 <- 0
-    lowlim_tmp <- layers_map_tmp$lowlim
-    highlim_tmp <- layers_map_tmp$highlim
+    lowlim_tmp <- layers_map$lowlim
+    highlim_tmp <- layers_map$highlim
 
-    layer_couple_tmp <- layers_map_tmp$layer_couple[-1]
+    layer_couple_tmp <- layers_map$layer_couple[-1]
 
 
     # If either the DS or the F0 are optimised as well,
     # more starting parameters need to be set!
-    if(args$DSD0_optim == T){
+    if(cfp_DSD0_optim(x) == T){
       prod_start <- c(prod_start,rep(0.5,length(prod_start)))
       lowlim_tmp <- c(lowlim_tmp,rep(0,length(lowlim_tmp)))
       highlim_tmp <- c(highlim_tmp,rep(1,length(highlim_tmp)))
     }
-    if (args$zero_flux == F){
+    if (cfp_zero_flux(x) == F){
       prod_start <- c(0,prod_start)
-      lowlim_tmp <- c(min(zero_limits),lowlim_tmp)
-      highlim_tmp <- c(max(zero_limits),highlim_tmp)
+      lowlim_tmp <- c(min(x$zero_limits),lowlim_tmp)
+      highlim_tmp <- c(max(x$zero_limits),highlim_tmp)
     }
 
-
-    # progress tracking
-      n_profs <- nrow(profiles_tmp)
-      printers <-floor(seq(1,nrow(profiles_tmp),length.out = 11))
-      printers<-profiles_tmp$prof_id[printers]
-
-
-    df_ret <-
-      purrr::map2(split(gasdata_gr ,
-                        gasdata_gr$prof_id),
-                  split(soilphys_gr,
-                        soilphys_gr$prof_id),
-                  prod_start = prod_start,
-                  printers = printers,
-                  known_flux_gr = known_flux_gr,
-                  F0 = F0,
-                  layer_couple_tmp = layer_couple_tmp,
-                  lowlim_tmp = lowlim_tmp,
-                  highlim_tmp = highlim_tmp,
-                  args = args,
-                  prof_optim) %>%
+    x <- split_by_prof(x)
+    df_ret <- purrr::map(x,
+                         prod_start = prod_start,
+                         F0 = F0,
+                         layer_couple_tmp = layer_couple_tmp,
+                         lowlim_tmp = lowlim_tmp,
+                         highlim_tmp = highlim_tmp,
+                         prof_optim) %>%
       dplyr::bind_rows()
     return(df_ret)
   }
 
 #########################################-
 ### Function for per profile optimisation
-prof_optim <- function(gasdata_tmp,
-                       soilphys_tmp,
+prof_optim <- function(x,
                        prod_start,
-                       return_pars = F,
-                       printers,
-                       known_flux_gr,
                        F0,
                        layer_couple_tmp,
                        lowlim_tmp,
-                       highlim_tmp,
-                       args){
+                       highlim_tmp){
 
-  i <- gasdata_tmp$prof_id[1]
-
-  if (i %in% printers){
-    print(paste0(seq(0,100,10)[printers == i]," %"))
-  }
-  #for known_flux b.c.
-  if(is.list(known_flux_gr)){
-    known_flux_df <-known_flux_gr[known_flux_gr$prof_id == i,]
-    known_flux_tmp <- known_flux_df$flux
-  } else {
-    known_flux_tmp <- NA
-  }
-
-  DSD0_optim <- args$DSD0_optim
-  evenness_factor <- args$evenness_factor
-  zero_flux <- args$zero_flux
-  known_flux_factor <- args$known_flux_factor
+  DSD0_optim <- cfp_DSD0_optim(x)
+  evenness_factor <- cfp_evenness_factor(x)
+  zero_flux <- cfp_zero_flux(x)
+  known_flux_factor <- cfp_known_flux_factor(x)
 
 
   #mapping productions to soilphys_tmp
-  pmap <- soilphys_tmp$pmap
+  pmap <- x$soilphys$pmap
 
   #calculating height of each step in m
-  height <- soilphys_tmp$height
+  height <- x$soilphys$height
 
   #mapping measured concentrations to soilphys_tmp
-  cmap <- soilphys_tmp$step_id[match(gasdata_tmp$depth,
-                                     soilphys_tmp$upper)]
+  cmap <- x$soilphys$step_id[match(x$gasdata$depth,
+                                     x$soilphys$upper)]
 
   #from ppm to mumol/m^3
-  conc <- gasdata_tmp$NRESULT_ppm * soilphys_tmp$rho_air[cmap]
+  conc <- x$gasdata$NRESULT_ppm * x$soilphys$rho_air[cmap]
 
   #shortening to valid cmaps
   conc <- conc[is.finite(cmap)]
@@ -732,20 +727,16 @@ prof_optim <- function(gasdata_tmp,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  dmin <- min(gasdata_tmp$depth)
-  C0 <- stats::median(gasdata_tmp$NRESULT_ppm[gasdata_tmp$depth == dmin]*soilphys_tmp$rho_air[soilphys_tmp$lower == dmin])
-
-  #storage term
-  dstor <-0
+  dmin <- min(x$gasdata$depth)
+  C0 <- stats::median(x$gasdata$NRESULT_ppm[x$gasdata$depth == dmin]*x$soilphys$rho_air[x$soilphys$lower == dmin])
 
   #DS and D0
-  DS <- soilphys_tmp$DS
-  if (is.list(known_flux_tmp)){
-    D0 <- soilphys_tmp$D0
-  } else {
-    D0 <- rep(NA,length(DS))
-  }
+  DS <- x$soilphys$DS
 
+  #temporary until implementation
+  D0 <- DS
+  dstor <- 0
+  known_flux <- NA
 
   #optimisation with error handling returning NA
   pars <- tryCatch({
@@ -762,9 +753,9 @@ prof_optim <- function(gasdata_tmp,
                                  cmap = cmap,
                                  conc = conc,
                                  dstor = dstor,
-                                 zero_flux=zero_flux,
+                                 zero_flux = zero_flux,
                                  F0 = F0,
-                                 known_flux = known_flux_tmp,
+                                 known_flux = known_flux,
                                  known_flux_factor = known_flux_factor,
                                  DSD0_optim = DSD0_optim,
                                  layer_couple = layer_couple_tmp,
@@ -773,11 +764,6 @@ prof_optim <- function(gasdata_tmp,
     )
     pars <-(prod_optimised$par)
   },error = function(e) {return(rep(NA, length(prod_start)))})
-
-
-  if(return_pars == T){
-    return(pars)
-  }
 
   if(zero_flux == T){
     prods <- pars
@@ -796,17 +782,20 @@ prof_optim <- function(gasdata_tmp,
 
   #calculating flux
   fluxs <- prod_mod_flux(prod,height,F0)
-  conc_mod <- prod_mod_conc(prod,height,soilphys_tmp$DS,F0,C0)
+  conc_mod <- prod_mod_conc(prod,height,x$soilphys$DS,F0,C0)
 
   #generating return data_frame
-  soilphys_tmp$flux <- fluxs
-  soilphys_tmp$F0 <- F0
-  soilphys_tmp$prod <-prod
-  soilphys_tmp$conc <- conc_mod
+  df <- data.frame(
+    prof_id = x$profiles$prof_id[1],
+    step_id = x$soilphys$step_id,
+    flux = fluxs,
+    F0 = F0,
+    prod = prod,
+    conc = conc_mod)
   if(DSD0_optim ==T){
-    soilphys_tmp$DSD0_fit <- DSD0_fit[pmap]
+    df$DSD0_fit <- DSD0_fit[pmap]
   }
-  return(soilphys_tmp)
+  return(df)
 }
 
 

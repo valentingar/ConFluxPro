@@ -4,19 +4,7 @@
 \alias{pro_flux}
 \title{pro_flux}
 \usage{
-pro_flux(
-  gasdata,
-  soilphys,
-  layers_map,
-  id_cols,
-  storage_term = FALSE,
-  zero_flux = TRUE,
-  zero_limits = c(-Inf, Inf),
-  known_flux = NA,
-  known_flux_factor = 0,
-  DSD0_optim = FALSE,
-  evenness_factor = 0
-)
+pro_flux(x, ...)
 }
 \arguments{
 \item{gasdata}{(dataframe)}
