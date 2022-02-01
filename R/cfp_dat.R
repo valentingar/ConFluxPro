@@ -56,21 +56,24 @@ cfp_dat <- function(gasdata,
   layers_map %>%
     dplyr::ungroup() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::mutate(group_id = cur_group_id()) %>%
+    dplyr::mutate(group_id = dplyr::cur_group_id()) %>%
     cfp_layers_map(id_cols = id_cols_list[[3]])
 
   gasdata <-
     gasdata %>%
     dplyr::ungroup() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::mutate(gd_id = cur_group_id()) %>%
+    dplyr::mutate(gd_id = dplyr::cur_group_id()) %>%
     cfp_gasdata(id_cols = id_cols_list[[1]])
 
   soilphys <-
     soilphys %>%
     dplyr::ungroup() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::mutate(sp_id = cur_group_id()) %>%
+    dplyr::mutate(sp_id = dplyr::cur_group_id()) %>%
+    dplyr::arrange(upper) %>%
+    dplyr::mutate(pmap = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
     cfp_soilphys(id_cols = id_cols_list[[2]])
 
 
@@ -136,48 +139,6 @@ validate_cfp_dat <- function(x){
 
 
 # helpers -------
-
-add_if_missing  <- function(df,
-                            gas,
-                            ...){
-
-
-  obj_list <- list(...)
-  stopifnot(length(obj_list) == 1)
-  obj_name <- names(obj_list)[1]
-  obj <- obj_list[[1]]
-
-  if (!is.null(obj)){
-    if(obj_name %in% names(df)){
-      stop(paste0(obj_name," must not be present in layers_map already!"))
-    }
-    if(!(length(obj) == length(gas)  |  length(obj) == 1)){
-      stop(paste0(obj_name," must be length 1 or the same as gas"))
-    }
-    stopifnot(is.numeric(obj))
-
-    if (length(obj) == 1){
-      df[[obj_name]] <- obj
-    } else {
-      df <-
-        lapply(seq_along(gas), function(i){
-          df_part <- df[df$gas == gas[i],]
-          df_part[[obj_name]] <- obj[i]
-          df_part
-        }) %>%
-        dplyr::bind_rows()
-    }
-  } else {
-    # columns must still be present but are NA instead
-    df[[obj_name]] <- NA
-  }
-
-  df
-}
-
-error_if_missing <- function(df,cols){
-  lapply(cols, function(i) if(!i %in% names(df)) stop(paste0(i, " must be present in layers_map!")))
-}
 
 select_id_cols <- function(df,id_cols){
   df <- df %>%
@@ -355,31 +316,6 @@ add_depths <- function(.x,
 
 # PRINTING
 #' @exportS3Method
-print.cfp_soilphys <- function(x){
-  cat("\nA cfp_soilphys object \n")
-  print_id_cols(x)
-  cat("\n")
-  NextMethod()
-}
-
-#' @exportS3Method
-print.cfp_gasdata <- function(x){
-  cat("\nA cfp_gasdata object \n")
-  print_id_cols(x)
-  cat("\n")
-  NextMethod()
-}
-
-#' @exportS3Method
-print.cfp_layers_map <- function(x){
-  cat("\nA cfp_layers_map object \n")
-  id_cols <- cfp_id_cols(x)
-  cat("id_cols:", id_cols, "\n")
-  cat("\n")
-  NextMethod()
-}
-
-#' @exportS3Method
 print.cfp_dat <- function(x){
   cat("\nA cfp_dat object to be used as input in ConFluxPro models \n \n")
   id_cols <- cfp_id_cols(x)
@@ -392,17 +328,7 @@ print.cfp_dat <- function(x){
 }
 
 
-
-print_id_cols <- function(x){
-  id_cols <- cfp_id_cols(x)
-  unique_groups <- x[id_cols] %>% dplyr::distinct() %>% nrow()
-  cat("id_cols:", id_cols, "\n")
-  cat(unique_groups, " unique profiles", "\n")
-}
-
-
 # SPLITTING
-
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")

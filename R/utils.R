@@ -33,7 +33,8 @@ chunk_lapply <- function(X,
 
 
 # is a data.frame of upper/lower type consistent
-
+# i.e. no gaps, no duplicates, no overlap of steps per profile
+# profile identified by id_cols
 is_ul_consistent <- function(df,
                              id_cols){
 
@@ -76,59 +77,13 @@ is_ul_consistent <- function(df,
 
 
 
-#' @export
-uplow <- function(upper,lower, layer = NULL){
 
-
-  stopifnot(is.numeric(upper),
-            is.numeric(lower))
-  stopifnot(length(upper) == length(lower),
-            length(upper) == length(layer) | is.null(layer))
-  stopifnot(all(upper > lower))
-  stopifnot(length(unique(upper)) == length(upper))
-  stopifnot(length(unique(lower)) == length(lower))
-
-  u_ord <- order(upper)
-  lower <- lower[u_ord]
-  upper <- upper[u_ord]
-  layer <- layer[u_ord]
-
-  x <- new_uplow(upper,lower,layer)
-
-  x <- validate_uplow(x)
-}
-
-
-new_uplow <- function(upper,lower, layer = NULL){
-
-  x <- structure(.Data = upper,
-                 class = c("uplow","list"),
-                 lower = lower,
-                 layer = layer)
-
-}
-
-validate_uplow <- function(x){
-  stopifnot(inherits(x,"uplow"))
-
-  upper <- attr(x,"upper")
-  lower <- attr(x,"lower")
-
-
-  x
-}
-
-'%within_uplow%' <- function(x,y){
-
-  stopifnot(inherits(x,"uplow"),
-            inherits(y,"uplow"))
-  stopifnot(length(x) == 1,
-            length(y) == 1)
-
-  l_x <- attr(x,"lower")
-  l_y <- attr(y,"lower")
-
-  (y >= x & l_y <= l_x)
+# For printing methods
+print_id_cols <- function(x){
+  id_cols <- cfp_id_cols(x)
+  unique_groups <- x[id_cols] %>% dplyr::distinct() %>% nrow()
+  cat("id_cols:", id_cols, "\n")
+  cat(unique_groups, " unique profiles", "\n")
 }
 
 

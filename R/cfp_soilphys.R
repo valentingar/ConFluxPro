@@ -1,5 +1,26 @@
-
-
+#'@title cfp_soilphys
+#'
+#' @description Create and validate cfp_soilphys objects. A cfp_soilphys object has the following
+#' characteristics. Each profile is uniquely identifiable by its \code{id_cols} without duplicates.
+#' The data is upper/lower consistent, meaning that the steps of each profile cover a range
+#' from min(lower) to max(upper) without gaps, overlap or duplicates.
+#'
+#' @param soilphys A data.frame with (at least) the following columns:
+#' \describe{
+#' \item{upper (cm) }{The upper bound of each step.}
+#' \item{lower (cm)}{The lower bound of each step.}
+#' \item{gas}{The gas of that step.}
+#' \item{DS (\eqn{m^2 s^-1})}{The specific diffusion coefficient of that gas in that step.}
+#' \item{rho_air (\eqn{mol m^-3})}{The number density of air in that step.}
+#' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
+#'
+#' }
+#'
+#'
+#' @inheritParams cfp_layers_map
+#'
+#' @return cfp_soilphys
+#'
 #' @export
 #helper
 cfp_soilphys <- function(soilphys,
@@ -49,3 +70,17 @@ validate_cfp_soilphys <- function(x){
 
   x
 }
+
+
+#methods --------------
+
+# PRINTING
+#' @exportS3Method
+print.cfp_soilphys <- function(x){
+  cat("\nA cfp_soilphys object \n")
+  print_id_cols(x)
+  cat("\n")
+  NextMethod()
+}
+
+

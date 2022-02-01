@@ -191,11 +191,6 @@ validate_PFres <- function(x){
 
 ##### EXTRACTOR FUNCTIONS #####
 
-#' @rdname PFres
-cfp_soilphys <- function(x){
-  x %>%
-    dplyr::select(!dplyr::any_of(extracols_pf()))
-}
 
 #' @rdname PFres
 cfp_id_cols <- function(x){
@@ -204,16 +199,6 @@ cfp_id_cols <- function(x){
 #' @export
 cfp_id_cols.default <- function(x){
   attr(x,"id_cols")
-}
-
-
-
-#' @rdname PFres
-cfp_gasdata <- function(x){
-  gd <- attr(x,"gasdata")
-  gd %>%
-    dplyr::left_join(cfp_profiles(x)) %>%
-    dplyr::select(!prof_id)
 }
 
 

@@ -1,3 +1,20 @@
+#' @title cfp_gasdata
+#' @description A function to create and validate cfp_gasdata objects. A gasdata
+#' object is characterised by the following criteria: Each row is one observation
+#' of the concentration of a gas at a depth and can be attributed to a distinct
+#' profileidentified by any \code{id_cols} columns.
+#' @param gasdata A \code{data.frame} with the following columns:
+#' \describe{
+#' \item{gas}{The gas of that observation.}
+#' \item{depth (cm)}{The depth of the observation.}
+#' \item{NRESULT_ppm (ppm)}{The observed concentration of that gas.}
+#' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
+#'}
+#'@inheritParams cfp_layers_map
+#'
+#'@return cfp_gasdata
+#'
+
 
 #'@export
 # helper
@@ -63,3 +80,12 @@ validate_cfp_gasdata <- function(x){
 }
 
 
+# methods -----------
+
+#' @exportS3Method
+print.cfp_gasdata <- function(x){
+  cat("\nA cfp_gasdata object \n")
+  print_id_cols(x)
+  cat("\n")
+  NextMethod()
+}
