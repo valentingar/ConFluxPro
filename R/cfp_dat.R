@@ -1,221 +1,28 @@
-#' @title input_classes
+#' @title cfp_dat
 #'
-#' @description This provides the framework for multiple input data classes that
-#' make it easier to set up a ConFluxPro model by checking for data integrity first.
+#' @description This is the essential object class that binds all necessary
+#' input data to run a ConFluxPro model. It automatically combines the different
+#' datasets and checks them for validity. It may split soilphys layers to correspond
+#' with layers_map and gasdata depths.
 #'
-#' @param x sosso
+#' @param gasdata A cfp_gasdata object created by running \code{cfp_gasdata()}.
+#' @param soilphys A cfp_soilphys object created by running \code{cfp_soilphys()}.
+#' @param layers_map A cfp_layers_map object created by running \code{cfp_layers_map}.
 #'
-#' @export
-# helper
-cfp_gasdata <- function(gasdata,
-                        id_cols){
-
-
-  stopifnot("id_cols must be provided!" = !missing(id_cols))
-
-  if (!"gas" %in% id_cols){
-    message("added 'gas' to id_cols")
-    id_cols <- c(id_cols,"gas")
-  }
-
-  x <- new_gdat(gasdata,
-                id_cols)
-
-  validate_cfp_gasdata(x)
-}
-
-#'
-# constructor
-new_gdat <- function(gasdata,
-                     id_cols){
-
-  structure(gasdata,
-            class = c("cfp_gasdata","data.frame"),
-            id_cols = id_cols)
-}
-
-
-#'
-# validator
-validate_cfp_gasdata <- function(x){
-
-  # are the classes correct?
-  stopifnot(inherits(x,"cfp_gasdata"))
-  stopifnot(inherits(x,"data.frame"))
-
-  # are the necessary columns present?
-  base_cols <- c("NRESULT_ppm","gas","depth")
-  id_cols <- cfp_id_cols(x)
-
-  stopifnot("data.frame lacks obligatory coluns" = base_cols %in% names(x),
-            "id_cols must be present in the data.frame" = id_cols %in% names(x)
-  )
-
-  #check for NAs in id_cols
-  stopifnot("id_cols cannot contain NAs" =
-    anyNA(x[id_cols]) == FALSE)
-
-  #check that at least two depths per group are present
-  problem_groups <-
-  x %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::summarise(n_depths = length(unique(depth[!is.na(NRESULT_ppm)]))) %>%
-    dplyr::filter(n_depths < 2)
-
-  stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
-              nrow(problem_groups) == 0 )
-
-  x
-}
-
-
-
-#' @export
-#helper
-cfp_soilphys <- function(soilphys,
-                         id_cols){
-
-
-  stopifnot("id_cols must be provided!" = !missing(id_cols))
-
-  if (!"gas" %in% id_cols){
-    message("added 'gas' to id_cols")
-    id_cols <- c(id_cols,"gas")
-  }
-
-  x <- new_cfp_soilphys(soilphys,
-                        id_cols
-                        )
-
-  x <- validate_cfp_soilphys(x)
-}
-
-#constructor
-new_cfp_soilphys <- function(soilphys,
-                      id_cols){
-  x <- structure(soilphys,
-                 class = c("cfp_soilphys","data.frame"),
-                 id_cols = id_cols)
-  x
-}
-
-#validator
-validate_cfp_soilphys <- function(x){
-
-  # are the classes correct?
-  stopifnot(inherits(x,"cfp_soilphys"))
-  stopifnot(inherits(x,"data.frame"))
-
-  # are the necessary columns present?
-  base_cols <- c("upper","lower","DS","rho_air","gas")
-  id_cols <- cfp_id_cols(x)
-
-  stopifnot("data.frame lacks obligatory coluns" = base_cols %in% names(x),
-            "id_cols must be present in the data.frame" = id_cols %in% names(x)
-  )
-
-  # is the data frame upper/lower consistent?
-  stopifnot("The data is not unique and upper/lower consistent!" = is_ul_consistent(x,id_cols))
-
-  x
-}
-
-
-
-#' @export
-cfp_layers_map <- function(layers_map,
-                           id_cols,
-                           gas = NULL,
-                           lowlim = NULL,
-                           highlim = NULL,
-                           layer_couple = NULL
-                           ){
-
-  stopifnot("layers_map must be a data frame!" = is.data.frame(layers_map))
-  stopifnot("id_cols must be provided!" = !missing(id_cols))
-
-  if (!"gas" %in% id_cols){
-    message("added 'gas' to id_cols")
-    id_cols <- c(id_cols,"gas")
-  }
-
-  #convenient way of adding multiple gases to layers_map
-  if (!is.null(gas)){
-
-    stopifnot("gas must not be present in layers_map already!" = !"gas" %in% names(layers_map))
-    stopifnot("gas must be a character (-vector)!" = is.character(gas))
-    stopifnot("gas must contain unique values only!" = length(gas) == length(unique(gas)))
-
-    layers_map <-
-      lapply(gas, function(i){
-        layers_map$gas <- i
-        layers_map
-      }) %>%
-      dplyr::bind_rows()
-  }
-
-  layers_map <- add_if_missing(layers_map,
-                               gas,
-                               lowlim = lowlim)
-
-  layers_map <- add_if_missing(layers_map,
-                               gas,
-                               highlim = highlim)
-  layers_map <- add_if_missing(layers_map,
-                               gas,
-                               layer_couple = layer_couple)
-
-
-  #automated adding of "layer" column
-  if(!"layer" %in% names(layers_map)){
-    layers_map <-
-      layers_map %>%
-      dplyr::arrange(desc(upper)) %>%
-      dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-      dplyr::mutate(layer = 1:n())
-
-    message("automatically added 'layer' column")
-  }
-
-  x <- new_cfp_layers_map(layers_map,
-                          id_cols)
-
-  x <- validate_cfp_layers_map(x)
-
-  x
-}
-
-
-#constructor
-new_cfp_layers_map <- function(layers_map,
-                               id_cols){
-
-  x <- structure(layers_map,
-                 id_cols = id_cols,
-                 class = c("cfp_layers_map","data.frame"))
-  x
-}
-
-#validator
-validate_cfp_layers_map <- function(x){
-
-  # are the classes correct?
-  stopifnot(inherits(x,"cfp_layers_map"))
-  stopifnot(inherits(x,"data.frame"))
-
-  # are the necessary columns present?
-  base_cols <- c("upper","lower","layer","lowlim","highlim","layer_couple","gas")
-  id_cols <- cfp_id_cols(x)
-
-  error_if_missing(x, c(base_cols,id_cols))
-
-  # is the data.frame upper/lower consistent?
-  stopifnot("layers_map must be unique and upper/lower consitent" =
-              is_ul_consistent(x,id_cols = cfp_id_cols(x)))
-
-  x
-
-}
+#' @return A cfp_dat object with the following parameters:
+#' \description{
+#' \item{gasdata}{The gasdata object with added column "gd_id" that is unique for each profile.}
+#' \item{soilphys}{The soilphys object with added columns "sp_id" that is unique for each profile,
+#' "step_id" indicating the position of each step from the bottom up, "height" in m of each layer,
+#' "pmap" indicating which layer it belongs to from the bottom up. Potentially, some original
+#' steps were split to account for the depths within gasdata or layers_map.}
+#' \item{layers_map}{The layers_map object with added column "group_id" indicating each
+#' unique group of the same layer parameterization set by layers_map.}
+#' \item{profiles}{A \code{data.frame} where each row indicates one unique profile that
+#' is characterised by all \cdoe{id_cols} present in the original input as well as the correspongin
+#' "gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
+#' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
+#'}
 
 
 #' @export
