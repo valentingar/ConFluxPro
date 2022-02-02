@@ -148,3 +148,38 @@ test_that("DSD0 optim works", {
   expect_equal(npf,nsp)
 
 })
+
+
+test_that("pro_flux works",{
+
+  soilphys <- ConFluxPro::soilphys %>%
+    cfp_soilphys(id_cols = c("site","Date"))
+
+  gasdata <- ConFluxPro::gasdata %>%
+    cfp_gasdata(id_cols = c("site","Date","repetition"))
+
+  layers_map <- soilphys %>%
+    dplyr::select(site,upper) %>%
+    dplyr::group_by(site) %>%
+    dplyr::slice_max(upper) %>%
+    dplyr::distinct() %>%
+    dplyr::summarise(upper = c(upper,0),
+                     lower = c(0,-100)) %>%
+    dplyr::ungroup() %>%
+    cfp_layers_map(id_cols = c("site"),
+                   gas = "CO2",
+                   lowlim = 0,
+                   highlim = 1000,
+                   layer_couple = 0
+                   )
+
+  PROFLUX <-
+    cfp_dat(gasdata,
+            soilphys,
+            layers_map) %>%
+    #cfp_pfmod() %>%
+    pro_flux()
+
+})
+
+

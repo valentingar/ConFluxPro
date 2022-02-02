@@ -2,14 +2,6 @@
 % Please edit documentation in R/PFres.R
 \name{PFres}
 \alias{PFres}
-\alias{cfp_id_cols}
-\alias{cfp_get_layers_map}
-\alias{pf_storage_term}
-\alias{pf_known_flux}
-\alias{pf_known_flux_factor}
-\alias{pf_zero_flux}
-\alias{pf_evenness_factor}
-\alias{cfp_get_profiles}
 \title{PFres}
 \usage{
 PFres(
@@ -26,22 +18,6 @@ PFres(
   gasdata,
   profiles
 )
-
-cfp_id_cols(x)
-
-cfp_get_layers_map(x)
-
-pf_storage_term(x)
-
-pf_known_flux(x)
-
-pf_known_flux_factor(x)
-
-pf_zero_flux(x)
-
-pf_evenness_factor(x)
-
-cfp_get_profiles(x)
 }
 \arguments{
 \item{layers_map}{(dataframe) That defines the layers of homogeneous

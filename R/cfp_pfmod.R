@@ -10,11 +10,11 @@
 #'
 
 cfp_pfmod <- function(x,
-                      zero_flux,
-                      zero_limits,
-                      DSD0_optim,
-                      evenness_factor,
-                      known_flux_factor){
+                      zero_flux = TRUE,
+                      zero_limits = c(-Inf,Inf),
+                      DSD0_optim = FALSE,
+                      evenness_factor = 0,
+                      known_flux_factor = 0){
 
   x <- new_cfp_pfmod(x,
                       zero_flux,
@@ -23,11 +23,12 @@ cfp_pfmod <- function(x,
                       evenness_factor,
                       known_flux_factor
   )
+  x <- validate_cfp_pfmod(x)
+  x
 }
 
 
 new_cfp_pfmod <- function(x,
-                          #id_cols,
                           zero_flux,
                           zero_limits,
                           DSD0_optim,
@@ -47,8 +48,31 @@ new_cfp_pfmod <- function(x,
 }
 
 
+validate_cfp_pfmod <- function(x){
+
+  lmap <- x$layers_map
+
+  stopifnot("layers_map cannot contain NAs!" = anyNA(lmap) == FALSE)
+  x
+}
+
 
 # methods ---------
+
+
+###### PRINTING #######
+#' @exportS3Method
+print.cfp_pfmod <- function(x, ...){
+  cat("\nA cfp_pfmod pro_flux model. \n")
+  cat("zero_flux:", cfp_zero_flux(x)," \n")
+  cat("zero_limits: ", cfp_zero_limits(x), " \n")
+  cat("DSD0_optim: ", cfp_DSD0_optim(x), " \n")
+  cat("evenness_factor: ", cfp_evenness_factor(x)," \n")
+  cat("known_flux_factor: ", cfp_known_flux_factor(x)," \n")
+  NextMethod()
+}
+
+
 
 #extractors
 #' @export

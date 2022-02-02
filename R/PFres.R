@@ -191,59 +191,6 @@ validate_PFres <- function(x){
 
 ##### EXTRACTOR FUNCTIONS #####
 
-
-#' @rdname PFres
-cfp_id_cols <- function(x){
-  UseMethod("cfp_id_cols")
-}
-#' @export
-cfp_id_cols.default <- function(x){
-  attr(x,"id_cols")
-}
-
-
-#' @rdname PFres
-cfp_get_layers_map <- function(x){
-  UseMethod("cfp_get_layers_map")
-}
-#' @export
-cfp_get_layers_map.default <- function(x){
-  x$layers_map
-}
-
-
-
-#' @rdname PFres
-pf_storage_term <- function(x){
-  attr(x,"storage_term")
-}
-#' @rdname PFres
-pf_known_flux <- function(x){
-  attr(x,"known_flux")
-}
-#' @rdname PFres
-pf_known_flux_factor <- function(x){
-  attr(x,"known_flux_factor")
-}
-#' @rdname PFres
-pf_zero_flux <- function(x){
-  attr(x,"zero_flux")
-}
-#' @rdname PFres
-pf_evenness_factor <- function(x){
-  attr(x,"evenness_factor")
-}
-
-#' @rdname PFres
-cfp_get_profiles <- function(x){
-  UseMethod("cfp_get_profiles")
-}
-
-#' @export
-cfp_get_profiles.default <- function(x){
-  x$profiles
-}
-
 ##### Methods #####
 
 

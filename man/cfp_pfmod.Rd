@@ -6,11 +6,11 @@
 \usage{
 cfp_pfmod(
   x,
-  zero_flux,
-  zero_limits,
-  DSD0_optim,
-  evenness_factor,
-  known_flux_factor
+  zero_flux = TRUE,
+  zero_limits = c(-Inf, Inf),
+  DSD0_optim = FALSE,
+  evenness_factor = 0,
+  known_flux_factor = 0
 )
 }
 \arguments{

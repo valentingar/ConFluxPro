@@ -15,6 +15,7 @@ cfp_pfres <- function(x,y){
   stopifnot(inherits(x,"cfp_pfmod"))
   x$PROFLUX <- y
 
+  x<-
   structure(x,
             class = c("cfp_pfres",class(x)))
   x <- validate_cfp_pfres(x)
@@ -32,3 +33,66 @@ validate_cfp_pfres <- function(x){
                                ))
   x
 }
+
+
+
+#### methods ----------------------
+
+###### PRINTING #######
+#' @exportS3Method
+print.cfp_pfres <- function(x, ...){
+  RMSE <- x$PROFLUX %>%
+    dplyr::select(prof_id,RMSE) %>%
+    dplyr::distinct() %>%
+    dplyr::pull(RMSE)
+  mean_RMSE <- round(mean(RMSE, na.rm = TRUE), digits = 6)
+  n_NA <- length(RMSE[is.na(RMSE) == TRUE])
+
+  cat("\nA cfp_pfres pro_flux model result. \n")
+  cat("mean RMSE achieved: ", mean_RMSE, "\n")
+  cat("number of failed fits: ", n_NA,"\n")
+  NextMethod()
+}
+
+
+####### EXTRACTORS #######
+
+#' @rdname cfp_pfres
+cfp_storage_term <- function(x){
+  UseMethod("cfp_storage_term")
+}
+#' @rdname cfp_pfres
+cfp_storage_term.cfp_pfmod <- function(x){
+  attr(x,"storage_term")
+}
+
+#' @rdname cfp_pfres
+cfp_known_flux_factor <- function(x){
+  UseMethod("cfp_known_flux_factor")
+}
+#' @rdname cfp_pfres
+cfp_known_flux_factor.cfp_pfmod <- function(x){
+  attr(x,"known_flux_factor")
+}
+
+
+#' @rdname cfp_pfres
+cfp_zero_flux <- function(x){
+  UseMethod("cfp_zero_flux")
+}
+#' @rdname cfp_pfres
+cfp_zero_flux.cfp_pfmod <- function(x){
+  attr(x,"zero_flux")
+}
+
+
+#' @rdname cfp_pfres
+cfp_evenness_factor <- function(x){
+  UseMethod("cfp_evenness_factor")
+}
+#' @rdname cfp_pfres
+cfp_evenness_factor.cfp_pfmod <- function(x){
+  attr(x,"evenness_factor")
+}
+
+
