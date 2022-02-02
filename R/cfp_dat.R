@@ -182,132 +182,84 @@ get_upper_lower_range <- function(x){
 
 
 split_soilphys <- function(soilphys,
-                           gasdata,
-                           layers_map){
+                            gasdata,
+                            layers_map){
 
-  #get id_cols for joining
+  # get id_cols for joining
   sp_id_cols <- cfp_id_cols(soilphys)
   gd_id_cols <- cfp_id_cols(gasdata)
   lmap_id_cols <- cfp_id_cols(layers_map)
 
-  merger_1 <- whats_in_both(list(lmap_id_cols,gd_id_cols)) #to join gd to sp
-  merger_2 <- whats_in_both(list(unique(c(lmap_id_cols,gd_id_cols)), # to join lmap to both
-                                 sp_id_cols))
+  # which id cols are in both?
+  sel_gd <- gd_id_cols[gd_id_cols %in% sp_id_cols]
+  sel_lmap <- lmap_id_cols[lmap_id_cols %in% sp_id_cols]
+  sel_both <- sel_gd[sel_gd %in% sel_lmap]
 
+  # combine layers_map and gasdata
+  all_depths <-
+  layers_map[,c(sel_both, "upper")] %>%
+  dplyr::rename(depth = upper) %>%
+  dplyr::bind_rows(gasdata[,c(sel_both, "depth")])
 
-  sp_bare <-
-  soilphys %>%
-    dplyr::arrange(lower) %>%
+  # add a single grouping variable
+  groups_map <-
+    soilphys %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(sel_both))) %>%
+    dplyr::summarise(depth_group = dplyr::cur_group_id())
+
+  all_depths <- all_depths %>%
+    dplyr::right_join(groups_map, by = sel_both)
+
+  #add row_number
+  soilphys <-
+    soilphys %>%
+    dplyr::left_join(groups_map) %>%
     dplyr::mutate(row_id = dplyr::row_number())
 
-  gd_bare <-
-    gasdata %>%
-    dplyr::select(dplyr::any_of(c(gd_id_cols,"depth","prof_id"))) %>%
-    dplyr::distinct()
-
-  lmap_bare <-
-    layers_map %>%
-    dplyr::select(dplyr::any_of(c(lmap_id_cols, "upper","lower"))) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(lmap_id_cols))) %>%
-    dplyr::summarise(depth = c(upper,lower))
-
-
-  all_depths <- gd_bare %>%
-    dplyr::bind_rows(lmap_bare) %>%
-    dplyr::select(dplyr::any_of(c(sp_id_cols,"depth"))) %>%
-    dplyr::distinct()
-
-
-  sp_out <-
-    sp_bare %>%
-      dplyr::select(dplyr::any_of(c(sp_id_cols, "upper","lower","row_id"))) %>%
-      dplyr::group_by(dplyr::across(dplyr::any_of(sp_id_cols))) %>%
-      dplyr::group_modify(~add_depths(.x,
-                                      .y,
-                                      all_depths,
-                                      id_cols = merger_2
-                                      )) %>%
-    dplyr::ungroup() %>%
-      dplyr::left_join(sp_bare %>% dplyr::select(!dplyr::any_of(c("upper","lower"))),
-                       by = c(sp_id_cols,"row_id")) %>%
-      dplyr::select(!row_id) %>%
+  soilphys_new <-
+    mapply(soilphys$upper,
+           soilphys$lower,
+           soilphys$depth_group,
+           soilphys$row_id,
+           FUN = add_between,
+           MoreArgs = list(df = all_depths),
+           SIMPLIFY = FALSE) %>%
+    do.call(what = rbind, args = .) %>%
+    data.frame() %>%
+    setNames(c("upper","lower","row_id")) %>%
+    dplyr::left_join(soilphys %>%
+                       dplyr::select(!dplyr::any_of(c("upper","lower")))) %>%
+    dplyr::select(!row_id) %>%
     dplyr::mutate(height = (upper-lower)/100) %>%
     dplyr::group_by(sp_id) %>%
     dplyr::arrange(upper) %>%
     dplyr::mutate(step_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
-    cfp_soilphys(id_cols = c(sp_id_cols))
-
-    sp_out
+    cfp_soilphys(id_cols = sp_id_cols)
 }
 
+add_between <- function(upper,
+                        lower,
+                        depth_group,
+                        row_id,
+                        df){
 
-# splitting soilphys so that the each slice is homogenous
-# and the gas measurements are at the intersections
-add_depths <- function(.x,
-                       .y,
-                       all_depths,
-                       id_cols){
+  depths <- sort(
+    unique(
+      df$depth[df$depth < upper &
+                 df$depth > lower &
+                 df$depth_group == depth_group]
+    )
+  )
 
-  #getting depths of gasdata at that plot
-  more_depths <-
-    all_depths %>%
-    dplyr::right_join(.y,by = id_cols) %>%
-    dplyr::pull(depth) %>%
-    unique()
+  upper <- c(depths, upper)
+  lower <- c(lower, depths)
 
-  #getting interfaces of soilphys at that plot
-  s_highs <- .x%>%
-    dplyr::pull(upper) %>%
-    unique()
-  s_lows <- .x %>%
-    dplyr::pull(lower) %>%
-    unique()
-  s_depths <- c(s_highs,s_lows)
+  l <- length(upper)
 
-  #creating union of the two + sorting
-  depths <- sort(unique(c(s_depths, more_depths)))
-
-  #find which depths need to be inserted
-  to_int <- sort(depths[depths %in% s_depths ==F])
-
-  #generate a map for the different layers with id
-  k_map <-
-    .x %>%
-    dplyr::select(upper,lower) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(k_id = row_number())
-
-  #find layer id for depths to be inserted
-  k_ind <- unlist(lapply(to_int,function(i){
-    k_id <- k_map$k_id[k_map$upper>i & k_map$lower<i]
-    if(length(k_id) == 0) k_id <- NA
-    return(k_id)
-  }))
-
-  #resizing depth to only include those that work
-  depths <- depths [!depths %in% to_int[is.na(k_ind)]]
-
-  #counting how often each layer needs to be in the final product
-  k_map <- k_map %>%
-    dplyr::mutate(k_count = unlist(lapply(k_id,function(i) length(which(!!k_ind %in% i) == T)))+1)
-
-  #expanding to final map and adding the correct boundaries
-  k_map_n <- k_map %>%
-    tidyr::uncount(k_count) %>%
-    dplyr::mutate(lower = !!depths[-length(!!depths)],
-                  upper = !!depths[-1])
-
-  #final product
-  .x <- .x %>%
-    dplyr::left_join(k_map, by = c("upper","lower")) %>%
-    dplyr::select(!dplyr::any_of(c("upper","lower")))%>%
-    dplyr::left_join(k_map_n, by = "k_id") %>%
-    dplyr::select(!dplyr::any_of({c("k_id","k_count")}))
-
-  return(.x)
+  matrix(c(upper,lower,rep(row_id, l)), ncol = 3)
 }
+
 
 
 sp_add_pmap <- function(soilphys,
