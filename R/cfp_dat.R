@@ -9,6 +9,13 @@
 #' @param soilphys A cfp_soilphys object created by running \code{cfp_soilphys()}.
 #' @param layers_map A cfp_layers_map object created by running \code{cfp_layers_map}.
 #'
+#'
+# @param known_flux (dataframe) a dataframe that gives a known efflux for each
+#   profile defined by id_cols. If this is provided, the productions are
+#   optimised to meet this flux as well as the concentration measurements
+#   provided.
+#'
+#'
 #' @return A cfp_dat object with the following parameters:
 #' \describe{
 #' \item{gasdata}{The gasdata object with added column "gd_id" that is unique for each profile.}

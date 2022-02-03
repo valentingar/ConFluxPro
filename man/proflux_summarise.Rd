@@ -18,23 +18,6 @@ proflux_summarize(PROFLUX, ...)
 \arguments{
 \item{PROFLUX}{Either an object of class \code{\link{PFres}}
 (see \code{\link{pro_flux}}), or a data.frame following the same convention.}
-
-\item{layers_map}{(dataframe) That defines the layers of homogeneous
-production as well as the upper and lower limits of production rate. \ Must
-include
-\itemize{
-\item the relevant id_cols (see below)
-\item the upper
-and lower boundaries of each layer (upper, lower)
-\item upper and lower
-limits of the production rate to be modeled in \eqn{\mu mol m^{-3}}
-(highlim, lowlim)
-\item the parameter layer_couple, that indicates how
-strongly the layer should be linked to the one below it (0 for no coupling)
-}}
-
-\item{id_cols}{(character vector) The names of the columns that together
-uniquely identify one profile. Must be present in gasdata.}
 }
 \description{
 Summarises key parameters of a PFres object

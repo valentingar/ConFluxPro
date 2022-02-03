@@ -9,25 +9,8 @@
 #'   boundary condition is not met, the flux must be optimised as well. This can
 #'   be set in \code{zero_flux}.
 #'
-#' @param gasdata (dataframe)
-#' @param soilphys (dataframe)
-#'
-#' @param layers_map (dataframe) That defines the layers of homogeneous
-#'   production as well as the upper and lower limits of production rate. \ Must
-#'   include
-#'   \itemize{
-#'   \item the relevant id_cols (see below)
-#'   \item the upper
-#'   and lower boundaries of each layer (upper, lower)
-#'   \item upper and lower
-#'   limits of the production rate to be modeled in \eqn{\mu mol m^{-3}}
-#'   (highlim, lowlim)
-#'   \item the parameter layer_couple, that indicates how
-#'   strongly the layer should be linked to the one below it (0 for no coupling)
-#'   }
-#'
-#' @param id_cols (character vector) The names of the columns that together
-#'   uniquely identify one profile. Must be present in gasdata.
+#' @param x A valid \code{cfp_dat} object. This contains all the necessary input
+#' data.
 #'
 #' @param storage_term (logical) Should changes in storage be accounted for?
 #'   Default is F. Only works if data is present in a temporal dimension as well
@@ -39,11 +22,6 @@
 #'
 #' @param zero_limits (numeric vector) a vector of length 2 defining the lower
 #'   and upper limit of the lowest flux if zero_flux = F.
-#'
-#' @param known_flux (dataframe) a dataframe that gives a known efflux for each
-#'   profile defined by id_cols. If this is provided, the productions are
-#'   optimised to meet this flux as well as the concentration measurements
-#'   provided.
 #'
 #' @param known_flux_factor (numeric) a numeric value > 0 that represents a
 #'   weight for the error calculation with the known flux. A higher value means
