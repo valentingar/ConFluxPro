@@ -221,9 +221,10 @@ split_soilphys <- function(soilphys,
     dplyr::right_join(groups_map, by = sel_both)
 
   #add row_number
+  merger <- names(groups_map)[names(groups_map) %in% names(soilphys)]
   soilphys <-
     soilphys %>%
-    dplyr::left_join(groups_map) %>%
+    dplyr::left_join(groups_map, merger) %>%
     dplyr::mutate(row_id = dplyr::row_number())
 
   soilphys_new <-
@@ -238,7 +239,8 @@ split_soilphys <- function(soilphys,
     data.frame() %>%
     setNames(c("upper","lower","row_id")) %>%
     dplyr::left_join(soilphys %>%
-                       dplyr::select(!dplyr::any_of(c("upper","lower")))) %>%
+                       dplyr::select(!dplyr::any_of(c("upper","lower"))),
+                     by = "row_id") %>%
     dplyr::select(!row_id) %>%
     dplyr::mutate(height = (upper-lower)/100) %>%
     dplyr::group_by(sp_id) %>%

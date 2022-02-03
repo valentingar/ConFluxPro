@@ -62,7 +62,6 @@ dcdz_layered(df,
 }
 \seealso{
 Other FLUX: 
-\code{\link{calculate_flux}()},
 \code{\link{efflux_extrap}()}
 }
 \concept{FLUX}

@@ -3,38 +3,14 @@
 \name{cfp_id_cols}
 \alias{cfp_id_cols}
 \alias{cfp_pfres}
-\alias{cfp_storage_term}
-\alias{cfp_storage_term.cfp_pfmod}
-\alias{cfp_known_flux_factor}
-\alias{cfp_known_flux_factor.cfp_pfmod}
-\alias{cfp_zero_flux}
-\alias{cfp_zero_flux.cfp_pfmod}
-\alias{cfp_evenness_factor}
-\alias{cfp_evenness_factor.cfp_pfmod}
 \title{cfp_pfres}
 \usage{
 cfp_id_cols(x)
 
 cfp_pfres(x, y)
-
-cfp_storage_term(x)
-
-\method{cfp_storage_term}{cfp_pfmod}(x)
-
-cfp_known_flux_factor(x)
-
-\method{cfp_known_flux_factor}{cfp_pfmod}(x)
-
-cfp_zero_flux(x)
-
-\method{cfp_zero_flux}{cfp_pfmod}(x)
-
-cfp_evenness_factor(x)
-
-\method{cfp_evenness_factor}{cfp_pfmod}(x)
 }
 \arguments{
-\item{x}{A valid \code{cfp_mod} object}
+\item{x}{A valid \code{cfp_pfmod} object}
 
 \item{y}{The corresponding PROFULX \code{data.frame}.}
 }

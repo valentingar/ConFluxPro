@@ -1,7 +1,7 @@
 #' @title cfp_pfmod
 #'
 #' @description An S3 class for \code{pro_flux()} models. The class inherits from
-#' cfp_input and adds any model specific parameters.
+#' cfp_dat and adds any model specific parameters.
 #'
 #' @param x A \code{cfp_dat} object with all the necessary input datasets.
 #'
@@ -74,7 +74,7 @@ print.cfp_pfmod <- function(x, ...){
 
 
 
-#extractors
+### EXTRACTORS #####
 #' @export
 cfp_zero_flux <- function(x){
   UseMethod("cfp_zero_flux")
