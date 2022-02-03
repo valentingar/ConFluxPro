@@ -25,7 +25,7 @@ cfp_gasdata <- function(gasdata,
   stopifnot("id_cols must be provided!" = !missing(id_cols))
 
   if (!"gas" %in% id_cols){
-    message("added 'gas' to id_cols")
+    message("\nadded 'gas' to id_cols")
     id_cols <- c(id_cols,"gas")
   }
 

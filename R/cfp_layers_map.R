@@ -43,7 +43,7 @@ cfp_layers_map <- function(layers_map,
   stopifnot("id_cols must be provided!" = !missing(id_cols))
 
   if (!"gas" %in% id_cols){
-    message("added 'gas' to id_cols")
+    message("\nadded 'gas' to id_cols")
     id_cols <- c(id_cols,"gas")
   }
 
@@ -80,12 +80,18 @@ cfp_layers_map <- function(layers_map,
   if(!"layer" %in% names(layers_map)){
     layers_map <-
       layers_map %>%
-      dplyr::arrange(desc(upper)) %>%
+      dplyr::arrange(upper) %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
       dplyr::mutate(layer = 1:n())
 
     message("automatically added 'layer' column")
   }
+
+  layers_map <-
+  layers_map %>%
+    dplyr::arrange(upper) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::mutate(pmap = dplyr::row_number())
 
   x <- new_cfp_layers_map(layers_map,
                           id_cols)

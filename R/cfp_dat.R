@@ -35,7 +35,7 @@ cfp_dat <- function(gasdata,
             "soilphys must be created with cfp_soilphys() first" = inherits(soilphys,"cfp_soilphys"),
             "layers_map must be created with cfp_layers_map() first" = inherits(layers_map,"cfp_layers_map"))
 
-  message("validating datasets")
+  message("\nvalidating datasets")
   gasdata <- validate_cfp_gasdata(gasdata)
   soilphys <- validate_cfp_soilphys(soilphys)
   layers_map <- validate_cfp_layers_map(layers_map)
@@ -44,6 +44,9 @@ cfp_dat <- function(gasdata,
   id_cols_list <- lapply(list(gasdata,soilphys,layers_map), cfp_id_cols)
   id_cols <- unlist(id_cols_list) %>% unique()
   message(paste0("id_cols: ", paste0(id_cols, collapse = ", "), collapse = ""))
+
+  stopifnot("All id_cols of layers_map must be present in soilphys!" =
+              all(id_cols_list[[3]] %in% id_cols_list[[2]]))
 
   merger_1 <- whats_in_both(id_cols_list[c(1,2)])
   merger_2 <- list(unlist(id_cols_list[c(1,2)][[1]]),
@@ -278,7 +281,7 @@ sp_add_pmap <- function(soilphys,
                                       by = names(.y))
 
       .x$pmap <- sapply(1:nrow(.x), function(i){
-        lmap$layer[.x$upper[i] <= lmap$upper & .x$lower[i] >= lmap$lower]
+        lmap$pmap[.x$upper[i] <= lmap$upper & .x$lower[i] >= lmap$lower]
       })
       .x
     }) %>%
