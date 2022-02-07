@@ -87,3 +87,13 @@ print_id_cols <- function(x){
 }
 
 
+#linear extrapolation with single target value
+lin_extrap<-function(x,
+                     y,
+                     x_new){
+  if(!length(x)==2 | !length(y)==2){
+    stop("length of x and y must be 2!")
+  }
+  y_new <- (x_new-x[1])*(diff(y) / diff(x)) + y[1]
+  return(y_new)
+}

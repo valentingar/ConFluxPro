@@ -9,7 +9,7 @@
 
 #' EXPORT EFFLUX
 #' @export
-  pf_efflux <- function(PROFLUX,
+  pf_efflux_old <- function(PROFLUX,
                         ...) {
 
     UseMethod("pf_efflux",
@@ -21,7 +21,7 @@
 
 
 #' @export
-  pf_efflux.PFres <- function(PROFLUX,
+  pf_efflux_old.PFres <- function(PROFLUX,
                               ...) {
 
     id_cols <- pf_id_cols(PROFLUX)
@@ -33,7 +33,7 @@
 
 
 #' @export
-  pf_efflux.data.frame <- function(PROFLUX,
+  pf_efflux_old.data.frame <- function(PROFLUX,
                                    id_cols,
                                    ...) {
 
