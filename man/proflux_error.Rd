@@ -2,35 +2,16 @@
 % Please edit documentation in R/proflux_error.R
 \name{proflux_error}
 \alias{proflux_error}
-\alias{error_gasdata}
-\alias{error_efflux}
-\alias{error_compare_models}
 \title{proflux_error}
-\usage{
-error_gasdata(PROFLUX, param_cols, normer)
-
-error_efflux(PROFLUX, param_cols, EFFLUX, normer)
-
-error_compare_models(PROFLUX, PF_summary, param_cols)
-}
 \arguments{
-\item{PROFLUX}{A PFres object, that is returned by a call
+\item{x}{A cfp_pfres object, that is returned by a call
 to pro_flux()}
 
 \item{param_cols}{The columns that, together, define different parameters (e.g. different gases)
 for which NRMSEs should be calculated separately (e.g. "gas").}
-
-\item{normer}{a character string defining the type of
-normalization to be applied. Can be one of
-\describe{
-\item{mean}{the arithmetic mean of a}
-\item{sd}{the standard deviation of a}
-\item{range}{the difference between the range of a}
-\item{IQR}{the difference between the interquantile range of a}
-}}
 }
 \description{
 A set of functions that can be called on an
-PFres object (the result of a call to pro_flux) to assess
+cfp_pfres object (the result of a call to pro_flux) to assess
 the quality of the model.
 }

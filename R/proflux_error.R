@@ -1,10 +1,10 @@
 #' @title proflux_error
 #'
 #' @description A set of functions that can be called on an
-#' PFres object (the result of a call to pro_flux) to assess
+#' cfp_pfres object (the result of a call to pro_flux) to assess
 #' the quality of the model.
 #'
-#' @param PROFLUX A PFres object, that is returned by a call
+#' @param x A cfp_pfres object, that is returned by a call
 #' to pro_flux()
 #'
 #' @param param_cols The columns that, together, define different parameters (e.g. different gases)
@@ -15,35 +15,41 @@
 #' @name proflux_error
 NULL
 #'
-#' @rdname proflux_error
+#' @rdname x_error
 
   error_gasdata <- function(
-    PROFLUX,
+    x,
     param_cols,
     normer
   ) {
-    id_cols <- pf_id_cols(PROFLUX)
-    gasdata <- pf_gasdata(PROFLUX)
-    profiles <- pf_profiles(PROFLUX)
 
     gasdata <-
-      gasdata %>%
-      dplyr::select(dplyr::any_of(
-        {c(id_cols,
-           "NRESULT_ppm",
-           "depth")})) %>%
+      x$gasdata %>%
+      dplyr::select(gd_id,
+                    NRESULT_ppm,
+                    depth) %>%
       dplyr::rename(upper = depth,
                     conc_ref = NRESULT_ppm)
+    soilphys <-
+      x$soilphys %>%
+      dplyr::select(sp_id,
+                    upper,
+                    step_id,
+                    rho_air)
 
-    PROFLUX %>%
+    x$profiles %>%
+      dplyr::left_join(x$PROFLUX, by = "prof_id") %>%
+      dplyr::left_join(soilphys, by = c("sp_id", "step_id")) %>%
       dplyr::select(dplyr::any_of(
-        {c(id_cols,
+        {c(param_cols,
+           "prof_id",
+           "gd_id",
            "upper",
            "conc",
            "rho_air")}
       )) %>%
       dplyr::mutate(conc_ppm = conc/rho_air) %>%
-      dplyr::left_join(gasdata) %>%
+      dplyr::left_join(gasdata, by = c("gd_id", "upper")) %>%
 
       # grouping by upper first
       # because different depths have different
@@ -51,7 +57,7 @@ NULL
       dplyr::group_by(
         dplyr::across(
           dplyr::any_of({c(param_cols,"upper")}))) %>%
-      dplyr::summarise(NRMSE = nrmse(conc/rho_air,
+      dplyr::summarise(NRMSE = nrmse(conc_ppm,
                                      conc_ref,
                                      norm = !!normer)) %>%
 
@@ -66,14 +72,14 @@ NULL
   }
 
 
-#' @rdname proflux_error
+#' @rdname x_error
 
-  error_efflux <- function(PROFLUX,
+  error_efflux <- function(x,
                            param_cols,
                            EFFLUX,
                            normer){
 
-    id_cols <- pf_id_cols(PROFLUX)
+    id_cols <- cfp_id_cols(x)
 
     EFFLUX <-
       EFFLUX %>%
@@ -82,9 +88,11 @@ NULL
         dplyr::any_of({c(id_cols,"efflux")})) %>%
       dplyr::rename(efflux_ref = efflux)
 
-    PROFLUX %>%
-      pf_efflux() %>%
-      dplyr::left_join(EFFLUX) %>%
+    merger <- id_cols[id_cols %in% names(EFFLUX)]
+
+    x %>%
+      efflux() %>%
+      dplyr::left_join(EFFLUX, by = merger) %>%
       dplyr::group_by(
         dplyr::across(
           dplyr::any_of({param_cols}))) %>%
@@ -93,94 +101,4 @@ NULL
                                      norm = !!normer))
 
   }
-
-#' @rdname proflux_error
-
-  error_compare_models <- function(PROFLUX,
-                                   PF_summary,
-                                   param_cols
-  ){
-
-    PF_summary_new <-
-      proflux_summarise(PROFLUX)
-
-    id_cols <- pf_id_cols(PROFLUX)
-    id_cols <- id_cols[id_cols %in% names(PF_summary[[1]])]  %>%
-      c("layer")
-
-    print(id_cols)
-
-    df_ret <-
-    lapply(names(PF_summary),function(name){
-      df_new <- PF_summary_new[[name]]
-      df_old <- PF_summary[[name]]
-
-      cols <- names(df_new)[!names(df_new) %in% id_cols]
-      print(cols)
-
-      df_old <-
-        df_old %>%
-        dplyr::rename_with(.cols = cols,
-                    .fn = ~paste0(.,"_old"))
-
-      id_cols_tmp <- id_cols[id_cols %in% names(df_new)]
-
-      df_ret <-
-      df_new %>%
-        dplyr::left_join(df_old,
-                         by = id_cols_tmp) %>%
-        dplyr::mutate(
-          dplyr::across(cols,
-            ~.x-
-              {get(paste0(cur_column(),"_old"))}
-            )) %>%
-        dplyr::select(dplyr::any_of(c(id_cols,cols)))
-
-      # get layer into column name if present
-      if ("layer" %in% id_cols_tmp){
-        df_ret <-
-          df_ret %>%
-          tidyr::pivot_wider(id_cols = id_cols_tmp[!id_cols_tmp == "layer"],
-                             names_from = "layer",
-                             values_from = cols )
-      }
-
-    df_ret
-    }) %>%
-      list_full_join()
-
-    stretch_cols <- names(df_ret)[!names(df_ret) %in% param_cols]
-
-    df_ret <-
-      df_ret %>%
-      tidyr::pivot_longer(cols = stretch_cols,
-                          names_to = "MC_var",
-                          values_to = "NRMSE")
-
-    df_ret
-  }
-
-###### HELPERS ######
-
-list_full_join <- function(l){
-  if(length(l) == 1){
-    return(l[[1]])
-  }
-
-  df1 <- l[[1]]
-  df2 <- l[[2]]
-
-  join_by <- names(df1)[names(df1) %in% names(df2)]
-
-  if (length(join_by) == 0){
-    join_by <- character()
-  }
-
-  l[[2]] <- dplyr::full_join(df1,df2,by = join_by)
-  l <- l[-1]
-  list_full_join(l)
-}
-
-
-
 
