@@ -42,6 +42,24 @@ fg_flux.default <- function(x, ...){
                  cfp_param(x),
                  cfp_funs(x),
                  cfp_id_cols(x))
+  y <- y %>%
+    left_join(x$profiles) %>%
+    select(prof_id,
+           upper,
+           lower,
+           depth,
+           layer,
+           mode,
+           gas,
+           flux,
+           flux_sd,
+           dcdz_ppm,
+           dcdz_sd,
+           dc_ppm,
+           rho_air,
+           DS,
+           r2)
+
 
   cfp_fgres(x,y)
 }
