@@ -87,6 +87,13 @@ pro_flux.cfp_dat <- function(x,
 }
 
 #'@exportS3Method
+pro_flux.cfp_pfres <- function(x,
+                               ...){
+  x <- as_cfp_pfmod(x)
+  NextMethod()
+}
+
+#'@exportS3Method
 pro_flux.default <- function(x,
                              ...){
 

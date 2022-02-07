@@ -125,3 +125,24 @@ cfp_known_flux_factor.default <- function(x){
   out <- attr(x,"known_flux_factor")
   out
 }
+
+###### COERCING #######
+#' @export
+as_cfp_pfmod <- function(x){
+  UseMethod("as_cfp_pfmod")
+}
+
+#'@exportS3Method
+as_cfp_pfmod.cfp_pfres <- function(x){
+  x <- new_cfp_pfmod(new_cfp_dat(x$gasdata,
+                                 x$soilphys,
+                                 x$layers_map,
+                                 x$profiles,
+                                 cfp_id_cols(x)),
+                     cfp_zero_flux(x),
+                     cfp_zero_limits(x),
+                     cfp_DSD0_optim(x),
+                     cfp_evenness_factor(x),
+                     cfp_known_flux_factor(x))
+  x
+}

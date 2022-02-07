@@ -26,7 +26,7 @@ validate_cfp_pfres <- function(x){
 
   select_cols <- c("sp_id", "step_id")
 
-  PF <- x$PROFLUX %>% dplyr::left_join(x$profiles)
+  PF <- x$PROFLUX %>% dplyr::left_join(x$profiles, by = "prof_id")
   stopifnot("PROFLUX and soilphys must have the same structure!" =
               dplyr::all_equal(PF[,select_cols] %>% dplyr::distinct(),
                                x$soilphys[,select_cols]
@@ -53,4 +53,7 @@ print.cfp_pfres <- function(x, ...){
   cat("number of failed fits: ", n_NA,"\n")
   NextMethod()
 }
+
+
+
 
