@@ -42,7 +42,7 @@ pf_efflux <- function(x) {
                      by = c("prof_id","step_id")) %>%
     dplyr::left_join(profiles, by = "prof_id") %>%
     dplyr::select(dplyr::any_of({
-      c(id_cols, "flux")
+      c(id_cols, "flux", "prof_id")
     })) %>%
     dplyr::rename(efflux = flux) %>%
     dplyr::ungroup()
@@ -61,40 +61,38 @@ fg_efflux <- function(x,
 
   stopifnot("length of layers must be 2!" = is.null(layers) || length(layers) == 2)
 
-  stopifnot("layers must be supplied for method = lex" =
-              method == "lex" && !is.null(layers))
-
   if(method == "top"){
-    return(get_top_efflux(x))
+    EFFLUX <- get_top_efflux(x)
   } else if (method == "lm"){
-    return(get_lm_efflux(x))
+    EFFLUX <- get_lm_efflux(x)
   } else if (method == "lex"){
-    return(get_lex_efflux(x, layers))
+    stopifnot("layers must be supplied for method = lex" =
+                !is.null(layers))
+    EFFLUX <- get_lex_efflux(x, layers)
   }
 
-
-
+  EFFLUX %>%
+    dplyr::left_join(x$profiles,
+                     by = "prof_id")
 }
 
 
 get_top_efflux <- function(x){
-  id_cols <- cfp_id_cols(x)
   FLUX <- x$FLUX
 
   FLUX %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::group_by(mode, prof_id) %>%
     dplyr::slice_max(upper) %>%
-    dplyr::select(dplyr::any_of(c(id_cols, "mode", "flux"))) %>%
+    dplyr::select(dplyr::any_of(c("prof_id", "mode", "flux"))) %>%
     dplyr::rename(efflux = flux)
 
 }
 
 get_lm_efflux <- function(x){
-  id_cols <- cfp_id_cols(x)
   FLUX <- x$FLUX
 
   FLUX %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::group_by(mode, prof_id) %>%
     dplyr::mutate(depth = (upper + lower) / 2,
                   topheight = max(upper)) %>%
     dplyr::group_modify(~{
@@ -112,11 +110,10 @@ get_lm_efflux <- function(x){
 
 get_lex_efflux <- function(x,
                                  layers){
-  id_cols <- cfp_id_cols(x)
   FLUX <- x$FLUX
 
   FLUX %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    dplyr::group_by(mode, prof_id) %>%
     dplyr::mutate(depth = (upper + lower) / 2,
                   topheight = max(upper)) %>%
     dplyr::arrange(desc(depth)) %>%
