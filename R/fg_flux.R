@@ -27,11 +27,18 @@ fg_flux <- function(x, ...){
 fg_flux.cfp_dat <- function(x, ...){
 
   x <- cfp_fgmod(x,...)
+  .Class <- "cfp_fgmod"
   NextMethod()
 }
 
 #' @exportS3Method
-fg_flux.default <- function(x, ...){
+fg_flux.cfp_fgres <- function(x, ...){
+  x <- as_cfp_fgmod(x)
+  NextMethod()
+}
+
+#' @exportS3Method
+fg_flux.cfp_fgmod <- function(x, ...){
 
   y <-
   calculate_flux(x$gasdata,

@@ -39,7 +39,7 @@ print.cfp_fgres <- function(x, ...){
   n_NA <- length(R2[is.na(R2) == TRUE])
 
   cat("\nA cfp_fgres fg_flux model result. \n")
-  cat("mean RMSE achieved: ", mean_R2, "\n")
+  cat("mean R2 achieved: ", mean_R2, "\n")
   cat("number of failed fits: ", n_NA,"\n")
   NextMethod()
 }

@@ -102,3 +102,23 @@ cfp_funs.cfp_fgmod <- function(x){
 
 
 
+
+###### COERCION #######
+#' @export
+as_cfp_fgmod <- function(x){
+  UseMethod("as_cfp_fgmod")
+}
+
+#'@exportS3Method
+as_cfp_fgmod.cfp_fgres <- function(x){
+  x <- cfp_fgmod(x = new_cfp_dat(x$gasdata,
+                                 x$soilphys,
+                                 x$layers_map,
+                                 x$profiles,
+                                 cfp_id_cols(x)),
+                  gases = cfp_gases(x),
+                  modes = cfp_modes(x),
+                  param = cfp_param(x),
+                  funs = cfp_funs(x))
+  x
+}

@@ -83,6 +83,7 @@ pro_flux.cfp_dat <- function(x,
                              ...){
   x <- cfp_pfmod(x,
                  ...)
+  .Class <- "cfp_pfmod"
   NextMethod()
 }
 
@@ -94,7 +95,7 @@ pro_flux.cfp_pfres <- function(x,
 }
 
 #'@exportS3Method
-pro_flux.default <- function(x,
+pro_flux.cfp_pfmod <- function(x,
                              ...){
 
   stopifnot(inherits(x,"cfp_pfmod"))

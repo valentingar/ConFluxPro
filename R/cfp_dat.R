@@ -303,7 +303,7 @@ sp_add_pmap <- function(soilphys,
 
 # methods  -------------------
 
-# PRINTING
+##### PRINTING #####
 #' @exportS3Method
 print.cfp_dat <- function(x){
   cat("\nA cfp_dat object to be used as input in ConFluxPro models. \n")
@@ -317,7 +317,7 @@ print.cfp_dat <- function(x){
 }
 
 
-# EXTRACTION
+###### EXTRACTION #####
 #' @rdname cfp_pfres
 cfp_id_cols <- function(x){
   UseMethod("cfp_id_cols")
@@ -328,8 +328,26 @@ cfp_id_cols.default <- function(x){
 }
 
 
+##### COERSION #######
 
-# SPLITTING
+#' @export
+as_cfp_dat <- function(x){
+  UseMethod("as_cfp_dat")
+}
+
+#' @exportS3Method
+as_cfp_dat.cfp_dat <- function(x){
+  x <-
+    new_cfp_dat(x$gasdata,
+              x$soilphys,
+              x$layers_map,
+              x$profiles,
+              cfp_id_cols(x))
+  x
+}
+
+
+##### SPLITTING #####
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
