@@ -9,8 +9,24 @@
 
 alternate <- function(x,
                       f,
-                      run_map){
+                      run_map,
+                      error_funs,
+                      error_args,
+                      return_raw){
 
+  stopifnot(inherits(x, "cfp_pfmod") | inherits(x, "cfp_fgmod"))
+
+
+  alternate_res <-
+    lapply(split(run_map,run_map$run_id),
+           alternate_model,
+           x = x,
+           f = f,
+           return_raw = return_raw,
+           error_funs = error_funs,
+           error_args = error_args)
+
+  alternate_res
 }
 
 
@@ -74,3 +90,78 @@ create_runs <- function(x,
     dplyr::bind_rows()
 
 }
+
+
+alternate_model <- function(run_map,
+                            x,
+                            f,
+                            error_funs,
+                            error_args,
+                            return_raw){
+
+  ## update parameters
+  x$soilphys <- update_soilphys(x$soilphys,
+                                run_map,
+                                f)
+
+  ## rerun model
+  y <- flux(x)
+
+  # return either the complete dataset
+  if (return_raw == TRUE){
+    return(y)
+  }
+
+  # otherwise:
+  # calculate error parameters and return results
+  df_ret <-
+    apply_error_funs(y,
+                     error_funs,
+                     error_args)
+
+  df_ret$run_id <- r_id
+  df_ret
+}
+
+update_soilphys <- function(soilphys,
+                            run_map,
+                            f){
+
+  id_cols <- cfp_id_cols(soilphys)
+  merger <- names(run_map)[names(run_map) %in% id_cols]
+
+  new_params <- lapply(split(run_map, run_map$param),
+                       update_param,
+                       soilphys,
+                       id_cols
+                     ) %>%
+    #do.call(dplyr::left_join(), args = list(by = merger))
+    dplyr::bind_cols()
+
+  soilphys <- soilphys %>%
+    dplyr::select(!dplyr::any_of(run_map$param)) %>%
+    dplyr::bind_cols(new_params)
+
+  soilphys <- f(soilphys)
+  soilphys <- cfp_soilphys(soilphys, id_cols)
+}
+
+update_param <- function(run_param,
+                         soilphys,
+                         id_cols){
+
+    param <- run_param$param[1]
+    merger <- names(run_param)[names(run_param) %in% id_cols]
+
+    soilphys %>%
+      dplyr::select(dplyr::any_of(c(
+        param,
+        id_cols))) %>%
+      dplyr::left_join(run_param, by = merger) %>%
+      dplyr::mutate(dplyr::across({param},
+                                  ~dplyr::case_when(type == "factor" ~ .x * value,
+                                             type == "abs" ~ value,
+                                             type == "addition" ~ .x + value)
+      )) %>%
+      dplyr::select({param})
+  }

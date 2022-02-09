@@ -4,7 +4,7 @@
 \alias{alternate}
 \title{alternate}
 \usage{
-alternate(x, f, run_map)
+alternate(x, f, run_map, error_funs, error_args, return_raw)
 }
 \arguments{
 \item{x}{A cfp_pfres or cfp_fgres model result.}
