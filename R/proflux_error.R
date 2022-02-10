@@ -15,7 +15,7 @@
 #' @name proflux_error
 NULL
 #'
-#' @rdname x_error
+#' @rdname proflux_error
 
   error_gasdata <- function(
     x,
@@ -72,7 +72,7 @@ NULL
   }
 
 
-#' @rdname x_error
+#' @rdname proflux_error
 
   error_efflux <- function(x,
                            param_cols,

@@ -914,32 +914,6 @@ make_map_randl <- function(params_map,
 
 
 
-
-apply_error_funs <- function(PROFLUX_new,
-                             error_funs,
-                             error_args){
-
-
-  df_ret <-
-  lapply(1:length(error_funs), function(f_id) {
-    error_args_tmp <-
-      error_args[[f_id]]
-    error_args_tmp$PROFLUX <- PROFLUX_new
-
-    df <-
-      do.call(
-        error_funs[[f_id]],
-        error_args_tmp
-      )
-
-    df$error_param <- names(error_funs[f_id])
-    df
-  }) %>%
-    dplyr::bind_rows()
-
-  df_ret
-}
-
 # functions to write the results  to database connection con
 write_database <- function(df_ret,
                                con,

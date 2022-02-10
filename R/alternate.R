@@ -165,3 +165,29 @@ update_param <- function(run_param,
       )) %>%
       dplyr::select({param})
   }
+
+##
+apply_error_funs <- function(x,
+                             error_funs,
+                             error_args){
+
+
+  df_ret <-
+    lapply(1:length(error_funs), function(f_id) {
+      error_args_tmp <-
+        error_args[[f_id]]
+      error_args_tmp$PROFLUX <- x # add PROFLUX argument
+
+      df <-
+        do.call(
+          error_funs[[f_id]],
+          error_args_tmp
+        )
+
+      df$error_param <- names(error_funs[f_id])
+      df
+    }) %>%
+    dplyr::bind_rows()
+
+  df_ret
+}
