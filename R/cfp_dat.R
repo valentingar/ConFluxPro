@@ -96,6 +96,14 @@ cfp_dat <- function(gasdata,
     dplyr::distinct() %>%
     as.data.frame()
 
+  soilphys <- soilphys %>%
+    filter(sp_id %in% profiles$sp_id) %>%
+    cfp_soilphys(id_cols = cfp_id_cols(soilphys))
+
+  gasdata <- gasdata %>%
+    dplyr::filter(gd_id %in% profiles$gd_id) %>%
+    cfp_gasdata(id_cols = cfp_id_cols(gasdata))
+
 
   message(paste0(nrow(profiles)," unique profiles"))
 
@@ -345,6 +353,38 @@ as_cfp_dat.cfp_dat <- function(x){
               cfp_id_cols(x))
   x
 }
+
+##### FILTER ######
+#' @exportS3Method
+filter.cfp_dat <- function(.data,
+                           ...,
+                           .preserve = FALSE){
+  tables <- names(.data)
+  tables <- tables[tables == "profiles"]
+
+  .data$profiles <- .data$profiles %>%
+    dplyr::filter(...)
+
+  possible_cols <- names(.data$profiles)
+
+  out <-
+    lapply(.data, function(t){
+
+      col_names <- names(t)
+      merger <- col_names[col_names %in% possible_cols]
+      deselector <- possible_cols[!possible_cols %in% merger]
+
+      t %>%
+        dplyr::right_join(.data$profiles,
+                          by = merger) %>%
+        dplyr::select(!dplyr::any_of(deselector))
+    })
+
+  attributes(out) <- attributes(.data)
+
+  out
+}
+
 
 
 ##### SPLITTING #####
