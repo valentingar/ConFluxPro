@@ -112,6 +112,13 @@ pro_flux.cfp_pfmod <- function(x,
   #combine PROFLUX result
   y <- dplyr::bind_rows(y)
 
+  # add some columns
+  y <- x$soilphys %>%
+    as.data.frame() %>%
+    dplyr::left_join(x$profiles, by = "sp_id") %>%
+    dplyr::select(upper, lower, step_id, prof_id, sp_id, pmap) %>%
+    dplyr::right_join(y, by = c("step_id", "prof_id"))
+
   #create cfp_pfres object
   y <- cfp_pfres(x,y)
   y
