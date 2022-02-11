@@ -63,6 +63,8 @@ create_runs <- function(x,
 
   if(method == "permutation"){
 
+    stopifnot("layers_different is only yet supported for 'random' method" = layers_different == FALSE)
+
     run_map <- expand.grid(params) %>%
       dplyr::mutate(run_id = dplyr::row_number()) %>%
       tidyr::pivot_longer(cols = !"run_id",
@@ -78,8 +80,19 @@ create_runs <- function(x,
     params <- lapply(params, sort)
 
     run_map <- data.frame(run_id = rep(1:n_runs, each = length(params)),
-                          param = rep(names(params), times = n_runs)) %>%
-      dplyr::rowwise() %>%
+                          param = rep(names(params), times = n_runs))
+
+    if (layers_different == TRUE){
+      run_map <-
+        x$layers_map %>%
+        dplyr::select(pmap,
+                      dplyr::any_of({cfp_id_cols(x)})) %>%
+        right_join(run_map, by = character())
+    }
+
+    run_map <-
+      run_map %>%
+    dplyr::rowwise() %>%
       dplyr::mutate(value = runif(1, params[[param]][1], params[[param]][2])) %>%
       dplyr::left_join(type_df, by = "param") %>%
       dplyr::ungroup()
@@ -88,6 +101,8 @@ create_runs <- function(x,
 
   run_map <- lapply(gases,function(g){run_map$gas <- g; run_map}) %>%
     dplyr::bind_rows()
+
+
 
 }
 
@@ -151,12 +166,13 @@ update_param <- function(run_param,
                          id_cols){
 
     param <- run_param$param[1]
-    merger <- names(run_param)[names(run_param) %in% id_cols]
+    merger <- names(run_param)[names(run_param) %in% c(id_cols,"pmap")]
 
     soilphys %>%
       dplyr::select(dplyr::any_of(c(
         param,
-        id_cols))) %>%
+        id_cols,
+        "pmap"))) %>%
       dplyr::left_join(run_param, by = merger) %>%
       dplyr::mutate(dplyr::across({param},
                                   ~dplyr::case_when(type == "factor" ~ .x * value,
