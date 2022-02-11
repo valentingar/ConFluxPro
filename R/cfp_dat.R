@@ -374,10 +374,17 @@ filter.cfp_dat <- function(.data,
       merger <- col_names[col_names %in% possible_cols]
       deselector <- possible_cols[!possible_cols %in% merger]
 
+      t_new <-
       t %>%
         dplyr::right_join(.data$profiles,
                           by = merger) %>%
         dplyr::select(!dplyr::any_of(deselector))
+
+      old_atr <- attributes(t)
+      new_atr <- old_atr[!names(old_atr) %in% names(attributes(data.frame()))]
+      attributes(t_new) <- c(attributes(t_new), new_atr)
+      class(t_new) <- class(t)
+      t_new
     })
 
   attributes(out) <- attributes(.data)
