@@ -326,7 +326,7 @@ print.cfp_dat <- function(x){
 
 
 ###### EXTRACTION #####
-#' @rdname cfp_pfres
+#' @export
 cfp_id_cols <- function(x){
   UseMethod("cfp_id_cols")
 }
@@ -376,7 +376,9 @@ filter.cfp_dat <- function(.data,
 
       t_new <-
       t %>%
-        dplyr::right_join(.data$profiles,
+        dplyr::right_join(.data$profiles %>%
+                            dplyr::select({merger}) %>%
+                            dplyr::distinct(),
                           by = merger) %>%
         dplyr::select(!dplyr::any_of(deselector))
 
