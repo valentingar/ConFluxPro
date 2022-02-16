@@ -5,14 +5,31 @@
 #'
 #' @param x A cfp_pfres or cfp_fgres model result.
 #'
+#' @param f A function taking in a soilphys object and recalculates the relevant
+#' columns. See \code{complete_soilphys()}.
+#'
+#' @param run_map A data.frame created by \code{run_map()} with the necessary information
+#' how the data is to be changed with each distinct \code{run_id}.
+#'
+#' @param return_raw Should the models be returned as is, or after applying any
+#' \code{error_funs}. Default is \code{TRUE} - exporting the models.
+#'
+#' @param error_funs A list of functions to be applied after flux calculation
+#' if \code{return_raw == FALSE}. This can be used to output not the models
+#' but quality parameters instead. Output must contain the column RMSE.
+#'
+#' @param error_args A list of additional function arguments to be passed to any
+#' of the \code{error_funs}. Must match the length of \code{error_funs}
+#'
 #' @export
+
 
 alternate <- function(x,
                       f,
                       run_map,
-                      error_funs,
-                      error_args,
-                      return_raw){
+                      return_raw = TRUE,
+                      error_funs = NULL,
+                      error_args = NULL){
 
   stopifnot(inherits(x, "cfp_pfmod") | inherits(x, "cfp_fgmod"))
 
@@ -35,77 +52,7 @@ alternate <- function(x,
 
 
 #helpers --------------
-# function to create the necessary run_map
-create_runs <- function(x,
-                        params = list(),
-                        method = NULL,
-                        type = NULL,
-                        n_runs = NULL,
-                        layers_different = FALSE
-                        ){
-
-  method <- match.arg(method, c("random", "permutation"))
-  type <- match.arg(type, c("abs", "factor", "addition" ))
-
-  stopifnot("type must be length 1 or the same as params" =
-              (length(type) == 1) | (length(type) = length(params)))
-
-  stopifnot("all params must be present in soilphys!" =
-              all(names(params) %in% names(x$soilphys)))
-
-  type_df <- data.frame(param = names(params),
-                        type = ifelse(length(type == 1),
-                                      rep(type, length(params)),
-                                      type)
-  )
-
-  gases <- unique(x$profiles$gas)
-
-  if(method == "permutation"){
-
-    stopifnot("layers_different is only yet supported for 'random' method" = layers_different == FALSE)
-
-    run_map <- expand.grid(params) %>%
-      dplyr::mutate(run_id = dplyr::row_number()) %>%
-      tidyr::pivot_longer(cols = !"run_id",
-                          names_to = "param",
-                          values_to = "value") %>%
-      dplyr::left_join(type_df, by = "param")
-
-  } else if (method == "random"){
-
-    stopifnot("For method = 'random' give exactly two values per param as limits" =
-                all(sapply(params,length) == 2))
-
-    params <- lapply(params, sort)
-
-    run_map <- data.frame(run_id = rep(1:n_runs, each = length(params)),
-                          param = rep(names(params), times = n_runs))
-
-    if (layers_different == TRUE){
-      run_map <-
-        x$layers_map %>%
-        dplyr::select(pmap,
-                      dplyr::any_of({cfp_id_cols(x)})) %>%
-        right_join(run_map, by = character())
-    }
-
-    run_map <-
-      run_map %>%
-    dplyr::rowwise() %>%
-      dplyr::mutate(value = runif(1, params[[param]][1], params[[param]][2])) %>%
-      dplyr::left_join(type_df, by = "param") %>%
-      dplyr::ungroup()
-
-  }
-
-  run_map <- lapply(gases,function(g){run_map$gas <- g; run_map}) %>%
-    dplyr::bind_rows()
-
-
-
-}
-
+#' @export
 apply_one_run <- function(run_map,
                            x,
                            f,

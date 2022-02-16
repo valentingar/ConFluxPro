@@ -4,10 +4,33 @@
 \alias{alternate}
 \title{alternate}
 \usage{
-alternate(x, f, run_map, error_funs, error_args, return_raw)
+alternate(
+  x,
+  f,
+  run_map,
+  return_raw = TRUE,
+  error_funs = NULL,
+  error_args = NULL
+)
 }
 \arguments{
 \item{x}{A cfp_pfres or cfp_fgres model result.}
+
+\item{f}{A function taking in a soilphys object and recalculates the relevant
+columns. See \code{complete_soilphys()}.}
+
+\item{run_map}{A data.frame created by \code{run_map()} with the necessary information
+how the data is to be changed with each distinct \code{run_id}.}
+
+\item{return_raw}{Should the models be returned as is, or after applying any
+\code{error_funs}. Default is \code{TRUE} - exporting the models.}
+
+\item{error_funs}{A list of functions to be applied after flux calculation
+if \code{return_raw == FALSE}. This can be used to output not the models
+but quality parameters instead. Output must contain the column RMSE.}
+
+\item{error_args}{A list of additional function arguments to be passed to any
+of the \code{error_funs}. Must match the length of \code{error_funs}}
 }
 \description{
 Alternate cfp_pfres / cfp_fgres models for sensitivit analysis and
