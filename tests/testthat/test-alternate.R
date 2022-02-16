@@ -62,5 +62,10 @@ test_that("create runmap works", {
   expect_equal(run_map, df)
   expect_equal(run_map_2, df_2, tolerance = 0.01)
 
+  PF_alt <- alternate(PROFLUX,
+                      function(i) complete_soilphys(i, overwrite = TRUE),
+                      run_map,
+                      return_raw = TRUE)
+
 
 })

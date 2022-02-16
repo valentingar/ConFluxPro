@@ -19,7 +19,7 @@ alternate <- function(x,
 
   alternate_res <-
     lapply(split(run_map,run_map$run_id),
-           alternate_model,
+           apply_one_run,
            x = x,
            f = f,
            return_raw = return_raw,
@@ -106,21 +106,16 @@ create_runs <- function(x,
 
 }
 
+apply_one_run <- function(run_map,
+                           x,
+                           f,
+                           error_funs,
+                           error_args,
+                           return_raw){
 
-alternate_model <- function(run_map,
-                            x,
-                            f,
-                            error_funs,
-                            error_args,
-                            return_raw){
-
-  ## update parameters
-  x$soilphys <- update_soilphys(x$soilphys,
-                                run_map,
-                                f)
-
-  ## rerun model
-  y <- flux(x)
+  y <- alternate_model(run_map,
+                       x,
+                       f)
 
   # return either the complete dataset
   if (return_raw == TRUE){
@@ -137,6 +132,24 @@ alternate_model <- function(run_map,
   df_ret$run_id <- r_id
   df_ret
 }
+
+
+alternate_model <- function(run_map,
+                            x,
+                            f){
+
+  ## update parameters
+  x$soilphys <- update_soilphys(x$soilphys,
+                                run_map,
+                                f)
+
+  ## rerun model
+  y <- flux(x)
+  y
+}
+
+
+
 
 update_soilphys <- function(soilphys,
                             run_map,
