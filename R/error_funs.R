@@ -1,4 +1,4 @@
-#' @title proflux_error
+#' @title error_funs
 #'
 #' @description A set of functions that can be called on an
 #' cfp_pfres object (the result of a call to pro_flux) to assess
@@ -8,20 +8,45 @@
 #' to pro_flux()
 #'
 #' @param param_cols The columns that, together, define different parameters (e.g. different gases)
-#' for which NRMSEs should be calculated separately (e.g. "gas").
+#' for which NRMSEs should be calculated separately (e.g. "gas"). Defaults to
+#' the id_cols of layers_map. If no such destinction is wished, set to \code{character()}
+#'
+#' @param EFFLUX A data.frame with (at most) one value of efflux per profile of x. Must
+#' contain any id_cols of x needed.
+#'
+#' @param ... Further arguments passed to \code{efflux()} in case of cfp_fgres.
 #'
 #' @inheritParams rmse
 #'
-#' @name proflux_error
-NULL
+#' @details For error_concentration, the way the error parameter is calculated for cfp_fgres and cfp_pfres objects
+#' is entirely different and should not be used in comparison between the two. NRMSE of
+#' cfp_pfres objects are calculated as the mean of depth-wise NRMSEs of modelled versus
+#' input gas concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
+#' (dcdz_sd / dcdz_ppm) per group described in param_cols.
 #'
-#' @rdname proflux_error
+#' @aliases error_concentration error_efflux error_funs
+#'
+#' @rdname error_funs
 
-  error_gasdata <- function(
+error_concentration <- function(
+  x,
+  param_cols = NULL,
+  normer
+){
+  UseMethod("error_concentration")
+}
+
+#' @exportS3Method
+error_concentration.cfp_pfres <- function(
     x,
-    param_cols,
+    param_cols = NULL,
     normer
   ) {
+
+  if (is.null(param_cols)){
+    #using layers map id_cols as default
+    param_cols <- cfp_id_cols(x$layers_map)
+  }
 
     gasdata <-
       x$gasdata %>%
@@ -38,8 +63,12 @@ NULL
                     rho_air)
 
     x$profiles %>%
-      dplyr::left_join(x$PROFLUX, by = "prof_id") %>%
-      dplyr::left_join(soilphys, by = c("sp_id", "step_id")) %>%
+      dplyr::left_join(x$PROFLUX, by = c("prof_id", "sp_id")) %>%
+      dplyr::left_join(soilphys %>%
+                         dplyr::select(sp_id,
+                                       step_id,
+                                       rho_air),
+                       by = c("sp_id", "step_id")) %>%
       dplyr::select(dplyr::any_of(
         {c(param_cols,
            "prof_id",
@@ -69,15 +98,43 @@ NULL
       # then calculation of mean of all depth-NRMSEs
       dplyr::summarise(NRMSE = mean(NRMSE,
                                     na.rm = T))
+}
+
+#' @exportS3Method
+error_concentration.cfp_fgres <- function(
+  x,
+  param_cols = NULL,
+  normer = NULL){
+
+  if (is.null(param_cols)){
+    #using layers map id_cols as default
+    param_cols <- cfp_id_cols(x$layers_map)
   }
 
+  merger <- names(x$FLUX)[names(x$FLUX) %in% names(x$profiles)]
 
-#' @rdname proflux_error
+  x$FLUX %>%
+    dplyr::left_join(x$profiles, by = merger) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(param_cols))) %>%
+    dplyr::summarise(NRMSE = mean(dcdz_sd / abs(dcdz_ppm), na.rm = TRUE))
+}
 
-  error_efflux <- function(x,
+
+#' @rdname error_funs
+error_efflux <-function(x,
+         param_cols,
+         EFFLUX,
+         normer,
+         ...){
+  UseMethod("error_efflux")
+}
+
+#' @exportS3Method
+  error_efflux.default <- function(x,
                            param_cols,
                            EFFLUX,
-                           normer){
+                           normer,
+                           ...){
 
     id_cols <- cfp_id_cols(x)
 
@@ -91,7 +148,7 @@ NULL
     merger <- id_cols[id_cols %in% names(EFFLUX)]
 
     x %>%
-      efflux() %>%
+      efflux(...) %>%
       dplyr::left_join(EFFLUX, by = merger) %>%
       dplyr::group_by(
         dplyr::across(
