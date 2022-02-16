@@ -1,6 +1,6 @@
 #' @title alternate
 #'
-#' @description Alternate cfp_pfres / cfp_fgres models for sensitivit analysis and
+#' @description Alternate cfp_pfres / cfp_fgres models for sensitivity analysis and
 #' more.
 #'
 #' @param x A cfp_pfres or cfp_fgres model result.
@@ -20,6 +20,12 @@
 #'
 #' @param error_args A list of additional function arguments to be passed to any
 #' of the \code{error_funs}. Must match the length of \code{error_funs}
+#'
+#' @details \code{alternate_model()} is used internally to change and rerun one model,
+#' but can also be used to update a model with a given unique run_map, e.g. by filtering
+#' the best run_id from the original \code{run_map}.
+#'
+#' @aliases alternate_model
 #'
 #' @export
 
@@ -52,7 +58,6 @@ alternate <- function(x,
 
 
 #helpers --------------
-#' @export
 apply_one_run <- function(run_map,
                            x,
                            f,
@@ -80,7 +85,7 @@ apply_one_run <- function(run_map,
   df_ret
 }
 
-
+#' @rdname alternate
 alternate_model <- function(run_map,
                             x,
                             f){

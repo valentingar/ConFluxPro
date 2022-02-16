@@ -2,6 +2,7 @@
 % Please edit documentation in R/alternate.R
 \name{alternate}
 \alias{alternate}
+\alias{alternate_model}
 \title{alternate}
 \usage{
 alternate(
@@ -12,6 +13,8 @@ alternate(
   error_funs = NULL,
   error_args = NULL
 )
+
+alternate_model(run_map, x, f)
 }
 \arguments{
 \item{x}{A cfp_pfres or cfp_fgres model result.}
@@ -33,6 +36,11 @@ but quality parameters instead. Output must contain the column RMSE.}
 of the \code{error_funs}. Must match the length of \code{error_funs}}
 }
 \description{
-Alternate cfp_pfres / cfp_fgres models for sensitivit analysis and
+Alternate cfp_pfres / cfp_fgres models for sensitivity analysis and
 more.
+}
+\details{
+\code{alternate_model()} is used internally to change and rerun one model,
+but can also be used to update a model with a given unique run_map, e.g. by filtering
+the best run_id from the original \code{run_map}.
 }
