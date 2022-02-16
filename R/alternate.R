@@ -86,6 +86,7 @@ apply_one_run <- function(run_map,
 }
 
 #' @rdname alternate
+#' @export
 alternate_model <- function(run_map,
                             x,
                             f){

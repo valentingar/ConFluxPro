@@ -27,6 +27,7 @@
 #' @aliases error_concentration error_efflux error_funs
 #'
 #' @rdname error_funs
+#' @export
 
 error_concentration <- function(
   x,
@@ -121,6 +122,7 @@ error_concentration.cfp_fgres <- function(
 
 
 #' @rdname error_funs
+#' @export
 error_efflux <-function(x,
          param_cols,
          EFFLUX,
