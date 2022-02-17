@@ -30,14 +30,14 @@ test_that("create runmap works", {
     pro_flux()
 
 
-  run_map <- create_runs(PROFLUX,
+  run_map <- run_map(PROFLUX,
                          params = list("TPS" = c(1,1.2),
                                        "Temp" = c(1,1.05)),
                          method = "permutation",
                          type = "factor"
                          )
   set.seed(42)
-  run_map_2 <- create_runs(PROFLUX,
+  run_map_2 <- run_map(PROFLUX,
                          params = list("TPS" = c(1,1.2),
                                        "Temp" = c(1,1.05)),
                          method = "random",

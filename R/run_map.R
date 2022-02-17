@@ -33,18 +33,22 @@ run_map <- function(x,
 ){
 
   method <- match.arg(method, c("random", "permutation"))
-  type <- match.arg(type, c("abs", "factor", "addition" ))
+  type <- match.arg(type, c("abs", "factor", "addition" ),several.ok = TRUE)
 
   stopifnot("type must be length 1 or the same as params" =
               (length(type) == 1) | (length(type) = length(params)))
 
   stopifnot("all params must be present in soilphys!" =
-              all(names(params) %in% names(x$soilphys)))
+              all(names(params) %in% c(names(x$soilphys), "topheight")))
+
+
+  if (length(type) == 1){
+    type <- rep(type, length(params))
+
+  }
 
   type_df <- data.frame(param = names(params),
-                        type = ifelse(length(type == 1),
-                                      rep(type, length(params)),
-                                      type)
+                        type = type
   )
 
   gases <- unique(x$profiles$gas)
@@ -52,6 +56,8 @@ run_map <- function(x,
   if(method == "permutation"){
 
     stopifnot("layers_different is only yet supported for 'random' method" = layers_different == FALSE)
+    stopifnot("topheight change not yet supported for method = permutation" =
+                !"topheight" %in% names(params))
 
     run_map <- expand.grid(params) %>%
       dplyr::mutate(run_id = dplyr::row_number()) %>%
@@ -75,7 +81,14 @@ run_map <- function(x,
         x$layers_map %>%
         dplyr::select(pmap,
                       dplyr::any_of({cfp_id_cols(x)})) %>%
-        right_join(run_map, by = character())
+        dplyr::right_join(run_map %>%
+                     dplyr::filter(!param == "topheight"),
+                   by = character()) %>%
+        dplyr::bind_rows(x$layers_map %>%
+                           dplyr::select(dplyr::any_of({cfp_id_cols(x)})) %>%
+                           dplyr::distinct() %>%
+                           dplyr::right_join(run_map, by = character()) %>%
+                           dplyr::filter(param == "topheight"))
     }
 
     run_map <-
