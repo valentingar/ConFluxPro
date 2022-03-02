@@ -1,6 +1,7 @@
 #' code to prepare the 'soilwater' dataset.
 #'
 
+library(dplyr)
 
 #Dates
 dates <- seq.Date(as.Date("2021-01-01"),

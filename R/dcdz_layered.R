@@ -25,7 +25,7 @@
 #'
 #' @examples {
 #' df <- data.frame(depth = c(10,0,-100),
-#'                  NRESULT_ppm = c(400,800,5000))
+#'                  x_ppm = c(400,800,5000))
 #'
 #' lmap <- data.frame(upper = c(10,0),
 #'                    lower = c(0,-100),
@@ -79,7 +79,7 @@ if (nrow(df)<length(depths) | ls_flag){
   return_na <- T
 } else {
 #spline model
-mod<-stats::lm(NRESULT_ppm~splines::bs(depth,knots=depth_steps,#depth_steps,
+mod<-stats::lm(x_ppm~splines::bs(depth,knots=depth_steps,#depth_steps,
                        degree = 1
 ),
 data=df)
@@ -113,14 +113,14 @@ create_return <- T
                          lower = lower[i])
 
 
-    df_valid <- df_part %>% dplyr::filter(!is.na(NRESULT_ppm),!is.na(depth))
+    df_valid <- df_part %>% dplyr::filter(!is.na(x_ppm),!is.na(depth))
     d_flag <- (df_valid  %>% dplyr::pull(depth) %>% unique() %>%length() <2)
     val_flag <- (df_valid %>% nrow() < 2)
 
     if (any(d_flag,val_flag)){
       return(df_ret)
     } else{
-    mod <- stats::lm(NRESULT_ppm ~depth, data = df_part)
+    mod <- stats::lm(x_ppm ~depth, data = df_part)
     dcdz <- as.numeric(stats::coef(mod)[2])*100 #gradient in ppm/m
     dc <- dcdz * (abs(diff(c(upper[i],lower[i]))) / 100)
     dcdz_sd <- as.numeric(summary(mod)$coefficients[2,2])*100 #error of gradient in ppm/m
@@ -148,26 +148,26 @@ create_return <- T
 } else if (mode == "EF"){
 
   if(nrow(df)>1){
-  starts<-stats::coef(stats::lm(NRESULT_ppm~I((depth-min(depths))^1.5),data=df))
+  starts<-stats::coef(stats::lm(x_ppm~I((depth-min(depths))^1.5),data=df))
   } else {
     starts <- NA
   }
   #If all values are basically the same,
   #problems arise, this checks for the relative
   #difference of all values being less than 1e-10
-  sing_flag <- mean(abs(na.omit(df$NRESULT_ppm)-mean(df$NRESULT_ppm,na.rm=T)))/mean(df$NRESULT_ppm,na.rm=T) < 1e-10
+  sing_flag <- mean(abs(na.omit(df$x_ppm)-mean(df$x_ppm,na.rm=T)))/mean(df$x_ppm,na.rm=T) < 1e-10
 
   if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){
     #preventing model errors before they occur and replacing with NA
     return_na <- T
   } else {
-    #print(df$NRESULT_ppm)
+    #print(df$x_ppm)
     #print(df$depth)
     #print(starts)
     #print("premod")
     #exponential model
 
-    mod <- try(stats::nls(NRESULT_ppm~(starts[1]+(b*((depth-min(depths))^c))),
+    mod <- try(stats::nls(x_ppm~(starts[1]+(b*((depth-min(depths))^c))),
                data = df,
                start = list(#"a"=as.numeric(starts[1]),
                             "b"=as.numeric(starts[2])*stats::rnorm(1,1,0.01),
@@ -197,7 +197,7 @@ create_return <- T
       dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
       dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
       dc<--diff(starts[1]+(b*((depths-min(depths))^c)))
-      r2 <- summary(stats::lm(NRESULT_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
+      r2 <- summary(stats::lm(x_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
 
       create_return <- T
     }

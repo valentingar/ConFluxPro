@@ -11,7 +11,7 @@ A tibble with 312 rows and 6 variables:
   \item{Date}{Date in the format "YYYY-MM-DD"}
   \item{depth}{depth from mineral soil in cm}
   \item{repetition}{id for which repetition in each depth}
-  \item{NRESULT_ppm}{concentration, in ppm}
+  \item{x_ppm}{concentration, in ppm}
   \item{gas}{name of the gas}
 }
 }

@@ -4,7 +4,7 @@ test_that("check_soilphys_half_ready", {
                    lower = numeric(),
                    SWC = numeric(),
                    TPS = numeric(),
-                   Temp = numeric(),
+                   t = numeric(),
                    p = numeric()
                    )
 
@@ -17,7 +17,7 @@ test_that("check_soilphys_not_ready", {
                    lower = numeric(),
                    SWC = numeric(),
                    TPS = numeric(),
-                   Temp = numeric()
+                   t = numeric()
   )
 
   expect_equal(check_soilphys(df,id_cols = c())$result,F)
@@ -30,10 +30,10 @@ test_that("check_soilphys_supects", {
                    depth = c(5,-5),
                    SWC = c(NA,1),
                    TPS = c(NA,1),
-                   Temp = c(NA,1)
+                   t = c(NA,1)
   )
   expect_equal(check_soilphys(df,id_cols = c())$suspects,tibble(upper = c(10,10,10),
-                                                                param = c("TPS","SWC","Temp"),
+                                                                param = c("TPS","SWC","t"),
                                                                 value = c(TRUE,TRUE,TRUE))
                )
 
@@ -42,7 +42,7 @@ test_that("check_soilphys_supects", {
                    depth = c(5,-5),
                    SWC = c(NA,1),
                    TPS = c(NA,1),
-                   Temp = c(NA,1)
+                   t = c(NA,1)
   )
   expect_equal(check_soilphys(df,id_cols = c())$suspects,tibble(param = c("upper"),
                                                                 value = c(TRUE))

@@ -1,7 +1,7 @@
 test_that("dcdz_layered works", {
 
   df <- data.frame(depth = c(10,0,-100),
-                   NRESULT_ppm = c(400,800,5000))
+                   x_ppm = c(400,800,5000))
   lmap <- data.frame(upper = c(10,0),
                      lower = c(0,-100),
                      layer = c("HU","MIN"))

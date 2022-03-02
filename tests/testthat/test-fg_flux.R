@@ -28,7 +28,7 @@ test_that("fg_flux works", {
             lmap ) %>%
     fg_flux(gases = "CO2",
             modes = "LL",
-            param = c("DS", "rho_air"),
+            param = c("DS", "c_air"),
             funs = c("harm", "arith"))# %>%
     fg_flux()
 

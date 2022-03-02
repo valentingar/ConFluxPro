@@ -26,7 +26,7 @@ This function analyses the soilphys dataframe before the flux
   made by discretize_depth. Mainly checks if ceratain columns are present
   and if they are missing, if they can be calcluated from the data present.
   Looks for the following columns by default:
-  "upper","lower","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS"
+  "upper","lower","TPS","SWC","AFPS","t","p","DSD0","D0","DS"
 }
 \examples{
 {

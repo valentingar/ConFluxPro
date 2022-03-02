@@ -32,14 +32,14 @@ test_that("create runmap works", {
 
   run_map <- run_map(PROFLUX,
                          params = list("TPS" = c(1,1.2),
-                                       "Temp" = c(1,1.05)),
+                                       "t" = c(1,1.05)),
                          method = "permutation",
                          type = "factor"
                          )
   set.seed(42)
   run_map_2 <- run_map(PROFLUX,
                          params = list("TPS" = c(1,1.2),
-                                       "Temp" = c(1,1.05)),
+                                       "t" = c(1,1.05)),
                          method = "random",
                          type = "factor",
                          n_runs = 4
@@ -47,14 +47,14 @@ test_that("create runmap works", {
 
 
   df <- dplyr::tibble(run_id = rep(1:4, each = 2),
-                   param = rep(c("TPS","Temp"),times = 4),
+                   param = rep(c("TPS","t"),times = 4),
                    value = c(1,1,1.2,1,1,1.05,1.2,1.05),
                    type = "factor",
                    gas = "CO2"
   )
 
   df_2 <-dplyr::tibble(run_id = rep(1:4, each = 2),
-                       param = rep(c("TPS","Temp"),times = 4),
+                       param = rep(c("TPS","t"),times = 4),
                        value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
                        type = "factor",
                        gas = "CO2")

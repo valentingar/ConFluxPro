@@ -27,7 +27,7 @@ test_that("create cfp_dat object",{
                          times = 2),
              lower = rep(c(0,-20,-100),
                          times = 2),
-             rho_air = 1,
+             c_air = 1,
              DS = 1,
              gas = "CO2") %>%
     cfp_soilphys(id_cols = "site")
@@ -37,7 +37,7 @@ test_that("create cfp_dat object",{
                           each = 5),
                depth = rep(c(10,0,-20,-30,-100),
                            times = 2),
-               NRESULT_ppm = rep(400,10),
+               x_ppm = rep(400,10),
                gas = "CO2") %>%
     cfp_gasdata(id_cols = "site")
 

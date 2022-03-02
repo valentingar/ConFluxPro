@@ -52,23 +52,23 @@ error_concentration.cfp_pfres <- function(
     gasdata <-
       x$gasdata %>%
       dplyr::select(gd_id,
-                    NRESULT_ppm,
+                    x_ppm,
                     depth) %>%
       dplyr::rename(upper = depth,
-                    conc_ref = NRESULT_ppm)
+                    conc_ref = x_ppm)
     soilphys <-
       x$soilphys %>%
       dplyr::select(sp_id,
                     upper,
                     step_id,
-                    rho_air)
+                    c_air)
 
     x$profiles %>%
       dplyr::left_join(x$PROFLUX, by = c("prof_id", "sp_id")) %>%
       dplyr::left_join(soilphys %>%
                          dplyr::select(sp_id,
                                        step_id,
-                                       rho_air),
+                                       c_air),
                        by = c("sp_id", "step_id")) %>%
       dplyr::select(dplyr::any_of(
         {c(param_cols,
@@ -76,9 +76,9 @@ error_concentration.cfp_pfres <- function(
            "gd_id",
            "upper",
            "conc",
-           "rho_air")}
+           "c_air")}
       )) %>%
-      dplyr::mutate(conc_ppm = conc/rho_air) %>%
+      dplyr::mutate(conc_ppm = conc/c_air) %>%
       dplyr::left_join(gasdata, by = c("gd_id", "upper")) %>%
 
       # grouping by upper first

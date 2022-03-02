@@ -11,7 +11,7 @@
 #' @param modes (character) A character vector specifying mode(s) for dcdz
 #'   calculation. Can be "LL","LS","EF".
 #' @param param (character) A vector containing the the parameters of soilphys,
-#'   for which means should be calculated, must contain "rho_air" and "DS", more
+#'   for which means should be calculated, must contain "c_air" and "DS", more
 #'   parameters help interpretation
 #' @param funs (character) A vector defining the type of mean to be used. One of
 #'   "arith" or "harm"
@@ -63,7 +63,7 @@ fg_flux.cfp_fgmod <- function(x, ...){
            dcdz_ppm,
            dcdz_sd,
            dc_ppm,
-           rho_air,
+           c_air,
            DS,
            r2)
 
@@ -87,8 +87,8 @@ calculate_flux <- function(gasdata,
     stop("cannot calculate flux: 'DS' is missing in param!")
   }
 
-  if(!"rho_air" %in% param){
-    stop("cannot calculate flux: 'rho_air' is missing in param!")
+  if(!"c_air" %in% param){
+    stop("cannot calculate flux: 'c_air' is missing in param!")
   }
 
   if(!length(which(id_cols %in% names(gasdata)))== length(id_cols)){
@@ -136,7 +136,7 @@ calculate_flux <- function(gasdata,
 
   #removing points without data
   gasdata <- gasdata %>%
-    dplyr::filter(!is.na(NRESULT_ppm),
+    dplyr::filter(!is.na(x_ppm),
                   !is.na(depth))
 
   if(nrow(gasdata) < 2){
@@ -156,11 +156,11 @@ calculate_flux <- function(gasdata,
 
 
   #turns Inf-values to NA
-  gasdata$NRESULT_ppm[is.infinite(gasdata$NRESULT_ppm)==T] <- NA
+  gasdata$x_ppm[is.infinite(gasdata$x_ppm)==T] <- NA
 
   #removes all NAs from gasdata
   gasdata <- gasdata %>%
-    dplyr::filter(is.na(NRESULT_ppm)==F,is.na(depth) == F)
+    dplyr::filter(is.na(x_ppm)==F,is.na(depth) == F)
 
 
   #if there is only one group in layers_map, this ensures correct joins
@@ -229,7 +229,7 @@ calculate_flux <- function(gasdata,
 
   FLUX <- FLUX %>%
     dplyr::left_join(soilphys_layers, by = merger) %>%
-    dplyr::mutate(flux = -DS*rho_air*dcdz_ppm) %>%
+    dplyr::mutate(flux = -DS*c_air*dcdz_ppm) %>%
     dplyr::mutate(depth = (upper+lower)/2) %>%
     dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm))) %>%
     dplyr::ungroup() %>%

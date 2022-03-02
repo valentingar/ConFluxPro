@@ -211,7 +211,7 @@ prof_optim <- function(x,
                                      x$soilphys$upper)]
 
   #from ppm to mumol/m^3
-  conc <- x$gasdata$NRESULT_ppm * x$soilphys$rho_air[cmap]
+  conc <- x$gasdata$x_ppm * x$soilphys$c_air[cmap]
 
   #shortening to valid cmaps
   conc <- conc[is.finite(cmap)]
@@ -226,7 +226,7 @@ prof_optim <- function(x,
 
   #C0 at lower end of production model
   dmin <- min(x$gasdata$depth)
-  C0 <- stats::median(x$gasdata$NRESULT_ppm[x$gasdata$depth == dmin]*x$soilphys$rho_air[x$soilphys$lower == dmin])
+  C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
 
   #DS and D0
   DS <- x$soilphys$DS

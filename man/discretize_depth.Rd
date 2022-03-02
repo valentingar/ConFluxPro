@@ -116,7 +116,7 @@ dt <- soiltemp \%>\%
   summarise(depth = c(depth,seq(0,-100,-10)))
 
 discretize_depth(soiltemp,
-                 "Temp",
+                 "t",
                  "linear",
                  dt,c(
                    "site","Date"))

@@ -7,7 +7,7 @@
 #' \describe{
 #' \item{gas}{The gas of that observation.}
 #' \item{depth (cm)}{The depth of the observation.}
-#' \item{NRESULT_ppm (ppm)}{The observed concentration of that gas.}
+#' \item{x_ppm (ppm)}{The observed concentration of that gas.}
 #' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 #'}
 #'@inheritParams cfp_layers_map
@@ -55,7 +55,7 @@ validate_cfp_gasdata <- function(x){
   stopifnot(inherits(x,"data.frame"))
 
   # are the necessary columns present?
-  base_cols <- c("NRESULT_ppm","gas","depth")
+  base_cols <- c("x_ppm","gas","depth")
   id_cols <- cfp_id_cols(x)
 
   stopifnot("data.frame lacks obligatory coluns" = base_cols %in% names(x),
@@ -70,7 +70,7 @@ validate_cfp_gasdata <- function(x){
   problem_groups <-
     x %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::summarise(n_depths = length(unique(depth[!is.na(NRESULT_ppm)]))) %>%
+    dplyr::summarise(n_depths = length(unique(depth[!is.na(x_ppm)]))) %>%
     dplyr::filter(n_depths < 2)
 
   stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
