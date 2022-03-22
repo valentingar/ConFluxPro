@@ -42,6 +42,5 @@ soilphys <-
   complete_soilphys(gases = "CO2")
 
 usethis::use_data(soilphys,
-                  soilphys,
                   overwrite = T)
 

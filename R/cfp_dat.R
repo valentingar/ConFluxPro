@@ -235,21 +235,26 @@ split_soilphys <- function(soilphys,
     dplyr::left_join(groups_map, merger) %>%
     dplyr::mutate(row_id = dplyr::row_number())
 
+  sp_dist <-
+  soilphys %>%
+    dplyr::select(depth_group,upper,lower) %>%
+    dplyr::distinct()
+
   soilphys_new <-
-    mapply(soilphys$upper,
-           soilphys$lower,
-           soilphys$depth_group,
-           soilphys$row_id,
+    mapply(sp_dist$upper,
+           sp_dist$lower,
+           sp_dist$depth_group,
            FUN = add_between,
            MoreArgs = list(df = all_depths),
            SIMPLIFY = FALSE) %>%
     do.call(what = rbind, args = .) %>%
     data.frame() %>%
-    setNames(c("upper","lower","row_id")) %>%
-    dplyr::left_join(soilphys %>%
-                       dplyr::select(!dplyr::any_of(c("upper","lower"))),
-                     by = "row_id") %>%
-    dplyr::select(!row_id) %>%
+    setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
+    dplyr::left_join(soilphys,
+                     by = c("upper","lower","depth_group")) %>%
+    dplyr::mutate(upper = upper_new,
+                  lower = lower_new) %>%
+    dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%
     dplyr::mutate(height = (upper-lower)/100) %>%
     dplyr::group_by(sp_id) %>%
     dplyr::arrange(upper) %>%
@@ -261,7 +266,6 @@ split_soilphys <- function(soilphys,
 add_between <- function(upper,
                         lower,
                         depth_group,
-                        row_id,
                         df){
 
   depths <- sort(
@@ -272,12 +276,12 @@ add_between <- function(upper,
     )
   )
 
-  upper <- c(depths, upper)
-  lower <- c(lower, depths)
+  upper_new <- c(depths, upper)
+  lower_new <- c(lower, depths)
 
-  l <- length(upper)
+  l <- length(upper_new)
 
-  matrix(c(upper,lower,rep(row_id, l)), ncol = 3)
+  matrix(c(upper_new,lower_new,rep(upper, l),rep(lower, l),rep(depth_group, l)), ncol = 5)
 }
 
 
