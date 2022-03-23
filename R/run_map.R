@@ -56,8 +56,6 @@ run_map <- function(x,
   if(method == "permutation"){
 
     stopifnot("layers_different is only yet supported for 'random' method" = layers_different == FALSE)
-    stopifnot("topheight change not yet supported for method = permutation" =
-                !"topheight" %in% names(params))
 
     run_map <- expand.grid(params) %>%
       dplyr::mutate(run_id = dplyr::row_number()) %>%
