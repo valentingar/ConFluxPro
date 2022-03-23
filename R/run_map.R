@@ -88,7 +88,8 @@ run_map <- function(x,
                                 values_to = "perm_id")
         }) %>%
         dplyr::left_join(run_map_raw) %>%
-        dplyr::select(!perm_id)
+        dplyr::select(!perm_id) %>%
+        dplyr::mutate(pmap = as.numeric(pmap))
 
 
       if("topheight" %in% names(params)){
