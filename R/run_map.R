@@ -193,5 +193,11 @@ run_map <- function(x,
   }
 
 
-  run_map
+  run_map <- new_cfp_run_map(x = run_map,
+                            id_cols = id_cols_runmap,
+                            params = params,
+                            method = method,
+                            type = type,
+                            n_runs = n_runs,
+                            layers_different = layers_different)
 }
