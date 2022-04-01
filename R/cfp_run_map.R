@@ -15,7 +15,9 @@ cfp_run_map <- function(x,
                         method,
                         type,
                         n_runs,
-                        layers_different){
+                        layers_different,
+                        runmap_type,
+                        params_df){
 
   x <-
   new_cfp_run_map(x,
@@ -24,7 +26,9 @@ cfp_run_map <- function(x,
                   method,
                   type,
                   n_runs,
-                  layers_different
+                  layers_different,
+                  runmap_type,
+                  params_df
   )
 
   x <- validate_cfp_run_map(x)
@@ -40,18 +44,22 @@ new_cfp_run_map <- function(x,
                             method,
                             type,
                             n_runs,
-                            layers_different
+                            layers_different,
+                            runmap_type,
+                            params_df
 ){
 
   stopifnot(is.data.frame(x))
 
   x <- structure(x,
-                 class = c("cfp_run_map",class(x)),
+                 class = c("cfp_run_map",class(x)[!grepl("cfp_run_map",class(x))]),
                  params = params,
                  method = method,
                  type = type,
                  n_runs = n_runs,
-                 layers_different = layers_different)
+                 layers_different = layers_different,
+                 runmap_type = runmap_type,
+                 params_df = params_df)
  x
 }
 
@@ -65,6 +73,45 @@ validate_cfp_run_map <- function(x){
 
   stopifnot("run_id" %in% names(x))
   x
+}
+
+
+
+###############
+### HELPERS ### -----------------
+###############
+
+# extractors ---------
+#' @export
+cfp_runmap_type <- function(x){
+  UseMethod("cfp_runmap_type")
+}
+
+#' @exportS3Method
+cfp_runmap_type.cfp_run_map <- function(x){
+  attr(x, "runmap_type")
+}
+
+
+#' @export
+cfp_params_df <- function(x){
+  UseMethod("cfp_params_df")
+}
+
+#' @exportS3Method
+cfp_params_df.cfp_run_map <- function(x){
+  attr(x, "params_df")
+}
+
+
+#' @export
+cfp_n_runs <- function(x){
+  UseMethod("cfp_n_runs")
+}
+
+#' @exportS3Method
+cfp_n_runs.cfp_run_map <- function(x){
+  attr(x, "n_runs")
 }
 
 

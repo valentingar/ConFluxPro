@@ -4,7 +4,17 @@
 \alias{cfp_run_map}
 \title{cfp_run_map}
 \usage{
-cfp_run_map(x, id_cols, params, method, type, n_runs, layers_different)
+cfp_run_map(
+  x,
+  id_cols,
+  params,
+  method,
+  type,
+  n_runs,
+  layers_different,
+  runmap_type,
+  params_df
+)
 }
 \arguments{
 \item{params}{A named list of numeric vectors. Names indicate column names
