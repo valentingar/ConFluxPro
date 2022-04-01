@@ -55,9 +55,7 @@ run_map <- function(x,
 
   if(method == "permutation"){
 
-    stopifnot("layers_different is only yet supported for 'random' method" = layers_different == FALSE)
-    stopifnot("topheight change not yet supported for method = permutation" =
-                !"topheight" %in% names(params))
+    if (layers_different == FALSE){
 
     run_map <- expand.grid(params) %>%
       dplyr::mutate(run_id = dplyr::row_number()) %>%
@@ -65,6 +63,86 @@ run_map <- function(x,
                           names_to = "param",
                           values_to = "value") %>%
       dplyr::left_join(type_df, by = "param")
+
+    } else {
+
+      params_notop <- params[!names(params) == "topheight"]
+
+      run_map_raw <- expand.grid(params_notop) %>%
+        dplyr::mutate(perm_id = dplyr::row_number())
+      n_perms <- nrow(run_map_raw)
+
+
+      run_map <-
+      x$layers_map %>%
+        dplyr::select(pmap,
+                      dplyr::any_of({cfp_id_cols(x)})) %>%
+        dplyr::group_by(dplyr::across(dplyr::any_of({cfp_id_cols(x)}))) %>%
+        dplyr::group_modify(~{
+          n_layers <- nrow(.x)
+          expand.grid(lapply(1:n_layers, function(x) 1:n_perms)) %>%
+            setNames(.x$pmap) %>%
+            dplyr::mutate(run_id = row_number()) %>%
+            tidyr::pivot_longer(!any_of("run_id"),
+                                names_to = "pmap",
+                                values_to = "perm_id")
+        }) %>%
+        dplyr::left_join(run_map_raw) %>%
+        dplyr::select(!perm_id) %>%
+        dplyr::mutate(pmap = as.numeric(pmap))
+
+
+      if("topheight" %in% names(params)){
+
+       # new permutation with topheight as well
+        run_map_compl <-
+          expand.grid(topheight = params$topheight,
+                      run_id = unique(run_map$run_id)) %>%
+          dplyr::mutate(run_id_new = dplyr::row_number())
+
+        # run_map without topheight
+        run_map_notop <-
+          run_map_compl%>%
+          dplyr::select(run_id, run_id_new) %>%
+          dplyr::left_join(run_map, by = "run_id") %>%
+          dplyr::select(!run_id) %>%
+          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
+                              names_to = "param",
+                              values_to = "value")
+
+        # run_map topheight only
+        run_map_top  <-
+          run_map %>%
+          dplyr::select(dplyr::any_of(c(cfp_id_cols(x),"run_id"))) %>%
+          dplyr::distinct() %>%
+          dplyr::left_join(run_map_compl %>%
+                             dplyr::select("topheight","run_id_new","run_id"),
+                           by = "run_id") %>%
+          dplyr::select(!run_id) %>%
+          dplyr::rename(value = topheight) %>%
+          dplyr::mutate(param = "topheight")
+
+
+        #combine and finalize
+        run_map <-
+          run_map_notop %>%
+          dplyr::bind_rows(run_map_top) %>%
+          dplyr::rename(run_id = run_id_new)  %>%
+          dplyr::left_join(type_df, by = "param")
+
+      } else {
+
+        run_map <-
+          run_map %>%
+          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
+                              names_to = "param",
+                              values_to = "value") %>%
+          dplyr::left_join(type_df, by = "param")
+
+
+      }
+
+    }
 
   } else if (method == "random"){
 
