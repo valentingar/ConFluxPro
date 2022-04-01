@@ -181,9 +181,17 @@ run_map <- function(x,
 
   }
 
-  run_map <- lapply(gases,function(g){run_map$gas <- g; run_map}) %>%
+  id_cols_all <- cfp_id_cols(PROFLUX)
+  id_cols_runmap <- id_cols_all[id_cols_all %in% names(run_map)]
+
+  if (!"gas" %in% id_cols_runmap){
+  # add at least basic id_cols (gas)
+  run_map <- lapply(gases, function(g){run_map$gas <- g; run_map}) %>%
     dplyr::bind_rows()
 
+  id_cols_runmap <- c(id_cols_runmap, "gas")
+  }
 
 
+  run_map
 }
