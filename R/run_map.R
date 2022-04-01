@@ -41,6 +41,9 @@ run_map <- function(x,
   stopifnot("all params must be present in soilphys!" =
               all(names(params) %in% c(names(x$soilphys), "topheight")))
 
+  stopifnot("please give an integer number of runs" =
+              ((!(method == "random")) || (is.numeric(n_runs) && (abs(round(n_runs) - n_runs) < 1E-10))))
+
 
   if (length(type) == 1){
     type <- rep(type, length(params))
@@ -178,9 +181,23 @@ run_map <- function(x,
 
   }
 
-  run_map <- lapply(gases,function(g){run_map$gas <- g; run_map}) %>%
+  id_cols_all <- cfp_id_cols(PROFLUX)
+  id_cols_runmap <- id_cols_all[id_cols_all %in% names(run_map)]
+
+  if (!"gas" %in% id_cols_runmap){
+  # add at least basic id_cols (gas)
+  run_map <- lapply(gases, function(g){run_map$gas <- g; run_map}) %>%
     dplyr::bind_rows()
 
+  id_cols_runmap <- c(id_cols_runmap, "gas")
+  }
 
 
+  run_map <- new_cfp_run_map(x = run_map,
+                            id_cols = id_cols_runmap,
+                            params = params,
+                            method = method,
+                            type = type,
+                            n_runs = n_runs,
+                            layers_different = layers_different)
 }
