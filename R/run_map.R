@@ -41,6 +41,9 @@ run_map <- function(x,
   stopifnot("all params must be present in soilphys!" =
               all(names(params) %in% c(names(x$soilphys), "topheight")))
 
+  stopifnot("please give an integer number of runs" =
+              ((!(method == "random")) || (is.numeric(n_runs) && (abs(round(n_runs) - n_runs) < 1E-10))))
+
 
   if (length(type) == 1){
     type <- rep(type, length(params))
