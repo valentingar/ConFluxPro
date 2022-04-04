@@ -49,6 +49,13 @@ alternate <- function(x,
            error_funs = error_funs,
            error_args = error_args)
 
+  alternate_res <- new_cfp_altres(alternate_res,
+                                  og_model = x,
+                                  f,
+                                  run_map,
+                                  return_raw,
+                                  error_funs,
+                                  error_args)
   alternate_res
 }
 
