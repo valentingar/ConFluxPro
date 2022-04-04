@@ -47,18 +47,23 @@ sobol_run_map.cfp_run_map <- function(x, ...){
                   run_id_sobol = run_id - n_runs/2,
                   sobol_mat = "B")
 
+  params_cols <- names(params_df)
+  params_cols <- params_cols[params_cols %in% c("pmap","param")]
+
   run_map_BA <-
     lapply(params_df$param_id,
            function(i){
 
              part_B <-
                run_map_B %>%
-               dplyr::anti_join(params_df[i, ]) %>%
+               dplyr::anti_join(params_df[i, ],
+                                by = params_cols) %>%
                dplyr::mutate(param_id = i)
 
              part_A <-
                params_df[i, ] %>%
-               dplyr::left_join(run_map_A)
+               dplyr::left_join(run_map_A,
+                                by = params_cols)
 
              out <- dplyr::bind_rows(part_B, part_A)
            }) %>%
@@ -72,12 +77,14 @@ sobol_run_map.cfp_run_map <- function(x, ...){
 
              part_A <-
                run_map_A %>%
-               dplyr::anti_join(params_df[i, ]) %>%
+               dplyr::anti_join(params_df[i, ],
+                                by = params_cols) %>%
                dplyr::mutate(param_id = i)
 
              part_B <-
                params_df[i, ] %>%
-               dplyr::left_join(run_map_B)
+               dplyr::left_join(run_map_B,
+                                by = params_cols)
 
              out <- dplyr::bind_rows(part_B, part_A)
            }) %>%
@@ -99,7 +106,8 @@ sobol_run_map.cfp_run_map <- function(x, ...){
   run_map_all <-
   run_map_all %>%
     dplyr::select(!run_id) %>%
-    dplyr::left_join(run_ids)
+    dplyr::left_join(run_ids,
+                     by = c("run_id_sobol","sobol_mat","param_id"))
 
   x <- new_cfp_run_map(run_map_all,
                        id_cols = cfp_id_cols(x),
