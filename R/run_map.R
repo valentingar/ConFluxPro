@@ -192,6 +192,11 @@ run_map <- function(x,
   id_cols_runmap <- c(id_cols_runmap, "gas")
   }
 
+  params_df <- run_map %>%
+    dplyr::select(dplyr::any_of(c("pmap", "param"))) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(param_id = row_number())
+
 
   run_map <- new_cfp_run_map(x = run_map,
                             id_cols = id_cols_runmap,
@@ -199,5 +204,7 @@ run_map <- function(x,
                             method = method,
                             type = type,
                             n_runs = n_runs,
-                            layers_different = layers_different)
+                            layers_different = layers_different,
+                            runmap_type = "base",
+                            params_df = params_df)
 }

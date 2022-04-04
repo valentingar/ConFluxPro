@@ -58,7 +58,10 @@ test_that("create runmap works", {
                     method = "permutation",
                     type = c("factor","factor"),
                     n_runs = NULL,
-                    layers_different = FALSE
+                    layers_different = FALSE,
+                    runmap_type = "base",
+                    params_df = tibble::tibble(param = c("TPS","t"),
+                                           param_id = c(1,2))
     )
 
   df_2 <-dplyr::tibble(run_id = rep(1:4, each = 2),
@@ -72,7 +75,10 @@ test_that("create runmap works", {
                     method = "random",
                     type = c("factor", "factor"),
                     n_runs = 4,
-                    layers_different = FALSE
+                    layers_different = FALSE,
+                    runmap_type = "base",
+                    params_df = tibble::tibble(param = c("TPS","t"),
+                                           param_id = c(1,2))
     )
 
   expect_equal(run_map, df)
@@ -131,7 +137,10 @@ test_that("permutation works", {
                     method = "permutation",
                     type = c("addition","factor"),
                     n_runs = NULL,
-                    layers_different = FALSE)
+                    layers_different = FALSE,
+                    runmap_type = "base",
+                    params_df = tibble::tibble(param = c("topheight","TPS"),
+                                               param_id = c(1,2)))
 
   expect_equal(run_map, df, tolerance = 0.01)
 })
