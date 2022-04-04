@@ -137,6 +137,7 @@ print.cfp_run_map <- function(x, ...){
   cat("number of runs: ", n,"\n")
   cat("parameters to alternate:\n")
   print(cfp_params_df(x))
+  NextMethod()
 }
 
 
