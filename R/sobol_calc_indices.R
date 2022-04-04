@@ -34,6 +34,8 @@ sobol_calc_indices <- function(Y,
     dplyr::mutate(param_id_new = param_ids[param_id_new]) %>%
     dplyr::mutate(param_id = ifelse(is.na(param_id), param_id_new, param_id)) %>%
     dplyr::select(!tidyr::any_of(c("param_id_new", "run_id"))) %>%
+    dplyr::select(tidyr::any_of(c("param_id", id_cols, effect_cols,
+                                "prof_id", "run_id_sobol", "sobol_mat"))) %>%
     tidyr::pivot_longer(cols = tidyr::any_of(effect_cols),
                         names_to = "effect_param",
                         values_to = "effect_value") %>%
