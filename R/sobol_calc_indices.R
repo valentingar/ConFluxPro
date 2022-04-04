@@ -45,7 +45,7 @@ sobol_calc_indices <- function(Y,
               VY = sum((A - B)^2+(BA - AB)^2)) %>%
     mutate(Si = 2*Vi/VY,
            ST = Vt/VY) %>%
-    left_join(cfp_params_df(run_map))
+    left_join(cfp_params_df(run_map), by = "param_id")
 
 
 }
