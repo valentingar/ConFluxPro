@@ -144,3 +144,76 @@ test_that("permutation works", {
 
   expect_equal(run_map, df, tolerance = 0.01)
 })
+
+
+
+
+test_that("topheight adjust", {
+
+
+  soilphys <-
+    ConFluxPro::soilphys %>%
+    cfp_soilphys(id_cols = c("site", "Date"))
+
+  gasdata <-
+    ConFluxPro::gasdata %>%
+    cfp_gasdata(id_cols = c("site", "Date"))
+
+
+  lmap <- soilphys %>%
+    select(upper,site) %>%
+    distinct() %>%
+    group_by(site) %>%
+    slice_max(upper) %>%
+    summarise(upper = c(upper,0),
+              lower = c(0,-100)) %>%
+    cfp_layers_map(gas = "CO2",
+                   layer_couple = 0,
+                   lowlim = 0,
+                   highlim = 1000,
+                   id_cols = "site")
+  PROFLUX <-
+    cfp_dat(gasdata,
+            soilphys,
+            lmap ) %>%
+    pro_flux()
+
+
+  expect_error(
+  run_map <- run_map(PROFLUX,
+                     params = list("topheight" = c(-100,0,1),
+                                   "TPS" = c(1,1.2)),
+                     method = "permutation",
+                     type = c("addition","factor")
+  ))
+
+  run_mappy <- run_map(PROFLUX,
+                     params = list("topheight" = c(-4,0,1),
+                                   "TPS" = c(1,1.2)),
+                     method = "permutation",
+                     type = c("addition","factor"),
+                     topheight_adjust = TRUE
+  )
+
+  min_topheight <-
+  run_mappy %>%
+    dplyr::filter(param == "topheight") %>%
+    dplyr::group_by(site) %>%
+    dplyr::slice_min(value, with_ties = FALSE)
+
+  expect_equal(min_topheight$value[which(min_topheight$site == c("site_a", "site_b"))],
+               c(-4,0))
+
+  expect_error(
+    run_mappo <- run_map(PROFLUX,
+                       params = list("topheight" = c(-4,1),
+                                     "TPS" = c(1,1.2)),
+                       method = "random",
+                       type = c("addition","factor"),
+                       n_runs = 10,
+                       topheight_adjust = TRUE
+    ),
+    NA)
+
+
+})

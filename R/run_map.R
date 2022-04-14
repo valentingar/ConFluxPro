@@ -18,6 +18,11 @@
 #'
 #' @param layers_different Should layers from layers_map be changed individually?
 #' If \code{TRUE} this allows for different changes at different depths.
+#'
+#' @param topheight_adjust (logical) If the proposed change in topheight is larger
+#' than the highest layer in soilphys, should the limits be automatically
+#' adjusted per id_cols indivdually? Default is FALSE, which leads to an error in that
+#' case.
 
 
 #' @export
@@ -29,7 +34,8 @@ run_map <- function(x,
                     method = NULL,
                     type = NULL,
                     n_runs = NULL,
-                    layers_different = FALSE
+                    layers_different = FALSE,
+                    topheight_adjust = FALSE
 ){
 
   method <- match.arg(method, c("random", "permutation"))
@@ -56,7 +62,36 @@ run_map <- function(x,
 
   gases <- unique(x$profiles$gas)
 
-  if(method == "permutation"){
+
+  # get second highest depth per ids in layers_map
+  if ("topheight" %in% names(params)){
+    ids_lmap <- cfp_id_cols(x$layers_map)
+
+    second_depth <-
+    x$soilphys %>%
+      dplyr::select(tidyr::any_of(c(ids_lmap, "upper"))) %>%
+      dplyr::distinct() %>%
+      dplyr::group_by(dplyr::across(tidyr::any_of(ids_lmap))) %>%
+      dplyr::slice_max(upper, n = 2) %>%
+      dplyr::summarise(top = max(upper),
+                       bottom = min(upper))
+
+    if (any((second_depth$top-second_depth$bottom) <= -min(params$topheight))){
+      if (topheight_adjust == TRUE){
+        message("adjusting topheight limits to fit data.")
+
+        #something to do just that.
+
+      } else {
+        stop("topheight change too large for (some) profiles! \n
+             Choose topheight_adjust = TRUE for autmatic, individual limits.")
+      }
+
+    }
+
+  }
+
+  if (method == "permutation"){
 
     if (layers_different == FALSE){
 
@@ -79,8 +114,8 @@ run_map <- function(x,
       run_map <-
       x$layers_map %>%
         dplyr::select(pmap,
-                      dplyr::any_of({cfp_id_cols(x)})) %>%
-        dplyr::group_by(dplyr::across(dplyr::any_of({cfp_id_cols(x)}))) %>%
+                      tidyr::any_of({cfp_id_cols(x)})) %>%
+        dplyr::group_by(dplyr::across(tidyr::any_of({cfp_id_cols(x)}))) %>%
         dplyr::group_modify(~{
           n_layers <- nrow(.x)
           expand.grid(lapply(1:n_layers, function(x) 1:n_perms)) %>%
@@ -109,14 +144,14 @@ run_map <- function(x,
           dplyr::select(run_id, run_id_new) %>%
           dplyr::left_join(run_map, by = "run_id") %>%
           dplyr::select(!run_id) %>%
-          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
+          tidyr::pivot_longer(cols = tidyr::any_of(names(params)),
                               names_to = "param",
                               values_to = "value")
 
         # run_map topheight only
         run_map_top  <-
           run_map %>%
-          dplyr::select(dplyr::any_of(c(cfp_id_cols(x),"run_id"))) %>%
+          dplyr::select(tidyr::any_of(c(cfp_id_cols(x),"run_id"))) %>%
           dplyr::distinct() %>%
           dplyr::left_join(run_map_compl %>%
                              dplyr::select("topheight","run_id_new","run_id"),
@@ -133,11 +168,13 @@ run_map <- function(x,
           dplyr::rename(run_id = run_id_new)  %>%
           dplyr::left_join(type_df, by = "param")
 
+
+
       } else {
 
         run_map <-
           run_map %>%
-          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
+          tidyr::pivot_longer(cols = tidyr::any_of(names(params)),
                               names_to = "param",
                               values_to = "value") %>%
           dplyr::left_join(type_df, by = "param")
@@ -145,6 +182,20 @@ run_map <- function(x,
 
       }
 
+    }
+
+    if (topheight_adjust == TRUE){
+
+    # filter out runs with not possible topheight change
+    merger <- ids_lmap[id_lmap %in% names(run_map)]
+
+    run_map <-
+      run_map %>%
+      dplyr::left_join(second_depth, by = merger) %>%
+      dplyr::filter(param == "topheight" &
+                      -value < top-bottom) %>%
+      dplyr::select(tidyr::any_of(c("run_id", ids_lmap))) %>%
+      dplyr::left_join(run_map, by = c(merger, "run_id"))
     }
 
   } else if (method == "random"){
@@ -161,21 +212,50 @@ run_map <- function(x,
       run_map <-
         x$layers_map %>%
         dplyr::select(pmap,
-                      dplyr::any_of({cfp_id_cols(x)})) %>%
+                      tidyr::any_of({cfp_id_cols(x)})) %>%
         dplyr::right_join(run_map %>%
                      dplyr::filter(!param == "topheight"),
                    by = character()) %>%
         dplyr::bind_rows(x$layers_map %>%
-                           dplyr::select(dplyr::any_of({cfp_id_cols(x)})) %>%
+                           dplyr::select(tidyr::any_of({cfp_id_cols(x)})) %>%
                            dplyr::distinct() %>%
                            dplyr::right_join(run_map, by = character()) %>%
                            dplyr::filter(param == "topheight"))
     }
 
+    params_limits <-
+      params %>%
+      data.frame() %>%
+      tidyr::pivot_longer(cols = names(params),
+                          names_to = "param",
+                          values_to = "ranges") %>%
+      dplyr::group_by(param) %>%
+      dplyr::mutate(limit = ifelse(ranges == min(ranges), "param_min", "param_max")) %>%
+      tidyr::pivot_wider(values_from = "ranges", names_from = "limit")
+
+    run_map <-
+      run_map %>%
+      dplyr::left_join(params_limits, by = "param")
+
+    if (topheight_adjust == TRUE){
+      merger <- ids_lmap[ids_lmap %in% names(run_map)]
+
+      run_map <-
+        run_map %>%
+        dplyr::left_join(second_depth, by = merger) %>%
+        dplyr::mutate(param_min = ifelse(param == "topheight" &
+                                            -param_min >= top-bottom,
+                                          (bottom-top)+0.0001,
+                                          param_min)) %>%
+        dplyr::select(!tidyr::any_of(c("top", "bottom")))
+
+    }
+
     run_map <-
       run_map %>%
       dplyr::rowwise() %>%
-      dplyr::mutate(value = runif(1, params[[param]][1], params[[param]][2])) %>%
+      dplyr::mutate(value = runif(1, param_min, param_max)) %>%
+      dplyr::select(!tidyr::any_of(c("param_min", "param_max"))) %>%
       dplyr::left_join(type_df, by = "param") %>%
       dplyr::ungroup()
 
@@ -193,7 +273,7 @@ run_map <- function(x,
   }
 
   params_df <- run_map %>%
-    dplyr::select(dplyr::any_of(c("pmap", "param"))) %>%
+    dplyr::select(tidyr::any_of(c("pmap", "param"))) %>%
     dplyr::distinct() %>%
     dplyr::mutate(param_id = row_number())
 
