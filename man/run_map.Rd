@@ -10,7 +10,8 @@ run_map(
   method = NULL,
   type = NULL,
   n_runs = NULL,
-  layers_different = FALSE
+  layers_different = FALSE,
+  topheight_adjust = FALSE
 )
 }
 \arguments{
@@ -30,6 +31,11 @@ method = random.}
 
 \item{layers_different}{Should layers from layers_map be changed individually?
 If \code{TRUE} this allows for different changes at different depths.}
+
+\item{topheight_adjust}{(logical) If the proposed change in topheight is larger
+than the highest layer in soilphys, should the limits be automatically
+adjusted per id_cols indivdually? Default is FALSE, which leads to an error in that
+case.}
 }
 \description{
 Create a run_map for model alteration in \code{alternate()}.
