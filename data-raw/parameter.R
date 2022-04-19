@@ -24,7 +24,12 @@ parameter <-
                       "sp_id",       #20
                       "step_id",     #21
                       "prof_id",     #22
-                      "RMSE"         #23
+                      "RMSE",        #23
+                      "lowlim",      #24
+                      "highlim",     #25
+                      "layer_couple",#26
+                      "layer",       #27
+                      "group_id"     #28
                       ),
              description = c("mole fraction of a gas",               #1
                              "name of the gas",                      #2
@@ -48,7 +53,12 @@ parameter <-
                              "id of the soilphys profile in a cfp_dat object", #20
                              "id of each step within a soilphys profile 1 = lowest", #21
                              "id of distinct profiles within a cfp_dat object", #22
-                             "real mean square error"                #23
+                             "real mean square error",               #23
+                             "lower limit for production optimisation", #24
+                             "upper limit for production optimisation", #25
+                             "coupling factor with layer below",     #26
+                             "layer name",                           #27
+                             "id for each combination of id_cols in layers_map" #28
                              ),
              unit = c("ppm",             #1
                       NA ,               #2
@@ -72,7 +82,12 @@ parameter <-
                       NA,                #20
                       NA,                #21
                       NA,                #22
-                      NA                 #23
+                      NA,                #23
+                      "µmol m^-3 s^-1",  #24
+                      "µmol m^-3 s^-1",  #25
+                      NA,                #26
+                      NA,                #27
+                      NA                 #28
                       ))
 
 usethis::use_data(parameter, overwrite = TRUE, internal = TRUE)
