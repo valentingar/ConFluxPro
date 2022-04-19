@@ -49,6 +49,13 @@ alternate <- function(x,
            error_funs = error_funs,
            error_args = error_args)
 
+  alternate_res <- new_cfp_altres(alternate_res,
+                                  og_model = x,
+                                  f,
+                                  run_map,
+                                  return_raw,
+                                  error_funs,
+                                  error_args)
   alternate_res
 }
 
@@ -102,10 +109,13 @@ alternate_model <- function(run_map,
   }
 
   ## update parameters
+  if (nrow(run_map) > 0){
   x$soilphys <- update_soilphys(x$soilphys,
                                 run_map,
                                 f
                                 )
+  }
+
   # update topheight
   if (is.null(topheight) == FALSE){
   x <- update_topheight(x,
@@ -170,16 +180,18 @@ update_topheight <-
     id_gd <-cfp_id_cols(x$gasdata)
     id_sp <- cfp_id_cols(x$soilphys)
 
+    m_lmap <- id_lmap[id_lmap %in% names(topheight)]
+
     topheight <- topheight %>% dplyr::select(!dplyr::any_of("pmap"))
     topheight_gd <- topheight_sp <- topheight %>%
       dplyr::left_join(x$profiles,
-                       by = {id_lmap})
+                       by = {m_lmap})
     topheight_gd <- topheight_gd %>% dplyr::select(gd_id, value, type)
     topheight_sp <- topheight_sp %>% dplyr::select(sp_id, value, type)
 
     x$layers_map <-
       x$layers_map %>%
-      dplyr::left_join(topheight, by = id_lmap ) %>%
+      dplyr::left_join(topheight, by = m_lmap ) %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_lmap))) %>%
       dplyr::mutate(upper = ifelse(upper == max(upper),
                                    change_param(upper,

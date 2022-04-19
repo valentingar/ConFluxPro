@@ -1,5 +1,4 @@
-test_that("create runmap works", {
-
+test_that("topheight only", {
 
 
   soilphys <-
@@ -31,41 +30,18 @@ test_that("create runmap works", {
 
 
   run_map <- run_map(PROFLUX,
-                         params = list("TPS" = c(1,1.2),
-                                       "t" = c(1,1.05)),
-                         method = "permutation",
-                         type = "factor"
-                         )
-  set.seed(42)
-  run_map_2 <- run_map(PROFLUX,
-                         params = list("TPS" = c(1,1.2),
-                                       "t" = c(1,1.05)),
-                         method = "random",
-                         type = "factor",
-                         n_runs = 4
+                     params = list("topheight" = c(-1)),
+                     method = "permutation",
+                     type = c("addition")
   )
 
-
-  df <- dplyr::tibble(run_id = rep(1:4, each = 2),
-                   param = rep(c("TPS","t"),times = 4),
-                   value = c(1,1,1.2,1,1,1.05,1.2,1.05),
-                   type = "factor",
-                   gas = "CO2"
+  expect_error(
+  alternate(PROFLUX,
+            run_map = run_map,
+            f = function(x) complete_soilphys(x, overwrite = TRUE),
+            return_raw = TRUE),
+  NA
   )
-
-  df_2 <-dplyr::tibble(run_id = rep(1:4, each = 2),
-                       param = rep(c("TPS","t"),times = 4),
-                       value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
-                       type = "factor",
-                       gas = "CO2")
-
-  expect_equal(run_map, df)
-  expect_equal(run_map_2, df_2, tolerance = 0.01)
-
-  PF_alt <- alternate(PROFLUX,
-                      function(i) complete_soilphys(i, overwrite = TRUE),
-                      run_map,
-                      return_raw = TRUE)
 
 
 })
