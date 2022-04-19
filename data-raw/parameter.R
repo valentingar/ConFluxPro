@@ -29,7 +29,10 @@ parameter <-
                       "highlim",     #25
                       "layer_couple",#26
                       "layer",       #27
-                      "group_id"     #28
+                      "group_id",    #28
+                      "efflux",      #29
+                      "prod_abs",    #30
+                      "prod_rel"     #31
                       ),
              description = c("mole fraction of a gas",               #1
                              "name of the gas",                      #2
@@ -58,7 +61,10 @@ parameter <-
                              "upper limit for production optimisation", #25
                              "coupling factor with layer below",     #26
                              "layer name",                           #27
-                             "id for each combination of id_cols in layers_map" #28
+                             "id for each combination of id_cols in layers_map", #28
+                             "efflux at the soil/atmosphere interface", #29
+                             "production rate (source term)",        #30
+                             "ratio of production rate to efflux"    #31
                              ),
              unit = c("ppm",             #1
                       NA ,               #2
@@ -87,7 +93,10 @@ parameter <-
                       "µmol m^-3 s^-1",  #25
                       NA,                #26
                       NA,                #27
-                      NA                 #28
+                      NA,                #28
+                      "µmol m^-2 s^-1",  #29
+                      "µmol m^-2 s^-1",  #30
+                      "1"                #31
                       ))
 
 usethis::use_data(parameter, overwrite = TRUE, internal = TRUE)
