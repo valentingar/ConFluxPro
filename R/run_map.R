@@ -187,7 +187,7 @@ run_map <- function(x,
     if (topheight_adjust == TRUE){
 
     # filter out runs with not possible topheight change
-    merger <- ids_lmap[id_lmap %in% names(run_map)]
+    merger <- ids_lmap[ids_lmap %in% names(run_map)]
 
     run_map <-
       run_map %>%
