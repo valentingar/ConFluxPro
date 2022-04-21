@@ -107,9 +107,7 @@ pro_flux.cfp_pfmod <- function(x,
   x_split <- split_by_group(x)
 
   #apply function to all grouped cfp_pfmods
-  future::plan(future::multisession, workers = 1)
   y <- furrr::future_map(x_split,pro_flux_group)
-  future::plan(future::sequential)
   #y <- purrr::map(x_split,pro_flux_group)
 
   #combine PROFLUX result
