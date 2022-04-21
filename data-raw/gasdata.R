@@ -51,7 +51,7 @@ gasdata <- data.frame(site = rep(sites,each = 5),
 
 gasdata <- lapply(seq_along(dates), function(i){
   gasdata %>%
-    mutate(Date = dates[i],
+    dplyr::mutate(Date = dates[i],
            date_factor = date_factor[i])
 }) %>%
   dplyr::bind_rows()
@@ -67,13 +67,13 @@ gasdata %>%
   dplyr::summarise(site = rep(site,reps),
                    Date = rep(Date,reps),
                    depth = rep(depth,reps),
-                   NRESULT_ppm = rnorm(reps,
+                   x_ppm = rnorm(reps,
                                        mean_conc,
                                        sd_conc)) %>%
   dplyr::mutate(gas = !!gas)
 
 #gasdata %>%
-#  ggplot(aes(y=NRESULT_ppm,
+#  ggplot(aes(y=x_ppm,
 #             x=depth,
 #             col = season(Date)))+
 #  geom_point()+
@@ -84,8 +84,9 @@ gasdata %>%
 #  coord_flip()
 #
 #gasdata %>%
-#  ggplot(aes(x=Date,y=NRESULT_ppm,col = site))+
+#  ggplot(aes(x=Date,y=x_ppm,col = site))+
 #  stat_summary(geom = "line")
 
-usethis::use_data(gasdata, gasdata,
+usethis::use_data(gasdata,
                   overwrite = T)
+

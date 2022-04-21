@@ -28,7 +28,7 @@ complete_soilphys <- function(soilphys,
                               gases,
                               overwrite = F){
 df_names <- names(soilphys)
-if (all(c("depth","upper","lower","TPS","SWC","Temp","p") %in% df_names)==F){
+if (all(c("depth","upper","lower","TPS","SWC","t","p") %in% df_names)==F){
   stop("there are essential parameters missing. please run check_soilphys()")
 }
 
@@ -37,7 +37,7 @@ AFPS_flag <- !("AFPS" %in% df_names)
 DSD0_flag <- !("DSD0" %in% df_names)
 DS_flag <- !("DS" %in% df_names)
 D0_flag <- !("D0" %in% df_names)
-rho_air_flag <- !("rho_air" %in% df_names)
+c_air_flag <- !("c_air" %in% df_names)
 
 if (AFPS_flag == TRUE | overwrite == TRUE ){
   soilphys <- soilphys %>%
@@ -69,7 +69,7 @@ if (D0_flag == TRUE | overwrite == TRUE){
   soilphys <-
     soilphys %>%
     dplyr::select(!dplyr::any_of("D0")) %>%
-    dplyr::mutate(D0 = D0_massman(gas,Temp,p))
+    dplyr::mutate(D0 = D0_massman(gas,t,p))
 
 }
 if(DS_flag == TRUE | overwrite == TRUE){
@@ -77,16 +77,16 @@ if(DS_flag == TRUE | overwrite == TRUE){
     dplyr::select(!dplyr::any_of("DS")) %>%
     dplyr::mutate(DS = DSD0*D0)
 }
-if(rho_air_flag == TRUE | overwrite == TRUE){
+if(c_air_flag == TRUE | overwrite == TRUE){
   soilphys <-soilphys %>%
-    dplyr::select(!dplyr::any_of("rho_air")) %>%
-    dplyr::mutate(rho_air = p*100 / (8.314 * (273.15+Temp)))
+    dplyr::select(!dplyr::any_of("c_air")) %>%
+    dplyr::mutate(c_air = p*100 / (8.314 * (273.15+t)))
 }
 print("The following columns were added:")
-print(paste0(c("AFPS","DSD0","D0","DS","rho_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,rho_air_flag)==TRUE],collapse = " "))
+print(paste0(c("AFPS","DSD0","D0","DS","c_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,c_air_flag)==TRUE],collapse = " "))
 if(overwrite == TRUE){
   print("The following columns were overwritten:")
-  print(paste0(c("AFPS","DSD0","D0","DS","rho_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,rho_air_flag)==F],collapse = " "))
+  print(paste0(c("AFPS","DSD0","D0","DS","c_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,c_air_flag)==F],collapse = " "))
 
 }
 return(soilphys)

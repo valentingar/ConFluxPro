@@ -115,6 +115,13 @@ pro_flux.cfp_pfmod <- function(x,
   #combine PROFLUX result
   y <- dplyr::bind_rows(y)
 
+  # add some columns
+  y <- x$soilphys %>%
+    as.data.frame() %>%
+    dplyr::left_join(x$profiles, by = "sp_id") %>%
+    dplyr::select(upper, lower, step_id, prof_id, sp_id, pmap) %>%
+    dplyr::right_join(y, by = c("step_id", "prof_id"))
+
   #create cfp_pfres object
   y <- cfp_pfres(x,y)
   y
@@ -207,7 +214,7 @@ prof_optim <- function(x,
                                      x$soilphys$upper)]
 
   #from ppm to mumol/m^3
-  conc <- x$gasdata$NRESULT_ppm * x$soilphys$rho_air[cmap]
+  conc <- x$gasdata$x_ppm * x$soilphys$c_air[cmap]
 
   #shortening to valid cmaps
   conc <- conc[is.finite(cmap)]
@@ -222,7 +229,7 @@ prof_optim <- function(x,
 
   #C0 at lower end of production model
   dmin <- min(x$gasdata$depth)
-  C0 <- stats::median(x$gasdata$NRESULT_ppm[x$gasdata$depth == dmin]*x$soilphys$rho_air[x$soilphys$lower == dmin])
+  C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
 
   #DS and D0
   DS <- x$soilphys$DS

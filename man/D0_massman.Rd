@@ -4,12 +4,12 @@
 \alias{D0_massman}
 \title{D0_Massman}
 \usage{
-D0_massman(gas, Temp, p)
+D0_massman(gas, t, p)
 }
 \arguments{
 \item{gas}{(character) One of "CO2","CH4","N2O","O2","N2"}
 
-\item{Temp}{(numeric) temperature in °C}
+\item{t}{(numeric) temperature in °C}
 
 \item{p}{(numeric) pressure in hpa}
 }

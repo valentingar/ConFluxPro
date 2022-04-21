@@ -37,7 +37,7 @@ validate_fgmod <- function(x){
               length(cfp_param(x)) == length(cfp_funs(x)))
 
   stopifnot("DS mus be in param!" = "DS" %in% cfp_param(x),
-            "rho_air must be in param!" = "rho_air" %in% cfp_param(x))
+            "c_air must be in param!" = "c_air" %in% cfp_param(x))
 
   match.arg(cfp_modes(x), c("LL", "LS", "EF"))
 

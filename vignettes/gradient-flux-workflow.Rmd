@@ -37,7 +37,7 @@ This vignette is a starting point to introduce the general structure of the pack
 # Data preparation
 ## Gas concentration data
 ### Structure
-With the next few lines of code, we will import different datasets and join them together to generate the two most important data.frames needed to run the model. The first part is the `gasdata` dataset. This is quite straight-forward a `data.frame`, where each row is an observation of a concentration of a specific gas at a specific depth. The concentration (`NRESULT_ppm`) must be in ppm, `depth` in cm and `gas` a character that must match the gases supported by `calculate_flux()`. We can have a look at the structure in the example data provided by loading it and looking at the first few rows.
+With the next few lines of code, we will import different datasets and join them together to generate the two most important data.frames needed to run the model. The first part is the `gasdata` dataset. This is quite straight-forward a `data.frame`, where each row is an observation of a concentration of a specific gas at a specific depth. The concentration (`x_ppm`) must be in ppm, `depth` in cm and `gas` a character that must match the gases supported by `calculate_flux()`. We can have a look at the structure in the example data provided by loading it and looking at the first few rows.
 
 ```{r setup, warning = F, message=FALSE}
 library(ConFluxPro)
@@ -53,14 +53,14 @@ library(dplyr)
 library(splines)
 
 gasdata %>% 
-  ggplot(aes(x=Date,y=NRESULT_ppm,col = factor(depth)))+
+  ggplot(aes(x=Date,y=x_ppm,col = factor(depth)))+
   stat_summary(geom = "line",
                fun = "mean")+
   facet_wrap(~site)+
   ggtitle("time series concentration")
 
 gasdata %>%
-  ggplot(aes(x=depth,y=NRESULT_ppm,col = season(Date)))+
+  ggplot(aes(x=depth,y=x_ppm,col = season(Date)))+
   stat_smooth(geom = "line",
               method = "lm",
               formula = y~bs(x,knots = c(0,-10,-20),degree = 1))+
@@ -86,14 +86,14 @@ To apply the correction, `SAMPLE_NO` must be supplied in `gasdata`, which is a u
 # create example dataset
 df <- data.frame(SAMPLE_NO = 1,
                  gas = c("N2","O2","Ar","CO2"),
-                 NRESULT_ppm = c(0.78158,0.209,0.009,0.00042))
-df$NRESULT_ppm <- df$NRESULT_ppm*1e6
+                 x_ppm = c(0.78158,0.209,0.009,0.00042))
+df$x_ppm <- df$x_ppm*1e6
 
 # imitate 20 % mass difference
-df$NRESULT_ppm <- 0.8*df$NRESULT_ppm
+df$x_ppm <- 0.8*df$x_ppm
 
 # show sum of all gases is different to 1
-sum(df$NRESULT_ppm)/1e6
+sum(df$x_ppm)/1e6
 
 #apply balance correction
 df_balcor <-
@@ -107,11 +107,11 @@ df_balcor <-
 
 
 # show sum of all gases is 1
-sum(df_balcor$NRESULT_ppm)/1e6
+sum(df_balcor$x_ppm)/1e6
 
 #show difference between original and new O2 concentration
-df$NRESULT_ppm[df$gas == "O2"]
-df_balcor$NRESULT_ppm[df_balcor$gas == "O2"]
+df$x_ppm[df$gas == "O2"]
+df_balcor$x_ppm[df_balcor$gas == "O2"]
 
 
 ```
@@ -158,7 +158,7 @@ The `soilphys` dataset is the counterpart of the complete model. It contains all
 
 #### Discretisation of different data sources {#discr}
 
-In the following, datasets of soil water content `SWC`, soil total pore space `TPS` and fitting parameters of diffusion models `a` and `b`, temperature `Temp` and pressure `p` will be discretised to match a common depth resolution using the function `discretize_depth()`. The goal is to have a dataset, where each soil profile is divided into layers with no gaps in between and for each layer the different parameters are discretised.
+In the following, datasets of soil water content `SWC`, soil total pore space `TPS` and fitting parameters of diffusion models `a` and `b`, temperature `t` and pressure `p` will be discretised to match a common depth resolution using the function `discretize_depth()`. The goal is to have a dataset, where each soil profile is divided into layers with no gaps in between and for each layer the different parameters are discretised.
 
 We start by importing the different datasets. `soiltemp` are point observations of temperature, `soilwater` the (synthetic) result of a soil water model with distinct layers of soil water content, `soildiff` also has layers that represent the different soil horizons with total pore space and fitting parameters of diffusion models. 
 
@@ -212,7 +212,7 @@ Next up is `soiltemp`. Instead of layers with discrete values, we have distinct 
 ```{r}
 soiltemp_dis <- 
   soiltemp %>%
-  discretize_depth(param = "Temp",
+  discretize_depth(param = "t",
                    method = "linear",
                    depth_target = dt,
                    id_cols =  c("site","Date") #Date variable added, because temperature is also time-dependent 
@@ -253,16 +253,16 @@ soilphys_complete <-
                     gases = "CO2")
 ```
 
-But let's untangle what's happening in the background. soilphys_complete will create the columns `AFPS`, `DSD0`,`D0`, `DS`, and `rho_air`. `AFPS` is the air filled pore space and is calculated as the difference between the total pore space `TPS` and the soil water content `SWC`.
+But let's untangle what's happening in the background. soilphys_complete will create the columns `AFPS`, `DSD0`,`D0`, `DS`, and `c_air`. `AFPS` is the air filled pore space and is calculated as the difference between the total pore space `TPS` and the soil water content `SWC`.
 $$
 AFPS = TPS - SWC
 $$
 `DSD0` is the diffusivity and is calculated using the formula provided in the function call `DSD0`. Here, the diffusion model fitting parameter `a` and `b` are used in an exponential model, however different formulas can be provided _in plain text_, i.e. no variables outside soilphys can be referenced. `D0` is the diffusion coefficient in air and is calculated following Massman (1998) as
 $$
-D_0 = a\cdot ((Temp+273.15) / 273.15)^b \cdot 1013/p
+D_0 = a\cdot ((t+273.15) / 273.15)^b \cdot 1013/p
 $$
 
-With Temp given in _°C_ and p in _hPa_. 
+With t given in _°C_ and p in _hPa_. 
 
 The specific diffusion coefficient `DS` is then calculated as the product of `DSD0` and `D0`: 
 $$
@@ -270,9 +270,9 @@ D_S =D_S/D_0 \cdot D_0
 $$
 Because `D0` is different for different gases, for any gas provided as a character vector in `gases`, a different `D0` is calculated. This means that the resulting data.frame of `soilphys_complete()` has $m\cdot n_{gases}$ rows, if the input data.frame had _m_ rows. Keep this in mind if very large datasets are to be modeled and only calculate diffusion coefficients for the gases needed. 
 
-Finally, the number density of air `rho_air` is calculated in mol m^-3^ as 
+Finally, the number density of air `c_air` is calculated in mol m^-3^ as 
 $$
-\rho_{air} = 100*p/(8.314\cdot (Temp+ 273.15))
+\c_{air} = 100*p/(8.314\cdot (t+ 273.15))
 $$
 Of course `DS` (e.g. from on site measurements) can also be added manually. However, it is recommended that `complete_soilphys()` is run nonetheless with a dummy `DSD0_formula` and the values overwritten afterwards to ensure that the structure of the  is ready for the model. To check this, we can run 
 
@@ -289,7 +289,7 @@ Now the `soilphys` dataset is ready to be used in flux calculation.
 The gradient-flux approach is implemented in the function `calculate_flux()`. It takes the datasets `gasdata` and the (completed) `soilphys` as an input. The goal was to give the user a fast and simple to use way to try out different model approaches and parameterisations. The basic approach is that, for layers defined in the function call, gradients of concentration are calculated and a mean `DS`. Then the flux is calculated as follows:
 
 $$
-f = dc_{ppm}/dz \cdot rho_{air} \cdot D_S 
+f = dc_{ppm}/dz \cdot c_{air} \cdot D_S 
 $$
 The user needs to define layers for the calculation of fluxes. These are in the process assumed homogeneous, and the flux constant so that the equation above applies. How this should be done is described later.
 
@@ -323,12 +323,12 @@ FLUX <-
                  layers_map = layers_map,
                  gases = "CO2",
                  modes = c("LL","LS"),
-                 param = c("DS","rho_air"),
+                 param = c("DS","c_air"),
                  funs = c("harm","arith"),
                  id_cols = c("site","Date"))
 ```
 
-Note that you need to define the parameters `param` that should be averaged for each layer. Obligatory are `DS` and `rho_air`, as these are needed in the flux calculation.
+Note that you need to define the parameters `param` that should be averaged for each layer. Obligatory are `DS` and `c_air`, as these are needed in the flux calculation.
 The flux calculation is complete and we can now take a first look at the data produced.
 ```{r}
 head(FLUX)
@@ -389,7 +389,7 @@ FLUX_add20 <-
                  layers_map = layers_map_add20,
                  gases = "CO2",
                  modes = c("LL","LS"),
-                 param = c("DS","rho_air"),
+                 param = c("DS","c_air"),
                  funs = c("harm","arith"),
                  id_cols = c("site","Date"))
 
@@ -423,7 +423,7 @@ FLUX_LR <-
                  layers_map = layers_map_LR,
                  gases = "CO2",
                  modes = c("LL"),
-                 param = c("DS","rho_air"),
+                 param = c("DS","c_air"),
                  funs = c("harm","arith"),
                  id_cols = c("site","Date"))
 
@@ -454,7 +454,7 @@ FLUX_EF <-
                  layers_map = layers_map,
                  gases = "CO2",
                  modes = "EF",
-                 param = c("DS","rho_air"),
+                 param = c("DS","c_air"),
                  funs = c("harm","arith"),
                  id_cols = c("site","Date"))
 

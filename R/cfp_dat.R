@@ -26,7 +26,7 @@
 #' \item{layers_map}{The layers_map object with added column "group_id" indicating each
 #' unique group of the same layer parameterization set by layers_map.}
 #' \item{profiles}{A \code{data.frame} where each row indicates one unique profile that
-#' is characterised by all \cdoe{id_cols} present in the original input as well as the correspongin
+#' is characterised by all \code{id_cols} present in the original input as well as the correspongin
 #' "gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
 #' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
 #'}
@@ -95,6 +95,14 @@ cfp_dat <- function(gasdata,
     dplyr::mutate(prof_id = dplyr::row_number()) %>%
     dplyr::distinct() %>%
     as.data.frame()
+
+  soilphys <- soilphys %>%
+    filter(sp_id %in% profiles$sp_id) %>%
+    cfp_soilphys(id_cols = cfp_id_cols(soilphys))
+
+  gasdata <- gasdata %>%
+    dplyr::filter(gd_id %in% profiles$gd_id) %>%
+    cfp_gasdata(id_cols = cfp_id_cols(gasdata))
 
 
   message(paste0(nrow(profiles)," unique profiles"))
@@ -227,21 +235,26 @@ split_soilphys <- function(soilphys,
     dplyr::left_join(groups_map, merger) %>%
     dplyr::mutate(row_id = dplyr::row_number())
 
+  sp_dist <-
+  soilphys %>%
+    dplyr::select(depth_group,upper,lower) %>%
+    dplyr::distinct()
+
   soilphys_new <-
-    mapply(soilphys$upper,
-           soilphys$lower,
-           soilphys$depth_group,
-           soilphys$row_id,
+    mapply(sp_dist$upper,
+           sp_dist$lower,
+           sp_dist$depth_group,
            FUN = add_between,
            MoreArgs = list(df = all_depths),
            SIMPLIFY = FALSE) %>%
     do.call(what = rbind, args = .) %>%
     data.frame() %>%
-    setNames(c("upper","lower","row_id")) %>%
-    dplyr::left_join(soilphys %>%
-                       dplyr::select(!dplyr::any_of(c("upper","lower"))),
-                     by = "row_id") %>%
-    dplyr::select(!row_id) %>%
+    setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
+    dplyr::left_join(soilphys,
+                     by = c("upper","lower","depth_group")) %>%
+    dplyr::mutate(upper = upper_new,
+                  lower = lower_new) %>%
+    dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%
     dplyr::mutate(height = (upper-lower)/100) %>%
     dplyr::group_by(sp_id) %>%
     dplyr::arrange(upper) %>%
@@ -253,7 +266,6 @@ split_soilphys <- function(soilphys,
 add_between <- function(upper,
                         lower,
                         depth_group,
-                        row_id,
                         df){
 
   depths <- sort(
@@ -264,12 +276,12 @@ add_between <- function(upper,
     )
   )
 
-  upper <- c(depths, upper)
-  lower <- c(lower, depths)
+  upper_new <- c(depths, upper)
+  lower_new <- c(lower, depths)
 
-  l <- length(upper)
+  l <- length(upper_new)
 
-  matrix(c(upper,lower,rep(row_id, l)), ncol = 3)
+  matrix(c(upper_new,lower_new,rep(upper, l),rep(lower, l),rep(depth_group, l)), ncol = 5)
 }
 
 
@@ -318,7 +330,7 @@ print.cfp_dat <- function(x){
 
 
 ###### EXTRACTION #####
-#' @rdname cfp_pfres
+#' @export
 cfp_id_cols <- function(x){
   UseMethod("cfp_id_cols")
 }
@@ -345,6 +357,47 @@ as_cfp_dat.cfp_dat <- function(x){
               cfp_id_cols(x))
   x
 }
+
+##### FILTER ######
+#' @exportS3Method
+filter.cfp_dat <- function(.data,
+                           ...,
+                           .preserve = FALSE){
+  tables <- names(.data)
+  tables <- tables[tables == "profiles"]
+
+  .data$profiles <- .data$profiles %>%
+    dplyr::filter(...)
+
+  possible_cols <- names(.data$profiles)
+
+  out <-
+    lapply(.data, function(t){
+
+      col_names <- names(t)
+      merger <- col_names[col_names %in% possible_cols]
+      deselector <- possible_cols[!possible_cols %in% merger]
+
+      t_new <-
+      t %>%
+        dplyr::right_join(.data$profiles %>%
+                            dplyr::select({merger}) %>%
+                            dplyr::distinct(),
+                          by = merger) %>%
+        dplyr::select(!dplyr::any_of(deselector))
+
+      old_atr <- attributes(t)
+      new_atr <- old_atr[!names(old_atr) %in% names(attributes(data.frame()))]
+      attributes(t_new) <- c(attributes(t_new), new_atr)
+      class(t_new) <- class(t)
+      t_new
+    })
+
+  attributes(out) <- attributes(.data)
+
+  out
+}
+
 
 
 ##### SPLITTING #####

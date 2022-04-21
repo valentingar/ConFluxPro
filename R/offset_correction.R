@@ -10,7 +10,7 @@
 #'   concentrations are then calculated, or a linear model is fit against time.
 #'   A correction factor is then calculated by dividing a target atmospheric
 #'   value (gases_std) by the mean or the values predicted by the linear model.
-#'   NRESULT_ppm values are then multiplied by that factor.
+#'   x_ppm values are then multiplied by that factor.
 #'
 #'
 #' @param df (dataframe) The gasdata-dataframe.
@@ -90,20 +90,20 @@ df<-df %>%
   dplyr::filter(depth_cat %in% !!depth_cal) %>%
   dplyr::left_join(corr_map) %>%
   dplyr::filter(is.na(section)==F) %>%
-  dplyr::filter(is.na(NRESULT_ppm)==F) %>%
+  dplyr::filter(is.na(x_ppm)==F) %>%
   dplyr::group_by(gas,section) %>%
   dplyr::group_modify(~{
   if(is.na(.x$mode[1])){
     med = 1
     grad = 0
   } else  if(.x$mode[1] == "const"){
-      med = stats::median(.x$NRESULT_ppm,na.rm=T)
+      med = stats::median(.x$x_ppm,na.rm=T)
       grad = 0
   } else if (.x$mode[1]=="lin"){
-    if (.x %>% dplyr::filter(!is.na(Date),!is.na(NRESULT_ppm)) %>% nrow() <2){
+    if (.x %>% dplyr::filter(!is.na(Date),!is.na(x_ppm)) %>% nrow() <2){
       stop(paste("section",.y$section[1],"does not have enough non-NA cases (>=2)"))
     }
-    mod <- stats::lm(NRESULT_ppm ~ Date,data = .x)
+    mod <- stats::lm(x_ppm ~ Date,data = .x)
     med <- stats::coef(mod)[1]
     grad <- stats::coef(mod)[2]
   }
@@ -114,7 +114,7 @@ df<-df %>%
   dplyr::select(contains(c("Date","Plot","gas","corr_fac"))) %>%
   dplyr::right_join(df) %>%
   dplyr::mutate(corr_fac = ifelse(is.na(corr_fac),1,corr_fac)) %>%
-  dplyr::mutate(NRESULT_ppm = NRESULT_ppm * corr_fac)
+  dplyr::mutate(x_ppm = x_ppm * corr_fac)
 
 
 return(df)

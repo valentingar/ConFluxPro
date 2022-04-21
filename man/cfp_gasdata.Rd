@@ -11,7 +11,7 @@ cfp_gasdata(gasdata, id_cols)
 \describe{
 \item{gas}{The gas of that observation.}
 \item{depth (cm)}{The depth of the observation.}
-\item{NRESULT_ppm (ppm)}{The observed concentration of that gas.}
+\item{x_ppm (ppm)}{The observed concentration of that gas.}
 \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 }}
 

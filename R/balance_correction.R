@@ -5,14 +5,14 @@
 #'   measurements of all gases and, if necessary, corrected for missing gases.
 #'   \cr Theoretically, bal is between (0;1), however values over 1 can result
 #'   from calibration errors. Values over 1 are treated the same and are
-#'   corrected. Then, each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
+#'   corrected. Then, each x_ppm is corrected: x_ppm / b_tot
 #'
 #' @param df (dataframe) The gasdata-dataframe. The dataframe will be altered in
 #'   the process of the function, so that it has to be overwritten (see examples
 #'   below).
 #'
 #' @param limits (vector, numeric) A vector of two that contains the upper and
-#'   lower limits for b_tot, above and below which NRESULT_ppm are flagged and
+#'   lower limits for b_tot, above and below which x_ppm are flagged and
 #'   set NA, if set_na is TRUE.
 #'
 #' @param gases (vector, character) A character vector of the gases that should
@@ -28,7 +28,7 @@
 #'   match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))
 #'
 #' @param gases_ob (vector, character) A vector of obligatory gases that must be
-#'   present for correct balance calculation. NRESULT_ppm of samples missing any
+#'   present for correct balance calculation. x_ppm of samples missing any
 #'   of these gases will be flagged in bal_flag and not corrected or set NA.
 #'   Defaults to c("N2","O2").
 #'
@@ -38,7 +38,7 @@
 #' @return gasdata (dataframe) With added columns
 #' @return bal = balance
 #' @return bal_flag  TRUE if value was not corrected (or set NA).
-#' @return NRESULT_ppm, corrected for balance
+#' @return x_ppm, corrected for balance
 #'
 #' @family gasdata
 #'
@@ -49,10 +49,10 @@
 #   gasdata %>%
 #   bind_rows(gasdata %>%
 #               mutate(gas = "N2",
-#                      NRESULT_ppm = 0.78e6))%>%
+#                      x_ppm = 0.78e6))%>%
 #   bind_rows(gasdata %>%
 #               mutate(gas = "O2",
-#                      NRESULT_ppm = 0.21e6)) %>%
+#                      x_ppm = 0.21e6)) %>%
 #   group_by(site,Date,depth,repetition) %>%
 #   mutate(SAMPLE_NO = cur_group_id())
 #
@@ -120,9 +120,9 @@ df <- df %>%
   dplyr::filter(gas %in% !!gases) %>% #Only gases declared in function are used
   dplyr::group_by(SAMPLE_NO) %>%
   dplyr::arrange(gas) %>%
-  dplyr::summarise(bal = sum(NRESULT_ppm/10^6,na.rm = T), #bal
-            n_bal = length(na.omit(NRESULT_ppm)), #number of counted gases
-            missing_gas = paste(c("",gases[-match(gas[is.na(NRESULT_ppm)==F],!!gases)],""),collapse = ",")) %>% #Character string with missing gases, comma separated to discern between N2 and N2O, O2 and CO2
+  dplyr::summarise(bal = sum(x_ppm/10^6,na.rm = T), #bal
+            n_bal = length(na.omit(x_ppm)), #number of counted gases
+            missing_gas = paste(c("",gases[-match(gas[is.na(x_ppm)==F],!!gases)],""),collapse = ",")) %>% #Character string with missing gases, comma separated to discern between N2 and N2O, O2 and CO2
   dplyr::mutate(bal_flag = grepl(paste0(gases_ob,collapse="|"),missing_gas)) %>% #TRUE if any of gases_ob are missing in "bal"
   dplyr::mutate(bal = bal_corr(bal,missing_gas)) %>% # correcting bal with standard values for missing gases
   dplyr::mutate(bal_flag = ifelse(bal < min(limits) | bal > max(limits),T,bal_flag)) %>% #bal_flag also true if bal exceeds limits
@@ -133,11 +133,11 @@ df <- df %>%
 
 #CORRECTION OF THE MOLE RATIOS for bal_flag = T
 if(set_na == T){
-  #if set_na == T, bal_flag == T NRESULT_ppm is set NA
-  df <- df %>% dplyr::mutate(NRESULT_ppm = ifelse(bal_flag == F, NRESULT_ppm / bal,NA))
+  #if set_na == T, bal_flag == T x_ppm is set NA
+  df <- df %>% dplyr::mutate(x_ppm = ifelse(bal_flag == F, x_ppm / bal,NA))
 } else {
-  #otherwise NRESULT_ppm is not changed
-  df <- df %>% dplyr::mutate(NRESULT_ppm = ifelse(bal_flag == F, NRESULT_ppm / bal,NRESULT_ppm))
+  #otherwise x_ppm is not changed
+  df <- df %>% dplyr::mutate(x_ppm = ifelse(bal_flag == F, x_ppm / bal,x_ppm))
 }
 
 if(any(df$bal_flag)){

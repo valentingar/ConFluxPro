@@ -17,7 +17,7 @@ gluxes shall be calulated.}
 calculation. Can be "LL","LS","EF".}
 
 \item{param}{(character) A vector containing the the parameters of soilphys,
-for which means should be calculated, must contain "rho_air" and "DS", more
+for which means should be calculated, must contain "c_air" and "DS", more
 parameters help interpretation}
 
 \item{funs}{(character) A vector defining the type of mean to be used. One of
