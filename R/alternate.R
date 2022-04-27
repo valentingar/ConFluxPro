@@ -41,7 +41,7 @@ alternate <- function(x,
 
 
   alternate_res <-
-    lapply(split(run_map,run_map$run_id),
+    furrr::future_map(split(run_map,run_map$run_id),
            apply_one_run,
            x = x,
            f = f,
