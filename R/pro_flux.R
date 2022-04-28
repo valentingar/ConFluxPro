@@ -107,7 +107,11 @@ pro_flux.cfp_pfmod <- function(x,
   x_split <- split_by_group(x)
 
   #apply function to all grouped cfp_pfmods
-  y <- furrr::future_map(x_split,pro_flux_group)
+  p <- progressr::progressor(steps = nrow(x$profiles)/50)
+  y <- furrr::future_map(x_split,
+                         pro_flux_group,
+                         p = p
+                         )
   #y <- purrr::map(x_split,pro_flux_group)
 
   #combine PROFLUX result
@@ -134,7 +138,12 @@ pro_flux.cfp_pfmod <- function(x,
 ##########################################
 ## Function to perform preparation for each
 ## group and then run prof_optim on all.
-pro_flux_group <-  function(x){
+pro_flux_group <-  function(x, p){
+
+  group <- x$layers_map$group_id[1]
+  p(amount = 0,
+    message = paste0("calculating group_id: ", group),
+    class = "sticky")
 
   #make absolutely sure layers_map is sorted correctly
   layers_map <- x$layers_map %>%
@@ -181,8 +190,12 @@ pro_flux_group <-  function(x){
                          layer_couple_tmp = layer_couple_tmp,
                          lowlim_tmp = lowlim_tmp,
                          highlim_tmp = highlim_tmp,
-                         prof_optim) %>%
+                         p = p,
+                         prof_optim)
+
+    df_ret <- df_ret %>%
       dplyr::bind_rows()
+
     return(df_ret)
   }
 
@@ -193,7 +206,8 @@ prof_optim <- function(x,
                        F0,
                        layer_couple_tmp,
                        lowlim_tmp,
-                       highlim_tmp){
+                       highlim_tmp,
+                       p){
 
   DSD0_optim <- cfp_DSD0_optim(x)
   evenness_factor <- cfp_evenness_factor(x)
@@ -289,6 +303,11 @@ prof_optim <- function(x,
   #calculating flux
   fluxs <- prod_mod_flux(prod,height,F0)
   conc_mod <- prod_mod_conc(prod,height,x$soilphys$DS,F0,C0)
+
+  #toggle progress bar
+  if(x$profiles$prof_id %% 50 == 0){
+  p()
+  }
 
   #generating return data_frame
   df <- data.frame(
