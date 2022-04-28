@@ -83,7 +83,7 @@ cfp_dat <- function(gasdata,
     dplyr::mutate(sp_id = dplyr::cur_group_id()) %>%
     dplyr::arrange(upper) %>%
     dplyr::ungroup() %>%
-    cfp_soilphys(id_cols = id_cols_list[[2]])
+    new_cfp_soilphys(id_cols = id_cols_list[[2]])
 
 
   # calculating profiles
@@ -98,7 +98,7 @@ cfp_dat <- function(gasdata,
 
   soilphys <- soilphys %>%
     filter(sp_id %in% profiles$sp_id) %>%
-    cfp_soilphys(id_cols = cfp_id_cols(soilphys))
+    new_cfp_soilphys(id_cols = cfp_id_cols(soilphys))
 
   gasdata <- gasdata %>%
     dplyr::filter(gd_id %in% profiles$gd_id) %>%
@@ -261,7 +261,7 @@ split_soilphys <- function(soilphys,
     dplyr::arrange(upper) %>%
     dplyr::mutate(step_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
-    cfp_soilphys(id_cols = sp_id_cols)
+    new_cfp_soilphys(id_cols = sp_id_cols)
 }
 
 add_between <- function(upper,
@@ -308,7 +308,7 @@ sp_add_pmap <- function(soilphys,
       .x
     }) %>%
     dplyr::ungroup() %>%
-    cfp_soilphys(id_cols = c(id_cols_sp))
+    new_cfp_soilphys(id_cols = c(id_cols_sp))
 
 }
 
@@ -420,7 +420,7 @@ split_by_group.cfp_dat <- function(x){
 
     sp <-
     x$soilphys[x$soilphys$sp_id %in% profs_tmp$sp_id,] %>%
-      cfp_soilphys(id_cols = cfp_id_cols(x$soilphys))
+      new_cfp_soilphys(id_cols = cfp_id_cols(x$soilphys))
 
     gd <-
       x$gasdata[x$gasdata$gd_id %in% profs_tmp$gd_id,] %>%
