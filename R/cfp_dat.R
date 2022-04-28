@@ -445,26 +445,43 @@ split_by_prof <- function(x){
 split_by_prof.cfp_dat <- function(x){
 
   profiles <- x$profiles
-  profs <- unique(profiles$prof_id)
+
+  soilphys <-
+  profiles %>%
+    dplyr::select(sp_id) %>%
+    dplyr::left_join(x$soilphys, by = "sp_id")
+
+  gasdata <-
+    profiles %>%
+    dplyr::select(gd_id) %>%
+    dplyr::left_join(x$gasdata, by = "gd_id")
+
+  lmap <-
+    profiles %>%
+    dplyr::select(group_id) %>%
+    dplyr::left_join(x$layers_map, by = "group_id")
+
+  atts <- attributes(x)
+
 
   out <-
-    lapply(profs, function(prof_tmp){
-
-      profs_tmp <- profiles[profiles$prof_id == prof_tmp,]
-
-      sp <-
-        x$soilphys[x$soilphys$sp_id == profs_tmp$sp_id,]
-
-      gd <-
-        x$gasdata[x$gasdata$gd_id == profs_tmp$gd_id,]
-
-      lmap <-
-        x$layers_map[x$layers_map$group_id == profs_tmp$group_id,]
-
-      cfp_dat_group <- new_cfp_dat(gd,sp,lmap,profs_tmp,id_cols = cfp_id_cols(x))
-      attributes(cfp_dat_group) <- attributes(x)
+    mapply(split(profiles, profiles$prof_id),
+           split(soilphys, soilphys$sp_id),
+           split(gasdata, gasdata$gd_id),
+           split(lmap, lmap$group_id),
+           id_cols = cfp_id_cols(x),
+           atts = list(atts),
+           FUN = function(profs,
+                    sp,
+                    gd,
+                    lmap,
+                    id_cols,
+                    atts){
+      cfp_dat_group <- new_cfp_dat(gd,sp,lmap,profs,id_cols = id_cols)
+      attributes(cfp_dat_group) <- atts
       cfp_dat_group
-    })
+    },
+    SIMPLIFY = FALSE)
   out
 }
 
