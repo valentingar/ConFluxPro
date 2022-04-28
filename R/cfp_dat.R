@@ -74,7 +74,7 @@ cfp_dat <- function(gasdata,
     dplyr::ungroup() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
     dplyr::mutate(gd_id = dplyr::cur_group_id()) %>%
-    cfp_gasdata(id_cols = id_cols_list[[1]])
+    new_cfp_gasdata(id_cols = id_cols_list[[1]])
 
   soilphys <-
     soilphys %>%
@@ -102,7 +102,7 @@ cfp_dat <- function(gasdata,
 
   gasdata <- gasdata %>%
     dplyr::filter(gd_id %in% profiles$gd_id) %>%
-    cfp_gasdata(id_cols = cfp_id_cols(gasdata))
+    new_cfp_gasdata(id_cols = cfp_id_cols(gasdata))
 
 
   message(paste0(nrow(profiles)," unique profiles"))
@@ -226,7 +226,8 @@ split_soilphys <- function(soilphys,
     dplyr::summarise(depth_group = dplyr::cur_group_id())
 
   all_depths <- all_depths %>%
-    dplyr::right_join(groups_map, by = sel_both)
+    dplyr::right_join(groups_map, by = sel_both) %>%
+    dplyr::distinct()
 
   #add row_number
   merger <- names(groups_map)[names(groups_map) %in% names(soilphys)]
@@ -423,7 +424,7 @@ split_by_group.cfp_dat <- function(x){
 
     gd <-
       x$gasdata[x$gasdata$gd_id %in% profs_tmp$gd_id,] %>%
-      cfp_gasdata(id_cols = cfp_id_cols(x$gasdata))
+      new_cfp_gasdata(id_cols = cfp_id_cols(x$gasdata))
 
     lmap <-
       x$layers_map[x$layers_map$group_id %in% profs_tmp$group_id,] %>%
