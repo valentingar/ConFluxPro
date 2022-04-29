@@ -470,9 +470,10 @@ split_by_prof.cfp_dat <- function(x){
     mapply(split(profiles, profiles$prof_id),
            split(soilphys, soilphys$prof_id),
            split(gasdata, gasdata$prof_id),
-           lmap,
+           MoreArgs = list(
+           lmap = lmap,
            id_cols = cfp_id_cols(x),
-           atts = list(atts),
+           atts = list(atts)),
            FUN = function(profs,
                     sp,
                     gd,
@@ -484,7 +485,7 @@ split_by_prof.cfp_dat <- function(x){
                                    lmap,
                                    profs,
                                    id_cols = id_cols)
-      attributes(cfp_dat_group) <- atts
+      attributes(cfp_dat_group) <- unlist(atts, recursive = FALSE)
       cfp_dat_group
     },
     SIMPLIFY = FALSE)
