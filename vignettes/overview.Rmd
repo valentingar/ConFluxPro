@@ -126,10 +126,152 @@ graph [layout = dot, rankdir = LR]
 ```
 
 # General workflow
-
-
-
 ## data preparation
+
+There are two datasets required for a ConFluxPro flux model. One giving information
+on the gas concentration profiles (`gasdata`) and one on the physical properties and
+diffusivity of the soil (`soilphys`). ConFluxPro ships a synthetic example dataset
+to illustrate the form of the datasets required. To access the datasets use the
+`data()` function:
+
+```{r}
+library(ConFluxPro)
+
+data(gasdata)
+data(soilphys)
+```
+
+### gasdata
+`gasdata` has three important columns: `depth` gives the depth of the data entry in cm,
+`x_ppm` the concentration in ppm and `gas` the type of the gas as a character string.
+Any further columns may identify each profile. For the example datasets, these 
+include `site` as well as `Date`:
+```{r}
+head(gasdata)
+```
+A profile is a single vertical snapshot of a soil column. Each profile will result in a 
+single efflux to / from the atmosphere. Parameters that characterise each profile
+are `id_cols` in ConFluxPro. To set up gasdata for a model, we run `cfp_gasdata()`.
+Here, we have to define the `id_cols` of the dataset. That is used to verify that
+the dataset is ready, i.e. that there are no incomplete profiles. Otherwise, 
+an error is returned.
+```{r}
+gasdata <- cfp_gasdata(gasdata, id_cols = c("site", "Date"))
+```
+
+### soilphys
+The next part is to prepare the `soilphys` object. Each profile is separated 
+into discrete steps for which soil physical parameters are defined. Each step
+has an upper and lower boundary that cover the complete depth of the profile
+without overlapping and gaps. In ConFluxPro, this is called *upper/lower consistency*. 
+Each step is considered homogeneous, which means that any parameter (e.g. total pore space) 
+is assumed constant within the step. For flux modeling, `soilphys` needs to have
+the following columns: `upper` and `lower` boundaries of each step in cm, the 
+apparent diffusion coefficient `DS` in m^2^ s^-1^ and `gas`. To get to this place,
+there are different functions that help set up such a dataset from different sources
+(see `discretize_depth()` and `complete_soilphys()`), the example dataset is already
+in shape, so that we can run `cfp_soilphys()` directly. Again, any `id_cols` need to 
+be defined. 
+```{r}
+head(soilphys)
+
+soilphys <- cfp_soilphys(soilphys, id_cols = c("site", "Date"))
+```
+`cfp_soilphys()` checks for upper/lower consistency and other indicators
+of data integrety. Should your data fail here (and `cfp_soilphys()` return an error), 
+make sure that you have only a single entry per step and profile (idfentified by 
+the `id_cols` provided) and that your steps are not overlapping and without gaps.
+
+### layers_map
+The final puzzle-piece for a model-ready dataset is `layers_map`. Here, any *layers*
+are defined, for which fluxes should be calculated independently or, in the case
+of the inverse approach, production rates should be optimised. This means, that
+different `layers_map` can be defined and tried out. Layers are defined by an `upper` 
+and `lower` boundary in cm. For now, we will consider two layers per site: One in the 
+Humus layer (here: depth > 0 cm) and one in the mineral soil (depth < 0 cm):
+```{r, message=FALSE}
+library(dplyr)
+
+```
+
+```{r}
+  layers_map <- 
+    soilphys %>% # use limits of soilphys per site
+    select(upper,site) %>%
+    distinct() %>%
+    group_by(site) %>%
+    slice_max(upper) %>%
+    summarise(upper = c(upper,0),
+              lower = c(0,-100)) 
+
+  layers_map
+```
+Using `cfp_layers_map()` the data is checked for integrity and further
+model-specific parameters defined.
+
+```{r}
+layers_map <-
+  cfp_layers_map(
+    layers_map,
+    gas = "CO2",
+    id_cols = "site",
+    layer_couple = 0,  # only for pro_flux()
+    lowlim = 0,        #   
+    highlim = 1000     #
+  )
+```
+
+### Binding it all together: cfp_dat()
+
+The centrepiece of every ConFluxPro model is a `cfp_dat` object. `cfp_dat()`
+takes a `cfp_gasdata`, `cfp_soilphys` and `cfp_layers_map` object and connects
+the different datasets together. For all combinations of `id_cols` within the
+datasets, a single `prof_id` is defined and each profile checked for integrity.
+This means, that for each profile, the three datasets need to match: 
+The lowest and highest `depth` of `gasdata` must exactly match the highest and lowest
+`upper` and `lower` boundary of `soilphys` and `layers_map`. Each profile must be
+complete, meaning that all three corresponding datasets must be matched uniquely per
+profile. This does not mean, that the `id_cols` must be the same for the datasets, only
+that they must be mappable to the other datasets. E.g. notice, that `layers_map` is
+missing the `id_cols` `"Date"`, which is no problem, because it can still be matched using
+`"site"`. If everything is ready, run `cfp_dat()` to join the datasets together. If the 
+data is not yet ready, the function will giv information about missing / not matching data.
+```{r}
+my_dat <- cfp_dat(gasdata,
+                  soilphys,
+                  layers_map)
+```
+
+A `cfp_dat` object is essentially a list of the original datasets and a fourth
+`data.frame` that has information on each single profile defined by the `ìd_cols`.
+This means, that all the elements can be accessed using the normal `$` operator:
+```{r}
+my_dat$layers_map
+```
+In the `profiles` `data.frame`, each row corresponds to a single profile with the
+corresponding `id_cols`, as well as ids, mapping the profile in the other datasets:
+`sp_id` for `soilphys`, `gd_id` for `gasdata` and `group_id` for `layers_map`.
+
+When printing a `cfp_dat` object, the most relevant information is displayed:
+```{r}
+my_dat
+```
+
+Different dplyr-like methods are implemented. Model data can be subsampled using
+`filter()`. Any columns of the `profiles` data.frame can be used for filtering
+(This ensures that only complete profiles are filtered).
+```{r}
+my_dat %>%
+  filter(site == "site_a")
+
+my_dat %>% 
+  filter(Date < "2021-04-01")
+
+
+my_dat %>% 
+  filter(prof_id %in% c(4, 6, 23))
+```
+
 
 ## Flux-Gradient-Method FGM
 
