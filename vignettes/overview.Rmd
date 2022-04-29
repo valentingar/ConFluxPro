@@ -1,0 +1,106 @@
+---
+title: "overview"
+author: Valentin Gartiser
+date: '2022-04-29'
+output: 
+  rmarkdown::html_vignette:
+    number_sections: true 
+    fig_width: 7
+    fig_height: 4
+    toc: true
+    toc_depth: 3
+    
+vignette: >
+  %\VignetteIndexEntry{overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+<style>
+    img {
+        border: 0;
+    }
+</style>
+
+<img src="../inst/logo.svg" width="300" height="300" style ="float:right"/>
+
+# Introduction
+
+Hello and welcome to ConFluxPro - a toolkit for soil gas analysis. The goal of this package was to implement the gradient-flux approach for modeling soil gas fluxes based on concentration measurements. A good starting point to get an idea of the setup and ideas behind this method is our paper Maier et al. (2020).
+
+# Package structure
+```{r, echo = FALSE, fig_height = 9}
+DiagrammeR::grViz(diagram = "digraph flowchart {
+graph [layout = dot, rankdir = LR]
+
+
+  node [style = filled color = white shape = rectangle]
+  node [fillcolor = BlueViolet fontcolor = white]
+  a [label = 'gasdata']
+  b [label = 'soilphys']
+  c [label = 'layers_map']
+  h [label = 'cfp_dat']
+  m [label = 'cfp_fgres']
+  n [label = 'cfp_pfres']
+  o [label = 'EFFLUX']
+  p [label = 'PRODUCTION']
+  s [label = 'cfp_altres']
+  
+  node [fillcolor = orange shape = oval fontcolor = black]
+  d [label = 'cfp_dat()']
+  e [label = 'cfp_gasdata()']
+  f [label = 'cfp_soilphys()']
+  g [label = 'cfp_layers_map()']
+  i [label = 'fg_flux()']
+  j [label = 'pro_flux()']
+  k [label = 'efflux()']
+  l [label = 'production()']
+  q [label = 'run_map()']
+  r [label = 'alternate()']
+  
+  a -> {e}
+  b -> {f}
+  c -> {g}
+  {e f g} -> d
+  d -> h
+  h -> {i j}
+  i -> m
+  j -> n
+  {m n} -> {k l r}
+  k -> o
+  l -> p
+  q -> r
+  r -> s
+  
+   subgraph clusterMain {
+   graph [rankdir = TB]
+   node [style = filled color = white shape = rectangle]
+  node [fillcolor = BlueViolet fontcolor = white]
+  aaa [label = 'objects']
+
+
+  node [fillcolor = orange shape = oval fontcolor = black]
+  bbb [label = 'functions()']
+   
+}
+  
+}
+ 
+  ")
+```
+blablalba
+
+
+# General workflow
+## data preparation
+
+## Flux-Gradient-Method FGM
+
+## Inverse Flux moddeling pro_flux()
+
