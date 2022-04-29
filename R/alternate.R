@@ -39,6 +39,7 @@ alternate <- function(x,
 
   stopifnot(inherits(x, "cfp_pfmod") | inherits(x, "cfp_fgmod"))
 
+  p <- progressr::progressor(steps = length(unique(run_map$run_id)))
 
   alternate_res <-
     furrr::future_map(split(run_map,run_map$run_id),
@@ -47,7 +48,8 @@ alternate <- function(x,
            f = f,
            return_raw = return_raw,
            error_funs = error_funs,
-           error_args = error_args)
+           error_args = error_args,
+           p = p)
 
   alternate_res <- new_cfp_altres(alternate_res,
                                   og_model = x,
@@ -66,15 +68,17 @@ alternate <- function(x,
 
 #helpers --------------
 apply_one_run <- function(run_map,
-                           x,
-                           f,
-                           error_funs,
-                           error_args,
-                           return_raw){
+                          x,
+                          f,
+                          error_funs,
+                          error_args,
+                          return_raw,
+                          p){
 
   y <- alternate_model(run_map,
                        x,
                        f)
+  p()
 
   # return either the complete dataset
   if (return_raw == TRUE){
