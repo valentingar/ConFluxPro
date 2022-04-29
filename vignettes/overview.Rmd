@@ -32,10 +32,39 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Hello and welcome to ConFluxPro - a toolkit for soil gas analysis. The goal of this package was to implement the gradient-flux approach for modeling soil gas fluxes based on concentration measurements. A good starting point to get an idea of the setup and ideas behind this method is our paper Maier et al. (2020).
+Hello and welcome to ConFluxPro - a toolkit for soil gas analysis.
+
+This package implements the **Flux-Gradient Method (FGM)** for the calculation of
+gas fluxes from concentration profiles. It provides a range of functions that cover
+the complete process from raw data to modeling fluxes and beyond. A framework of S3 classes 
+and methods aim to make the process as straightforward as possible while keeping 
+the control of the specific model in the hands of the user.
+
+This vignette provides an overview over the package structure, including the 
+most important functions and workflows. Further vignettes will introduce the
+different models, functions and processes in more detail. 
 
 # Package structure
-```{r, echo = FALSE, fig_height = 9}
+
+The following graph gives an overview over the most important functions within
+ConFluxPro. There are two main data objects that are required for ConFluxPro models
+**gasdata** and **soilphys**. The former contains information on *gas concentration* 
+profiles, the latter corresponding information on soil physical parameters and,
+most importantly, *diffusivity*. The model structure is defined in **layers_map**, 
+where *layers* are defined for which different parameters are set. All data comes 
+together in a single object with **cfp_dat()**. Here, the different data sources
+are checked and prepared for modelling.
+
+Models include a traditional FGM approach in **fg_flux()**, as well as an inverse
+approach in **pro_flux()**. From every model result, the soil *efflux* and other 
+parameters can be extracted. Further functions help improve and analyse the models.
+
+This framework is designed to be as modular as possible, so that any kind of 
+approach can be implemented. Each function has documentation attached (`?my_function`)
+to help setting up the data and the models. In the next chapter a typical 
+workflow will be presented using synthetic datasets that are included in the package.
+
+```{r, echo = FALSE}
 DiagrammeR::grViz(diagram = "digraph flowchart {
 graph [layout = dot, rankdir = LR]
 
@@ -51,6 +80,7 @@ graph [layout = dot, rankdir = LR]
   o [label = 'EFFLUX']
   p [label = 'PRODUCTION']
   s [label = 'cfp_altres']
+  
   
   node [fillcolor = orange shape = oval fontcolor = black]
   d [label = 'cfp_dat()']
@@ -94,10 +124,11 @@ graph [layout = dot, rankdir = LR]
  
   ")
 ```
-blablalba
-
 
 # General workflow
+
+
+
 ## data preparation
 
 ## Flux-Gradient-Method FGM
