@@ -189,7 +189,7 @@ of the inverse approach, production rates should be optimised. This means, that
 different `layers_map` can be defined and tried out. Layers are defined by an `upper` 
 and `lower` boundary in cm. For now, we will consider two layers per site: One in the 
 Humus layer (here: depth > 0 cm) and one in the mineral soil (depth < 0 cm):
-```{r, message=FALSE}
+```{r, message=FALSE, eval=TRUE}
 library(dplyr)
 
 ```
@@ -242,8 +242,7 @@ my_dat <- cfp_dat(gasdata,
                   layers_map)
 ```
 
-A `cfp_dat` object is essentially a list of the original datasets and a fourth
-`data.frame` that has information on each single profile defined by the `ìd_cols`.
+A `cfp_dat` object is essentially a list of the original datasets and a fourth `data.frame` that has information on each single profile defined by the `ìd_cols`.
 This means, that all the elements can be accessed using the normal `$` operator:
 ```{r}
 my_dat$layers_map
@@ -272,8 +271,26 @@ my_dat %>%
   filter(prof_id %in% c(4, 6, 23))
 ```
 
+## Models
+### Flux-Gradient-Method FGM with fg_flux()
+The 'classic' approach of calculating fluxes from concentration profiles is to estimate the gradient of a gas along its direction of diffusion and use Fick's law:
+$$
+F = D_s \cdot \frac{dc}{dz}
+$$
+This is implemented in ConFluxPro in the `fg_flux()` function. Within each layer defined in `layers_map`, the gradient is estimated. The corresponding diffusion coefficient is the harmonic mean of the apparent diffusion coefficient within this layer, weighed by the height of each step within `soilphys`. Different methods are implemented to estimate the gradient, e.g. a linear spline method, local linear regression and so on. These can be defined in the function call. For now, let's use a linear spline function to estimate the gradients within the humus and mineral soil layer we defined beforehand:
+```{r}
+FLUX <-
+my_dat %>%
+  fg_flux(gases = "CO2", 
+          modes = "LS", # use linear spline to estimate gradient 
+          param = c("c_air", "DS"), # soilphys parameters averaged per layer
+          funs = c("arith", "harm") # averaging function corresponding to param
+          )
 
-## Flux-Gradient-Method FGM
+```
 
-## Inverse Flux moddeling pro_flux()
+
+
+
+### Inverse Flux moddeling pro_flux()
 
