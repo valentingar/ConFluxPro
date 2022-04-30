@@ -275,7 +275,7 @@ my_dat %>%
 ### Flux-Gradient-Method FGM with fg_flux()
 The 'classic' approach of calculating fluxes from concentration profiles is to estimate the gradient of a gas along its direction of diffusion and use Fick's law:
 $$
-F = D_s \cdot \frac{dc}{dz}
+F = - D_s \cdot \frac{dc}{dz}
 $$
 This is implemented in ConFluxPro in the `fg_flux()` function. Within each layer defined in `layers_map`, the gradient is estimated. The corresponding diffusion coefficient is the harmonic mean of the apparent diffusion coefficient within this layer, weighed by the height of each step within `soilphys`. Different methods are implemented to estimate the gradient, e.g. a linear spline method, local linear regression and so on. These can be defined in the function call. For now, let's use a linear spline function to estimate the gradients within the humus and mineral soil layer we defined beforehand:
 ```{r}
@@ -289,8 +289,29 @@ my_dat %>%
 
 ```
 
+The resulting object stores all the input datasets and parameters and the flux results are only added to the list of data.frames and can thus be accessed by running `FLUX$FLUX`. The advantage of keeping the input parameters is twofold: a) you always can check the parameters that produced the model result and b) it makes it easy to tweak things and try again. This also means that we can 
+rerun the model with a simple command:
+```{r}
+fg_flux(FLUX) # all the information is already there
+```
 
+Let's visualise the results using ggplot:
 
+```{r, message = FALSE}
+library(ggplot2)
+```
+
+```{r}
+FLUX$FLUX %>%
+  left_join(FLUX$profiles) %>% # here is the info about the Date and site we need
+  ggplot(aes(x = Date, y = flux, col = factor(layer)))+
+  geom_line()+
+  facet_grid(rows = vars(site))+
+  theme(legend.position = 'bottom')
+```
+The layer numbering always starts at the bottom, so that 1 (red) denotes the mineral soil and 2 (blue) the humus layer. 
 
 ### Inverse Flux moddeling pro_flux()
+A different way t
 
+### Extract and calculate the efflux()
