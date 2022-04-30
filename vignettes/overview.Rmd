@@ -19,8 +19,12 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  dev = "svg"
 )
+
+ggplot2::theme_set(ggplot2::theme_bw())
+
 ```
 <style>
     img {
@@ -312,6 +316,79 @@ FLUX$FLUX %>%
 The layer numbering always starts at the bottom, so that 1 (red) denotes the mineral soil and 2 (blue) the humus layer. 
 
 ### Inverse Flux moddeling pro_flux()
-A different way t
+A different approach is implemented in ConFluxPro using inverse modelling. Assuming that a gas is only either produced or consumed
+within a soil homogeneous step of soil and the relevant fluxes at its boundaries are known, the concentration profile of a gas can be calculated as follows: 
+$$
+C(z) = -\frac{P}{2 \cdot D_S} \cdot z^2 -\frac{F_{in}}{D_S} \cdot z + C_0
+$$
+where $C(z)$ is the concentration at a height $z$, $P$ is the production rate and $F_{in}$ the incoming flux and $C_0$ the concentration at the lower boundary. In ConFluxPro, this is solved for each step of soil in `soilphys`. The production rates in different layers in the soil are then optimised so that the resulting concentration profile fits the `gasdata` best. For this, lower and upper limits of the production rates have to be defined, that are stored in `layers_map` and can be different for different layers. Within each layer, the same production rate is assumed, so that the total degrees of freedom of the optimisation depend on the number of layers defined in `layers_map`. 
+
+Let's have a look at the layers_map we defined before again.
+```{r}
+my_dat$layers_map
+```
+The lower and upper limits for the optimisation are in the columns `lowlim` and `highlim`. Here, we assume that CO[2] is only produced within the soil, so that we set the lower limit to 0. The column `pmap` identifies each layer and can be later retrieved in the `PROFLUX` or `soilphys` `data.frame` starting with 1 at the bottom. 
+
+With that, we are all set and can calculate the fluxes using `pro_flux()`:
+```{r}
+PROFLUX <-
+  pro_flux(my_dat)
+```
+
+As with the 'classic' approach, the model result is the same as the model input with an added dataset `PROFLUX`, so that we can simply run the model again with:
+```{r}
+pro_flux(PROFLUX)
+```
+The model results are stored in
+```{r, eval=FALSE}
+PROFLUX$PROFLUX
+```
+Which has the same structure as `soilphys` with added columns `prod` giving the production rate within that step and `conc` giving the concentration at the upper boundary of the step. 
+
+Lets's visualise again, but this time we can use the production per layer directly:
+```{r}
+PROFLUX$PROFLUX %>%
+  left_join(PROFLUX$profiles) %>%
+  mutate(layer = factor(ifelse(pmap == 2, "humus", "mineral")),
+         flux = prod*(upper-lower)/ 100 ) %>% # calculating absolute production per step
+  ggplot(aes(x = Date, y = flux, 
+             fill = layer))+ 
+  geom_bar(stat = 'identity', position = 'stack')+
+  facet_grid(rows = vars(site))
+  
+```
+Because this evaluation is often the first thing we want to do after a `pro_flux` model is complete, there is a convenient function `production()` that automates this process, where the column `prod_abs` gives the same information that we calculated as `flux` above. 
+```{r}
+production(PROFLUX) %>% 
+  head()
+```
 
 ### Extract and calculate the efflux()
+No matter the approach, one goal is often to estimate the efflux of a gas at the atmosphere/soil interface. This can be done using the `efflux()` function. For a `pro_flux()` model result, this is straightforward, as the efflux is simply the sum of the production within the soil that was optimised. Thus, the efflux can be directly estimated:
+```{r}
+PF_EFFLUX <- efflux(PROFLUX)
+head(PF_EFFLUX)
+```
+For a model result from `fg_flux()`, this needs some more consideration. One option is to extrapolate the soil internal fluxes from to the top of the soil using linear regression. This can be defined in the call to `efflux`:
+```{r}
+FG_EFFLUX <- efflux(FLUX, 
+                    method = "lm") # using a linear regression.
+head(FG_EFFLUX)
+```
+Let's see how the two models differ:
+```{r}
+FG_EFFLUX %>%
+  mutate(model = "classic") %>%
+  bind_rows(PF_EFFLUX %>% 
+              mutate(model = "inverse")) %>%
+  ggplot(aes(x = Date, y = efflux, col = model))+
+  geom_line()+
+  facet_grid(rows = vars(site))
+```
+As we can see, the inverse approach estimated higher efflux, while models showed the same relative dynamics across the datasets.
+
+# Outlook 
+Here ends this short overview over the most important functions and workflows in ConFluxPro. Check out the other vignettes of this package to learn more about **further model analysis** or **data preparation**. 
+
+*Thank you for your interest in the package and good luck with your research!*
+
