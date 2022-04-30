@@ -20,8 +20,7 @@ for which means should be calculated, must contain "c_air" and "DS", more
 parameters help interpretation}
 
 \item{funs}{(character) A vector defining the type of mean to be used. One of
-"arith" or "harm"
-@export}
+"arith" or "harm"}
 }
 \description{
 An S3 class for \code{fg_flux()} models. The class inherits from
