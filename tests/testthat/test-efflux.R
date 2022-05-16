@@ -1,4 +1,4 @@
-test_that("topheight only", {
+test_that("efflux works", {
 
 
   soilphys <-
@@ -22,26 +22,16 @@ test_that("topheight only", {
                    lowlim = 0,
                    highlim = 1000,
                    id_cols = "site")
-  PROFLUX <-
+  EFFLUX <-
     cfp_dat(gasdata,
             soilphys,
             lmap ) %>%
-    pro_flux()
+    pro_flux() %>%
+    efflux()
 
-
-  run_map <- run_map(PROFLUX,
-                     params = list("topheight" = c(-1)),
-                     method = "permutation",
-                     type = c("addition")
-  )
-
-  expect_error(
-  alternate(PROFLUX,
-            run_map = run_map,
-            f = function(x) complete_soilphys(x, overwrite = TRUE),
-            return_raw = TRUE),
-  NA
-  )
+  expect_equal(nrow(EFFLUX), 24)
+  expect_equal(round(EFFLUX$efflux, 1),
+               c(0.8,0.7,1.4,1,1.7,1.4,4.1,3.3,5.9,4.5,7.2,5.7,10.1,8.5,8.1,6.9,6.2,5.2,3.9,3.2,1.7,1.5,1.2,1.1))
 
 
 })

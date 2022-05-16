@@ -21,8 +21,7 @@ for which means should be calculated, must contain "c_air" and "DS", more
 parameters help interpretation}
 
 \item{funs}{(character) A vector defining the type of mean to be used. One of
-"arith" or "harm"
-@export}
+"arith" or "harm"}
 }
 \description{
 This function takes a valid input dataset in cfp_dat

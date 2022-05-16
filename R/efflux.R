@@ -34,12 +34,8 @@ pf_efflux <- function(x) {
   merger <- id_cols[id_cols %in% names(PROFLUX)] %>% c("step_id")
 
   PROFLUX %>%
-    dplyr::select(step_id, prof_id) %>%
-    dplyr::distinct() %>%
     dplyr::group_by(prof_id) %>%
     dplyr::slice_max(step_id) %>%
-    dplyr::left_join(PROFLUX,
-                     by = c("prof_id","step_id")) %>%
     dplyr::left_join(profiles, by = "prof_id") %>%
     dplyr::select(dplyr::any_of({
       c(id_cols, "flux", "prof_id")
