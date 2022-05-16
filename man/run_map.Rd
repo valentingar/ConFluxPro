@@ -7,8 +7,8 @@
 run_map(
   x,
   params = list(),
-  method = NULL,
   type = NULL,
+  method = NULL,
   n_runs = NULL,
   layers_different = FALSE,
   topheight_adjust = FALSE
@@ -25,6 +25,10 @@ represent. One of
 \item{factor}{Factors to be multiplied with the original values.}
 \item{addition}{Factors to be added to the original values.}
 }}
+
+\item{method}{Either 'random', where a random value is chosen within
+the bounds set in \code{params} or 'permutation', where every permutation of
+the values in \code{params} is added.}
 
 \item{n_runs}{Integer value of the number of alterations to be done for
 method = random.}
