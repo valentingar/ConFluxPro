@@ -1,8 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# ConFluxPro
-
 <!-- badges: start -->
 
 [![Lifecycle:
@@ -10,6 +7,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ConFluxPro)](https://CRAN.R-project.org/package=ConFluxPro)
 <!-- badges: end -->
+
+# ConFluxPro <a><img src='inst/logo_hexagon.svg' align="right" height="139" /></a>
 
 ConFluxPro helps calculating and modelling gas fluxes from soil gas data
 using the flux-gradient approach (FGA) or using inverse modelling. It
