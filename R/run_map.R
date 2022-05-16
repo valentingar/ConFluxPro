@@ -265,7 +265,7 @@ run_map <- function(x,
 
   }
 
-  id_cols_all <- cfp_id_cols(PROFLUX)
+  id_cols_all <- cfp_id_cols(x)
   id_cols_runmap <- id_cols_all[id_cols_all %in% names(run_map)]
 
   if (!"gas" %in% id_cols_runmap){

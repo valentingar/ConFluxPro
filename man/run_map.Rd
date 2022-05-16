@@ -31,7 +31,7 @@ the bounds set in \code{params} or 'permutation', where every permutation of
 the values in \code{params} is added.}
 
 \item{n_runs}{Integer value of the number of alterations to be done for
-method = random.}
+method = 'random'.}
 
 \item{layers_different}{Should layers from layers_map be changed individually?
 If \code{TRUE} this allows for different changes at different depths.}
