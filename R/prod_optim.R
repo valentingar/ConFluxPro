@@ -75,19 +75,15 @@ prod_optim<- function(X,
 
   #assign production values to steps (pmap provided in function call)
   prod <- X[pmap]
-  #print(prod)
   #add storage term to production
   prod <- prod+dstor
 
-  #print(prod)
   #calculate concentration using the values provided
   conc_mod <- prod_mod_conc(prod,height,DS,F0,C0)
 
-  #print(conc_mod)
   #assign moddeled concentrations to match observations
   conc_mod <- conc_mod[cmap]
 
-  #print(conc_mod)
   #calculate RMSE
   k <- (conc-conc_mod)^2
   k <- k*wmap #weigh the observations that depend on higher degrees of freedom more
