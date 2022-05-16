@@ -33,7 +33,7 @@
 
 prod_mod_conc <- function(prod,height,DS,F0,C0){
   flux <- cumsum(((prod) * height))+F0
-  conc <- cumsum(-((prod)/(2*DS)) *height^2  - c(0,flux[-length(flux)])/DS *height)+C0
+  conc <- cumsum(-((prod)/(2*DS)) *height^2  - c(F0,flux[-length(flux)])/DS *height)+C0
   return(conc)
 }
 
