@@ -131,7 +131,7 @@ series_cleaner<-function(df,
     mon <- lubridate::month(df$Date[1])
 
     if (i %in% round(seq(1,n_groups,length.out = 11))){
-      print(paste(depth,df$Date[1],round(i/n_groups,digits = 2)*100,"%"))
+      message(paste(depth,df$Date[1],round(i/n_groups,digits = 2)*100,"%"))
     }
 
 

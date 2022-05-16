@@ -13,8 +13,12 @@
 #' \item{addition}{Factors to be added to the original values.}
 #'}
 #'
+#' @param method Either 'random', where a random value is chosen within
+#' the bounds set in \code{params} or 'permutation', where every permutation of
+#' the values in \code{params} is added.
+#'
 #' @param n_runs Integer value of the number of alterations to be done for
-#' method = random.
+#' method = 'random'.
 #'
 #' @param layers_different Should layers from layers_map be changed individually?
 #' If \code{TRUE} this allows for different changes at different depths.
@@ -31,8 +35,8 @@
 # function to create the necessary run_map
 run_map <- function(x,
                     params = list(),
-                    method = NULL,
                     type = NULL,
+                    method = NULL,
                     n_runs = NULL,
                     layers_different = FALSE,
                     topheight_adjust = FALSE
@@ -261,7 +265,7 @@ run_map <- function(x,
 
   }
 
-  id_cols_all <- cfp_id_cols(PROFLUX)
+  id_cols_all <- cfp_id_cols(x)
   id_cols_runmap <- id_cols_all[id_cols_all %in% names(run_map)]
 
   if (!"gas" %in% id_cols_runmap){

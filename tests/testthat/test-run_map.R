@@ -1,6 +1,6 @@
 test_that("create runmap works", {
 
-
+  library(dplyr)
 
   soilphys <-
     ConFluxPro::soilphys %>%
@@ -52,7 +52,7 @@ test_that("create runmap works", {
                       type = "factor",
                       gas = "CO2"
   ) %>%
-    new_cfp_run_map(id_cols = c("gas"),
+    ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
                     params = list("TPS" = c(1,1.2),
                                   "t" = c(1,1.05)),
                     method = "permutation",
@@ -69,7 +69,7 @@ test_that("create runmap works", {
                        value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
                        type = "factor",
                        gas = "CO2") %>%
-    new_cfp_run_map(id_cols = c("gas"),
+    ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
                     params = list("TPS" = c(1,1.2),
                                   "t" = c(1,1.05)),
                     method = "random",

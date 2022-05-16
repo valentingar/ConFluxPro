@@ -161,10 +161,6 @@ create_return <- T
     #preventing model errors before they occur and replacing with NA
     return_na <- T
   } else {
-    #print(df$x_ppm)
-    #print(df$depth)
-    #print(starts)
-    #print("premod")
     #exponential model
 
     mod <- try(stats::nls(x_ppm~(starts[1]+(b*((depth-min(depths))^c))),
@@ -182,8 +178,6 @@ create_return <- T
     if (conv_flag | class(mod)=="try-error"){
       return_na <- T
     } else {
-      #print("aftermod")
-      #print(mod)
       #a <- coef(mod)[1]
       b <- stats::coef(mod)[1]
       c <- stats::coef(mod)[2]
@@ -191,8 +185,6 @@ create_return <- T
 
       db <- summary(mod)$coefficients[1,2]
       dc <- summary(mod)$coefficients[2,2]
-      #print(db)
-      #print(dc)
       #calculating dcdz via the 1st derivative of the exponential Function.
       dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
       dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
