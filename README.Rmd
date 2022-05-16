@@ -25,13 +25,14 @@ knitr::opts_chunk$set(
 
 ConFluxPro is a free toolbox for modelling soil gas fluxes using the flux-gradient-method (FGM). It provides functions for data preparation, a framework for model set-up and implements different FGM models, as well as an inverse approach. 
 
-To get started, check out the provided vignette:
-vignette(ConFluxPro::overview)
+To get started, check out the provided vignette after installation:
+``` r
+vignette("overview", package = "ConFluxPro")
+```
 
 ## Installation
 
-Currently it is only possible to install the development 
-version from GitHub: 
+Install the current development version from github: 
 
 ``` r
 # install.packages("remotes")
@@ -42,4 +43,4 @@ remotes::install_github("valentingar/ConFluxPro")
 This package is being developed by Valentin Gartiser: 
 valentin.gartiser (at) forst.bwl.de
 
-Please contact me if you experiense any problems or have questions - I will be glad to help out where I can.
+Please contact me if you experience any problems or have questions - I will be glad to help out where I can.
