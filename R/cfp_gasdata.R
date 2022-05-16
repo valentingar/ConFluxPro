@@ -29,7 +29,7 @@ cfp_gasdata <- function(gasdata,
     id_cols <- c(id_cols,"gas")
   }
 
-  x <- new_gdat(gasdata,
+  x <- new_cfp_gasdata(gasdata,
                 id_cols)
 
   validate_cfp_gasdata(x)
@@ -37,7 +37,7 @@ cfp_gasdata <- function(gasdata,
 
 #'
 # constructor
-new_gdat <- function(gasdata,
+new_cfp_gasdata <- function(gasdata,
                      id_cols){
 
   structure(gasdata,
