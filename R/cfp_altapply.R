@@ -32,15 +32,19 @@ cfp_altapply.list <- function(X,
                               FUN,
                               ...){
 
+  p <- progressr::progressor(length(X))
+
   lapply(X = X,
-         FUN = function(PF, ...){
+         FUN = function(PF, p, ...){
            df <- FUN(PF, ...)
+           p()
            stopifnot("FUN must return a data.frame or NULL!" = is.data.frame(df) | is.null(df))
            if (is.null(df)){
              df <- tibble::tibble()
            }
            df
          },
+         p = p,
          ...
          ) %>%
     dplyr::bind_rows(.id = "run_id") %>%

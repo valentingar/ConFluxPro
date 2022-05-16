@@ -15,7 +15,8 @@
 #'   parameters help interpretation
 #' @param funs (character) A vector defining the type of mean to be used. One of
 #'   "arith" or "harm"
-#'   @export
+#' @rdname fg_flux
+#' @export fg_flux
 
 fg_flux <- function(x, ...){
   UseMethod("fg_flux")
