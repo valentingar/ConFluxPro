@@ -29,7 +29,9 @@ test_that("fg_flux works", {
     fg_flux(gases = "CO2",
             modes = "LL",
             param = c("DS", "c_air"),
-            funs = c("harm", "arith"))# %>%
-    fg_flux()
+            funs = c("harm", "arith"))
+
+  expect_equal(nrow(FLUX$FLUX), 48)
+  expect_equal(round(FLUX$FLUX$flux[10], 3),0.316)
 
 })
