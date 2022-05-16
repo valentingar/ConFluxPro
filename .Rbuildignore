@@ -1,8 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
-^doc$
-^Meta$
 ^inst/logo_draft.odg$
 ^inst/data_structure.xlsx$
 ^README\.Rmd$
