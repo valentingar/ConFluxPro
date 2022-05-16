@@ -24,13 +24,15 @@
 #'
 
 complete_soilphys <- function(soilphys,
-                              DSD0_formula="a*AFPS^b",
+                              DSD0_formula = NULL,
                               gases,
-                              overwrite = F){
+                              overwrite = TRUE){
 df_names <- names(soilphys)
 if (all(c("depth","upper","lower","TPS","SWC","t","p") %in% df_names)==F){
   stop("there are essential parameters missing. please run check_soilphys()")
 }
+
+stopifnot("Must provide a valid DSD0_formula!" = (!is.null(DSD0_formula)))
 
 gas_present_flag <- "gas" %in% names(soilphys)
 AFPS_flag <- !("AFPS" %in% df_names)
@@ -82,7 +84,7 @@ if(c_air_flag == TRUE | overwrite == TRUE){
     dplyr::select(!dplyr::any_of("c_air")) %>%
     dplyr::mutate(c_air = p*100 / (8.314 * (273.15+t)))
 }
-messagr("The following columns were added:")
+message("The following columns were added:")
 message(paste0(c("AFPS","DSD0","D0","DS","c_air")[c(AFPS_flag,DSD0_flag,D0_flag,DS_flag,c_air_flag)==TRUE],collapse = " "))
 if(overwrite == TRUE){
   message("The following columns were overwritten:")
