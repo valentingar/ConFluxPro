@@ -15,6 +15,8 @@ run_map(
 )
 }
 \arguments{
+\item{x}{Either a \link{cfp_pfres} or \link{cfp_fgres} model result.}
+
 \item{params}{A named list of numeric vectors. Names indicate column names
 in soilphys, vectors either distinct values (method permutation) or limits (method random).}
 

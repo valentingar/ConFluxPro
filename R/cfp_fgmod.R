@@ -61,6 +61,8 @@ print.cfp_fgmod <- function(x, ...){
 
 ######## EXTRACTORS #########
 
+
+#' @describeIn extractors gases
 #' @export
 cfp_gases <- function(x){
   UseMethod("cfp_gases")
@@ -70,6 +72,8 @@ cfp_gases.cfp_fgmod <- function(x){
   attr(x, "gases")
 }
 
+
+#' @describeIn extractors modes
 #' @export
 cfp_modes <- function(x){
   UseMethod("cfp_modes")
@@ -80,6 +84,7 @@ cfp_modes.cfp_fgmod <- function(x){
 }
 
 
+#' @describeIn extractors param
 #' @export
 cfp_param <- function(x){
   UseMethod("cfp_param")
@@ -90,7 +95,7 @@ cfp_param.cfp_fgmod <- function(x){
 }
 
 
-
+#' @describeIn extractors funs
 #' @export
 cfp_funs <- function(x){
   UseMethod("cfp_funs")
@@ -104,6 +109,7 @@ cfp_funs.cfp_fgmod <- function(x){
 
 
 ###### COERCION #######
+#' @describeIn coercion to cfp_fgmod
 #' @export
 as_cfp_fgmod <- function(x){
   UseMethod("as_cfp_fgmod")

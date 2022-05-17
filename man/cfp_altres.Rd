@@ -17,6 +17,8 @@ cfp_altres(
 \arguments{
 \item{x}{A named list of cfp_pfres or cfp_fgres models.}
 
+\item{og_model}{The original model that was altered}
+
 \item{f}{A function taking in a soilphys object and recalculates the relevant
 columns. See \code{complete_soilphys()}.}
 

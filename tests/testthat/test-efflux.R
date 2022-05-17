@@ -1,5 +1,6 @@
 test_that("efflux works", {
 
+  require(dplyr)
 
   soilphys <-
     ConFluxPro::soilphys %>%

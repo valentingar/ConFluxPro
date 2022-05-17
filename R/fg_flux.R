@@ -6,6 +6,13 @@
 #'
 #'
 #' @inheritParams pro_flux
+#'
+#' @inheritParams cfp_dat
+#'
+#' @inheritParams cfp_gasdata
+#'
+#' @param ... Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:
+#'
 #' @param gases (character) A character vector defining the gases for which
 #' gluxes shall be calulated.
 #' @param modes (character) A character vector specifying mode(s) for dcdz
@@ -51,8 +58,8 @@ fg_flux.cfp_fgmod <- function(x, ...){
                  cfp_funs(x),
                  cfp_id_cols(x))
   y <- y %>%
-    left_join(x$profiles) %>%
-    select(prof_id,
+    dplyr::left_join(x$profiles) %>%
+    dplyr::select(prof_id,
            upper,
            lower,
            depth,
@@ -75,7 +82,7 @@ fg_flux.cfp_fgmod <- function(x, ...){
 
 
 
-
+#' @rdname fg_flux
 calculate_flux <- function(gasdata,
                            soilphys,
                            layers_map,
@@ -186,7 +193,7 @@ calculate_flux <- function(gasdata,
   id_lmap <- c(id_cols[id_cols %in% names(layers_map)],"j_help")
 
   FLUX <- lapply(modes,function(mode){
-    return(gasdata %>% mutate(mode = !!mode))
+    return(gasdata %>% dplyr::mutate(mode = !!mode))
   }) %>%
     dplyr::bind_rows() %>%
     dplyr::ungroup()%>%

@@ -5,6 +5,8 @@
 #'
 #' @param x A named list of cfp_pfres or cfp_fgres models.
 #'
+#' @param og_model The original model that was altered
+#'
 #' @inheritParams alternate
 #'
 #' @export
@@ -78,6 +80,8 @@ validate_cfp_altres <- function(x){
 
 ###### EXTRACTION ######
 
+
+#' @describeIn extractors og_model
 #' @export
 cfp_og_model <- function(x){
   UseMethod("cfp_og_model")

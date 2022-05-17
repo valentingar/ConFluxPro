@@ -27,6 +27,7 @@ This function completes the soilphys dataset by calculating
 \examples{
 soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
 
+
 }
 \seealso{
 D0_massman

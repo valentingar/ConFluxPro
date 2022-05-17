@@ -72,7 +72,6 @@ offset_correction(gasdata,
 \seealso{
 Other gasdata: 
 \code{\link{balance_correction}()},
-\code{\link{offset_subsetting}()},
-\code{\link{series_cleaner}()}
+\code{\link{offset_subsetting}()}
 }
 \concept{gasdata}

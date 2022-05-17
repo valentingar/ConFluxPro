@@ -1,7 +1,6 @@
-#' @title utility functions
-#'
-#' @description A group of functions that help in the internals of the package.
-#'
+
+# internal functions only
+
 
 
 chunk_lapply <- function(X,
@@ -68,7 +67,7 @@ is_ul_consistent <- function(df,
   n_no_fit <-
     df %>%
     dplyr::mutate(is_lowest = lower == min(lower)) %>%
-    dplyr::filter(!(lower == lag(upper) |
+    dplyr::filter(!(lower == dplyr::lag(upper) |
                     is_lowest)) %>%
     nrow()
 

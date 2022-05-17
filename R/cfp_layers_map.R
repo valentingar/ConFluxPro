@@ -1,7 +1,7 @@
 #' @title cfp_layers_map
 #'
 #' @description A function to conveniently create a vaild cfp_layers_map object
-#' with options to add more gases and corresponding parameters for \code{\link{pro_flux()}} models.
+#' with options to add more gases and corresponding parameters for \code{\link{pro_flux}} models.
 #' Please note that only \code{layers_map} and code{id_cols} are obligatory. Adding the necessary
 #' columns to \code{layers_map} beforehand allows for more fine-tuned control of models.
 #'
@@ -23,9 +23,9 @@
 #' @param gas (character vector) A vector of gas names to be added to layers_map.
 #' The input layers_map is then repeated for each gas.
 #' @param lowlim (numeric vector) A vector the same length as gas with the lower limit
-#' of possible production allowed in \code{pro_flux()} models.
+#' of possible production allowed in \code{pro_flux} models.
 #' @param highlim (numeric vecotr)  A vector the same length as gas with the upper limit
-#' of possible production allowed in \code{pro_flux()} models.
+#' of possible production allowed in \code{pro_flux} models.
 #' @param layer_couple (numeric_vector) A vector the same length as gas that indicates how
 #' strongly the layer should be linked to the one below it (0 for no coupling)
 #'
@@ -82,7 +82,7 @@ cfp_layers_map <- function(layers_map,
       layers_map %>%
       dplyr::arrange(upper) %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-      dplyr::mutate(layer = 1:n())
+      dplyr::mutate(layer = 1:dplyr::n())
 
     message("automatically added 'layer' column")
   }
@@ -184,7 +184,7 @@ error_if_missing <- function(df,cols){
 # methods -----------
 
 #' @exportS3Method
-print.cfp_layers_map <- function(x){
+print.cfp_layers_map <- function(x, ...){
   cat("\nA cfp_layers_map object \n")
   id_cols <- cfp_id_cols(x)
   cat("id_cols:", id_cols, "\n")

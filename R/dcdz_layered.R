@@ -40,7 +40,6 @@
 #' }
 #'
 #' @family FLUX
-#' @import dplyr
 #' @import splines
 #'
 #' @export

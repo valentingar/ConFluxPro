@@ -8,6 +8,8 @@ sobol_run_map(x, ...)
 }
 \arguments{
 \item{x}{An object of class cfp_run_map created by a call to run_map().}
+
+\item{...}{Additional arguments passed on to \link{run_map}}
 }
 \description{
 Modify an existing run_map for sobol indice estimation.

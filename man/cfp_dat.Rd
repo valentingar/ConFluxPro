@@ -2,9 +2,15 @@
 % Please edit documentation in R/cfp_dat.R
 \name{cfp_dat}
 \alias{cfp_dat}
+\alias{split_by_group}
+\alias{split_by_prof}
 \title{cfp_dat}
 \usage{
 cfp_dat(gasdata, soilphys, layers_map)
+
+split_by_group(x)
+
+split_by_prof(x)
 }
 \arguments{
 \item{gasdata}{A cfp_gasdata object created by running \code{cfp_gasdata()}.}
@@ -12,6 +18,8 @@ cfp_dat(gasdata, soilphys, layers_map)
 \item{soilphys}{A cfp_soilphys object created by running \code{cfp_soilphys()}.}
 
 \item{layers_map}{A cfp_layers_map object created by running \code{cfp_layers_map}.}
+
+\item{x}{An object of class cfp_dat}
 }
 \value{
 A cfp_dat object with the following parameters:

@@ -35,17 +35,17 @@ uniquely identify one profile.}
 The input layers_map is then repeated for each gas.}
 
 \item{lowlim}{(numeric vector) A vector the same length as gas with the lower limit
-of possible production allowed in \code{pro_flux()} models.}
+of possible production allowed in \code{pro_flux} models.}
 
 \item{highlim}{(numeric vecotr)  A vector the same length as gas with the upper limit
-of possible production allowed in \code{pro_flux()} models.}
+of possible production allowed in \code{pro_flux} models.}
 
 \item{layer_couple}{(numeric_vector) A vector the same length as gas that indicates how
 strongly the layer should be linked to the one below it (0 for no coupling)}
 }
 \description{
 A function to conveniently create a vaild cfp_layers_map object
-with options to add more gases and corresponding parameters for \code{\link{pro_flux()}} models.
+with options to add more gases and corresponding parameters for \code{\link{pro_flux}} models.
 Please note that only \code{layers_map} and code{id_cols} are obligatory. Adding the necessary
 columns to \code{layers_map} beforehand allows for more fine-tuned control of models.
 }

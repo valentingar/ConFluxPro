@@ -5,7 +5,35 @@
 #'
 #' @param x A \code{cfp_dat} object with all the necessary input datasets.
 #'
-#' @inheritParams pro_flux
+# @param storage_term (logical) Should changes in storage be accounted for?
+#   Default is F. Only works if data is present in a temporal dimension as well
+#   and is probably only representative for a high temporal resolution (hours).
+#
+#' @param zero_flux (logical) Applies the zero-flux boundary condition? If
+#'   FALSE, the first value in X represents the incoming flux to the lowest
+#'   layer.
+#'
+#' @param zero_limits (numeric vector) a vector of length 2 defining the lower
+#'   and upper limit of the lowest flux if zero_flux = F.
+#'
+#' @param known_flux_factor (numeric) a numeric value > 0 that represents a
+#'   weight for the error calculation with the known flux. A higher value means
+#'   that the optimisation will weigh the error to the efflux more than in
+#'   regard to the concentration measurements. Must be determined manually by
+#'   trying out!
+#'
+#' @param DSD0_optim (logical) If True, the diffusion coefficient (DSD0) values are
+#'   also object to optimisation together with the production. DSD0 is varied between
+#'   values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
+#'   are given as DSD0_fit in the return table. Only makes sense to use in
+#'   combination with known_flux.
+#'
+#' @param evenness_factor (numeric) A user defined factor used to penalise strong
+#' differences between the optimised production rates. This must be identified by
+#' trial-and-error and can help prevent that production rates are simply set to zero
+#' basically the lower a production is relative to the the maximum of the absolute of
+#' all productions, the higher it is penalised. The \code{evenness_factor} then
+#' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
 #'
 #'
 
@@ -75,6 +103,7 @@ print.cfp_pfmod <- function(x, ...){
 
 
 ### EXTRACTORS #####
+#' @describeIn extractors zero_flux
 #' @export
 cfp_zero_flux <- function(x){
   UseMethod("cfp_zero_flux")
@@ -85,6 +114,8 @@ cfp_zero_flux.default <- function(x){
   out
 }
 
+
+#' @describeIn extractors zero_limits
 #' @export
 cfp_zero_limits <- function(x){
   UseMethod("cfp_zero_limits")
@@ -95,6 +126,7 @@ cfp_zero_limits.default <- function(x){
   out
 }
 
+#' @describeIn extractors DSD0_optim
 #' @export
 cfp_DSD0_optim <- function(x){
   UseMethod("cfp_DSD0_optim")
@@ -106,6 +138,7 @@ cfp_DSD0_optim.default <- function(x){
 }
 
 
+#' @describeIn extractors evenness_factor
 #' @export
 cfp_evenness_factor <- function(x){
   UseMethod("cfp_evenness_factor")
@@ -116,6 +149,8 @@ cfp_evenness_factor.default <- function(x){
   out
 }
 
+
+#' @describeIn extractors known_flux_factor
 #' @export
 cfp_known_flux_factor <- function(x){
   UseMethod("cfp_known_flux_factor")
@@ -127,6 +162,7 @@ cfp_known_flux_factor.default <- function(x){
 }
 
 ###### COERCING #######
+#' @describeIn coercion to cfp_pfmod
 #' @export
 as_cfp_pfmod <- function(x){
   UseMethod("as_cfp_pfmod")

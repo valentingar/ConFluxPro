@@ -1,5 +1,5 @@
 test_that("topheight only", {
-
+  require(dplyr)
 
   soilphys <-
     ConFluxPro::soilphys %>%

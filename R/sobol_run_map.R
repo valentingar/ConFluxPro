@@ -4,6 +4,7 @@
 #'
 #' @param x An object of class cfp_run_map created by a call to run_map().
 #'
+#' @param ... Additional arguments passed on to \link{run_map}
 #'
 #' @export
 

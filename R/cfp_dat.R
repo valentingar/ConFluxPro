@@ -9,6 +9,7 @@
 #' @param soilphys A cfp_soilphys object created by running \code{cfp_soilphys()}.
 #' @param layers_map A cfp_layers_map object created by running \code{cfp_layers_map}.
 #'
+#' @param x An object of class cfp_dat
 #'
 # @param known_flux (dataframe) a dataframe that gives a known efflux for each
 #   profile defined by id_cols. If this is provided, the productions are
@@ -31,7 +32,7 @@
 #' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
 #'}
 
-
+#' @importFrom dplyr filter
 #' @export
 # helper
 cfp_dat <- function(gasdata,
@@ -177,9 +178,9 @@ same_range <- function(soilphys,
                        layers_map){
 
   sp_summ <- get_upper_lower_range(soilphys) %>%
-    rename(umax_x = umax,
+    dplyr::rename(umax_x = umax,
            lmin_x = lmin) %>%
-    left_join(get_upper_lower_range(layers_map),
+    dplyr::left_join(get_upper_lower_range(layers_map),
               by = whats_in_both(list(cfp_id_cols(layers_map),cfp_id_cols(soilphys)))
     )
 
@@ -321,7 +322,7 @@ sp_add_pmap <- function(soilphys,
 
 ##### PRINTING #####
 #' @exportS3Method
-print.cfp_dat <- function(x){
+print.cfp_dat <- function(x, ...){
   cat("\nA cfp_dat object to be used as input in ConFluxPro models. \n")
   id_cols <- cfp_id_cols(x)
   cat("id_cols:", id_cols, "\n")
@@ -334,6 +335,7 @@ print.cfp_dat <- function(x){
 
 
 ###### EXTRACTION #####
+#' @describeIn extractors id_cols
 #' @export
 cfp_id_cols <- function(x){
   UseMethod("cfp_id_cols")
@@ -345,7 +347,7 @@ cfp_id_cols.default <- function(x){
 
 
 ##### COERSION #######
-
+#' @describeIn coercion to cfp_dat
 #' @export
 as_cfp_dat <- function(x){
   UseMethod("as_cfp_dat")
@@ -405,6 +407,7 @@ filter.cfp_dat <- function(.data,
 
 
 ##### SPLITTING #####
+#' @rdname cfp_dat
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
@@ -440,6 +443,7 @@ split_by_group.cfp_dat <- function(x){
   out
 }
 
+#' @rdname cfp_dat
 #' @export
 split_by_prof <- function(x){
   UseMethod("split_by_prof")

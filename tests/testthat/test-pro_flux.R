@@ -1,5 +1,6 @@
 test_that("pro_flux works", {
 
+  library(dplyr)
 
   soilphys <-
   ConFluxPro::soilphys %>%

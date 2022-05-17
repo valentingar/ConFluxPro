@@ -9,66 +9,45 @@
 #'   boundary condition is not met, the flux must be optimised as well. This can
 #'   be set in \code{zero_flux}.
 #'
-#' @param x A valid \code{cfp_dat} object. This contains all the necessary input
-#' data.
+#' @inheritParams cfp_pfmod
 #'
-#' @param storage_term (logical) Should changes in storage be accounted for?
-#'   Default is F. Only works if data is present in a temporal dimension as well
-#'   and is probably only representative for a high temporal resolution (hours).
-#'
-#' @param zero_flux (logical) Applies the zero-flux boundary condition? If
-#'   FALSE, the first value in X represents the incoming flux to the lowest
-#'   layer.
-#'
-#' @param zero_limits (numeric vector) a vector of length 2 defining the lower
-#'   and upper limit of the lowest flux if zero_flux = F.
-#'
-#' @param known_flux_factor (numeric) a numeric value > 0 that represents a
-#'   weight for the error calculation with the known flux. A higher value means
-#'   that the optimisation will weigh the error to the efflux more than in
-#'   regard to the concentration measurements. Must be determined manually by
-#'   trying out!
-#'
-#' @param DSD0_optim (logical) If True, the diffusion coefficient (DSD0) values are
-#'   also object to optimisation together with the production. DSD0 is varied between
-#'   values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
-#'   are given as DSD0_fit in the return table. Only makes sense to use in
-#'   combination with known_flux.
-#'
-#' @param evenness_factor (numeric) A user defined factor used to penalise strong
-#' differences between the optimised production rates. This must be identified by
-#' trial-and-error and can help prevent that production rates are simply set to zero
-#' basically the lower a production is relative to the the maximum of the absolute of
-#' all productions, the higher it is penalised. The \code{evenness_factor} then
-#' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
+#' @param ... Additional arguments passed on to \link{cfp_pfmod}
 #'
 #' @examples {
-#' data("gasdata")
-#' data("soilphys")
 #'
-#' library(dplyr)
+#'library(dplyr)
 #'
-#' lmap <- soilphys %>%
-#'   select(upper,site) %>%
-#'   distinct() %>%
-#'   group_by(site) %>%
-#'   slice_max(upper) %>%
-#'   summarise(upper = c(upper,0),
-#'             lower = c(0,-100),
-#'             lowlim = 0,
-#'             highlim = 1000,
-#'             layer_couple = 0)
-#' PROFLUX <-
-#'   pro_flux(gasdata,
-#'            soilphys,
-#'            lmap,
-#'            c("site","Date"))
+#'soilphys <-
+#'  ConFluxPro::soilphys %>%
+#'  cfp_soilphys(id_cols = c("site", "Date"))
+#'
+#'gasdata <-
+#'  ConFluxPro::gasdata %>%
+#'  cfp_gasdata(id_cols = c("site", "Date"))
+#'
+#'
+#'lmap <- soilphys %>%
+#'  select(upper,site) %>%
+#'  distinct() %>%
+#'  group_by(site) %>%
+#'  slice_max(upper) %>%
+#'  summarise(upper = c(upper,0),
+#'            lower = c(0,-100)) %>%
+#'  cfp_layers_map(gas = "CO2",
+#'                 layer_couple = 0,
+#'                 lowlim = 0,
+#'                 highlim = 1000,
+#'                 id_cols = "site")
+#'PROFLUX <-
+#'  cfp_dat(gasdata,
+#'          soilphys,
+#'          lmap ) %>%
+#'  pro_flux()
 #' }
 #'
 #' @family proflux
 #'
 #'
-#' @import dplyr
 #' @importFrom  ddpcr quiet
 #'
 #' @export
