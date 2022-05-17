@@ -66,7 +66,6 @@
 #'                               }
 #'
 #'
-#' @import dplyr
 #' @importFrom stats na.omit
 #'
 #' @export

@@ -27,7 +27,6 @@
 #'
 #' @family soilphys
 #'
-#' @import dplyr
 #' @import tidyr
 #'
 #' @export

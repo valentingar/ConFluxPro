@@ -68,7 +68,6 @@
 #' @family proflux
 #'
 #'
-#' @import dplyr
 #' @importFrom  ddpcr quiet
 #'
 #' @export

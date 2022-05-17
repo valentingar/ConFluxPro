@@ -37,7 +37,6 @@
 #'
 #' @family gasdata
 #'
-#' @import dplyr
 #' @importFrom magrittr %>%
 #'
 #' @export

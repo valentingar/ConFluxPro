@@ -186,7 +186,7 @@ calculate_flux <- function(gasdata,
   id_lmap <- c(id_cols[id_cols %in% names(layers_map)],"j_help")
 
   FLUX <- lapply(modes,function(mode){
-    return(gasdata %>% mutate(mode = !!mode))
+    return(gasdata %>% dplyr::mutate(mode = !!mode))
   }) %>%
     dplyr::bind_rows() %>%
     dplyr::ungroup()%>%

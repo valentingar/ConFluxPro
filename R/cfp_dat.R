@@ -31,7 +31,7 @@
 #' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
 #'}
 
-
+#' @importFrom dplyr filter
 #' @export
 # helper
 cfp_dat <- function(gasdata,
@@ -177,9 +177,9 @@ same_range <- function(soilphys,
                        layers_map){
 
   sp_summ <- get_upper_lower_range(soilphys) %>%
-    rename(umax_x = umax,
+    dplyr::rename(umax_x = umax,
            lmin_x = lmin) %>%
-    left_join(get_upper_lower_range(layers_map),
+    dplyr::left_join(get_upper_lower_range(layers_map),
               by = whats_in_both(list(cfp_id_cols(layers_map),cfp_id_cols(soilphys)))
     )
 
@@ -321,7 +321,7 @@ sp_add_pmap <- function(soilphys,
 
 ##### PRINTING #####
 #' @exportS3Method
-print.cfp_dat <- function(x){
+print.cfp_dat <- function(x, ...){
   cat("\nA cfp_dat object to be used as input in ConFluxPro models. \n")
   id_cols <- cfp_id_cols(x)
   cat("id_cols:", id_cols, "\n")

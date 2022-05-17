@@ -1,5 +1,5 @@
 test_that("fg_flux works", {
-
+  require(dplyr)
 
   soilphys <-
     ConFluxPro::soilphys %>%
