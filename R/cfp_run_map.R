@@ -92,6 +92,7 @@ validate_cfp_run_map <- function(x){
 ###############
 
 # extractors ---------
+#' @describeIn extractors runmap_type
 #' @export
 cfp_runmap_type <- function(x){
   UseMethod("cfp_runmap_type")
@@ -103,6 +104,7 @@ cfp_runmap_type.cfp_run_map <- function(x){
 }
 
 
+#' @describeIn extractors params_df
 #' @export
 cfp_params_df <- function(x){
   UseMethod("cfp_params_df")
@@ -114,6 +116,8 @@ cfp_params_df.cfp_run_map <- function(x){
 }
 
 
+
+#' @describeIn extractors n_runs
 #' @export
 cfp_n_runs <- function(x){
   UseMethod("cfp_n_runs")
