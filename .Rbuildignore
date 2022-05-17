@@ -4,3 +4,4 @@
 ^inst/logo_draft.odg$
 ^inst/data_structure.xlsx$
 ^README\.Rmd$
+^R/series_correction.R$
