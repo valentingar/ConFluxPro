@@ -52,26 +52,35 @@ This implements an inverse modeling approach which optimizes
 }
 \examples{
 {
-data("gasdata")
-data("soilphys")
 
 library(dplyr)
 
+soilphys <-
+ ConFluxPro::soilphys \%>\%
+ cfp_soilphys(id_cols = c("site", "Date"))
+
+gasdata <-
+ ConFluxPro::gasdata \%>\%
+ cfp_gasdata(id_cols = c("site", "Date"))
+
+
 lmap <- soilphys \%>\%
-  select(upper,site) \%>\%
-  distinct() \%>\%
-  group_by(site) \%>\%
-  slice_max(upper) \%>\%
-  summarise(upper = c(upper,0),
-            lower = c(0,-100),
-            lowlim = 0,
-            highlim = 1000,
-            layer_couple = 0)
+ select(upper,site) \%>\%
+ distinct() \%>\%
+ group_by(site) \%>\%
+ slice_max(upper) \%>\%
+ summarise(upper = c(upper,0),
+           lower = c(0,-100)) \%>\%
+ cfp_layers_map(gas = "CO2",
+                layer_couple = 0,
+                lowlim = 0,
+                highlim = 1000,
+                id_cols = "site")
 PROFLUX <-
-  pro_flux(gasdata,
-           soilphys,
-           lmap,
-           c("site","Date"))
+ cfp_dat(gasdata,
+         soilphys,
+         lmap ) \%>\%
+ pro_flux()
 }
 
 }
