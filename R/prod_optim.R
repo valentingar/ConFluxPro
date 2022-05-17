@@ -9,6 +9,7 @@
 #' @param X (numeric vector) specifying the productions to be optimized
 #' @param height (numeric vector) giving the height of each step
 #' @param DS (numeric vector) giving the DS of each step
+#' @param D0 (numeric vector) giving the D0 of each step
 #' @param pmap (integer vector) assigning a production from X to each step
 #' @param cmap (integer vector) assigning the modeled concentrations to the
 #' observed concentrations as there can be multiple observations per depth

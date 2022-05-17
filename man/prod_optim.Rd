@@ -31,6 +31,8 @@ prod_optim(
 
 \item{DS}{(numeric vector) giving the DS of each step}
 
+\item{D0}{(numeric vector) giving the D0 of each step}
+
 \item{C0}{(numeric) The concentration at the
 bottom of the lowermost step.}
 
