@@ -184,7 +184,7 @@ error_if_missing <- function(df,cols){
 # methods -----------
 
 #' @exportS3Method
-print.cfp_layers_map <- function(x){
+print.cfp_layers_map <- function(x, ...){
   cat("\nA cfp_layers_map object \n")
   id_cols <- cfp_id_cols(x)
   cat("id_cols:", id_cols, "\n")

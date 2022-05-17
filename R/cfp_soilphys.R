@@ -76,7 +76,7 @@ validate_cfp_soilphys <- function(x){
 
 # PRINTING
 #' @exportS3Method
-print.cfp_soilphys <- function(x){
+print.cfp_soilphys <- function(x, ...){
   cat("\nA cfp_soilphys object \n")
   print_id_cols(x)
   cat("\n")

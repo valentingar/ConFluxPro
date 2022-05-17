@@ -15,7 +15,7 @@ cfp_parameter <- function(x = NULL){
 
 #' @exportS3Method
 cfp_parameter.default <- function(x = NULL){
-  y <- ConFluxPro:::parameter
+  y <- parameter
 
   if (is.null(x)){
     return(y)
@@ -27,7 +27,7 @@ cfp_parameter.default <- function(x = NULL){
 
 #' @exportS3Method
 cfp_parameter.character <- function(x){
-  y <- ConFluxPro:::parameter
+  y <- parameter
 
   y[y$name %in% x, ]
 }

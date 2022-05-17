@@ -83,7 +83,7 @@ validate_cfp_gasdata <- function(x){
 # methods -----------
 
 #' @exportS3Method
-print.cfp_gasdata <- function(x){
+print.cfp_gasdata <- function(x, ...){
   cat("\nA cfp_gasdata object \n")
   print_id_cols(x)
   cat("\n")
