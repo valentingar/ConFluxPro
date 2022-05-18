@@ -75,9 +75,9 @@ run_map <- function(x,
 
     second_depth <-
     x$soilphys %>%
-      dplyr::select(tidyr::any_of(c(ids_lmap, "upper"))) %>%
+      dplyr::select(dplyr::any_of(c(ids_lmap, "upper"))) %>%
       dplyr::distinct() %>%
-      dplyr::group_by(dplyr::across(tidyr::any_of(ids_lmap))) %>%
+      dplyr::group_by(dplyr::across(dplyr::any_of(ids_lmap))) %>%
       dplyr::slice_max(upper, n = 2) %>%
       dplyr::summarise(top = max(upper),
                        bottom = min(upper))
@@ -120,8 +120,8 @@ run_map <- function(x,
       run_map <-
       x$layers_map %>%
         dplyr::select(pmap,
-                      tidyr::any_of({cfp_id_cols(x)})) %>%
-        dplyr::group_by(dplyr::across(tidyr::any_of({cfp_id_cols(x)}))) %>%
+                      dplyr::any_of({cfp_id_cols(x)})) %>%
+        dplyr::group_by(dplyr::across(dplyr::any_of({cfp_id_cols(x)}))) %>%
         dplyr::group_modify(~{
           n_layers <- nrow(.x)
           expand.grid(lapply(1:n_layers, function(x) 1:n_perms)) %>%
@@ -150,14 +150,14 @@ run_map <- function(x,
           dplyr::select(run_id, run_id_new) %>%
           dplyr::left_join(run_map, by = "run_id") %>%
           dplyr::select(!run_id) %>%
-          tidyr::pivot_longer(cols = tidyr::any_of(names(params)),
+          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
                               names_to = "param",
                               values_to = "value")
 
         # run_map topheight only
         run_map_top  <-
           run_map %>%
-          dplyr::select(tidyr::any_of(c(cfp_id_cols(x),"run_id"))) %>%
+          dplyr::select(dplyr::any_of(c(cfp_id_cols(x),"run_id"))) %>%
           dplyr::distinct() %>%
           dplyr::left_join(run_map_compl %>%
                              dplyr::select("topheight","run_id_new","run_id"),
@@ -180,7 +180,7 @@ run_map <- function(x,
 
         run_map <-
           run_map %>%
-          tidyr::pivot_longer(cols = tidyr::any_of(names(params)),
+          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
                               names_to = "param",
                               values_to = "value") %>%
           dplyr::left_join(type_df, by = "param")
@@ -200,7 +200,7 @@ run_map <- function(x,
       dplyr::left_join(second_depth, by = merger) %>%
       dplyr::filter(param == "topheight" &
                       -value < top-bottom) %>%
-      dplyr::select(tidyr::any_of(c("run_id", ids_lmap))) %>%
+      dplyr::select(dplyr::any_of(c("run_id", ids_lmap))) %>%
       dplyr::left_join(run_map, by = c(merger, "run_id"))
     }
 
@@ -218,12 +218,12 @@ run_map <- function(x,
       run_map <-
         x$layers_map %>%
         dplyr::select(pmap,
-                      tidyr::any_of({cfp_id_cols(x)})) %>%
+                      dplyr::any_of({cfp_id_cols(x)})) %>%
         dplyr::right_join(run_map %>%
                      dplyr::filter(!param == "topheight"),
                    by = character()) %>%
         dplyr::bind_rows(x$layers_map %>%
-                           dplyr::select(tidyr::any_of({cfp_id_cols(x)})) %>%
+                           dplyr::select(dplyr::any_of({cfp_id_cols(x)})) %>%
                            dplyr::distinct() %>%
                            dplyr::right_join(run_map, by = character()) %>%
                            dplyr::filter(param == "topheight"))
@@ -253,7 +253,7 @@ run_map <- function(x,
                                             -param_min >= top-bottom,
                                           (bottom-top)+0.0001,
                                           param_min)) %>%
-        dplyr::select(!tidyr::any_of(c("top", "bottom")))
+        dplyr::select(!dplyr::any_of(c("top", "bottom")))
 
     }
 
@@ -261,7 +261,7 @@ run_map <- function(x,
       run_map %>%
       dplyr::rowwise() %>%
       dplyr::mutate(value = runif(1, param_min, param_max)) %>%
-      dplyr::select(!tidyr::any_of(c("param_min", "param_max"))) %>%
+      dplyr::select(!dplyr::any_of(c("param_min", "param_max"))) %>%
       dplyr::left_join(type_df, by = "param") %>%
       dplyr::ungroup()
 
@@ -279,7 +279,7 @@ run_map <- function(x,
   }
 
   params_df <- run_map %>%
-    dplyr::select(tidyr::any_of(c("pmap", "param"))) %>%
+    dplyr::select(dplyr::any_of(c("pmap", "param"))) %>%
     dplyr::distinct() %>%
     dplyr::mutate(param_id = row_number())
 
