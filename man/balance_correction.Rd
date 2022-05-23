@@ -19,7 +19,7 @@ the process of the function, so that it has to be overwritten (see examples
 below).}
 
 \item{limits}{(vector, numeric) A vector of two that contains the upper and
-lower limits for b_tot, above and below which NRESULT_ppm are flagged and
+lower limits for b_tot, above and below which x_ppm are flagged and
 set NA, if set_na is TRUE.}
 
 \item{gases}{(vector, character) A character vector of the gases that should
@@ -35,7 +35,7 @@ gases present first and recalculating gases_st accordingly. \cr Order must
 match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))}
 
 \item{gases_ob}{(vector, character) A vector of obligatory gases that must be
-present for correct balance calculation. NRESULT_ppm of samples missing any
+present for correct balance calculation. x_ppm of samples missing any
 of these gases will be flagged in bal_flag and not corrected or set NA.
 Defaults to c("N2","O2").}
 
@@ -49,7 +49,7 @@ bal = balance
 
 bal_flag  TRUE if value was not corrected (or set NA).
 
-NRESULT_ppm, corrected for balance
+x_ppm, corrected for balance
 }
 \description{
 A function to correct the measured values for non-complete gas
@@ -57,7 +57,7 @@ A function to correct the measured values for non-complete gas
   measurements of all gases and, if necessary, corrected for missing gases.
   \cr Theoretically, bal is between (0;1), however values over 1 can result
   from calibration errors. Values over 1 are treated the same and are
-  corrected. Then, each NRESULT_ppm is corrected: NRESULT_ppm / b_tot
+  corrected. Then, each x_ppm is corrected: x_ppm / b_tot
 }
 \examples{
 {
@@ -69,7 +69,6 @@ data("gasdata")
 \seealso{
 Other gasdata: 
 \code{\link{offset_correction}()},
-\code{\link{offset_subsetting}()},
-\code{\link{series_cleaner}()}
+\code{\link{offset_subsetting}()}
 }
 \concept{gasdata}

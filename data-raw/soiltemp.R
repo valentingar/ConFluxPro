@@ -1,6 +1,7 @@
 #' code to prepare the 'soiltemp' dataset.
 #'
 
+library(dplyr)
 
 #Dates
 dates <- seq.Date(as.Date("2021-01-01"),
@@ -32,22 +33,22 @@ soiltemp <- data.frame(site = rep(sites,each = 5),
             site = site,
             depth = depth,
             depth_factor = depth_factor) %>%
-  mutate(Temp = sin((lubridate::month(Date)-4)/6*pi)*depth_factor+5,
+  mutate(t = sin((lubridate::month(Date)-4)/6*pi)*depth_factor+5,
          randomiser = rnorm(n(),1,0.1)) %>%
   mutate(randomiser = randomiser +
            ifelse(depth %in% c(5,7),
                   sin((lubridate::month(Date)-4)/6*pi)/6,
                   0)
          ) %>%
-  mutate(Temp = Temp*randomiser) %>%
+  mutate(t = t*randomiser) %>%
   select(site,
          Date,
          depth,
-         Temp)
+         t)
 
 #soiltemp %>%
 #  ggplot(aes(x = Date,
-#             y = Temp,
+#             y = t,
 #             col = factor(depth)))+
 #  geom_line()+
 #  facet_wrap(~site)

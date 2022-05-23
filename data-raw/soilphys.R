@@ -8,6 +8,7 @@ source("data-raw/soildiff.R")
 
 
 library(tidyr)
+library(dplyr)
 dt <- soilwater %>%
   select(upper,lower,site) %>%
   distinct() %>%
@@ -32,14 +33,14 @@ soilphys <-
                                id_cols = c("site","Date")
               )) %>%
   left_join(soiltemp %>%
-              discretize_depth(param = c("Temp"),
+              discretize_depth(param = c("t"),
                                method = "linear",
                                depth_target = dt,
                                id_cols = c("site","Date")
               )) %>%
-  mutate(p = 1013) %>%
+  dplyr::mutate(p = 1013) %>%
   complete_soilphys(gases = "CO2")
 
 usethis::use_data(soilphys,
-                  soilphys,
                   overwrite = T)
+

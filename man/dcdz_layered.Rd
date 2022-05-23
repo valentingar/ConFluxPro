@@ -45,7 +45,7 @@ This function calculates concentration gradients using different approaches.
 \examples{
 {
 df <- data.frame(depth = c(10,0,-100),
-                 NRESULT_ppm = c(400,800,5000))
+                 x_ppm = c(400,800,5000))
 
 lmap <- data.frame(upper = c(10,0),
                    lower = c(0,-100),
@@ -59,10 +59,5 @@ dcdz_layered(df,
 
 }
 
-}
-\seealso{
-Other FLUX: 
-\code{\link{calculate_flux}()},
-\code{\link{efflux_extrap}()}
 }
 \concept{FLUX}

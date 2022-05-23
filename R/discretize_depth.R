@@ -80,7 +80,6 @@
 #'
 #' @family soilphys
 #'
-#' @import dplyr
 #' @import splines
 #' @importFrom magrittr %>%
 #'
@@ -97,7 +96,7 @@
 #'   summarise(depth = c(depth,seq(0,-100,-10)))
 #'
 #' discretize_depth(soiltemp,
-#'                  "Temp",
+#'                  "t",
 #'                  "linear",
 #'                  dt,c(
 #'                    "site","Date"))
@@ -309,7 +308,6 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
     dplyr::bind_rows()
   k <- nrow(df_ret)/(length(dt_mid))
 
-  #print(k)
   lower <- dt[-length(dt)]
   upper <- dt[-1]
 
@@ -326,11 +324,11 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
 
 
 df_ret <- df %>%
-  select(any_of({c(id_cols,"prof_id")})) %>%
-  distinct() %>%
-  left_join(df_ret,by = "prof_id")
+  dplyr::select(any_of({c(id_cols,"prof_id")})) %>%
+  dplyr::distinct() %>%
+  dplyr::left_join(df_ret,by = "prof_id")
 
-return(df_ret %>% select(-"prof_id"))
+return(df_ret %>% dplyr::select(-"prof_id"))
 
 }
 

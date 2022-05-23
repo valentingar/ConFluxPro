@@ -85,7 +85,10 @@ soilphys_layered <- function(soilphys,
       by = id_cols_s,
       suffix = c("_harm", "_arith")
     )
-  soilphys <- dplyr::left_join(soilphys, layers_map)
+
+  merger <- names(soilphys)[names(soilphys) %in% names(layers_map)]
+
+  soilphys <- dplyr::left_join(soilphys, layers_map, by = merger)
   return(soilphys)
 }
 

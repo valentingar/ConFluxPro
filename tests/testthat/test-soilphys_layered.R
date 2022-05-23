@@ -4,7 +4,7 @@ test_that("soilphys_layered works", {
                lower = c(0,-30,-100),
                depth = c(5,-15,-65),
                DS = c(5E-5,5E-5,0E-5),
-               rho_air = c(40,40,40),
+               c_air = c(40,40,40),
                gas = "CO2")
 
   layers_map <- data.frame(
@@ -15,7 +15,7 @@ test_that("soilphys_layered works", {
   df_res <-
   soilphys_layered(df,
                    layers_map,
-                   param = c("DS","rho_air"),
+                   param = c("DS","c_air"),
                    funs = c("harm","arith"),
                    id_cols = "gas")
 

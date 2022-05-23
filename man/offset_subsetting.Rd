@@ -59,7 +59,6 @@ offset_override
 
 Other gasdata: 
 \code{\link{balance_correction}()},
-\code{\link{offset_correction}()},
-\code{\link{series_cleaner}()}
+\code{\link{offset_correction}()}
 }
 \concept{gasdata}

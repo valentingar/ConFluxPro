@@ -42,7 +42,7 @@ A function for the correction of offsets in the whole
   concentrations are then calculated, or a linear model is fit against time.
   A correction factor is then calculated by dividing a target atmospheric
   value (gases_std) by the mean or the values predicted by the linear model.
-  NRESULT_ppm values are then multiplied by that factor.
+  x_ppm values are then multiplied by that factor.
 }
 \examples{
 {
@@ -72,7 +72,6 @@ offset_correction(gasdata,
 \seealso{
 Other gasdata: 
 \code{\link{balance_correction}()},
-\code{\link{offset_subsetting}()},
-\code{\link{series_cleaner}()}
+\code{\link{offset_subsetting}()}
 }
 \concept{gasdata}

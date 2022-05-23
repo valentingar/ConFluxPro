@@ -4,7 +4,7 @@
 \alias{complete_soilphys}
 \title{complete_soilphys}
 \usage{
-complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b", gases, overwrite = F)
+complete_soilphys(soilphys, DSD0_formula = NULL, gases, overwrite = TRUE)
 }
 \arguments{
 \item{soilphys}{(dataframe) the soilphys dataframe}
@@ -26,6 +26,7 @@ This function completes the soilphys dataset by calculating
 }
 \examples{
 soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
+
 
 }
 \seealso{

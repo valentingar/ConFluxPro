@@ -6,7 +6,7 @@
 #'   made by discretize_depth. Mainly checks if ceratain columns are present
 #'   and if they are missing, if they can be calcluated from the data present.
 #'   Looks for the following columns by default:
-#'   "upper","lower","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS"
+#'   "upper","lower","TPS","SWC","AFPS","t","p","DSD0","D0","DS"
 #'
 #'
 #' @param df (dataframe) the soilphys dataframe
@@ -27,7 +27,6 @@
 #'
 #' @family soilphys
 #'
-#' @import dplyr
 #' @import tidyr
 #'
 #' @export
@@ -39,7 +38,7 @@ check_soilphys <-function(df,
   df_names <- names(df)
 
   #defining a vector of obligatory parameter names
-  param_names <-  c("upper","lower","TPS","SWC","AFPS","Temp","p","DSD0","D0","DS",extra_vars,id_cols)
+  param_names <-  c("upper","lower","TPS","SWC","AFPS","t","p","DSD0","D0","DS",extra_vars,id_cols)
 
   param_missing <- param_names[!param_names %in% df_names] #missing parameters in df
 
@@ -61,7 +60,7 @@ check_soilphys <-function(df,
     }
   }
   if ("D0" %in% param_missing){
-    if("p" %in% param_missing | "Temp" %in% param_missing){
+    if("p" %in% param_missing | "t" %in% param_missing){
       not_to_fix <- c(not_to_fix,"D0","DS")
     } else{
       to_fix <- c(to_fix,"D0")

@@ -1,7 +1,6 @@
-#' @title utility functions
-#'
-#' @description A group of functions that help in the internals of the package.
-#'
+
+# internal functions only
+
 
 
 chunk_lapply <- function(X,
@@ -33,7 +32,8 @@ chunk_lapply <- function(X,
 
 
 # is a data.frame of upper/lower type consistent
-
+# i.e. no gaps, no duplicates, no overlap of steps per profile
+# profile identified by id_cols
 is_ul_consistent <- function(df,
                              id_cols){
 
@@ -67,9 +67,32 @@ is_ul_consistent <- function(df,
   n_no_fit <-
     df %>%
     dplyr::mutate(is_lowest = lower == min(lower)) %>%
-    dplyr::filter(!(lower == lag(upper) |
+    dplyr::filter(!(lower == dplyr::lag(upper) |
                     is_lowest)) %>%
     nrow()
 
   n_no_fit == 0
+}
+
+
+
+
+# For printing methods
+print_id_cols <- function(x){
+  id_cols <- cfp_id_cols(x)
+  unique_groups <- x[id_cols] %>% dplyr::distinct() %>% nrow()
+  cat("id_cols:", id_cols, "\n")
+  cat(unique_groups, " unique profiles", "\n")
+}
+
+
+#linear extrapolation with single target value
+lin_extrap<-function(x,
+                     y,
+                     x_new){
+  if(!length(x)==2 | !length(y)==2){
+    stop("length of x and y must be 2!")
+  }
+  y_new <- (x_new-x[1])*(diff(y) / diff(x)) + y[1]
+  return(y_new)
 }

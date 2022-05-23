@@ -37,7 +37,6 @@
 #'
 #' @family gasdata
 #'
-#' @import dplyr
 #' @importFrom magrittr %>%
 #'
 #' @export
@@ -61,9 +60,9 @@ series_cleaner<-function(df,
       #calculating mean by Date
       dplyr::left_join(df %>%
                          dplyr::group_by(Date) %>%
-                         dplyr::summarise(mean=mean(NRESULT_ppm,na.rm = T))) %>%
+                         dplyr::summarise(mean=mean(x_ppm,na.rm = T))) %>%
       #Calculating difference to mean
-      dplyr::mutate(Ndiff=NRESULT_ppm-mean)
+      dplyr::mutate(Ndiff=x_ppm-mean)
     df <- df %>%
       #calculating mean difference
       dplyr::left_join(df %>%
@@ -83,7 +82,7 @@ series_cleaner<-function(df,
       bs<-boxplot.stats(.x$Ndiff)
       lims<-range(bs$stats)
       .x <- .x %>%
-        dplyr::mutate(NRESULT_ppm  = ifelse(Ndiff < !!lims[1] | Ndiff > !!lims[2],NA,NRESULT_ppm))
+        dplyr::mutate(x_ppm  = ifelse(Ndiff < !!lims[1] | Ndiff > !!lims[2],NA,x_ppm))
       return(.x)
     })
 
@@ -95,7 +94,7 @@ series_cleaner<-function(df,
   mst_diffs <-  df_new %>%
     dplyr::mutate(n=length(unique(df_new$MST_ID))) %>% #n = number of MST in each depth
     dplyr::full_join(df_new %>%
-                       dplyr::filter(is.na(NRESULT_ppm)==F) %>%
+                       dplyr::filter(is.na(x_ppm)==F) %>%
                        dplyr::group_by(Date) %>%
                        dplyr::count(name="m")) %>% #m = number of non-NA obs per depth and Day
     dplyr::mutate(s=n-m) %>%
@@ -104,7 +103,7 @@ series_cleaner<-function(df,
     dplyr::left_join(df_new) %>%
     dplyr::mutate(month=lubridate::month(Date)) %>%
     dplyr::group_by(MST_ID,month) %>%
-    dplyr::summarise(mean_diff=mean(NRESULT_ppm-mean),sd_diff=stats::sd(NRESULT_ppm-mean),depth=depth[1]) #calculate mean diff to mean for each MST and Month
+    dplyr::summarise(mean_diff=mean(x_ppm-mean),sd_diff=stats::sd(x_ppm-mean),depth=depth[1]) #calculate mean diff to mean for each MST and Month
 
 
   #counts number of groups for offset correction
@@ -131,7 +130,7 @@ series_cleaner<-function(df,
     mon <- lubridate::month(df$Date[1])
 
     if (i %in% round(seq(1,n_groups,length.out = 11))){
-      print(paste(depth,df$Date[1],round(i/n_groups,digits = 2)*100,"%"))
+      message(paste(depth,df$Date[1],round(i/n_groups,digits = 2)*100,"%"))
     }
 
 
@@ -139,7 +138,7 @@ series_cleaner<-function(df,
       return(df)
     }
 
-    notna<-unique(df$MST_ID[is.na(df$NRESULT_ppm)==F])
+    notna<-unique(df$MST_ID[is.na(df$x_ppm)==F])
     if (length(notna) == length(unique(df$MST_ID))){
       return(df)
     }
@@ -170,7 +169,7 @@ series_cleaner<-function(df,
     }
     offset<-offset/(length(notna))
     df$mean<-df$mean+offset
-    df$Ndiff<-df$NRESULT_ppm-df$mean
+    df$Ndiff<-df$x_ppm-df$mean
     return(df)
   }
 
@@ -200,7 +199,7 @@ series_cleaner<-function(df,
     dplyr::group_by(MST_ID) %>%
     dplyr::mutate(Ndiff=na_interpol(Date,Ndiff)) %>%
     #pull(diff)
-    dplyr::mutate(NRESULT_ppm=mean+Ndiff)
+    dplyr::mutate(x_ppm=mean+Ndiff)
 
   return(df_new2)
 }

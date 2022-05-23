@@ -49,9 +49,12 @@ gasdata <- data.frame(site = rep(sites,each = 5),
                       mean_conc = c(mean_conc_a,mean_conc_b),
                       sd_conc = c(sd_conc_a,sd_conc_b))
 
-gasdata <- data.frame(Date = rep(dates,each=10),
-                      date_factor = rep(date_factor,each=10),
-                      rep(gasdata,times=12))
+gasdata <- lapply(seq_along(dates), function(i){
+  gasdata %>%
+    dplyr::mutate(Date = dates[i],
+           date_factor = date_factor[i])
+}) %>%
+  dplyr::bind_rows()
 
 # expand data per replication and mimic natural data by
 # calling rnorm
@@ -64,14 +67,13 @@ gasdata %>%
   dplyr::summarise(site = rep(site,reps),
                    Date = rep(Date,reps),
                    depth = rep(depth,reps),
-                   repetition = c(1:reps),
-                   NRESULT_ppm = rnorm(reps,
+                   x_ppm = rnorm(reps,
                                        mean_conc,
                                        sd_conc)) %>%
   dplyr::mutate(gas = !!gas)
 
 #gasdata %>%
-#  ggplot(aes(y=NRESULT_ppm,
+#  ggplot(aes(y=x_ppm,
 #             x=depth,
 #             col = season(Date)))+
 #  geom_point()+
@@ -82,8 +84,9 @@ gasdata %>%
 #  coord_flip()
 #
 #gasdata %>%
-#  ggplot(aes(x=Date,y=NRESULT_ppm,col = site))+
+#  ggplot(aes(x=Date,y=x_ppm,col = site))+
 #  stat_summary(geom = "line")
 
-usethis::use_data(gasdata, gasdata,
+usethis::use_data(gasdata,
                   overwrite = T)
+

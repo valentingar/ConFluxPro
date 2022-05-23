@@ -9,6 +9,7 @@
 #' @param X (numeric vector) specifying the productions to be optimized
 #' @param height (numeric vector) giving the height of each step
 #' @param DS (numeric vector) giving the DS of each step
+#' @param D0 (numeric vector) giving the D0 of each step
 #' @param pmap (integer vector) assigning a production from X to each step
 #' @param cmap (integer vector) assigning the modeled concentrations to the
 #' observed concentrations as there can be multiple observations per depth
@@ -75,19 +76,15 @@ prod_optim<- function(X,
 
   #assign production values to steps (pmap provided in function call)
   prod <- X[pmap]
-  #print(prod)
   #add storage term to production
   prod <- prod+dstor
 
-  #print(prod)
   #calculate concentration using the values provided
   conc_mod <- prod_mod_conc(prod,height,DS,F0,C0)
 
-  #print(conc_mod)
   #assign moddeled concentrations to match observations
   conc_mod <- conc_mod[cmap]
 
-  #print(conc_mod)
   #calculate RMSE
   k <- (conc-conc_mod)^2
   k <- k*wmap #weigh the observations that depend on higher degrees of freedom more
