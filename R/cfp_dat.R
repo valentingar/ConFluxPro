@@ -297,7 +297,7 @@ sp_add_pmap <- function(soilphys,
 
   soilphys <-
   soilphys %>%
-    dplyr::select(tidyr::any_of(c(merger, "upper", "lower"))) %>%
+    dplyr::select(dplyr::any_of(c(merger, "upper", "lower"))) %>%
     dplyr::distinct() %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(merger))) %>%
     dplyr::group_modify(~{
