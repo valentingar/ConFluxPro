@@ -34,8 +34,8 @@ remotes::install_github("valentingar/ConFluxPro")
 
 ## Contact
 
-This package is being developed by Valentin Gartiser: valentin.gartiser
-(at) forst.bwl.de
+This package is being developed by Valentin Gartiser: code \[at\]
+valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I
 will be glad to help out where I can.
