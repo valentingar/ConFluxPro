@@ -21,7 +21,8 @@ Imports:
     DBI,
     future,
     furrr,
-    progressr
+    progressr,
+    ggplot2
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
@@ -31,7 +32,6 @@ Depends:
 Suggests: 
     rmarkdown,
     testthat (>= 3.0.0),
-    ggplot2,
     knitr,
     DiagrammeR
 VignetteBuilder: 
