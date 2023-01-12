@@ -162,6 +162,44 @@ plot_profile.cfp_soilphys <- function(x) {
 
 
 
+#' @exportS3Method
+plot_profile.cfp_layers_map <- function(x) {
+
+  x %>%
+    dplyr::mutate(depth = (upper+lower)/2) %>%
+    dplyr::mutate(range = diff(range(c(lowlim, highlim)))) %>%
+    dplyr::mutate(yrange = diff(range(c(upper, lower)))) %>%
+    dplyr::mutate(layer_couple = ifelse(lower == min(lower), NA, layer_couple)) %>%
+    ggplot2::ggplot(aes(ymax = upper, ymin = lower, y = depth))+
+    ggplot2::geom_rect(aes(xmin = lowlim,
+                           xmax = highlim,
+                           fill = "production"),
+                       alpha = 0.5)+
+    ggplot2::geom_hline(aes(yintercept = upper), col = "black")+
+    ggplot2::geom_hline(aes(yintercept = lower), col = "black")+
+    ggplot2::geom_text(aes(label = layer,
+                           x = 0.2*range), col = "white")+
+    ggplot2::geom_text(aes(label = pmap,
+                           x = 0.4*range), col = "white")+
+    ggplot2::geom_text(aes(label = layer_couple,
+                           x = 0.8*range,
+                           y = lower),
+                       col = "white")+
+    ggplot2::geom_text(aes(label = "layer",
+                           x = 0.2*range[1],
+                           y = 1.1*yrange[1] + min(lower)),
+                       col = "black")+
+    ggplot2::geom_text(aes(label = "pmap",
+                           x = 0.4*range[1],
+                           y = 1.1*yrange[1] + min(lower)),
+                       col = "black")+
+    ggplot2::geom_text(aes(label = "layer_couple",
+                           x = 0.8*range[1],
+                           y = 1.1*yrange[1] + min(lower)),
+                       col = "black")+
+    ggplot2::facet_wrap(cfp_id_cols(x))+
+    scale_cfp_fill
+}
 
 
 ### HELPERS ### ------------------------
