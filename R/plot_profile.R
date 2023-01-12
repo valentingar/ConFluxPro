@@ -104,7 +104,7 @@ plot_profile.cfp_pfres <- function(x) {
       sec.axis = ggplot2::sec_axis(
         trans = ~ (. - prod_start) * prod_max / prod_scale,
         name = expression("production [µmol m" ^
-                            "-2" ~ "s" ^ "-1" ~ "]")
+                            "-3" ~ "s" ^ "-1" ~ "]")
       )
     ) +
     scale_cfp_color +
@@ -112,12 +112,99 @@ plot_profile.cfp_pfres <- function(x) {
 
 
   if (prod_state == 2) {
-    p +  ggplot2::geom_vline(xintercept = 0.5, alpha = 0.5)
+    p <- p +  ggplot2::geom_vline(xintercept = 0.5, alpha = 0.5)
   }
 
   p +
     ggplot2::facet_wrap(cfp_id_cols(x))
 }
+
+
+#' @exportS3Method
+plot_profile.cfp_fgres <- function(x) {
+  check_for_too_many_profiles(x)
+
+  profiles <- x$profiles
+
+  soilphys <- x$soilphys %>%
+    dplyr::left_join(profiles)
+  gasdata <- x$gasdata %>%
+    dplyr::left_join(profiles)
+  FLUX <- x$FLUX %>%
+    dplyr::left_join(profiles)
+
+  flux_range <- range(FLUX$flux)
+  if (prod(flux_range) < 0)
+    flux_state <- 2
+  else if (flux_range[1] < 0)
+    flux_state <- 3
+  else
+    flux_state <- 1
+
+  flux_start <- c(0, 0.5, 1)[flux_state]
+  flux_scale <- c(1, 0.5, 1)[flux_state]
+
+  flux_max <- max(abs(flux_range))
+
+  x_max <- max(gasdata$x_ppm)
+
+
+  p <-
+    soilphys %>%
+    ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +
+    stat_variable_bar(aes(x = 1, fill = "soil")) +
+    stat_variable_bar(aes(x = TPS, fill = "AFPS")) +
+    stat_variable_bar(aes(x = SWC, fill = "SWC")) +
+    stat_variable_bar(aes(x = SWC, fill = "SWC")) +
+    ggplot2::geom_rect(
+      data = FLUX,
+      aes(
+        xmin = flux_start,
+        xmax = flux_start + ((flux) / flux_max) * flux_scale,
+        ymax = upper,
+        ymin = lower,
+        fill = "flux"
+      ),
+      alpha = 0.5
+    ) +
+    ggplot2::geom_point(
+      data = gasdata,
+      aes(
+        y = depth,
+        x = x_ppm / x_max,
+        color = "measured"
+      ),
+      inherit.aes = FALSE
+    ) +
+    ggplot2::geom_text(data = FLUX,
+              aes( x = 0.8,
+                   y = (upper + lower) / 2,
+                   label = signif(dcdz_ppm, 3))) +
+    ggplot2::geom_text(aes(x = 0.8,
+                  y = 1.1*diff(range(c(upper, lower))) + min(lower),
+                  label = "dcdz_ppm")) +
+    ggplot2::scale_x_continuous(
+      name = "concentration [ppm]",
+      breaks = clean_breaks_zeroone(x_max, c(0, 0.25, 0.5, 0.75, 1)),
+      labels = function(x)
+        x * x_max,
+      sec.axis = ggplot2::sec_axis(
+        trans = ~ (. - flux_start) * flux_max / flux_scale,
+        name = expression("flux [µmol m" ^
+                            "-2" ~ "s" ^ "-1" ~ "]")
+      )
+    ) +
+    scale_cfp_color +
+    scale_cfp_fill
+
+  if (flux_state == 2) {
+    p <- p +  ggplot2::geom_vline(xintercept = 0.5, alpha = 0.5)
+  }
+
+  p +
+    ggplot2::facet_wrap(cfp_id_cols(x))
+}
+
 
 #' @exportS3Method
 plot_profile.cfp_soilphys <- function(x) {
@@ -244,8 +331,8 @@ scale_cfp_color <-
 scale_cfp_fill <-
   ggplot2::scale_fill_manual(
     name = "",
-    breaks = c("soil", "AFPS", "SWC", "production"),
-    values = c("darkorange", "white", "blue", "black")
+    breaks = c("soil", "AFPS", "SWC", "production", "flux"),
+    values = c("darkorange", "white", "blue", "black", "black")
   )
 
 check_for_too_many_profiles <- function(x){
