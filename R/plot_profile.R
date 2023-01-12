@@ -17,6 +17,8 @@ plot_profile <- function(x) {
 
 #' @exportS3Method
 plot_profile.cfp_pfres <- function(x) {
+  check_for_too_many_profiles(x)
+
   profiles <- x$profiles
 
   soilphys <- x$soilphys %>%
@@ -119,6 +121,8 @@ plot_profile.cfp_pfres <- function(x) {
 
 #' @exportS3Method
 plot_profile.cfp_soilphys <- function(x) {
+  check_for_too_many_profiles(x)
+
   t_max <- max(x$t)
   t_min <- min(x$t)
   DS_max <- max(x$DS)
@@ -168,6 +172,7 @@ plot_profile.cfp_soilphys <- function(x) {
 
 #' @exportS3Method
 plot_profile.cfp_layers_map <- function(x) {
+  check_for_too_many_profiles(x)
 
   x %>%
     dplyr::mutate(depth = (upper+lower)/2) %>%
@@ -226,3 +231,11 @@ scale_cfp_fill <-
     breaks = c("soil", "AFPS", "SWC", "production"),
     values = c("darkorange", "white", "blue", "black")
   )
+
+check_for_too_many_profiles <- function(x){
+  number_of_profiles <- n_profiles(x)
+  if (number_of_profiles > 20){
+    warning("Plotting ", number_of_profiles, " plots may take a while")
+  }
+}
+
