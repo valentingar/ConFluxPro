@@ -211,6 +211,22 @@ plot_profile.cfp_layers_map <- function(x) {
 }
 
 
+#' @exportS3Method
+plot_profile.cfp_gasdata <- function(x) {
+  check_for_too_many_profiles(x)
+
+  x %>%
+    ggplot2::ggplot(aes(y = depth)) +
+    ggplot2::geom_point(aes(x = x_ppm, color = "measured")) +
+    ggplot2::stat_summary(aes(x = x_ppm, color = "measured"),
+                          geom = "line",
+                          orientation = "y",
+                          fun = "mean") +
+    scale_cfp_color+
+    ggplot2::facet_wrap(cfp_id_cols(x))
+}
+
+
 ### HELPERS ### ------------------------
 
 clean_breaks_zeroone <- function(range, breaks) {
