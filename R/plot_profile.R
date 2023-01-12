@@ -99,7 +99,7 @@ plot_profile.cfp_pfres <- function(x) {
       breaks = clean_breaks_zeroone(x_max, c(0, 0.25, 0.5, 0.75, 1)),
       labels = function(x)
         x * x_max,
-      sec.axis = sec_axis(
+      sec.axis = ggplot2::sec_axis(
         trans = ~ (. - prod_start) * prod_max / prod_scale,
         name = expression("production [µmol m" ^
                             "-2" ~ "s" ^ "-1" ~ "]")
@@ -112,6 +112,9 @@ plot_profile.cfp_pfres <- function(x) {
   if (prod_state == 2) {
     p +  ggplot2::geom_vline(xintercept = 0.5, alpha = 0.5)
   }
+
+  p +
+    ggplot2::facet_wrap(cfp_id_cols(x))
 }
 
 #' @exportS3Method
@@ -157,7 +160,8 @@ plot_profile.cfp_soilphys <- function(x) {
       )
     ) +
     scale_cfp_color +
-    scale_cfp_fill
+    scale_cfp_fill +
+    ggplot2::facet_wrap(cfp_id_cols(x))
 }
 
 
