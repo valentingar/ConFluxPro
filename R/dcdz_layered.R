@@ -58,6 +58,7 @@ if ((mode %in% valid_modes)==F){
 upper <- layers_map$upper
 lower <- layers_map$lower
 layers <- layers_map$layer
+gd_id <- df$gd_id[1]
 
 
 depths <- rev(sort(unique(c(upper, lower)))) #depths including boundaries from top to bottom
@@ -206,14 +207,14 @@ if (return_na){
 
 }
 if (create_return){
-  df_ret <- data.frame(layers_map[,!names(layers_map) =="Plot"],
+  df_ret <- data.frame(layers_map,
                        dcdz_ppm = dcdz,
                        dcdz_sd = dcdz_sd,
                        dc_ppm = dc,
                        r2 = r2)
 }
 
-return (df_ret)
+cbind(df_ret, gd_id = gd_id)
 }
 
 
