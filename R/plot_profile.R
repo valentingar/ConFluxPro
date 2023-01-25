@@ -56,7 +56,6 @@ plot_profile.cfp_pfres <- function(x) {
     stat_variable_bar(aes(x = 1, fill = "soil")) +
     stat_variable_bar(aes(x = TPS, fill = "AFPS")) +
     stat_variable_bar(aes(x = SWC, fill = "SWC")) +
-    stat_variable_bar(aes(x = SWC, fill = "SWC")) +
     ggplot2::geom_rect(
       data = PROFLUX,
       aes(
@@ -98,7 +97,7 @@ plot_profile.cfp_pfres <- function(x) {
     ) +
     ggplot2::scale_x_continuous(
       name = "concentration [ppm]",
-      breaks = clean_breaks_zeroone(x_max, c(0, 0.25, 0.5, 0.75, 1)),
+      breaks = scales::pretty_breaks(5)(c(0,x_max)) / x_max,
       labels = function(x)
         x * x_max,
       sec.axis = ggplot2::sec_axis(
@@ -185,7 +184,7 @@ plot_profile.cfp_fgres <- function(x) {
                   label = "dcdz_ppm")) +
     ggplot2::scale_x_continuous(
       name = "concentration [ppm]",
-      breaks = clean_breaks_zeroone(x_max, c(0, 0.25, 0.5, 0.75, 1)),
+      breaks = scales::pretty_breaks(5)(c(0,x_max)) / x_max,
       labels = function(x)
         x * x_max,
       sec.axis = ggplot2::sec_axis(
@@ -238,12 +237,9 @@ plot_profile.cfp_soilphys <- function(x) {
     )) +
     ggplot2::scale_x_continuous(
       name = "temperature [°C]",
-      breaks = clean_breaks_zeroone(
-        range = (t_max - t_min),
-        breaks = c(0, 0.25, 0.5, 0.75, 1)
-      ),
+      breaks = (scales::pretty_breaks(5)(c(t_min, t_max)) - t_min) / (t_max - t_min),
       labels = function(x)
-        x * (t_max - t_min),
+        (x * (t_max - t_min)) + t_min,
       sec.axis = ggplot2::sec_axis(
         trans = ~ . * DS_max,
         name = expression("DS [m" ^ "2" ~
@@ -315,13 +311,6 @@ plot_profile.cfp_gasdata <- function(x) {
 
 
 ### HELPERS ### ------------------------
-
-clean_breaks_zeroone <- function(range, breaks) {
-  round(range, (-nchar(round((range) / (length(breaks) - 1)
-  )))) / range * breaks
-}
-
-
 scale_cfp_color <-
   ggplot2::scale_color_manual(
     name = "",
