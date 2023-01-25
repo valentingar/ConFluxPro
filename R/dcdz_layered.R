@@ -46,8 +46,7 @@
 
 dcdz_layered <- function(df,
                          layers_map,
-                         mode,
-                         depth_steps
+                         mode
                          ){
 valid_modes = c("LS","LL","EF")
 
@@ -58,6 +57,7 @@ if ((mode %in% valid_modes)==F){
 upper <- layers_map$upper
 lower <- layers_map$lower
 layers <- layers_map$layer
+depth_steps <- upper[-1]
 gd_id <- df$gd_id[1]
 
 

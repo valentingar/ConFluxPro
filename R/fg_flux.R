@@ -64,13 +64,14 @@ fg_flux.cfp_fgmod <- function(x, ...){
   y <- dplyr::bind_rows(y)
 
   y <- y %>%
-    dplyr::left_join(x$profiles) %>%
+    dplyr::left_join(x$profiles, by = names(y)[names(y) %in% names(x$profiles)]) %>%
     dplyr::select(prof_id,
            upper,
            lower,
            depth,
            layer,
            gas,
+           mode,
            flux,
            flux_sd,
            dcdz_ppm,
@@ -110,11 +111,6 @@ calculate_flux <- function(x, p){
   layers_map <- layers_map %>%
     dplyr::arrange(dplyr::desc(upper))
 
-  depth_steps <- layers_map %>% #depths between the layers from top to bottom
-    dplyr::slice(n = -1) %>%
-    dplyr::mutate(depth_steps = upper) %>%
-    dplyr::select(dplyr::any_of(c(id_cols,"depth_steps")))
-
   #turns Inf-values to NA
   gasdata$x_ppm[is.infinite(gasdata$x_ppm)==T] <- NA
 
@@ -141,39 +137,18 @@ calculate_flux <- function(x, p){
                  p(message = "dcdz calculation ...")
                  dcdz_layered(x, ...)
                },
-               depth_steps = depth_steps,
                mode = mode,
                layers_map = layers_map,
                p = p
              ) %>%
              dplyr::bind_rows() %>%
-             dplyr::mutate(mode = !!mode)
+             dplyr::mutate(mode = !!mode,
+                           gas = !!gas)
 
          },
          SIMPLIFY = FALSE) %>%
     dplyr::bind_rows() %>%
     dplyr::left_join(x$profiles[, c("gd_id", "prof_id")], by = "gd_id")
-
-#
-#   FLUX <-
-#     gasdata %>%
-#     dplyr::full_join(data.frame(mode = modes), by = character()) %>%
-#     dplyr::ungroup() %>%
-#     dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols, "mode")}))) %>%
-#     dplyr::group_modify(~{
-#
-#       #toggle progress
-#     p(message = "dcdz calculation")
-#
-#       FLUX <-
-#         dcdz_layered(.x,
-#                      .y %>% dplyr::left_join(layers_map, by = id_lmap),
-#                    .y$mode[1],
-#                      .y %>% dplyr::left_join(depth_steps, by = id_lmap) %>%
-#                        dplyr::pull(depth_steps))
-#       FLUX <- FLUX %>%
-#         dplyr::select(!dplyr::any_of(c("gas","mode",id_cols)))
-#     })
 
   id_cols <-id_cols[!id_cols == "mode"]
 
