@@ -192,20 +192,26 @@ calculate_flux <- function(gasdata,
   id_cols <- c(id_cols, "mode")
   id_lmap <- c(id_cols[id_cols %in% names(layers_map)],"j_help")
 
-  FLUX <- lapply(modes,function(mode){
+  p <- progressr::progressor(steps = n_gradients)
+
+  FLUX <- lapply(modes, function(mode){
     return(gasdata %>% dplyr::mutate(mode = !!mode))
   }) %>%
     dplyr::bind_rows() %>%
-    dplyr::ungroup()%>%
+    dplyr::ungroup() %>%
     dplyr::mutate(j_help = 1) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"j_help")}))) %>%
     dplyr::mutate(n_gr = dplyr::cur_group_id(),
                   n_tot=n_gradients) %>%
     dplyr::group_modify(~{
+
+      #toggle progress
+    p(message = "dcdz calculation")
+
       FLUX <-
         dcdz_layered(.x,
                      .y %>% dplyr::left_join(layers_map, by = id_lmap),
-                     .y$mode[1],
+                   .y$mode[1],
                      .y %>% dplyr::left_join(depth_steps, by = id_lmap) %>%
                        dplyr::pull(depth_steps))
       FLUX <- FLUX %>%
