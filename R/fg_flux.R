@@ -173,7 +173,7 @@ calculate_flux <- function(x, p){
 
   soilphys_layers <- soilphys_layers %>%
     dplyr::left_join(x$profiles,
-                     by = names(soilphys_layered)[names(soilphys_layered) %in% names(x$profiles)]) %>%
+                     by = names(soilphys_layers)[names(soilphys_layers) %in% names(x$profiles)]) %>%
     dplyr::ungroup() %>%
     dplyr::select(tidyr::any_of(c("prof_id", "upper", "lower" , param)))
 
