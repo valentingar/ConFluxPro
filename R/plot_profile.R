@@ -28,7 +28,8 @@ plot_profile.cfp_pfres <- function(x) {
   PROFLUX <- x$PROFLUX %>%
     dplyr::left_join(profiles)
 
-  prod_range <- range(PROFLUX$prod)
+  # round to account for machine precision errors (0 =/= -10^18)
+  prod_range <- round(range(PROFLUX$prod), digits = 13)
   if (prod(prod_range) < 0)
     prod_state <- 2
   else if (prod_range[1] < 0)
