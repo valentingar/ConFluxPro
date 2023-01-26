@@ -34,6 +34,7 @@ fg_flux <- function(x, ...){
 #' @exportS3Method
 fg_flux.cfp_dat <- function(x, ...){
 
+  x <- as_cfp_dat(x)
   x <- cfp_fgmod(x,...)
   .Class <- "cfp_fgmod"
   NextMethod()
@@ -48,24 +49,30 @@ fg_flux.cfp_fgres <- function(x, ...){
 #' @exportS3Method
 fg_flux.cfp_fgmod <- function(x, ...){
 
-  y <-
-  calculate_flux(x$gasdata,
-                 x$soilphys,
-                 x$layers_map,
-                 cfp_gases(x),
-                 cfp_modes(x),
-                 cfp_param(x),
-                 cfp_funs(x),
-                 cfp_id_cols(x))
+  # first separate groups
+  x_split <- split_by_group(x)
+
+  p <- progressr::progressor(steps = nrow(x$profiles) * length(cfp_modes(x)))
+
+
+  y <- furrr::future_map(x_split,
+                         calculate_flux,
+                         p = p
+  )
+
+
+  #combine FLUX result
+  y <- dplyr::bind_rows(y)
+
   y <- y %>%
-    dplyr::left_join(x$profiles) %>%
+    dplyr::left_join(x$profiles, by = names(y)[names(y) %in% names(x$profiles)]) %>%
     dplyr::select(prof_id,
            upper,
            lower,
            depth,
            layer,
-           mode,
            gas,
+           mode,
            flux,
            flux_sd,
            dcdz_ppm,
@@ -75,7 +82,6 @@ fg_flux.cfp_fgmod <- function(x, ...){
            DS,
            r2)
 
-
   cfp_fgres(x,y)
 }
 
@@ -83,14 +89,17 @@ fg_flux.cfp_fgmod <- function(x, ...){
 
 
 #' @rdname fg_flux
-calculate_flux <- function(gasdata,
-                           soilphys,
-                           layers_map,
-                           gases,
-                           modes,
-                           param,
-                           funs,
-                           id_cols = NULL){
+calculate_flux <- function(x, p){
+
+  gasdata <- x$gasdata
+  soilphys <- x$soilphys
+  layers_map <- x$layers_map
+  gases <- cfp_gases(x)
+  modes <- cfp_modes(x)
+  param <- cfp_param(x)
+  funs <- cfp_funs(x)
+  id_cols <- cfp_id_cols(x)
+
   if(!"DS" %in% param){
     stop("cannot calculate flux: 'DS' is missing in param!")
   }
@@ -99,118 +108,47 @@ calculate_flux <- function(gasdata,
     stop("cannot calculate flux: 'c_air' is missing in param!")
   }
 
-  if(!length(which(id_cols %in% names(gasdata)))== length(id_cols)){
-    warning("not all id_cols are present in gasdata.")
-  }
-
-  if(!length(which(id_cols %in% names(soilphys)))== length(id_cols)){
-    warning("not all id_cols are present in soilphys")
-  }
-
-  if(!"gas" %in% id_cols){
-    id_cols <- c(id_cols,"gas")
-  }
-
-  # finding combinations of id_cols that are not present
-  # in both layers_map and gasdata
-  if (any(id_cols %in% names(layers_map)) == T ){
-    id_cols_lmap <- id_cols[id_cols %in% names(layers_map)]
-
-    id_nomatch <-
-      layers_map %>%
-      dplyr::select(dplyr::any_of(id_cols)) %>%
-      dplyr::distinct() %>%
-      dplyr::anti_join(gasdata %>%
-                         dplyr::select(dplyr::any_of(id_cols)) %>%
-                         dplyr::distinct(),
-                       by = id_cols_lmap)
-
-
-    # warning for skipped id_cols and subsetting of gasdata
-    if(nrow(id_nomatch) > 0){
-      message(paste("The following values of id_cols are not represented
-                in layers_map or gasdata, skipping: "))
-      cat(id_nomatch)
-
-      merger <- names(gasdata)[names(gasdata) %in% names(id_nomatch)]
-
-      gasdata <- gasdata %>%
-        dplyr::anti_join(id_nomatch, by = merger)
-    }}
-
-  #subset gasdata to relevant gases
-  gasdata <- gasdata %>%
-    dplyr::filter(gas %in% gases)
-
-  #removing points without data
-  gasdata <- gasdata %>%
-    dplyr::filter(!is.na(x_ppm),
-                  !is.na(depth))
-
-  if(nrow(gasdata) < 2){
-    stop("gasdata is empty for given gases - check your input and data!")
-  }
-
   #some prep
   layers_map <- layers_map %>%
     dplyr::arrange(dplyr::desc(upper))
-
-  depth_steps <- layers_map %>% #depths between the layers from top to bottom
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::slice(n = -1) %>%
-    dplyr::mutate(depth_steps = upper) %>%
-    dplyr::select(dplyr::any_of(c(id_cols,"depth_steps")))
-
-
 
   #turns Inf-values to NA
   gasdata$x_ppm[is.infinite(gasdata$x_ppm)==T] <- NA
 
   #removes all NAs from gasdata
   gasdata <- gasdata %>%
-    dplyr::filter(is.na(x_ppm)==F,is.na(depth) == F)
-
-
-  #if there is only one group in layers_map, this ensures correct joins
-  # when calculating the fluxes
-  layers_map$j_help <- 1
-  depth_steps$j_help <- 1
-
-
-  #for progress tracking
-  n_gradients <- gasdata %>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of(id_cols))  %>%
-    dplyr::distinct() %>%
-    nrow()
-  n_soilphys <- soilphys%>%
-    dplyr::ungroup() %>%
-    dplyr::select(dplyr::any_of(id_cols))  %>%
-    dplyr::distinct() %>%
-    nrow()
+    dplyr::filter(is.na(x_ppm) == F, is.na(depth) == F)
 
   id_cols <- c(id_cols, "mode")
-  id_lmap <- c(id_cols[id_cols %in% names(layers_map)],"j_help")
+  id_lmap <- id_cols[id_cols %in% names(layers_map)]
 
-  FLUX <- lapply(modes,function(mode){
-    return(gasdata %>% dplyr::mutate(mode = !!mode))
-  }) %>%
+  FLUX <-
+  furrr::future_map2(.x = gases,
+         .y = modes,
+         .f = function(gas, mode){
+           gasdata <- gasdata[gasdata$gas == gas, ]
+
+           gasdata_split <-
+             split(gasdata, gasdata[, names(gasdata) %in% id_cols])
+
+           FLUX <-
+             furrr::future_map(
+               gasdata_split,
+               .f = function(x, p, ...){
+                 p(message = "dcdz calculation ...")
+                 dcdz_layered(x, ...)
+               },
+               mode = mode,
+               layers_map = layers_map,
+               p = p
+             ) %>%
+             dplyr::bind_rows() %>%
+             dplyr::mutate(mode = !!mode,
+                           gas = !!gas)
+
+         }) %>%
     dplyr::bind_rows() %>%
-    dplyr::ungroup()%>%
-    dplyr::mutate(j_help = 1) %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"j_help")}))) %>%
-    dplyr::mutate(n_gr = dplyr::cur_group_id(),
-                  n_tot=n_gradients) %>%
-    dplyr::group_modify(~{
-      FLUX <-
-        dcdz_layered(.x,
-                     .y %>% dplyr::left_join(layers_map, by = id_lmap),
-                     .y$mode[1],
-                     .y %>% dplyr::left_join(depth_steps, by = id_lmap) %>%
-                       dplyr::pull(depth_steps))
-      FLUX <- FLUX %>%
-        dplyr::select(!dplyr::any_of(c("j_help","gas","mode",id_cols)))
-    })
+    dplyr::left_join(x$profiles[, c("gd_id", "prof_id")], by = "gd_id")
 
   id_cols <-id_cols[!id_cols == "mode"]
 
@@ -233,13 +171,16 @@ calculate_flux <- function(gasdata,
                                      funs,
                                      id_cols)
 
-  merger <- names(FLUX)[names(FLUX) %in% names(soilphys_layers)]
+  soilphys_layers <- soilphys_layers %>%
+    dplyr::left_join(x$profiles,
+                     by = names(soilphys_layers)[names(soilphys_layers) %in% names(x$profiles)]) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(tidyr::any_of(c("prof_id", "upper", "lower" , param)))
 
-  FLUX <- FLUX %>%
-    dplyr::left_join(soilphys_layers, by = merger) %>%
+    FLUX <- FLUX %>%
+    dplyr::left_join(soilphys_layers, by = c("prof_id", "upper", "lower")) %>%
     dplyr::mutate(flux = -DS*c_air*dcdz_ppm) %>%
     dplyr::mutate(depth = (upper+lower)/2) %>%
     dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm))) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(!j_help)
+    dplyr::ungroup()
 }
