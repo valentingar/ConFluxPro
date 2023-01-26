@@ -34,6 +34,7 @@ fg_flux <- function(x, ...){
 #' @exportS3Method
 fg_flux.cfp_dat <- function(x, ...){
 
+  x <- as_cfp_dat(x)
   x <- cfp_fgmod(x,...)
   .Class <- "cfp_fgmod"
   NextMethod()
