@@ -1,30 +1,25 @@
 test_that("dcdz_layered works", {
 
   df <- data.frame(depth = c(10,0,-100),
-                   x_ppm = c(400,800,5000))
+                   x_ppm = c(400,800,5000),
+                   gd_id = 1)
   lmap <- data.frame(upper = c(10,0),
                      lower = c(0,-100),
                      layer = c("HU","MIN"))
   LL <-
   dcdz_layered(df,
                lmap,
-               mode = "LL",
-               depth_steps = c(0) #interface depths
-  )
+               mode = "LL")
 
   LS <-
     dcdz_layered(df,
                  lmap,
-                 mode = "LS",
-                 depth_steps = c(0) #interface depths
-    )
+                 mode = "LS")
 
   EF <-
     dcdz_layered(df,
                  lmap,
-                 mode = "EF",
-                 depth_steps = c(0) #interface depths
-    )
+                 mode = "EF")
 
   expect_equal(nrow(EF),2)
   expect_equal(nrow(LS),2)
