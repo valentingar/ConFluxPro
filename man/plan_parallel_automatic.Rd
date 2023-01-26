@@ -4,7 +4,7 @@
 \alias{plan_parallel_automatic}
 \title{Automatically plan for parallel computing in cfp.}
 \usage{
-plan_parallel_automatic(x, number_of_workers = future::availableCores())
+plan_parallel_automatic(x, number_of_workers)
 }
 \arguments{
 \item{x}{A cfp_dat object.}

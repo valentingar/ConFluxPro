@@ -6,7 +6,12 @@
 #'
 #' @export
 
-plan_parallel_automatic <-
+plan_parallel_automatic <- function(x, number_of_workers){
+  UseMethod("plan_parallel_automatic")
+}
+
+#' @exportS3Method
+plan_parallel_automatic.cfp_dat <-
   function(x,
            number_of_workers = future::availableCores()){
 
