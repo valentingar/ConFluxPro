@@ -163,7 +163,7 @@ pro_flux_group <-  function(x, p){
     }
 
     x <- split_by_prof(x)
-    df_ret <-purrr::map(x,
+    df_ret <-furrr::future_map(x,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,

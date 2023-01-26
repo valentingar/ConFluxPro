@@ -2,7 +2,7 @@
 #'
 #' Get the number of profiles in cfp objects.
 #'
-#' @param x
+#' @inheritParams cfp_pfmod
 #'
 #' @export
 n_profiles <- function(x) {

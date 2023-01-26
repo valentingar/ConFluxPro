@@ -91,7 +91,7 @@ dcdz <- dc / -diff(depths) *100 #from cm^-1 to m^-1
 
 
 # error estimate in ppm/m:
-dcdz_sd <- -rev(as.numeric(summary(mod)$coefficients[,2][-1]+c(0,lag(summary(mod)$coefficients[,2][-1],1)[-1]))) /diff(depths) *100
+dcdz_sd <- -rev(as.numeric(summary(mod)$coefficients[,2][-1]+c(0, dplyr::lag(summary(mod)$coefficients[,2][-1],1)[-1]))) /diff(depths) *100
 if (!length(dcdz_sd)==length(layers)){
   dcdz_sd <- rep(NA,length(layers))
 }
