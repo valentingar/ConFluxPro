@@ -2,7 +2,7 @@
 #'
 #' Get the number of groups in cfp objects.
 #'
-#' @param x
+#' @inheritParams cfp_pfmod
 #'
 #' @export
 n_groups <- function(x) {

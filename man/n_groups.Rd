@@ -7,7 +7,7 @@
 n_groups(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 }
 \description{
 Get the number of groups in cfp objects.
