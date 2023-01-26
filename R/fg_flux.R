@@ -122,18 +122,18 @@ calculate_flux <- function(x, p){
   id_lmap <- id_cols[id_cols %in% names(layers_map)]
 
   FLUX <-
-  mapply(gas = gases,
-         mode = modes,
-         FUN = function(gas, mode){
+  furrr::future_map2(.x = gases,
+         .y = modes,
+         .f = function(gas, mode){
            gasdata <- gasdata[gasdata$gas == gas, ]
 
            gasdata_split <-
              split(gasdata, gasdata[, names(gasdata) %in% id_cols])
 
            FLUX <-
-             lapply(
+             furrr::future_map(
                gasdata_split,
-               FUN = function(x, p, ...){
+               .f = function(x, p, ...){
                  p(message = "dcdz calculation ...")
                  dcdz_layered(x, ...)
                },
@@ -145,8 +145,7 @@ calculate_flux <- function(x, p){
              dplyr::mutate(mode = !!mode,
                            gas = !!gas)
 
-         },
-         SIMPLIFY = FALSE) %>%
+         }) %>%
     dplyr::bind_rows() %>%
     dplyr::left_join(x$profiles[, c("gd_id", "prof_id")], by = "gd_id")
 
