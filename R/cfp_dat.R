@@ -93,6 +93,7 @@ cfp_dat <- function(gasdata,
     select_id_cols(c(id_cols,"gd_id")) %>%
     dplyr::left_join(soilphys %>% select_id_cols(c(id_cols,"sp_id")), by = merger_1) %>%
     dplyr::left_join(layers_map %>% select_id_cols(c(id_cols,"group_id")), by = merger_2) %>%
+    dplyr::filter((is.na(sp_id) + is.na(gd_id) + is.na(group_id)) == 0) %>% # only complete profiles
     dplyr::mutate(prof_id = dplyr::row_number()) %>%
     dplyr::distinct() %>%
     as.data.frame()
