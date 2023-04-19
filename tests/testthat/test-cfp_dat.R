@@ -1,5 +1,7 @@
 test_that("create cfp_dat object",{
 
+  library(dplyr)
+
   lmap <- data.frame(site = rep(c("site_a","site_b"),
                               each = 2),
                    upper = rep(c(10,0),
@@ -56,6 +58,7 @@ test_that("create cfp_dat object",{
 
 test_that("split soilphys",{
 
+  library(dplyr)
 
   lmap <- data.frame(site = rep(c("site_a","site_b"),
                                 each = 2),
@@ -111,6 +114,8 @@ test_that("split soilphys",{
 
 test_that("missing combinations work",{
 
+  library(dplyr)
+
   lmap <- data.frame(site = rep(c("site_a","site_b"),
                                 each = 2),
                      upper = rep(c(10,0),
@@ -156,6 +161,8 @@ test_that("missing combinations work",{
 
 
 test_that("incomplete profiles are checked",{
+
+  library(dplyr)
 
   lmap <- data.frame(site = rep(c("site_a","site_b"),
                                 each = 2),
