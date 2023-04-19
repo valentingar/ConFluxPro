@@ -231,7 +231,7 @@ prof_optim <- function(x,
   known_flux <- NA
 
   #optimisation with error handling returning NA
-  prod_optimised <- tryCatch({prod_optimised<-stats::optim(par=prod_start,
+  prod_optimised <- tryCatch({stats::optim(par=prod_start,
                                                            fn = prod_optim,
                                                            lower = lowlim_tmp,
                                                            upper = highlim_tmp,
@@ -253,7 +253,7 @@ prof_optim <- function(x,
                                                            wmap = wmap,
                                                            evenness_factor = evenness_factor
   )},
-  error = NA)
+  error = function(cond) NA)
 
 
   if (is.na(prod_optimised[1])){
@@ -264,13 +264,13 @@ prof_optim <- function(x,
     RMSE <-prod_optimised$value
   }
 
-  if(zero_flux == T){
+  if(zero_flux == TRUE){
     prods <- pars
   } else {
     F0 <- pars[1]
     prods <- pars[-1]
   }
-  if(DSD0_optim == T){
+  if(DSD0_optim == TRUE){
     DSD0_fit <- prods[-c(1:length(prods)/2)]
     prods <- prods[1:(length(prods)/2)]
   }
