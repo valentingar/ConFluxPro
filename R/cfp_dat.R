@@ -35,6 +35,7 @@
 #' @importFrom dplyr filter
 #' @export
 # helper
+
 cfp_dat <- function(gasdata,
                     soilphys,
                     layers_map){
@@ -119,16 +120,25 @@ cfp_dat <- function(gasdata,
 
   profiles <-
     profiles %>%
-    filter(!prof_id %in% profiles_insufficient_gasdata) %>%
+    dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
     data.frame()
 
-
   soilphys <- soilphys %>%
-    filter(sp_id %in% profiles$sp_id) %>%
+    dplyr::filter(sp_id %in% profiles$sp_id) %>%
     new_cfp_soilphys(id_cols = cfp_id_cols(soilphys))
 
   gasdata <- gasdata %>%
     dplyr::filter(gd_id %in% profiles$gd_id) %>%
+    dplyr::left_join(
+      layers_map %>%
+        dplyr::group_by(dplyr::across(dplyr::any_of(cfp_id_cols(layers_map)))) %>%
+        dplyr::summarise(upper = max(upper),
+                         lower = min(lower)),
+        by = cfp_id_cols(layers_map)
+        ) %>%
+    dplyr::filter(depth <= upper,
+                  depth >= lower) %>%
+    dplyr::select(!c("upper", "lower")) %>%
     new_cfp_gasdata(id_cols = cfp_id_cols(gasdata))
 
 
