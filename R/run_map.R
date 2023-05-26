@@ -35,6 +35,7 @@
 
 
 # function to create the necessary run_map
+
 run_map <- function(x,
                     params = list(),
                     type = NULL,
@@ -136,7 +137,7 @@ run_map <- function(x,
     dplyr::mutate(param_id = row_number())
 
 
-  run_map <- new_cfp_run_map(x = run_map,
+  run_map <- new_cfp_run_map(x = data.frame(run_map),
                             id_cols = id_cols_runmap,
                             params = params,
                             method = method,
@@ -144,7 +145,7 @@ run_map <- function(x,
                             n_runs = n_runs,
                             layers_different = layers_different,
                             runmap_type = "base",
-                            params_df = params_df)
+                            params_df = data.frame(params_df))
 }
 
 
@@ -157,51 +158,56 @@ run_map_permutation <- function(x,
                                 type_df,
                                 second_depth){
 
-      run_map <- expand.grid(params) %>%
-        dplyr::mutate(run_id = dplyr::row_number()) %>%
-        tidyr::pivot_longer(cols = !"run_id",
+   params_notop <- params[!names(params) == "topheight"]
+
+      run_map <- expand.grid(params_notop) %>%
+        dplyr::mutate(perm_id = dplyr::row_number()) %>%
+        tidyr::pivot_longer(cols = !"perm_id",
                             names_to = "param",
-                            values_to = "value") %>%
-        dplyr::left_join(type_df, by = "param")
+                            values_to = "value")
 
       if (layers_different == TRUE) {
+        n_perms <- max(run_map$perm_id)
 
-      params_notop <- params[!names(params) == "topheight"]
+        if (layers_from == "layers_map"){
+          layers_for_run_map <-
+            x$layers_map %>%
+            dplyr::select(pmap,
+                          dplyr::any_of({cfp_id_cols(x)}))
 
-      run_map_raw <- expand.grid(params_notop) %>%
-        dplyr::mutate(perm_id = dplyr::row_number())
-      n_perms <- nrow(run_map_raw)
-
-
-      if (layers_from == "layers_map"){
+        } else if (layers_from == "soilphys"){
+          layers_for_run_map <-
+            x$soilphys %>%
+            dplyr::select(dplyr::any_of(c(cfp_id_cols(x$layers_map),
+                                          "upper",
+                                          "lower"))) %>%
+            dplyr::distinct()
+        }
 
         run_map <-
-          x$layers_map %>%
-          dplyr::select(pmap,
-                        dplyr::any_of({cfp_id_cols(x)})) %>%
-          dplyr::group_by(dplyr::across(dplyr::any_of({cfp_id_cols(x)}))) %>%
+          layers_for_run_map %>%
+          dplyr::group_by(dplyr::across(dplyr::any_of(cfp_id_cols(x)))) %>%
+          dplyr::mutate(layer_id = row_number()) %>%
           dplyr::group_modify(~{
-            n_layers <- nrow(.x)
-            expand.grid(lapply(1:n_layers, function(x) 1:n_perms)) %>%
-              setNames(.x$pmap) %>%
+            expand.grid(lapply(.x$layer_id, function(x) 1:n_perms)) %>%
+              setNames(.x$layer_id) %>%
               dplyr::mutate(run_id = row_number()) %>%
               tidyr::pivot_longer(!any_of("run_id"),
-                                  names_to = "pmap",
-                                  values_to = "perm_id")
-          }) %>%
-          dplyr::left_join(run_map_raw) %>%
-          dplyr::select(!perm_id) %>%
-          dplyr::mutate(pmap = as.numeric(pmap))
+                                  names_to = "layer_id",
+                                  values_to = "perm_id") %>%
+              dplyr::mutate(layer_id = as.numeric(layer_id)) %>%
+              dplyr::left_join(.x)
 
-      } else if (layers_from == "soilphys"){
-        run_map <-
-          x$soilphys %>%
-          dplyr::select(upper,
-                        lower,
-                        dplyr::any_of({cfp_id_cols(x)})) %>%
-          dplyr::distinct()
+          }) %>%
+          dplyr::left_join(run_map, relationship = "many-to-many") %>%
+          dplyr::select(!perm_id) %>%
+          dplyr::select(!layer_id)
       }
 
+      if (!"run_id" %in% names(run_map)){
+        run_map <- run_map %>%
+          dplyr::rename(run_id = perm_id)
+      }
 
       if("topheight" %in% names(params)){
 
@@ -213,18 +219,16 @@ run_map_permutation <- function(x,
 
         # run_map without topheight
         run_map_notop <-
-          run_map_compl%>%
+          run_map_compl %>%
           dplyr::select(run_id, run_id_new) %>%
           dplyr::left_join(run_map, by = "run_id") %>%
-          dplyr::select(!run_id) %>%
-          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
-                              names_to = "param",
-                              values_to = "value")
+          dplyr::select(!run_id)
 
         # run_map topheight only
         run_map_top  <-
           run_map %>%
-          dplyr::select(dplyr::any_of(c(cfp_id_cols(x),"run_id"))) %>%
+          dplyr::select(!param) %>%
+          dplyr::select(!value) %>%
           dplyr::distinct() %>%
           dplyr::left_join(run_map_compl %>%
                              dplyr::select("topheight","run_id_new","run_id"),
@@ -233,30 +237,15 @@ run_map_permutation <- function(x,
           dplyr::rename(value = topheight) %>%
           dplyr::mutate(param = "topheight")
 
-
         #combine and finalize
         run_map <-
           run_map_notop %>%
           dplyr::bind_rows(run_map_top) %>%
-          dplyr::rename(run_id = run_id_new)  %>%
-          dplyr::left_join(type_df, by = "param")
-
-
-
-      } else {
-
-        run_map <-
-          run_map %>%
-          tidyr::pivot_longer(cols = dplyr::any_of(names(params)),
-                              names_to = "param",
-                              values_to = "value") %>%
-          dplyr::left_join(type_df, by = "param")
+          dplyr::rename(run_id = run_id_new)
 
       }
 
-    }
-
-    if (topheight_adjust == TRUE){
+    if ("topheight" %in% names(params) && topheight_adjust == TRUE){
       # filter out runs with not possible topheight change
 
       merger <- cfp_id_cols(x$layers_map)[cfp_id_cols(x$layers_map) %in% names(run_map)]
@@ -271,6 +260,9 @@ run_map_permutation <- function(x,
                          by = c(merger, "run_id"),
                          relationship = "many-to-many")
     }
+
+      run_map <- run_map  %>%
+        dplyr::left_join(type_df, by = "param")
 
   run_map
 }
