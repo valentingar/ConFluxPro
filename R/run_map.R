@@ -201,7 +201,9 @@ run_map <- function(x,
       dplyr::filter(param == "topheight" &
                       -value < top-bottom) %>%
       dplyr::select(dplyr::any_of(c("run_id", ids_lmap))) %>%
-      dplyr::left_join(run_map, by = c(merger, "run_id"))
+      dplyr::left_join(run_map,
+                       by = c(merger, "run_id"),
+                       relationship = "many-to-many")
     }
 
   } else if (method == "random"){

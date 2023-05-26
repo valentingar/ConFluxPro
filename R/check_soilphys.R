@@ -80,7 +80,8 @@ check_soilphys <-function(df,
   #checking for suspicious NAs
   susp <-df %>%
     dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"upper")}))) %>%
-    dplyr::summarise(across(any_of(params_grouping),is.na),.groups = "keep") %>%
+    dplyr::mutate(across(any_of(params_grouping),is.na),.groups = "keep") %>%
+    dplyr::select(dplyr::any_of(c(params_grouping, id_cols, "upper"))) %>%
     dplyr::summarise(across(any_of(params_grouping),all))
 
   #finding column names of suspects

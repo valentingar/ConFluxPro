@@ -8,7 +8,7 @@ Imports:
     stats,
     lubridate,
     tibble,
-    dplyr,
+    dplyr (>= 1.1.1),
     magrittr,
     splines,
     tidyr,

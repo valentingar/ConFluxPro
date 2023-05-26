@@ -219,7 +219,7 @@ prof_optim <- function(x,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  dmin <- min(x$gasdata$depth)
+  dmin <- min(x$layers_map$lower)
   C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
 
   #DS and D0

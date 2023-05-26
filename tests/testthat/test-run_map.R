@@ -16,8 +16,8 @@ test_that("create runmap works", {
     distinct() %>%
     group_by(site) %>%
     slice_max(upper) %>%
-    summarise(upper = c(upper,0),
-              lower = c(0,-100)) %>%
+    reframe(upper = c(upper,0),
+            lower = c(0,-100)) %>%
     cfp_layers_map(gas = "CO2",
                    layer_couple = 0,
                    lowlim = 0,
@@ -104,8 +104,8 @@ test_that("permutation works", {
     distinct() %>%
     group_by(site) %>%
     slice_max(upper) %>%
-    summarise(upper = c(upper,0),
-              lower = c(0,-100)) %>%
+    reframe(upper = c(upper,0),
+            lower = c(0,-100)) %>%
     cfp_layers_map(gas = "CO2",
                    layer_couple = 0,
                    lowlim = 0,
@@ -165,8 +165,8 @@ test_that("topheight adjust", {
     distinct() %>%
     group_by(site) %>%
     slice_max(upper) %>%
-    summarise(upper = c(upper,0),
-              lower = c(0,-100)) %>%
+    reframe(upper = c(upper,0),
+            lower = c(0,-100)) %>%
     cfp_layers_map(gas = "CO2",
                    layer_couple = 0,
                    lowlim = 0,

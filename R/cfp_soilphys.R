@@ -34,6 +34,10 @@ cfp_soilphys <- function(soilphys,
     id_cols <- c(id_cols,"gas")
   }
 
+  soilphys <-
+    soilphys %>%
+    dplyr::mutate(depth = (upper + lower) / 2)
+
   x <- new_cfp_soilphys(soilphys,
                         id_cols
   )
