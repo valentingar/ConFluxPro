@@ -160,11 +160,20 @@ run_map_permutation <- function(x,
 
    params_notop <- params[!names(params) == "topheight"]
 
-      run_map <- expand.grid(params_notop) %>%
-        dplyr::mutate(perm_id = dplyr::row_number()) %>%
-        tidyr::pivot_longer(cols = !"perm_id",
-                            names_to = "param",
-                            values_to = "value")
+   if (length(params_notop) > 0){
+
+     run_map <- expand.grid(params_notop) %>%
+       dplyr::mutate(perm_id = dplyr::row_number()) %>%
+       tidyr::pivot_longer(cols = !"perm_id",
+                           names_to = "param",
+                           values_to = "value")
+   } else {
+
+     run_map <- data.frame(param = "topheight",
+                           value = params$topheight,
+                           run_id = seq_along(params$topheight))
+
+   }
 
       if (layers_different == TRUE) {
         n_perms <- max(run_map$perm_id)
@@ -209,7 +218,7 @@ run_map_permutation <- function(x,
           dplyr::rename(run_id = perm_id)
       }
 
-      if("topheight" %in% names(params)){
+      if("topheight" %in% names(params) && length(params_notop) > 0){
 
         # new permutation with topheight as well
         run_map_compl <-
@@ -284,9 +293,14 @@ run_map_random <- function(x,
 
   params_notop <- params[!names(params) == "topheight"]
 
-  run_map <- data.frame(run_id = rep(1:n_runs,
-                                     each = length(params_notop)),
-                        param = rep(names(params_notop), times = n_runs))
+  if (length(params_notop) > 0){
+    run_map <- data.frame(run_id = rep(1:n_runs,
+                                       each = length(params_notop)),
+                          param = rep(names(params_notop), times = n_runs))
+  } else {
+    run_map <- data.frame(param = "topheight",
+                          run_id = 1:n_runs)
+  }
 
   if (layers_different == TRUE){
     if (layers_from == "layers_map"){
@@ -309,7 +323,7 @@ run_map_random <- function(x,
   }
 
 
-  if ("topheight" %in% names(params)){
+  if ("topheight" %in% names(params) && length(params_notop) > 0){
     run_map <-
       run_map %>%
       dplyr::select(dplyr::any_of(c(cfp_id_cols(x),
