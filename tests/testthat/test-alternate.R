@@ -90,7 +90,9 @@ test_that("layers from soilphys", {
   expect_no_error(
     alternate(PROFLUX,
               run_map = run_map,
-              f = function(x) complete_soilphys(x, overwrite = TRUE),
+              f = function(x) complete_soilphys(x,
+                                                overwrite = TRUE,
+                                                DSD0_formula = "a*AFPS^b"),
               return_raw = TRUE)
   )
 
