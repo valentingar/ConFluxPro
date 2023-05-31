@@ -159,7 +159,7 @@ update_param <- function(run_param,
                          id_cols){
 
     param <- run_param$param[1]
-    merger <- names(run_param)[names(run_param) %in% c(id_cols,"pmap", "upper", "lower")]
+    merger <- names(run_param)[names(run_param) %in% c(id_cols,"pmap", "upper", "lower", "step_id")]
 
     soilphys %>%
       dplyr::select(dplyr::any_of(c(
@@ -167,7 +167,8 @@ update_param <- function(run_param,
         id_cols,
         "pmap",
         "upper",
-        "lower"))) %>%
+        "lower",
+        "step_id"))) %>%
       dplyr::left_join(run_param, by = merger) %>%
       dplyr::mutate(dplyr::across({param},
                                   ~dplyr::case_when(type == "factor" ~ .x * value,
@@ -188,7 +189,7 @@ update_topheight <-
 
     m_lmap <- id_lmap[id_lmap %in% names(topheight)]
 
-    topheight <- topheight %>% dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower")))
+    topheight <- topheight %>% dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower", "step_id")))
     topheight_gd <- topheight_sp <- topheight %>%
       dplyr::left_join(x$profiles,
                        by = {m_lmap})

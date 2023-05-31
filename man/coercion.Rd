@@ -22,10 +22,10 @@ These functions help coerce different object types in ConFluxPro.
 }
 \section{Functions}{
 \itemize{
-\item \code{as_cfp_dat}: to cfp_dat
+\item \code{as_cfp_dat()}: to cfp_dat
 
-\item \code{as_cfp_fgmod}: to cfp_fgmod
+\item \code{as_cfp_fgmod()}: to cfp_fgmod
 
-\item \code{as_cfp_pfmod}: to cfp_pfmod
+\item \code{as_cfp_pfmod()}: to cfp_pfmod
+
 }}
-

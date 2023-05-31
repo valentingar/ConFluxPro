@@ -1,34 +1,46 @@
-#' @title run_map
+#'@title run_map
 #'
-#' @description Create a run_map for model alteration in \code{alternate()}.
+#'@description Create a run_map for model alteration in \code{alternate()}.
 #'
-#' @param x Either a \link{cfp_pfres} or \link{cfp_fgres} model result.
+#'@param x Either a \link{cfp_pfres} or \link{cfp_fgres} model result.
 #'
-#' @param params A named list of numeric vectors. Names indicate column names
-#' in soilphys, vectors either distinct values (method permutation) or limits (method random).
+#'@param params A named list of numeric vectors. Names indicate column names in
+#'  soilphys, vectors either distinct values (method permutation) or limits
+#'  (method random).
 #'
-#' @param type A vector of length param indicating what the values in params
-#' represent. One of
+#'@param type A vector of length param indicating what the values in params
+#'  represent. One of
 #' \describe{
 #' \item{abs}{Absolute values that are applied as-is.}
 #' \item{factor}{Factors to be multiplied with the original values.}
 #' \item{addition}{Factors to be added to the original values.}
 #'}
 #'
-#' @param method Either 'random', where a random value is chosen within
-#' the bounds set in \code{params} or 'permutation', where every permutation of
-#' the values in \code{params} is added.
+#'@param method Either 'random', where a random value is chosen within the
+#'  bounds set in \code{params} or 'permutation', where every permutation of the
+#'  values in \code{params} is added.
 #'
-#' @param n_runs Integer value of the number of alterations to be done for
-#' method = 'random'.
+#'@param n_runs Integer value of the number of alterations to be done for method
+#'  = 'random'.
 #'
-#' @param layers_different Should layers from layers_map be changed individually?
-#' If \code{TRUE} this allows for different changes at different depths.
+#'@param layers_different Should layers from layers_map be changed individually?
+#'  If \code{TRUE} this allows for different changes at different depths.
 #'
-#' @param topheight_adjust (logical) If the proposed change in topheight is larger
-#' than the highest layer in soilphys, should the limits be automatically
-#' adjusted per id_cols indivdually? Default is FALSE, which leads to an error in that
-#' case.
+#'@param layers_from (character) If layers_different is TRUE, from which source
+#'  should the layers be created? One of:
+#'\describe{
+#'\item{layers_map}{(default) Use the layers that are defined in layers_map.}
+#'\item{soilphys}{Use the layers as defined in soilphys}
+#'\item{layers_altmap}{Use the layers as defined in the provided layers_altmap object.}
+#'}
+#'
+#'@param layers_altmap An optional layers_map created using layers_map() that
+#'  defines the layers to be used if layers_different = TRUE.
+#'
+#'@param topheight_adjust (logical) If the proposed change in topheight is
+#'  larger than the highest layer in soilphys, should the limits be
+#'  automatically adjusted per id_cols indivdually? Default is FALSE, which
+#'  leads to an error in that case.
 
 
 #' @export
@@ -43,6 +55,7 @@ run_map <- function(x,
                     n_runs = NULL,
                     layers_different = FALSE,
                     layers_from = "layers_map",
+                    layers_altmap = NULL,
                     topheight_adjust = FALSE
 ){
 
@@ -58,7 +71,7 @@ run_map <- function(x,
   stopifnot("please give an integer number of runs" =
               ((!(method == "random")) || (is.numeric(n_runs) && (abs(round(n_runs) - n_runs) < 1E-10))))
 
-  layers_from = match.arg(layers_from, c("layers_map", "soilphys"))
+  layers_from = match.arg(layers_from, c("layers_map", "soilphys", "layers_altmap"))
 
 
   if (length(type) == 1){
@@ -106,6 +119,7 @@ run_map <- function(x,
                                    n_runs,
                                    layers_different,
                                    layers_from,
+                                   layers_altmap,
                                    topheight_adjust,
                                    type_df,
                                    second_depth)
@@ -115,6 +129,7 @@ run_map <- function(x,
                                 n_runs,
                                 layers_different,
                                 layers_from,
+                                layers_altmap,
                                 topheight_adjust,
                                 type_df,
                                 second_depth)
@@ -136,6 +151,19 @@ run_map <- function(x,
     dplyr::distinct() %>%
     dplyr::mutate(param_id = row_number())
 
+  if (layers_different && layers_from == "layers_altmap"){
+    run_map <-
+      x$soilphys %>%
+      dplyr::select(!"pmap") %>%
+      sp_add_pmap(layers_altmap) %>%
+      dplyr::select(dplyr::any_of(c("pmap", "step_id", cfp_id_cols(x$soilphys)))) %>%
+      dplyr::distinct() %>%
+      dplyr::right_join(layers_altmap[, c("pmap", "upper", "lower", cfp_id_cols(layers_altmap))],
+                        by = c("pmap" ,cfp_id_cols(layers_altmap))) %>%
+      dplyr::right_join(run_map, by = c("upper", "lower", cfp_id_cols(layers_altmap))) %>%
+      dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower")))
+  }
+
 
   run_map <- new_cfp_run_map(x = data.frame(run_map),
                             id_cols = id_cols_runmap,
@@ -154,6 +182,7 @@ run_map_permutation <- function(x,
                                 n_runs,
                                 layers_different,
                                 layers_from,
+                                layers_altmap,
                                 topheight_adjust,
                                 type_df,
                                 second_depth){
@@ -188,6 +217,13 @@ run_map_permutation <- function(x,
           layers_for_run_map <-
             x$soilphys %>%
             dplyr::select(dplyr::any_of(c(cfp_id_cols(x$layers_map),
+                                          "upper",
+                                          "lower"))) %>%
+            dplyr::distinct()
+        } else if (layers_from == "layers_altmap"){
+          layers_for_run_map <-
+            layers_altmap %>%
+            dplyr::select(dplyr::any_of(c(cfp_id_cols(layers_altmap),
                                           "upper",
                                           "lower"))) %>%
             dplyr::distinct()
@@ -261,7 +297,14 @@ run_map_permutation <- function(x,
 
       run_map <-
         run_map %>%
-        dplyr::left_join(second_depth, by = merger) %>%
+        {function(x,y,merger){
+          if (length(merger) == 0){
+            dplyr::cross_join(x,y)
+          } else {
+            dplyr::left_join(x,y, by = merger)
+          }
+        }
+          }(., second_depth, merger) %>%
         dplyr::filter(param == "topheight" &
                         -value < top-bottom) %>%
         dplyr::select(dplyr::any_of(c("run_id", cfp_id_cols(x$layers_map)))) %>%
@@ -281,6 +324,7 @@ run_map_random <- function(x,
                            n_runs,
                            layers_different,
                            layers_from,
+                           layers_altmap,
                            topheight_adjust,
                            type_df,
                            second_depth){
@@ -319,6 +363,14 @@ run_map_random <- function(x,
         dplyr::distinct() %>%
         dplyr::cross_join(run_map)
 
+    } else if (layers_from == "layers_altmap"){
+      run_map <-
+        layers_altmap %>%
+        dplyr::select(dplyr::any_of(c(cfp_id_cols(layers_altmap),
+                                      "upper",
+                                      "lower"))) %>%
+        dplyr::distinct() %>%
+        dplyr::cross_join(run_map)
     }
   }
 
