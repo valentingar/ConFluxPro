@@ -156,7 +156,7 @@ run_map <- function(x,
       x$soilphys %>%
       dplyr::select(!"pmap") %>%
       sp_add_pmap(layers_altmap) %>%
-      dplyr::select(dplyr::any_of(c("pmap", "step_id", cfp_id_cols(x$soilphys)))) %>%
+      dplyr::select(dplyr::any_of(c("pmap", "step_id", cfp_id_cols(layers_altmap)))) %>%
       dplyr::distinct() %>%
       dplyr::right_join(layers_altmap[, c("pmap", "upper", "lower", cfp_id_cols(layers_altmap))],
                         by = c("pmap" ,cfp_id_cols(layers_altmap))) %>%
@@ -188,6 +188,8 @@ run_map_permutation <- function(x,
                                 second_depth){
 
    params_notop <- params[!names(params) == "topheight"]
+
+   stopifnot("all limits in params be numeric for method = 'permutation' !!!" = all(sapply(params, is.numeric)))
 
    if (length(params_notop) > 0){
 
@@ -333,7 +335,21 @@ run_map_random <- function(x,
   stopifnot("For method = 'random' give exactly two values per param as limits" =
               all(sapply(params,length) == 2))
 
-  params <- lapply(params, sort)
+  params <- lapply(params, function(x) {
+    if(is.numeric(x[1])){
+      x <- sort(x)
+    }
+    x
+    })
+
+  # get column names in params, if given as characters
+  columns_for_limits <- unlist(params[sapply(params, is.character)], use.names = FALSE)
+
+  stopifnot(  "if limits in params are privided as characters,
+            these columns must be present in layers_altmap!"  =
+                all(columns_for_limits %in% names(layers_altmap))
+            )
+
 
   params_notop <- params[!names(params) == "topheight"]
 
@@ -367,6 +383,7 @@ run_map_random <- function(x,
       run_map <-
         layers_altmap %>%
         dplyr::select(dplyr::any_of(c(cfp_id_cols(layers_altmap),
+                                      columns_for_limits,
                                       "upper",
                                       "lower"))) %>%
         dplyr::distinct() %>%
@@ -396,6 +413,12 @@ run_map_random <- function(x,
   run_map <-
     run_map %>%
     dplyr::left_join(params_limits, by = "param")
+
+  run_map <-
+  run_map %>%
+    rowwise() %>%
+    mutate(param_min = as.numeric(get(ifelse(is.na(suppressWarnings(as.numeric(param_min))),param_min,"param_min"))),
+           param_max = as.numeric(get(ifelse(is.na(suppressWarnings(as.numeric(param_max))),param_max,"param_max"))))
 
   if (topheight_adjust == TRUE){
     # only topheight_adjust limits within range of topmost layer!
