@@ -39,7 +39,7 @@ The functions are designed to be used in optimization and are hence as fast as p
 }
 \section{Functions}{
 \itemize{
-\item \code{prod_mod_flux}: flux output only
+\item \code{prod_mod_flux()}: flux output only
 
 examples{
 prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
@@ -47,8 +47,8 @@ prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
               F0=0
               )
 }
-}}
 
+}}
 \examples{
 {
 prod_mod_conc(prod = c(0.01,0.02,0.65,0.5,0.4),
