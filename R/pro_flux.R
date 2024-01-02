@@ -49,8 +49,6 @@
 #' @family proflux
 #'
 #'
-#' @importFrom  ddpcr quiet
-#'
 #' @export
 
 pro_flux <- function(x,
