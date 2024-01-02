@@ -151,15 +151,15 @@ pro_flux_group <-  function(x, p){
 
     # If either the DS or the F0 are optimised as well,
     # more starting parameters need to be set!
-    if(cfp_DSD0_optim(x) == T){
+    if(cfp_DSD0_optim(x) == TRUE){
       prod_start <- c(prod_start,rep(0.5,length(prod_start)))
       lowlim_tmp <- c(lowlim_tmp,rep(0,length(lowlim_tmp)))
       highlim_tmp <- c(highlim_tmp,rep(1,length(highlim_tmp)))
     }
-    if (cfp_zero_flux(x) == F){
+    if (cfp_zero_flux(x) == FALSE){
       prod_start <- c(0,prod_start)
-      lowlim_tmp <- c(min(x$zero_limits),lowlim_tmp)
-      highlim_tmp <- c(max(x$zero_limits),highlim_tmp)
+      lowlim_tmp <- c(min(cfp_zero_limits(x)), lowlim_tmp)
+      highlim_tmp <- c(max(cfp_zero_limits(x)), highlim_tmp)
     }
 
     x <- split_by_prof(x)
