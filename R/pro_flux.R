@@ -11,7 +11,8 @@
 #'
 #' @inheritParams cfp_pfmod
 #'
-#' @param ... Additional arguments passed on to \link{cfp_pfmod}
+#' @inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor known_flux_factor
+#'
 #'
 #' @examples {
 #'
@@ -54,6 +55,11 @@
 
 pro_flux <- function(x,
                      ...){
+  # for future expansion, remove if implemented
+  named_dots <- names(list(...))
+  stopifnot("'...' contains unused arguments or that are not yet implemented fully" =
+              all(named_dots %in% c("zero_flux", "zero_limits", "evenness_factor")))
+
 UseMethod("pro_flux")
 }
 
@@ -226,9 +232,9 @@ prof_optim <- function(x,
   DS <- x$soilphys$DS
 
   #temporary until implementation
-  D0 <- DS
-  dstor <- 0
-  known_flux <- NA
+  # D0 <- DS
+  # dstor <- 0
+  # known_flux <- NA
 
   #optimisation with error handling returning NA
   prod_optimised <- tryCatch({stats::optim(par=prod_start,
@@ -238,15 +244,15 @@ prof_optim <- function(x,
                                                            method = "L-BFGS-B",
                                                            height = height,
                                                            DS = DS,
-                                                           D0 = D0,
+                                                           #D0 = D0,
                                                            C0 = C0,
                                                            pmap = pmap,
                                                            cmap = cmap,
                                                            conc = conc,
-                                                           dstor = dstor,
+                                                           #dstor = dstor,
                                                            zero_flux = zero_flux,
                                                            F0 = F0,
-                                                           known_flux = known_flux,
+                                                           #known_flux = known_flux,
                                                            known_flux_factor = known_flux_factor,
                                                            DSD0_optim = DSD0_optim,
                                                            layer_couple = layer_couple_tmp,
@@ -297,7 +303,7 @@ prof_optim <- function(x,
     prod = prod,
     conc = conc_mod,
     RMSE = RMSE)
-  if(DSD0_optim ==T){
+  if(DSD0_optim == TRUE){
     df$DSD0_fit <- DSD0_fit[pmap]
   }
   return(df)

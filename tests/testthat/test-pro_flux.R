@@ -53,8 +53,8 @@ test_that("pro_flux zero_flux works", {
     distinct() %>%
     group_by(site) %>%
     slice_max(upper) %>%
-    reframe(upper = c(upper, -60, 0),
-            lower = c(0, -60, -100)) %>%
+    reframe(upper = c(upper, 0),
+            lower = c(0, -100)) %>%
     cfp_layers_map(gas = "CO2",
                    layer_couple = 0,
                    lowlim = 0,
