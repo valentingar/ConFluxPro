@@ -9,7 +9,23 @@ pro_flux(x, ...)
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
-\item{...}{Additional arguments passed on to \link{cfp_pfmod}}
+\item{...}{
+  Arguments passed on to \code{\link[=cfp_pfmod]{cfp_pfmod}}
+  \describe{
+    \item{\code{zero_flux}}{(logical) Applies the zero-flux boundary condition? If
+FALSE, the first value in X represents the incoming flux to the lowest
+layer.}
+    \item{\code{zero_limits}}{(numeric vector) a vector of length 2 defining the lower
+and upper limit of the lowest flux if zero_flux = F.}
+    \item{\code{known_flux_factor}}{RESERVED FOR FUTURE EXPANSION}
+    \item{\code{DSD0_optim}}{RESERVED FOR FUTURE EXPANSION}
+    \item{\code{evenness_factor}}{(numeric) A user defined factor used to penalise strong
+differences between the optimised production rates. This must be identified by
+trial-and-error and can help prevent that production rates are simply set to zero
+basically the lower a production is relative to the the maximum of the absolute of
+all productions, the higher it is penalised. The \code{evenness_factor} then
+defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.}
+  }}
 }
 \description{
 This implements an inverse modeling approach which optimizes

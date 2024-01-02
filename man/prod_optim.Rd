@@ -8,17 +8,17 @@ prod_optim(
   X,
   height,
   DS,
-  D0,
+  D0 = NA,
   C0,
   pmap,
   cmap,
   conc,
-  dstor,
-  zero_flux = T,
+  dstor = 0,
+  zero_flux = TRUE,
   F0 = 0,
   known_flux = NA,
   known_flux_factor = 0,
-  DSD0_optim = F,
+  DSD0_optim = FALSE,
   layer_couple,
   wmap,
   evenness_factor
@@ -31,7 +31,7 @@ prod_optim(
 
 \item{DS}{(numeric vector) giving the DS of each step}
 
-\item{D0}{(numeric vector) giving the D0 of each step}
+\item{D0}{RESERVED FOR FUTURE EXPANSION}
 
 \item{C0}{(numeric) The concentration at the
 bottom of the lowermost step.}
@@ -44,16 +44,15 @@ observed concentrations as there can be multiple observations per depth}
 \item{conc}{(numeric) the observed concentrations (in the same unit as
 the modelled concentrations).}
 
-\item{dstor}{(numeric) storage changes per step (same unit as the
-productions given in X).}
+\item{dstor}{RESERVED FOR FUTURE EXPANSION}
 
 \item{zero_flux}{(logical) Applies the zero-flux boundary
-condition(T)? If FALSE, the first value in X
+condition(TRUE)? If FALSE, the first value in X
 represents the incoming flux to the lowest layer.}
 
 \item{F0}{(numeric) flux into lowest layer.}
 
-\item{known_flux}{(numeric) known surface flux to be matched}
+\item{known_flux}{RESERVED FOR FUTURE EXPANSION}
 
 \item{known_flux_factor}{(numeric) a factor defining how much the known flux
 should weigh in the RMSE calculation}
