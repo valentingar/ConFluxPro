@@ -29,6 +29,7 @@ deepflux.cfp_pfres <- function(x, ...){
     dplyr::select(prof_id, F0) %>%
     dplyr::distinct() %>%
     dplyr::left_join(x$profiles %>%
-                       dplyr::select(dplyr::any_of(c(id_cols, "prof_id"))))
+                       dplyr::select(dplyr::any_of(c(id_cols, "prof_id"))),
+                     by = "prof_id")
 
 }
