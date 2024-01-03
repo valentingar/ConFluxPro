@@ -22,6 +22,9 @@ deepflux.cfp_pfres <- function(x, ...){
   PROD <- x$PROFLUX
   id_cols <- cfp_id_cols(x)
 
+  zero_flux <- cfp_zero_flux(x)
+  if(zero_flux) message("zero_flux boundary condition is TRUE -> F0 is always 0.")
+
   PROD %>%
     dplyr::select(prof_id, F0) %>%
     dplyr::distinct() %>%
