@@ -56,32 +56,32 @@ different objects that can be defined in ConFluxPro.
 }
 \section{Functions}{
 \itemize{
-\item \code{cfp_og_model}: og_model
+\item \code{cfp_og_model()}: og_model
 
-\item \code{cfp_id_cols}: id_cols
+\item \code{cfp_id_cols()}: id_cols
 
-\item \code{cfp_gases}: gases
+\item \code{cfp_gases()}: gases
 
-\item \code{cfp_modes}: modes
+\item \code{cfp_modes()}: modes
 
-\item \code{cfp_param}: param
+\item \code{cfp_param()}: param
 
-\item \code{cfp_funs}: funs
+\item \code{cfp_funs()}: funs
 
-\item \code{cfp_zero_flux}: zero_flux
+\item \code{cfp_zero_flux()}: zero_flux
 
-\item \code{cfp_zero_limits}: zero_limits
+\item \code{cfp_zero_limits()}: zero_limits
 
-\item \code{cfp_DSD0_optim}: DSD0_optim
+\item \code{cfp_DSD0_optim()}: DSD0_optim
 
-\item \code{cfp_evenness_factor}: evenness_factor
+\item \code{cfp_evenness_factor()}: evenness_factor
 
-\item \code{cfp_known_flux_factor}: known_flux_factor
+\item \code{cfp_known_flux_factor()}: known_flux_factor
 
-\item \code{cfp_runmap_type}: runmap_type
+\item \code{cfp_runmap_type()}: runmap_type
 
-\item \code{cfp_params_df}: params_df
+\item \code{cfp_params_df()}: params_df
 
-\item \code{cfp_n_runs}: n_runs
+\item \code{cfp_n_runs()}: n_runs
+
 }}
-

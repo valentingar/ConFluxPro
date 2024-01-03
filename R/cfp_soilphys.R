@@ -34,6 +34,10 @@ cfp_soilphys <- function(soilphys,
     id_cols <- c(id_cols,"gas")
   }
 
+  soilphys <-
+    soilphys %>%
+    dplyr::mutate(depth = (upper + lower) / 2)
+
   x <- new_cfp_soilphys(soilphys,
                         id_cols
   )
@@ -83,4 +87,23 @@ print.cfp_soilphys <- function(x, ...){
   NextMethod()
 }
 
+
+# SUBSETTING
+#' @export
+'[.cfp_soilphys' <- function(x,
+                             ...){
+  id_cols <- cfp_id_cols(x)
+  x_class <- class(x)
+
+  x <- data.frame(x)
+  x <- x[...]
+
+  if (all(id_cols %in% names(x))){
+    # if all id_cols present, coerce back to soilphys object
+    attr(x, "id_cols") <- id_cols
+    class(x) <- x_class
+  }
+
+  x
+}
 

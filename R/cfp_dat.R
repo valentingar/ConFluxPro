@@ -35,6 +35,7 @@
 #' @importFrom dplyr filter
 #' @export
 # helper
+
 cfp_dat <- function(gasdata,
                     soilphys,
                     layers_map){
@@ -93,16 +94,55 @@ cfp_dat <- function(gasdata,
     select_id_cols(c(id_cols,"gd_id")) %>%
     dplyr::left_join(soilphys %>% select_id_cols(c(id_cols,"sp_id")), by = merger_1) %>%
     dplyr::left_join(layers_map %>% select_id_cols(c(id_cols,"group_id")), by = merger_2) %>%
+    dplyr::filter((is.na(sp_id) + is.na(gd_id) + is.na(group_id)) == 0) %>% # only complete profiles
     dplyr::mutate(prof_id = dplyr::row_number()) %>%
     dplyr::distinct() %>%
     as.data.frame()
 
+  profiles_insufficient_gasdata <-
+    profiles %>%
+    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id")) %>%
+    dplyr::left_join(layers_map,
+                     by = c(cfp_id_cols(layers_map),"group_id"),
+                     relationship = "many-to-many") %>%
+    dplyr::filter(!is.na(depth),
+                  !is.na(x_ppm)) %>%
+    dplyr::filter(depth >= lower,
+                  depth <= upper) %>%
+    dplyr::filter((is.na(gd_id) + is.na(depth) + is.na(pmap) + is.na(group_id)) == 0) %>%
+    dplyr::group_by(group_id, gd_id, pmap) %>%
+    dplyr::summarise(n_depths = length(unique(depth))) %>%
+    dplyr::mutate(n_depths = ifelse(n_depths == 1, NA, n_depths)) %>%
+    dplyr::right_join(profiles %>%
+                        left_join(layers_map,
+                                  by = c(cfp_id_cols(layers_map), "group_id"),
+                                  relationship = "many-to-many"),
+                    by = c("gd_id", "group_id", "pmap")) %>%
+  dplyr::group_by(prof_id) %>%
+    dplyr::filter(anyNA(n_depths)) %>%
+    dplyr::pull(prof_id)
+
+  profiles <-
+    profiles %>%
+    dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
+    data.frame()
+
   soilphys <- soilphys %>%
-    filter(sp_id %in% profiles$sp_id) %>%
+    dplyr::filter(sp_id %in% profiles$sp_id) %>%
     new_cfp_soilphys(id_cols = cfp_id_cols(soilphys))
 
   gasdata <- gasdata %>%
     dplyr::filter(gd_id %in% profiles$gd_id) %>%
+    dplyr::left_join(
+      layers_map %>%
+        dplyr::group_by(dplyr::across(dplyr::any_of(cfp_id_cols(layers_map)))) %>%
+        dplyr::summarise(upper = max(upper),
+                         lower = min(lower)),
+        by = cfp_id_cols(layers_map)
+        ) %>%
+    dplyr::filter(depth <= upper,
+                  depth >= lower) %>%
+    dplyr::select(!c("upper", "lower")) %>%
     new_cfp_gasdata(id_cols = cfp_id_cols(gasdata))
 
 
@@ -253,7 +293,8 @@ split_soilphys <- function(soilphys,
     data.frame() %>%
     setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
     dplyr::left_join(soilphys,
-                     by = c("upper","lower","depth_group")) %>%
+                     by = c("upper","lower","depth_group"),
+                     relationship = "many-to-many") %>%
     dplyr::mutate(upper = upper_new,
                   lower = lower_new) %>%
     dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%

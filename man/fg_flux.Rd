@@ -7,27 +7,12 @@
 \usage{
 fg_flux(x, ...)
 
-calculate_flux(
-  gasdata,
-  soilphys,
-  layers_map,
-  gases,
-  modes,
-  param,
-  funs,
-  id_cols = NULL
-)
+calculate_flux(x, p)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
 \item{...}{Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:}
-
-\item{gasdata}{A cfp_gasdata object created by running \code{cfp_gasdata()}.}
-
-\item{soilphys}{A cfp_soilphys object created by running \code{cfp_soilphys()}.}
-
-\item{layers_map}{A cfp_layers_map object created by running \code{cfp_layers_map}.}
 
 \item{gases}{(character) A character vector defining the gases for which
 gluxes shall be calulated.}
@@ -41,9 +26,6 @@ parameters help interpretation}
 
 \item{funs}{(character) A vector defining the type of mean to be used. One of
 "arith" or "harm"}
-
-\item{id_cols}{(character vector) The names of the columns that together
-uniquely identify one profile.}
 }
 \description{
 This function takes a valid input dataset in cfp_dat

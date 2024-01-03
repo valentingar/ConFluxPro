@@ -46,8 +46,7 @@
 
 dcdz_layered <- function(df,
                          layers_map,
-                         mode,
-                         depth_steps
+                         mode
                          ){
 valid_modes = c("LS","LL","EF")
 
@@ -58,6 +57,8 @@ if ((mode %in% valid_modes)==F){
 upper <- layers_map$upper
 lower <- layers_map$lower
 layers <- layers_map$layer
+depth_steps <- upper[-1]
+gd_id <- df$gd_id[1]
 
 
 depths <- rev(sort(unique(c(upper, lower)))) #depths including boundaries from top to bottom
@@ -90,7 +91,7 @@ dcdz <- dc / -diff(depths) *100 #from cm^-1 to m^-1
 
 
 # error estimate in ppm/m:
-dcdz_sd <- -rev(as.numeric(summary(mod)$coefficients[,2][-1]+c(0,lag(summary(mod)$coefficients[,2][-1],1)[-1]))) /diff(depths) *100
+dcdz_sd <- -rev(as.numeric(summary(mod)$coefficients[,2][-1]+c(0, dplyr::lag(summary(mod)$coefficients[,2][-1],1)[-1]))) /diff(depths) *100
 if (!length(dcdz_sd)==length(layers)){
   dcdz_sd <- rep(NA,length(layers))
 }
@@ -103,37 +104,34 @@ create_return <- T
 
 } else if (mode == "LL"){
 
+
+  df_ret <- data.frame(layer = layers,
+                       upper = upper,
+                       lower = lower)
+
   #This implements a local linear approach using a linear regession model within each layer
   df_ret <- lapply(1:length(upper), function(i){
-    df_part <- df %>% dplyr::filter(depth <= !!upper[i],
-                                    depth >= !!lower[i])
-    df_ret <- data.frame(layer = layers[i],
-                         upper = upper[i],
-                         lower = lower[i])
+    df_part <- df[df$depth <= upper[i] &
+                    df$depth >= lower[i], ]
 
+mod <- stats::lm(x_ppm ~depth, data = df_part)
+    dcdz <- as.numeric(stats::coef(mod)[2]) * 100 #gradient in ppm/m
+    dc <- dcdz * (abs(diff(c(upper[i], lower[i]))) / 100)
 
-    df_valid <- df_part %>% dplyr::filter(!is.na(x_ppm),!is.na(depth))
-    d_flag <- (df_valid  %>% dplyr::pull(depth) %>% unique() %>%length() <2)
-    val_flag <- (df_valid %>% nrow() < 2)
+    mod_summary <- summary(mod)
+    dcdz_sd <- as.numeric(mod_summary$coefficients[2,2])*100 #error of gradient in ppm/m
+    r2 <- mod_summary$r.squared
 
-    if (any(d_flag,val_flag)){
-      return(df_ret)
-    } else{
-    mod <- stats::lm(x_ppm ~depth, data = df_part)
-    dcdz <- as.numeric(stats::coef(mod)[2])*100 #gradient in ppm/m
-    dc <- dcdz * (abs(diff(c(upper[i],lower[i]))) / 100)
-    dcdz_sd <- as.numeric(summary(mod)$coefficients[2,2])*100 #error of gradient in ppm/m
-    r2 <- summary(mod)$r.squared
-    }
-
-    df_ret <- cbind.data.frame(df_ret,
-                         dcdz_ppm = dcdz,
+    df_ret <- data.frame(dcdz_ppm = dcdz,
                          dcdz_sd = dcdz_sd,
                          dc_ppm = dc,
                          r2 = r2)
     return(df_ret)
   }) %>%
-    dplyr::bind_rows()
+    do.call(rbind, .) %>%
+    cbind.data.frame(df_ret, .)
+
+
 
   if(all(is.na(df_ret))){
     return_na <- T
@@ -206,14 +204,14 @@ if (return_na){
 
 }
 if (create_return){
-  df_ret <- data.frame(layers_map[,!names(layers_map) =="Plot"],
+  df_ret <- data.frame(layers_map,
                        dcdz_ppm = dcdz,
                        dcdz_sd = dcdz_sd,
                        dc_ppm = dc,
                        r2 = r2)
 }
 
-return (df_ret)
+cbind(df_ret, gd_id = gd_id)
 }
 
 

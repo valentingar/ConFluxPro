@@ -11,7 +11,8 @@
 #'
 #' @inheritParams cfp_pfmod
 #'
-#' @param ... Additional arguments passed on to \link{cfp_pfmod}
+#' @inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor known_flux_factor
+#'
 #'
 #' @examples {
 #'
@@ -48,12 +49,15 @@
 #' @family proflux
 #'
 #'
-#' @importFrom  ddpcr quiet
-#'
 #' @export
 
 pro_flux <- function(x,
                      ...){
+  # for future expansion, remove if implemented
+  named_dots <- names(list(...))
+  stopifnot("'...' contains unused arguments or that are not yet implemented fully" =
+              all(named_dots %in% c("zero_flux", "zero_limits", "evenness_factor")))
+
 UseMethod("pro_flux")
 }
 
@@ -151,19 +155,19 @@ pro_flux_group <-  function(x, p){
 
     # If either the DS or the F0 are optimised as well,
     # more starting parameters need to be set!
-    if(cfp_DSD0_optim(x) == T){
+    if(cfp_DSD0_optim(x) == TRUE){
       prod_start <- c(prod_start,rep(0.5,length(prod_start)))
       lowlim_tmp <- c(lowlim_tmp,rep(0,length(lowlim_tmp)))
       highlim_tmp <- c(highlim_tmp,rep(1,length(highlim_tmp)))
     }
-    if (cfp_zero_flux(x) == F){
+    if (cfp_zero_flux(x) == FALSE){
       prod_start <- c(0,prod_start)
-      lowlim_tmp <- c(min(x$zero_limits),lowlim_tmp)
-      highlim_tmp <- c(max(x$zero_limits),highlim_tmp)
+      lowlim_tmp <- c(min(cfp_zero_limits(x)), lowlim_tmp)
+      highlim_tmp <- c(max(cfp_zero_limits(x)), highlim_tmp)
     }
 
     x <- split_by_prof(x)
-    df_ret <-purrr::map(x,
+    df_ret <-furrr::future_map(x,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,
@@ -219,41 +223,41 @@ prof_optim <- function(x,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  dmin <- min(x$gasdata$depth)
+  dmin <- min(x$layers_map$lower)
   C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
 
   #DS and D0
   DS <- x$soilphys$DS
 
   #temporary until implementation
-  D0 <- DS
-  dstor <- 0
-  known_flux <- NA
+  # D0 <- DS
+  # dstor <- 0
+  # known_flux <- NA
 
   #optimisation with error handling returning NA
-  prod_optimised <- tryCatch({prod_optimised<-stats::optim(par=prod_start,
+  prod_optimised <- tryCatch({stats::optim(par=prod_start,
                                                            fn = prod_optim,
                                                            lower = lowlim_tmp,
                                                            upper = highlim_tmp,
                                                            method = "L-BFGS-B",
                                                            height = height,
                                                            DS = DS,
-                                                           D0 = D0,
+                                                           #D0 = D0,
                                                            C0 = C0,
                                                            pmap = pmap,
                                                            cmap = cmap,
                                                            conc = conc,
-                                                           dstor = dstor,
+                                                           #dstor = dstor,
                                                            zero_flux = zero_flux,
                                                            F0 = F0,
-                                                           known_flux = known_flux,
+                                                           #known_flux = known_flux,
                                                            known_flux_factor = known_flux_factor,
                                                            DSD0_optim = DSD0_optim,
                                                            layer_couple = layer_couple_tmp,
                                                            wmap = wmap,
                                                            evenness_factor = evenness_factor
   )},
-  error = NA)
+  error = function(cond) NA)
 
 
   if (is.na(prod_optimised[1])){
@@ -264,13 +268,13 @@ prof_optim <- function(x,
     RMSE <-prod_optimised$value
   }
 
-  if(zero_flux == T){
+  if(zero_flux == TRUE){
     prods <- pars
   } else {
     F0 <- pars[1]
     prods <- pars[-1]
   }
-  if(DSD0_optim == T){
+  if(DSD0_optim == TRUE){
     DSD0_fit <- prods[-c(1:length(prods)/2)]
     prods <- prods[1:(length(prods)/2)]
   }
@@ -297,7 +301,7 @@ prof_optim <- function(x,
     prod = prod,
     conc = conc_mod,
     RMSE = RMSE)
-  if(DSD0_optim ==T){
+  if(DSD0_optim == TRUE){
     df$DSD0_fit <- DSD0_fit[pmap]
   }
   return(df)
