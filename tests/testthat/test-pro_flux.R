@@ -81,7 +81,7 @@ test_that("pro_flux does not allow negative concentrations", {
     date = 1,
     upper =c(10,0),
     lower = c(0,-10),
-    DS = c(-2E-4,
+    DS = c(2E-4,
            2E-5),
     c_air = 44) %>%
     cfp_soilphys(id_cols = "date")
@@ -102,11 +102,15 @@ test_that("pro_flux does not allow negative concentrations", {
                    lowlim = 0,
                    highlim = 1000,
                    id_cols = "date")
-  PROFLUX <-
+
+  my_dat <-
     cfp_dat(gasdata,
             soilphys,
-            lmap) %>%
-    pro_flux()
+            lmap)
+
+  my_dat$soilphys$DS[1] <- -2e-04
+
+  PROFLUX <- pro_flux(my_dat)
 
   PROFLUX$PROFLUX
 
