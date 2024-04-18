@@ -96,3 +96,12 @@ lin_extrap<-function(x,
   y_new <- (x_new-x[1])*(diff(y) / diff(x)) + y[1]
   return(y_new)
 }
+
+
+# any negatives
+
+any_negative_values <- function(x){
+  x <- x[is.finite(x)]
+  if (length(x) == 0) return(FALSE)
+  min(x) < 0
+}

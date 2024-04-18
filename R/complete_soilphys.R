@@ -48,6 +48,11 @@ if (DSD0_flag == TRUE | overwrite == TRUE){
   soilphys <- soilphys %>%
     dplyr::select(!dplyr::any_of("DSD0")) %>%
     dplyr::mutate(DSD0 = !!(rlang::parse_expr(DSD0_formula)))
+
+  if (any_negative_values(soilphys$DSD0)){
+    message("Negative DSD0 calculated, setting NA!")
+    soilphys$DSD0[soilphys$DSD0 < 0] <- NA
+  }
 }
 if (D0_flag == TRUE | overwrite == TRUE){
 
@@ -66,14 +71,30 @@ if (D0_flag == TRUE | overwrite == TRUE){
                              soilphys$t,
                              soilphys$p)
 
+  if (any_negative_values(soilphys$D0)){
+    message("Negative D0 calculated, setting NA!")
+    soilphys$D0[soilphys$D0 < 0] <- NA
+  }
+
 }
 
 if(DS_flag == TRUE | overwrite == TRUE){
   soilphys$DS <- soilphys$DSD0 * soilphys$D0
+
+  if (any_negative_values(soilphys$DS)){
+    message("Negative DS calculated, setting NA!")
+    soilphys$DS[soilphys$DS < 0] <- NA
+  }
+
 }
 
 if(c_air_flag == TRUE | overwrite == TRUE){
   soilphys$c_air <-  (soilphys$p*100 / (8.314 * (273.15 + soilphys$t)))
+
+  if (any_negative_values(soilphys$c_air)){
+    message("Negative c_air calculated, setting NA!")
+    soilphys$c_air[soilphys$c_air < 0] <- NA
+  }
 }
 
 message("The following columns were added:")
