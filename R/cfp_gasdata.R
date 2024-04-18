@@ -76,6 +76,10 @@ validate_cfp_gasdata <- function(x){
   stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
               nrow(problem_groups) == 0 )
 
+  # no negative values in x_ppm
+  any_negative_x_ppm <- min(x$x_ppm, na.rm = TRUE) < 0
+  stopifnot("Negative mixing ratios are not allowed!" = !any_negative_x_ppm)
+
   x
 }
 
