@@ -84,11 +84,6 @@ prod_optim<- function(X,
   #calculate concentration using the values provided
   conc_mod <- prod_mod_conc(prod,height,DS,F0,C0)
 
-  # do not allow negative concentrations!
-  if (min(conc_mod)<0){
-    return(9999999)
-  }
-
   #assign moddeled concentrations to match observations
   conc_mod <- conc_mod[cmap]
 

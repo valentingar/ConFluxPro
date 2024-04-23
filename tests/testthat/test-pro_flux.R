@@ -108,7 +108,7 @@ test_that("pro_flux does not allow negative concentrations", {
             soilphys,
             lmap)
 
-  my_dat$soilphys$DS[1] <- -2e-04
+  my_dat$gasdata$x_ppm[1] <- -my_dat$gasdata$x_ppm[1]
 
   PROFLUX <- pro_flux(my_dat)
 
