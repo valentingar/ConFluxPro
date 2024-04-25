@@ -19,7 +19,9 @@ Statvariable_bar <- ggplot2::ggproto("variable_bar", ggplot2::Stat,
                                   data.frame(x = (data$xmax + data$xmin) / 2,
                                              y = data$y / 2,
                                              width = data$xmax - data$xmin,
-                                             height = data$y
+                                             height = data$y,
+                                             xmax = data$xmax,
+                                             xmin = data$xmin
                                   )
                               } else if (all(parameter_y %in% data_columns) &
                                          !(any(parameter_x %in% data_columns))){
@@ -28,7 +30,10 @@ Statvariable_bar <- ggplot2::ggproto("variable_bar", ggplot2::Stat,
                                   data.frame(y = (data$ymax + data$ymin) / 2,
                                              x = data$x / 2,
                                              height = data$ymax - data$ymin,
-                                             width = data$x
+                                             width = data$x,
+                                             ymax = data$ymax,
+                                             ymin = data$ymin
+
                                   )
                               } else {
                                 stop("provide either x, ymin and ymax or y, xmin and xmax")
