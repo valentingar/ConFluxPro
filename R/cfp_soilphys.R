@@ -64,13 +64,24 @@ validate_cfp_soilphys <- function(x){
   # are the necessary columns present?
   base_cols <- c("upper","lower","DS","c_air","gas")
   id_cols <- cfp_id_cols(x)
+  base_cols_present <- base_cols %in% names(x)
+  id_cols_present <- id_cols %in% names(x)
 
-  stopifnot("data.frame lacks obligatory coluns" = base_cols %in% names(x),
-            "id_cols must be present in the data.frame" = id_cols %in% names(x)
-  )
+  if (any(!base_cols_present) ){
+    stop(paste0("missing columns ", base_cols[base_cols_present]))
+  }
+  if (any(!id_cols_present)){
+    stop(paste0("missing id_cols ", id_cols[id_cols_present]))
+  }
 
   # is the data frame upper/lower consistent?
   stopifnot("The data is not unique and upper/lower consistent!" = is_ul_consistent(x,id_cols))
+
+  # no negative values in DS and c_air
+  any_negative_DS <- min(x$DS, na.rm = TRUE) < 0
+  any_negative_c_air <- min(x$c_air, na.rm = TRUE) < 0
+  stopifnot("Negative diffusion coefficient DS is not allowed!" = !any_negative_DS)
+  stopifnot("Negative air density c_air is not allowed!" = !any_negative_c_air)
 
   x
 }

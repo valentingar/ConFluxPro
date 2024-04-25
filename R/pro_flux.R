@@ -287,6 +287,14 @@ prof_optim <- function(x,
   fluxs <- prod_mod_flux(prod,height,F0)
   conc_mod <- prod_mod_conc(prod,height,x$soilphys$DS,F0,C0)
 
+  # do not allow negative concentrations!
+  if (any_negative_values(conc_mod)){
+    fluxs <- NA
+    conc_mod <- NA
+    prod <- NA
+    RMSE <- NA
+  }
+
   #toggle progress bar
   if(x$profiles$prof_id %% 50 == 0){
   p()
