@@ -4,6 +4,9 @@
 \name{cfp_og_model}
 \alias{cfp_og_model}
 \alias{cfp_id_cols}
+\alias{get_soilphys}
+\alias{get_gasdata}
+\alias{get_layers_map}
 \alias{cfp_gases}
 \alias{cfp_modes}
 \alias{cfp_param}
@@ -22,6 +25,12 @@
 cfp_og_model(x)
 
 cfp_id_cols(x)
+
+get_soilphys(x)
+
+get_gasdata(x)
+
+get_layers_map(x)
 
 cfp_gases(x)
 
@@ -59,6 +68,12 @@ different objects that can be defined in ConFluxPro.
 \item \code{cfp_og_model()}: og_model
 
 \item \code{cfp_id_cols()}: id_cols
+
+\item \code{get_soilphys()}: get_soilphys
+
+\item \code{get_gasdata()}: get_gasdata
+
+\item \code{get_layers_map()}: get_layers_map
 
 \item \code{cfp_gases()}: gases
 
