@@ -387,6 +387,82 @@ cfp_id_cols.default <- function(x){
 }
 
 
+join_with_profiles <- function(target_data,
+                                profiles){
+
+  extra_cols <- c("sp_id", "gd_id", "group_id", "prof_id", "step_id", "pmap", "row_id", "depth_group")
+  join_cols <- names(profiles)[names(profiles) %in% names(target_data)]
+  id_cols <- join_cols[!join_cols %in% extra_cols]
+
+  x <-
+    profiles %>%
+    dplyr::left_join(target_data,
+                     by = join_cols,
+                     relationship = "one-to-many") %>%
+    dplyr::select(!dplyr::any_of(extra_cols))
+
+  list(x, id_cols)
+}
+
+#' @describeIn extractors get_soilphys
+#' @export
+get_soilphys <- function(x){
+  UseMethod("get_soilphys")
+}
+#' @export
+get_soilphys.cfp_dat <- function(x){
+  soilphys <- x$soilphys
+  profiles <- x$profiles
+
+  x <-
+  soilphys %>%
+    join_with_profiles(profiles)
+
+  x<-
+    cfp_soilphys(x[[1]],
+                 id_cols = x[[2]])
+
+  x
+}
+
+#' @describeIn extractors get_gasdata
+#' @export
+get_gasdata <- function(x){
+  UseMethod("get_gasdata")
+}
+#' @export
+get_gasdata.cfp_dat <- function(x){
+  gasdata <- x$gasdata
+  profiles <- x$profiles
+
+  x <-
+  gasdata %>%
+    join_with_profiles(profiles)
+
+  x <- cfp_gasdata(x[[1]],
+                id_cols = x[[2]])
+  x
+}
+
+
+#' @describeIn extractors get_layers_map
+#' @export
+get_layers_map <- function(x){
+  UseMethod("get_layers_map")
+}
+#' @export
+get_layers_map.cfp_dat <- function(x){
+  layers_map <- x$layers_map
+
+  layers_map <-
+  layers_map %>%
+    dplyr::select(
+      !dplyr::any_of(c("group_id")))
+  layers_map
+}
+
+
+
 ##### COERSION #######
 #' @describeIn coercion to cfp_dat
 #' @export

@@ -37,6 +37,27 @@ validate_cfp_pfres <- function(x){
 
 #### methods ----------------------
 
+##### EXTRACTION ######
+#' @describeIn extractors get_PROFLUX
+#' @export
+get_PROFLUX <- function(x){
+  UseMethod("get_PROFLUX")
+}
+#' @export
+get_PROFLUX.cfp_dat <- function(x){
+  PROFLUX <- x$PROFLUX
+  profiles <- x$profiles
+
+  x <-
+    PROFLUX %>%
+    join_with_profiles(profiles) %>%
+    {.[[1]]}
+
+  x
+}
+
+
+
 ###### PRINTING #######
 #' @exportS3Method
 print.cfp_pfres <- function(x, ...){

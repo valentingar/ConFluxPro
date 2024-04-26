@@ -21,16 +21,22 @@ plot_profile.cfp_pfres <- function(x) {
 
   profiles <- x$profiles
 
-  soilphys <- x$soilphys %>%
-    dplyr::left_join(profiles)
-  gasdata <- x$gasdata %>%
-    dplyr::left_join(profiles)
-  PROFLUX <- x$PROFLUX %>%
-    dplyr::left_join(profiles)
+  # soilphys <- x$soilphys %>%
+  #   dplyr::left_join(profiles)
+  # gasdata <- x$gasdata %>%
+  #   dplyr::left_join(profiles)
+  # PROFLUX <- x$PROFLUX %>%
+  #   dplyr::left_join(profiles)
+
+  soilphys <- get_soilphys(x)
+  gasdata <- get_gasdata(x)
+  PROFLUX <- get_PROFLUX(x)
 
   # round to account for machine precision errors (0 =/= -10^18)
-  prod_range <- round(range(PROFLUX$prod), digits = 13)
-  if (prod(prod_range) < 0)
+  prod_range <- suppressWarnings(round(range(PROFLUX$prod, na.rm = TRUE), digits = 13))
+  if (any(!is.finite(prod_range)))
+    prod_state <- 4
+  else if (prod(prod_range) < 0)
     prod_state <- 2
   else if (prod_range[1] < 0)
     prod_state <- 3
@@ -42,13 +48,14 @@ plot_profile.cfp_pfres <- function(x) {
 
   prod_max <- max(abs(prod_range))
 
-  x_max <- max(gasdata$x_ppm)
+  x_max <- max(gasdata$x_ppm, na.rm = TRUE)
 
   gasdata_adapted <-
     soilphys %>%
     dplyr::select(!depth) %>%
     dplyr::rename(depth = upper) %>%
-    dplyr::right_join(PROFLUX) %>%
+    dplyr::right_join(PROFLUX,
+                      by = whats_in_both(list(names(PROFLUX), names(.)))) %>%
     dplyr::arrange(dplyr::desc(depth))
 
   p <-
@@ -56,8 +63,10 @@ plot_profile.cfp_pfres <- function(x) {
     ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +
     stat_variable_bar(aes(x = 1, fill = "soil")) +
     stat_variable_bar(aes(x = TPS, fill = "AFPS")) +
-    stat_variable_bar(aes(x = SWC, fill = "SWC")) +
-    ggplot2::geom_rect(
+    stat_variable_bar(aes(x = SWC, fill = "SWC"))
+
+  if (prod_state != 4 ){
+    p <- p +ggplot2::geom_rect(
       data = PROFLUX,
       aes(
         xmin = prod_start,
@@ -67,7 +76,10 @@ plot_profile.cfp_pfres <- function(x) {
         fill = "production"
       ),
       alpha = 0.5
-    ) +
+    )
+  }
+
+  p <- p +
     ggplot2::geom_point(
       data = gasdata,
       aes(
@@ -95,8 +107,10 @@ plot_profile.cfp_pfres <- function(x) {
       ),
       inherit.aes = FALSE,
       orientation = "y"
-    ) +
-    ggplot2::scale_x_continuous(
+    )
+
+  if (prod_state != 4){
+    p <- p + ggplot2::scale_x_continuous(
       name = "concentration [ppm]",
       breaks = scales::pretty_breaks(5)(c(0,x_max)) / x_max,
       labels = function(x)
@@ -105,8 +119,17 @@ plot_profile.cfp_pfres <- function(x) {
         trans = ~ (. - prod_start) * prod_max / prod_scale,
         name = expression("production [µmol m" ^
                             "-3" ~ "s" ^ "-1" ~ "]")
+      ))
+  } else {
+    p <- p + ggplot2::scale_x_continuous(
+      name = "concentration [ppm]",
+      breaks = scales::pretty_breaks(5)(c(0,x_max)) / x_max,
+      labels = function(x)
+        x * x_max
       )
-    ) +
+  }
+
+  p <- p +
     scale_cfp_color +
     scale_cfp_fill
 

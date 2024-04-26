@@ -241,7 +241,7 @@ update_topheight <-
       dplyr::select(!dplyr::any_of(c("param",
                                      "type",
                                      "value"))) %>%
-      new_cfp_layers_map(id_cols = id_lmap)
+      new_cfp_gasdata(id_cols = id_lmap)
 
 
     x
