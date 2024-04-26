@@ -172,6 +172,8 @@ run_map <- function(x,
                             type = type,
                             n_runs = n_runs,
                             layers_different = layers_different,
+                            layers_from = layers_from,
+                            layers_altmap = layers_altmap,
                             runmap_type = "base",
                             params_df = data.frame(params_df))
 }

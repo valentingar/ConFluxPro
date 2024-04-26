@@ -59,6 +59,8 @@ test_that("create runmap works", {
                     type = c("factor","factor"),
                     n_runs = NULL,
                     layers_different = FALSE,
+                    layers_from = "layers_map",
+                    layers_altmap = NULL,
                     runmap_type = "base",
                     params_df = data.frame(param = c("TPS","t"),
                                            param_id = c(1,2))
@@ -76,6 +78,8 @@ test_that("create runmap works", {
                     type = c("factor", "factor"),
                     n_runs = 4,
                     layers_different = FALSE,
+                    layers_from = "layers_map",
+                    layers_altmap = NULL,
                     runmap_type = "base",
                     params_df = data.frame(param = c("TPS","t"),
                                            param_id = c(1,2))
@@ -138,6 +142,8 @@ test_that("permutation works", {
                     type = c("addition", "factor"),
                     n_runs = NULL,
                     layers_different = FALSE,
+                    layers_from = "layers_map",
+                    layers_altmap = NULL,
                     runmap_type = "base",
                     params_df = data.frame(param = c("TPS", "topheight"),
                                                param_id = c(1,2)))
