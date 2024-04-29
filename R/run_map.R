@@ -151,6 +151,11 @@ run_map <- function(x,
     dplyr::distinct() %>%
     dplyr::mutate(param_id = row_number())
 
+  run_map <-
+    run_map %>%
+    dplyr::left_join(params_df, by = whats_in_both(list(names(params_df),
+                                                        names(run_map))))
+
   if (layers_different && layers_from == "layers_altmap"){
     run_map <-
       x$soilphys %>%
@@ -172,6 +177,8 @@ run_map <- function(x,
                             type = type,
                             n_runs = n_runs,
                             layers_different = layers_different,
+                            layers_from = layers_from,
+                            layers_altmap = layers_altmap,
                             runmap_type = "base",
                             params_df = data.frame(params_df))
 }

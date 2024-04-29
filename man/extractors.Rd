@@ -20,6 +20,9 @@
 \alias{cfp_runmap_type}
 \alias{cfp_params_df}
 \alias{cfp_n_runs}
+\alias{cfp_layers_different}
+\alias{cfp_layers_from}
+\alias{cfp_layers_altmap}
 \alias{extractors}
 \title{extractors}
 \usage{
@@ -58,6 +61,12 @@ cfp_runmap_type(x)
 cfp_params_df(x)
 
 cfp_n_runs(x)
+
+cfp_layers_different(x)
+
+cfp_layers_from(x)
+
+cfp_layers_altmap(x)
 }
 \arguments{
 \item{x}{An object from which to extract the information.}
@@ -103,5 +112,11 @@ different objects that can be defined in ConFluxPro.
 \item \code{cfp_params_df()}: params_df
 
 \item \code{cfp_n_runs()}: n_runs
+
+\item \code{cfp_layers_different()}: layers_different
+
+\item \code{cfp_layers_from()}: layers_from
+
+\item \code{cfp_layers_altmap()}: layers_altmap
 
 }}

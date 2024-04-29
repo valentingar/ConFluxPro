@@ -38,6 +38,8 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
                     type,
                     n_runs,
                     layers_different,
+                    layers_from,
+                    layers_altmap,
                     runmap_type,
                     params_df
     )
@@ -55,6 +57,8 @@ new_cfp_run_map <- function(x,
                             type,
                             n_runs,
                             layers_different,
+                            layers_from,
+                            layers_altmap,
                             runmap_type,
                             params_df
 ){
@@ -68,6 +72,8 @@ new_cfp_run_map <- function(x,
                  type = type,
                  n_runs = n_runs,
                  layers_different = layers_different,
+                 layers_from = layers_from,
+                 layers_altmap = layers_altmap,
                  runmap_type = runmap_type,
                  params_df = params_df)
  x
@@ -128,7 +134,37 @@ cfp_n_runs.cfp_run_map <- function(x){
   attr(x, "n_runs")
 }
 
+#' @describeIn extractors layers_different
+#' @export
+cfp_layers_different <- function(x){
+  UseMethod("cfp_layers_different")
+}
 
+#' @exportS3Method
+cfp_layers_different.cfp_run_map <- function(x){
+  attr(x, "layers_different")
+}
+
+#' @describeIn extractors layers_from
+#' @export
+cfp_layers_from <- function(x){
+  UseMethod("cfp_layers_from")
+}
+
+#' @exportS3Method
+cfp_layers_from.cfp_run_map <- function(x){
+  attr(x, "layers_from")
+}
+#' @describeIn extractors layers_altmap
+#' @export
+cfp_layers_altmap <- function(x){
+  UseMethod("cfp_layers_altmap")
+}
+
+#' @exportS3Method
+cfp_layers_altmap.cfp_run_map <- function(x){
+  attr(x, "layers_altmap")
+}
 
 
 
