@@ -113,7 +113,7 @@ dt <- soiltemp \%>\%
   distinct() \%>\%
   group_by(site) \%>\%
   slice_max(depth) \%>\%
-  summarise(depth = c(depth,seq(0,-100,-10)))
+  reframe(depth = c(depth,seq(0,-100,-10)))
 
 discretize_depth(soiltemp,
                  "t",
