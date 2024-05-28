@@ -117,7 +117,7 @@ plot_profile.cfp_pfres <- function(x) {
         x * x_max,
       sec.axis = ggplot2::sec_axis(
         trans = ~ (. - prod_start) * prod_max / prod_scale,
-        name = expression("production [µmol m" ^
+        name = expression("production ["*mu*"mol m" ^
                             "-3" ~ "s" ^ "-1" ~ "]")
       ))
   } else {
@@ -213,7 +213,7 @@ plot_profile.cfp_fgres <- function(x) {
         x * x_max,
       sec.axis = ggplot2::sec_axis(
         trans = ~ (. - flux_start) * flux_max / flux_scale,
-        name = expression("flux [µmol m" ^
+        name = expression("flux ["*mu*"mol m" ^
                             "-2" ~ "s" ^ "-1" ~ "]")
       )
     ) +
@@ -260,7 +260,7 @@ plot_profile.cfp_soilphys <- function(x) {
       label = signif(c_air, 3)
     )) +
     ggplot2::scale_x_continuous(
-      name = "temperature [°C]",
+      name = expression("temperature ["*degree*"C]"),
       breaks = (scales::pretty_breaks(5)(c(t_min, t_max)) - t_min) / (t_max - t_min),
       labels = function(x)
         (x * (t_max - t_min)) + t_min,

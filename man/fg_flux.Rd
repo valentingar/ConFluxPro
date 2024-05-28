@@ -2,12 +2,9 @@
 % Please edit documentation in R/fg_flux.R
 \name{fg_flux}
 \alias{fg_flux}
-\alias{calculate_flux}
 \title{fg_flux}
 \usage{
 fg_flux(x, ...)
-
-calculate_flux(x, p)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}

@@ -33,7 +33,7 @@ This function completes the soilphys dataset by calculating
   calculated if missing.
 }
 \examples{
-soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
+soilphys <- complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b")
 
 
 }

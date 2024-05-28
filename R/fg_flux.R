@@ -88,7 +88,7 @@ fg_flux.cfp_fgmod <- function(x, ...){
 
 
 
-#' @rdname fg_flux
+#'
 calculate_flux <- function(x, p){
 
   gasdata <- x$gasdata

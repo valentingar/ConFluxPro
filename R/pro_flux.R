@@ -32,7 +32,7 @@
 #'  distinct() %>%
 #'  group_by(site) %>%
 #'  slice_max(upper) %>%
-#'  summarise(upper = c(upper,0),
+#'  reframe(upper = c(upper,0),
 #'            lower = c(0,-100)) %>%
 #'  cfp_layers_map(gas = "CO2",
 #'                 layer_couple = 0,

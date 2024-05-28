@@ -15,7 +15,7 @@
 #'
 #' @param quiet (logical) Suppress messages.
 #'
-#' @examples soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
+#' @examples soilphys <- complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b")
 #'
 #'
 #' @seealso D0_massman
