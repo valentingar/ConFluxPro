@@ -50,7 +50,8 @@ test_that("create runmap works", {
                       param = rep(c("TPS","t"),times = 4),
                       value = c(1,1,1.2,1,1,1.05,1.2,1.05),
                       type = "factor",
-                      gas = "CO2"
+                      gas = "CO2",
+                   param_id = rep(1:2,times = 4)
   ) %>%
     ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
                     params = list("TPS" = c(1,1.2),
@@ -70,7 +71,8 @@ test_that("create runmap works", {
                        param = rep(c("TPS","t"),times = 4),
                        value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
                        type = "factor",
-                       gas = "CO2") %>%
+                       gas = "CO2",
+                    param_id = rep(1:2,times = 4)) %>%
     ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
                     params = list("TPS" = c(1,1.2),
                                   "t" = c(1,1.05)),
@@ -133,7 +135,8 @@ test_that("permutation works", {
                       param = rep(c("TPS","topheight"),each = 6),
                       value = c(1,1,1,1.2,1.2,1.2,-1,0,1,-1,0,1),
                       type = rep(c("factor", "addition"), each = 6),
-                      gas = "CO2"
+                      gas = "CO2",
+                   param_id = rep(1:2,each = 6)
   ) %>%
     new_cfp_run_map(id_cols = "gas",
                     params = list("topheight" = c(-1,0,1),
