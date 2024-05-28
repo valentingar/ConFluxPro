@@ -70,37 +70,37 @@ Cannot differ between id_cols.}
 }
 \value{
 dataframe with the columns upper and lower derived from depth_target,
-  depth being the middle of each depth step, as well as the interpolated and
-  discretized parameters.
+depth being the middle of each depth step, as well as the interpolated and
+discretized parameters.
 }
 \description{
 This function helps to interpolate and discretize
-  depth-dependent data to match a set depth profile. The idea is that the
-  data is discretized into set depth steps (see depth_target), each
-  specifying a layer with an upper and lower boundary. So that for example
-  one depth step is from top of the humus layer to +5 cm, the next from 5 to
-  0 cm and so on. The format of this final dataframe is specified in
-  "depth_target", where a numeric vector of the interfaces of the steps is
-  given (e.g. c(6,3,0,-5,-10) resulting in 4 depth steps). \cr
-  There are
-  different interpolation methods implemented, which might be more practical
-  for different parameters or tasks.
-  \itemize{
-  \item
-  A linear interpolation is possible
-  for more or less contiuous parameters, (e.g. soil temperature).
-  \item The
-  boundary interpolation is a nearest neighbor interpolation and uses the
-  values set in the "upper" and "lower" variables to map the parameter to any
-  step within these limits.
-  \item
-  A linear spline interpolation fits a linear
-  spline model to the data with knots defined in  \code{knots}. It is
-  possible to provide multiple parameters to be discretized. In this case it
-  is also possible to define specific controls for each parameter
-  individually. However, if only one value is given for method, int_depth,
-  or knots, the corresponding value is applied to all parameters given in
-  "param".}
+depth-dependent data to match a set depth profile. The idea is that the
+data is discretized into set depth steps (see depth_target), each
+specifying a layer with an upper and lower boundary. So that for example
+one depth step is from top of the humus layer to +5 cm, the next from 5 to
+0 cm and so on. The format of this final dataframe is specified in
+"depth_target", where a numeric vector of the interfaces of the steps is
+given (e.g. c(6,3,0,-5,-10) resulting in 4 depth steps). \cr
+There are
+different interpolation methods implemented, which might be more practical
+for different parameters or tasks.
+\itemize{
+\item
+A linear interpolation is possible
+for more or less contiuous parameters, (e.g. soil temperature).
+\item The
+boundary interpolation is a nearest neighbor interpolation and uses the
+values set in the "upper" and "lower" variables to map the parameter to any
+step within these limits.
+\item
+A linear spline interpolation fits a linear
+spline model to the data with knots defined in  \code{knots}. It is
+possible to provide multiple parameters to be discretized. In this case it
+is also possible to define specific controls for each parameter
+individually. However, if only one value is given for method, int_depth,
+or knots, the corresponding value is applied to all parameters given in
+"param".}
 }
 \examples{
 {

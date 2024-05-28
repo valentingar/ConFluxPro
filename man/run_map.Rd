@@ -24,7 +24,7 @@ soilphys, vectors either distinct values (method permutation) or limits
 (method random).}
 
 \item{type}{A vector of length param indicating what the values in params
- represent. One of
+represent. One of
 \describe{
 \item{abs}{Absolute values that are applied as-is.}
 \item{factor}{Factors to be multiplied with the original values.}
@@ -42,7 +42,7 @@ values in \code{params} is added.}
 If \code{TRUE} this allows for different changes at different depths.}
 
 \item{layers_from}{(character) If layers_different is TRUE, from which source
- should the layers be created? One of:
+should the layers be created? One of:
 \describe{
 \item{layers_map}{(default) Use the layers that are defined in layers_map.}
 \item{soilphys}{Use the layers as defined in soilphys}
@@ -58,5 +58,9 @@ automatically adjusted per id_cols indivdually? Default is FALSE, which
 leads to an error in that case.}
 }
 \description{
-Create a run_map for model alteration in \code{alternate()}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{run_map()} was deprecated in favour of \code{cfp_run_map()} for concistency.
+
+Create a cfp_run_map for model alteration in alternate()
 }

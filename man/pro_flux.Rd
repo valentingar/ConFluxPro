@@ -29,13 +29,13 @@ defines the weight of this penalty in the optimisation algorithm \code{\link{pro
 }
 \description{
 This implements an inverse modeling approach which optimizes
-  vertically resolved production (or consumption) of the gases in question to
-  fit a modeled concentration profile to observed data.
+vertically resolved production (or consumption) of the gases in question to
+fit a modeled concentration profile to observed data.
 
-  One boundary condition of this model is, that there is no incoming or
-  outgoing flux at the bottom of the lowest layer of the profile. If this
-  boundary condition is not met, the flux must be optimised as well. This can
-  be set in \code{zero_flux}.
+One boundary condition of this model is, that there is no incoming or
+outgoing flux at the bottom of the lowest layer of the profile. If this
+boundary condition is not met, the flux must be optimised as well. This can
+be set in \code{zero_flux}.
 }
 \examples{
 {

@@ -21,7 +21,7 @@ x contains NA values.}
 }
 \description{
 This function calculates harmonic mean of a vector and can be
- used analogous to the base functions mean() or median()
+used analogous to the base functions mean() or median()
 }
 \examples{
 {

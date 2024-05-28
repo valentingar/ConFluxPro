@@ -30,14 +30,14 @@ test_that("create runmap works", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("TPS" = c(1,1.2),
                                    "t" = c(1,1.05)),
                      method = "permutation",
                      type = c("factor","factor")
   )
   set.seed(42)
-  run_map_2 <- run_map(PROFLUX,
+  run_map_2 <- cfp_run_map(PROFLUX,
                        params = list("TPS" = c(1,1.2),
                                      "t" = c(1,1.05)),
                        method = "random",
@@ -124,7 +124,7 @@ test_that("permutation works", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1,0,1),
                                    "TPS" = c(1,1.2)),
                      method = "permutation",
@@ -189,14 +189,14 @@ test_that("topheight adjust", {
 
 
   expect_error(
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-100,0,1),
                                    "TPS" = c(1,1.2)),
                      method = "permutation",
                      type = c("addition","factor")
   ))
 
-  run_mappy <- run_map(PROFLUX,
+  run_mappy <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-4,0,1),
                                    "TPS" = c(1,1.2)),
                      method = "permutation",
@@ -214,7 +214,7 @@ test_that("topheight adjust", {
                c(-4,0))
 
   expect_error(
-    run_mappo <- run_map(PROFLUX,
+    run_mappo <- cfp_run_map(PROFLUX,
                        params = list("topheight" = c(-4,1),
                                      "TPS" = c(1,1.2)),
                        method = "random",
@@ -257,20 +257,20 @@ test_that("topheight only", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1)),
                      method = "permutation",
                      type = c("addition")
   )
 
   expect_no_error(
-    run_map <- run_map(PROFLUX,
+    run_map <- cfp_run_map(PROFLUX,
                        params = list("topheight" = c(-1,2)),
                        method = "permutation",
                        type = c("addition")
     ))
   expect_no_error(
-    run_map <- run_map(PROFLUX,
+    run_map <- cfp_run_map(PROFLUX,
                        params = list("topheight" = c(-1,1)),
                        method = "random",
                        type = c("addition"),
