@@ -44,9 +44,18 @@
 #'  automatically adjusted per id_cols indivdually? Default is FALSE, which
 #'  leads to an error in that case.
 #'
+#' @importFrom rlang .data
+#'
 #' @export
 cfp_run_map <- function(x,
-                        ...){
+                        params = list(),
+                        type = NULL,
+                        method = NULL,
+                        n_runs = NULL,
+                        layers_different = FALSE,
+                        layers_from = "layers_map",
+                        layers_altmap = NULL,
+                        topheight_adjust = FALSE){
   UseMethod("cfp_run_map")
 }
 
@@ -54,7 +63,14 @@ cfp_run_map <- function(x,
 
 #' @exportS3Method
 cfp_run_map.cfp_altres <- function(x,
-                                   ...){
+                                   params = NULL,
+                                   type = NULL,
+                                   method = NULL,
+                                   n_runs = NULL,
+                                   layers_different = NULL,
+                                   layers_from = NULL,
+                                   layers_altmap = NULL,
+                                   topheight_adjust = NULL){
   out <- attr(x, "run_map")
   out
 }
@@ -64,7 +80,6 @@ cfp_run_map.cfp_altres <- function(x,
 #' @exportS3Method
 cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
   function(x,
-           ...,
            params = list(),
            type = NULL,
            method = NULL,
@@ -272,13 +287,13 @@ run_map_permutation <- function(x,
 
       }) %>%
       dplyr::left_join(run_map, relationship = "many-to-many") %>%
-      dplyr::select(!perm_id) %>%
-      dplyr::select(!layer_id)
+      dplyr::select(!"perm_id") %>%
+      dplyr::select(!"layer_id")
   }
 
   if (!"run_id" %in% names(run_map)){
     run_map <- run_map %>%
-      dplyr::rename(run_id = perm_id)
+      dplyr::rename(run_id = "perm_id")
   }
 
   if("topheight" %in% names(params) && length(params_notop) > 0){
@@ -292,28 +307,28 @@ run_map_permutation <- function(x,
     # run_map without topheight
     run_map_notop <-
       run_map_compl %>%
-      dplyr::select(run_id, run_id_new) %>%
+      dplyr::select("run_id", "run_id_new") %>%
       dplyr::left_join(run_map, by = "run_id") %>%
-      dplyr::select(!run_id)
+      dplyr::select(!"run_id")
 
     # run_map topheight only
     run_map_top  <-
       run_map %>%
-      dplyr::select(!param) %>%
-      dplyr::select(!value) %>%
+      dplyr::select(!"param") %>%
+      dplyr::select(!"value") %>%
       dplyr::distinct() %>%
       dplyr::left_join(run_map_compl %>%
                          dplyr::select("topheight","run_id_new","run_id"),
                        by = "run_id") %>%
-      dplyr::select(!run_id) %>%
-      dplyr::rename(value = topheight) %>%
+      dplyr::select(!"run_id") %>%
+      dplyr::rename(value = "topheight") %>%
       dplyr::mutate(param = "topheight")
 
     #combine and finalize
     run_map <-
       run_map_notop %>%
       dplyr::bind_rows(run_map_top) %>%
-      dplyr::rename(run_id = run_id_new)
+      dplyr::rename(run_id = "run_id_new")
 
   }
 
@@ -331,9 +346,9 @@ run_map_permutation <- function(x,
           dplyr::left_join(x,y, by = merger)
         }
       }
-      }(., second_depth, merger) %>%
-      dplyr::filter(param == "topheight" &
-                      -value < top-bottom) %>%
+      }(second_depth, merger) %>%
+      dplyr::filter(.data$param == "topheight" &
+                      -.data$value < .data$top-.data$bottom) %>%
       dplyr::select(dplyr::any_of(c("run_id", cfp_id_cols(x$layers_map)))) %>%
       dplyr::left_join(run_map,
                        by = c(merger, "run_id"),
@@ -391,7 +406,7 @@ run_map_random <- function(x,
     if (layers_from == "layers_map"){
       run_map <-
         x$layers_map %>%
-        dplyr::select(pmap,
+        dplyr::select("pmap",
                       dplyr::any_of({cfp_id_cols(x)}))%>%
         dplyr::cross_join(run_map)
 
@@ -433,7 +448,7 @@ run_map_random <- function(x,
     t() %>%
     data.frame() %>%
     stats::setNames(c("param_min", "param_max")) %>%
-    dplyr::mutate(param = rownames(.))
+    tibble::rownames_to_column("param")
 
   run_map <-
     run_map %>%
@@ -452,10 +467,10 @@ run_map_random <- function(x,
     run_map <-
       run_map %>%
       dplyr::left_join(second_depth, by = merger) %>%
-      dplyr::mutate(param_min = ifelse(param == "topheight" &
-                                         -param_min >= top-bottom,
-                                       (bottom-top)+0.0001,
-                                       param_min)) %>%
+      dplyr::mutate(param_min = ifelse(.data$param == "topheight" &
+                                         -.data$param_min >= .data$top-.data$bottom,
+                                       (.data$bottom-.data$top)+0.0001,
+                                       .data$param_min)) %>%
       dplyr::select(!dplyr::any_of(c("top", "bottom")))
 
   }
@@ -463,7 +478,7 @@ run_map_random <- function(x,
   run_map <-
     run_map %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(value = stats::runif(1, param_min, param_max)) %>%
+    dplyr::mutate(value = stats::runif(1, .data$param_min, .data$param_max)) %>%
     dplyr::select(!dplyr::any_of(c("param_min", "param_max"))) %>%
     dplyr::left_join(type_df, by = "param") %>%
     dplyr::ungroup()

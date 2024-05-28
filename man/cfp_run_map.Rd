@@ -4,7 +4,17 @@
 \alias{cfp_run_map}
 \title{cfp_run_map}
 \usage{
-cfp_run_map(x, ...)
+cfp_run_map(
+  x,
+  params = list(),
+  type = NULL,
+  method = NULL,
+  n_runs = NULL,
+  layers_different = FALSE,
+  layers_from = "layers_map",
+  layers_altmap = NULL,
+  topheight_adjust = FALSE
+)
 }
 \arguments{
 \item{x}{Either a \link{cfp_pfres} or \link{cfp_fgres} model result.}
