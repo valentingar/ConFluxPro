@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_fgmod.R
 \name{cfp_fgmod}
 \alias{cfp_fgmod}
-\title{cfp_pfmod}
+\title{cfp_fgmod}
 \usage{
 cfp_fgmod(x, gases, modes, param, funs)
 }
@@ -10,7 +10,7 @@ cfp_fgmod(x, gases, modes, param, funs)
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
 \item{gases}{(character) A character vector defining the gases for which
-gluxes shall be calulated.}
+fluxes shall be calulated.}
 
 \item{modes}{(character) A character vector specifying mode(s) for dcdz
 calculation. Can be "LL","LS","EF".}

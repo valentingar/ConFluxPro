@@ -12,16 +12,8 @@
 #' @inheritParams cfp_gasdata
 #'
 #' @param ... Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:
-#'
-#' @param gases (character) A character vector defining the gases for which
-#' gluxes shall be calulated.
-#' @param modes (character) A character vector specifying mode(s) for dcdz
-#'   calculation. Can be "LL","LS","EF".
-#' @param param (character) A vector containing the the parameters of soilphys,
-#'   for which means should be calculated, must contain "c_air" and "DS", more
-#'   parameters help interpretation
-#' @param funs (character) A vector defining the type of mean to be used. One of
-#'   "arith" or "harm"
+#' @inheritDotParams cfp_fgmod gases modes param funs
+
 #' @rdname fg_flux
 #' @export fg_flux
 

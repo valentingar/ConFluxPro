@@ -1,12 +1,25 @@
-#' plot_profile
+#'plot_profile
 #'
-#' Plot ConFluxPro profiles using ggplot. Supported objects:
+#'Plot vertical soil-profiles of ConFluxPro objects using ggplot. This is mainly
+#' intended for diagnostic purposes and better understand the underlying data.
+#' Supported objects:
 #' \describe{
-#' \item{cfp_soilphys}{Displays TPS, SWC and AFPS, as well as values of Ds and Temperature.}
-#' \item{cfp_pfres}{Displays TPS, SWC and AFPS, as well as production and measured and modelled gas concentrations.}
+#' \item{cfp_pfres}{Displays TPS, SWC and AFPS, as well as production and
+#' measured and modelled gas concentrations.}
+#' \item{cfp_fgres}{Displays TPS, SWC and AFPS, as well as the measured
+#' concentration profile, and concentration gradients for each layer.}
+#' \item{cfp_soilphys}{Displays TPS, SWC and AFPS, as well as values of
+#' Ds and Temperature.}
+#' \item{cfp_gasdata}{Displays the concentration profile.}
+#' \item{cfp_layers_map}{Displays the layer names, pmap and layer_couple,
+#' as well as the allowed production range.}
 #'}
 #'
-#' @param x
+#'@param x A cfp_pfres, cfp_fgres model result, or a cfp_soilphys, cfp_gasdata
+#'  or cfp_layers_map object
+#'
+#'@returns A ggplot2 plot with facets for each distinct profile. If more than 20
+#'profiles are plotted a message is sent because this can take a long time.
 #'
 #' @importFrom ggplot2 aes
 #' @export
@@ -33,7 +46,8 @@ plot_profile.cfp_pfres <- function(x) {
   PROFLUX <- get_PROFLUX(x)
 
   # round to account for machine precision errors (0 =/= -10^18)
-  prod_range <- suppressWarnings(round(range(PROFLUX$prod, na.rm = TRUE), digits = 13))
+  prod_range <- suppressWarnings(round(range(PROFLUX$prod, na.rm = TRUE),
+                                       digits = 13))
   if (any(!is.finite(prod_range)))
     prod_state <- 4
   else if (prod(prod_range) < 0)
@@ -261,7 +275,8 @@ plot_profile.cfp_soilphys <- function(x) {
     )) +
     ggplot2::scale_x_continuous(
       name = expression("temperature ["*degree*"C]"),
-      breaks = (scales::pretty_breaks(5)(c(t_min, t_max)) - t_min) / (t_max - t_min),
+      breaks = (
+        scales::pretty_breaks(5)(c(t_min, t_max)) - t_min) / (t_max - t_min),
       labels = function(x)
         (x * (t_max - t_min)) + t_min,
       sec.axis = ggplot2::sec_axis(
@@ -285,7 +300,10 @@ plot_profile.cfp_layers_map <- function(x) {
     dplyr::mutate(depth = (upper+lower)/2) %>%
     dplyr::mutate(range = diff(range(c(lowlim, highlim)))) %>%
     dplyr::mutate(yrange = diff(range(c(upper, lower)))) %>%
-    dplyr::mutate(layer_couple = ifelse(lower == min(lower), NA, layer_couple)) %>%
+    dplyr::mutate(layer_couple =
+                    ifelse(lower == min(lower),
+                           NA,
+                           layer_couple)) %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower, y = depth))+
     ggplot2::geom_rect(aes(xmin = lowlim,
                            xmax = highlim,
@@ -314,7 +332,9 @@ plot_profile.cfp_layers_map <- function(x) {
                            y = 1.1*yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::facet_wrap(cfp_id_cols(x))+
-    scale_cfp_fill
+    scale_cfp_fill+
+    ggplot2::xlab(
+      expression("allowed production in "*mu*"mol m"^"-2"*" s"^"-1"))
 }
 
 
