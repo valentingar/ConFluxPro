@@ -7,6 +7,7 @@
 #'
 #' @param ... Further arguments passed on for cfp_fgres efflux calculation.
 #'
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -35,14 +36,14 @@ pf_efflux <- function(x) {
   merger <- id_cols[id_cols %in% names(PROFLUX)] %>% c("step_id")
 
   PROFLUX %>%
-    dplyr::group_by(prof_id) %>%
-    dplyr::arrange(desc(step_id)) %>%
-    dplyr::summarise(flux = flux[1]) %>%
+    dplyr::group_by(.data$prof_id) %>%
+    dplyr::arrange(dplyr::desc(.data$step_id)) %>%
+    dplyr::summarise(flux = .data$flux[1]) %>%
     dplyr::left_join(profiles, by = "prof_id") %>%
     dplyr::select(dplyr::any_of({
       c(id_cols, "flux", "prof_id")
     })) %>%
-    dplyr::rename(efflux = flux) %>%
+    dplyr::rename(efflux = "flux") %>%
     dplyr::ungroup()
 }
 
@@ -107,14 +108,14 @@ get_lm_efflux <- function(x){
 }
 
 get_lex_efflux <- function(x,
-                                 layers){
+                           layers){
   FLUX <- x$FLUX
 
   FLUX %>%
-    dplyr::group_by(mode, prof_id) %>%
-    dplyr::mutate(depth = (upper + lower) / 2,
-                  topheight = max(upper)) %>%
-    dplyr::arrange(desc(depth)) %>%
+    dplyr::group_by(.data$mode, .data$prof_id) %>%
+    dplyr::mutate(depth = (.data$upper + .data$lower) / 2,
+                  topheight = max(.data$upper)) %>%
+    dplyr::arrange(dplyr::desc(.data$depth)) %>%
     dplyr::slice(layers) %>%
     dplyr::group_modify(~{
       h<-.x$topheight[1]

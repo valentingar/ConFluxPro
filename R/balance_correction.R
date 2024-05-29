@@ -67,6 +67,7 @@
 #'
 #'
 #' @importFrom stats na.omit
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -116,27 +117,38 @@ bal_corr <- function(bal,missing_gas){
 }
 
 df <- df %>%
-  dplyr::filter(gas %in% !!gases) %>% #Only gases declared in function are used
-  dplyr::group_by(SAMPLE_NO) %>%
-  dplyr::arrange(gas) %>%
-  dplyr::summarise(bal = sum(x_ppm/10^6,na.rm = T), #bal
-            n_bal = length(na.omit(x_ppm)), #number of counted gases
-            missing_gas = paste(c("",gases[-match(gas[is.na(x_ppm)==F],!!gases)],""),collapse = ",")) %>% #Character string with missing gases, comma separated to discern between N2 and N2O, O2 and CO2
-  dplyr::mutate(bal_flag = grepl(paste0(gases_ob,collapse="|"),missing_gas)) %>% #TRUE if any of gases_ob are missing in "bal"
-  dplyr::mutate(bal = bal_corr(bal,missing_gas)) %>% # correcting bal with standard values for missing gases
-  dplyr::mutate(bal_flag = ifelse(bal < min(limits) | bal > max(limits),T,bal_flag)) %>% #bal_flag also true if bal exceeds limits
-  dplyr::mutate(bal_flag = ifelse(bal == 0,T,bal_flag)) %>%
+  dplyr::filter(.data$gas %in% !!gases) %>% #Only gases declared in function are used
+  dplyr::group_by(.data$SAMPLE_NO) %>%
+  dplyr::arrange("gas") %>%
+  dplyr::summarise(bal = sum(.data$x_ppm/10^6, na.rm = T), #bal
+            n_bal = length(na.omit(.data$x_ppm)), #number of counted gases
+            missing_gas = paste(
+              c("",
+                !!gases[-match(.data$gas[is.na(x_ppm) == F],
+                               !!gases)],""),
+              collapse = ",")) %>% #Character string with missing gases, comma separated to discern between N2 and N2O, O2 and CO2
+  dplyr::mutate(bal_flag = grepl(paste0(!!gases_ob,
+                                        collapse = "|"),
+                                 .data$missing_gas)) %>% #TRUE if any of gases_ob are missing in "bal"
+  dplyr::mutate(bal = bal_corr(.data$bal, .data$missing_gas)) %>% # correcting bal with standard values for missing gases
+  dplyr::mutate(bal_flag = ifelse(.data$bal < min(!!limits) | .data$bal > max(!!limits),
+                                  TRUE, .data$bal_flag)) %>% #bal_flag also true if bal exceeds limits
+  dplyr::mutate(bal_flag = ifelse(.data$bal == 0, TRUE, .data$bal_flag)) %>%
   dplyr::right_join(df) %>% #joining with gasdata
-  dplyr::mutate(bal_flag = ifelse(is.na(bal_flag),T,bal_flag)) #if after the join a sample_no was not met in gasdata, bal_flag is na and thus is set T
+  dplyr::mutate(bal_flag = ifelse(is.na(.data$bal_flag), TRUE, .data$bal_flag)) #if after the join a sample_no was not met in gasdata, bal_flag is na and thus is set T
 
 
 #CORRECTION OF THE MOLE RATIOS for bal_flag = T
 if(set_na == T){
   #if set_na == T, bal_flag == T x_ppm is set NA
-  df <- df %>% dplyr::mutate(x_ppm = ifelse(bal_flag == F, x_ppm / bal,NA))
+  df <- df %>% dplyr::mutate(x_ppm = ifelse(.data$bal_flag == FALSE,
+                                            .data$x_ppm / .data$bal,
+                                            NA))
 } else {
   #otherwise x_ppm is not changed
-  df <- df %>% dplyr::mutate(x_ppm = ifelse(bal_flag == F, x_ppm / bal,x_ppm))
+  df <- df %>% dplyr::mutate(x_ppm = ifelse(.data$bal_flag == FALSE,
+                                            .data$x_ppm / .data$bal,
+                                            .data$x_ppm))
 }
 
 if(any(df$bal_flag)){

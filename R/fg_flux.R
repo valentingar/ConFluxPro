@@ -14,6 +14,8 @@
 #' @param ... Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:
 #' @inheritDotParams cfp_fgmod gases modes param funs
 
+#' @importFrom rlang .data
+
 #' @rdname fg_flux
 #' @export fg_flux
 
@@ -58,23 +60,23 @@ fg_flux.cfp_fgmod <- function(x, ...){
 
   y <- y %>%
     dplyr::left_join(x$profiles, by = names(y)[names(y) %in% names(x$profiles)]) %>%
-    dplyr::select(prof_id,
-           upper,
-           lower,
-           depth,
-           layer,
-           gas,
-           mode,
-           flux,
-           flux_sd,
-           dcdz_ppm,
-           dcdz_sd,
-           dc_ppm,
-           c_air,
-           DS,
-           r2)
+    dplyr::select("prof_id",
+           "upper",
+           "lower",
+           "depth",
+           "layer",
+           "gas",
+           "mode",
+           "flux",
+           "flux_sd",
+           "dcdz_ppm",
+           "dcdz_sd",
+           "dc_ppm",
+           "c_air",
+           "DS",
+           "r2")
 
-  cfp_fgres(x,y)
+  cfp_fgres(x, y)
 }
 
 
@@ -109,7 +111,7 @@ calculate_flux <- function(x, p){
 
   #removes all NAs from gasdata
   gasdata <- gasdata %>%
-    dplyr::filter(is.na(x_ppm) == F, is.na(depth) == F)
+    dplyr::filter(is.na(.data$x_ppm) == F, is.na(.data$depth) == F)
 
   id_cols <- c(id_cols, "mode")
   id_lmap <- id_cols[id_cols %in% names(layers_map)]
@@ -171,8 +173,8 @@ calculate_flux <- function(x, p){
 
     FLUX <- FLUX %>%
     dplyr::left_join(soilphys_layers, by = c("prof_id", "upper", "lower")) %>%
-    dplyr::mutate(flux = -DS*c_air*dcdz_ppm) %>%
-    dplyr::mutate(depth = (upper+lower)/2) %>%
-    dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm))) %>%
+    dplyr::mutate(flux = -.data$DS * .data$c_air * .data$dcdz_ppm) %>%
+    dplyr::mutate(depth = (.data$upper + .data$lower)/2) %>%
+    dplyr::mutate(flux_sd = abs(.data$flux * abs(.data$dcdz_sd / .data$dcdz_ppm))) %>%
     dplyr::ungroup()
 }

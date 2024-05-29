@@ -69,7 +69,7 @@ plot_profile.cfp_pfres <- function(x) {
     dplyr::select(!depth) %>%
     dplyr::rename(depth = upper) %>%
     dplyr::right_join(PROFLUX,
-                      by = whats_in_both(list(names(PROFLUX), names(.)))) %>%
+                      by = whats_in_both(list(names(PROFLUX), names(.data)))) %>%
     dplyr::arrange(dplyr::desc(depth))
 
   p <-
@@ -215,8 +215,8 @@ plot_profile.cfp_fgres <- function(x) {
     ) +
     ggplot2::geom_text(data = FLUX,
               aes( x = 0.8,
-                   y = (upper + lower) / 2,
-                   label = signif(dcdz_ppm, 3))) +
+                   y = (.data$upper + .data$lower) / 2,
+                   label = signif(.data$dcdz_ppm, 3))) +
     ggplot2::geom_text(aes(x = 0.8,
                   y = 1.1*diff(range(c(upper, lower))) + min(lower),
                   label = "dcdz_ppm")) +
@@ -298,7 +298,7 @@ plot_profile.cfp_layers_map <- function(x) {
 
   x %>%
     dplyr::mutate(depth = (upper+lower)/2) %>%
-    dplyr::mutate(range = diff(range(c(lowlim, highlim)))) %>%
+    dplyr::mutate(xrange = diff(range(c(lowlim, highlim)))) %>%
     dplyr::mutate(yrange = diff(range(c(upper, lower)))) %>%
     dplyr::mutate(layer_couple =
                     ifelse(lower == min(lower),
@@ -312,24 +312,24 @@ plot_profile.cfp_layers_map <- function(x) {
     ggplot2::geom_hline(aes(yintercept = upper), col = "black")+
     ggplot2::geom_hline(aes(yintercept = lower), col = "black")+
     ggplot2::geom_text(aes(label = layer,
-                           x = 0.2*range), col = "white")+
+                           x = 0.2*.data$xrange), col = "white")+
     ggplot2::geom_text(aes(label = pmap,
-                           x = 0.4*range), col = "white")+
+                           x = 0.4*.data$xrange), col = "white")+
     ggplot2::geom_text(aes(label = layer_couple,
-                           x = 0.8*range,
+                           x = 0.8*.data$xrange,
                            y = lower),
                        col = "white")+
     ggplot2::geom_text(aes(label = "layer",
-                           x = 0.2*range[1],
-                           y = 1.1*yrange[1] + min(lower)),
+                           x = 0.2*.data$xrange[1],
+                           y = 1.1*.data$yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::geom_text(aes(label = "pmap",
-                           x = 0.4*range[1],
-                           y = 1.1*yrange[1] + min(lower)),
+                           x = 0.4*.data$xrange[1],
+                           y = 1.1*.data$yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::geom_text(aes(label = "layer_couple",
-                           x = 0.8*range[1],
-                           y = 1.1*yrange[1] + min(lower)),
+                           x = 0.8*.data$xrange[1],
+                           y = 1.1*.data$yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::facet_wrap(cfp_id_cols(x))+
     scale_cfp_fill+

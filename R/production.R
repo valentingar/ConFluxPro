@@ -21,6 +21,8 @@
 #' @returns data.frame with prod_abs (\eqn{µmol / m^2 / s}), efflux (\eqn{µmol / m^2 / s}) and
 #' \eqn{prod_rel = efflux / prod_abs}.
 #'
+#' @importFrom rlang .data
+#'
 #' @export
 
 production <- function(x, ...){
@@ -36,14 +38,14 @@ production.cfp_fgres <- function(x, ...){
 
   FLUX %>%
     dplyr::left_join(EFFLUX, by = merger) %>%
-    dplyr::arrange(upper) %>%
+    dplyr::arrange("upper") %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::mutate(flux_lag = dplyr::lag(flux),
-                  flux_lead = dplyr::lead(flux)) %>%
-    dplyr::mutate(flux_lag = ifelse(is.na(flux_lag), 0, flux_lag),
-                  flux_lead = ifelse(is.na(flux_lead), efflux, flux_lead)) %>%
-    dplyr::mutate(prod_abs = flux_lead - flux_lag ) %>%
-    dplyr::mutate(prod_rel = prod_abs / efflux) %>%
+    dplyr::mutate(flux_lag = dplyr::lag(.data$flux),
+                  flux_lead = dplyr::lead(.data$flux)) %>%
+    dplyr::mutate(flux_lag = ifelse(is.na(.data$flux_lag), 0, .data$flux_lag),
+                  flux_lead = ifelse(is.na(.data$flux_lead), .data$efflux, .data$flux_lead)) %>%
+    dplyr::mutate(prod_abs = .data$flux_lead - .data$flux_lag ) %>%
+    dplyr::mutate(prod_rel = .data$prod_abs / .data$efflux) %>%
     dplyr::select(dplyr::any_of(c(id_cols,
                                   "upper",
                                   "lower",

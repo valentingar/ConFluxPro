@@ -33,6 +33,8 @@
 #'}
 
 #' @importFrom dplyr filter
+#' @importFrom rlang .data
+#'
 #' @export
 # helper
 
@@ -112,14 +114,14 @@ cfp_dat <- function(gasdata,
     dplyr::filter((is.na(gd_id) + is.na(depth) + is.na(pmap) + is.na(group_id)) == 0) %>%
     dplyr::group_by(group_id, gd_id, pmap) %>%
     dplyr::summarise(n_depths = length(unique(depth))) %>%
-    dplyr::mutate(n_depths = ifelse(n_depths == 1, NA, n_depths)) %>%
+    dplyr::mutate(n_depths = ifelse(.data$n_depths == 1, NA, .data$n_depths)) %>%
     dplyr::right_join(profiles %>%
-                        left_join(layers_map,
+                        dplyr::left_join(layers_map,
                                   by = c(cfp_id_cols(layers_map), "group_id"),
                                   relationship = "many-to-many"),
                     by = c("gd_id", "group_id", "pmap")) %>%
   dplyr::group_by(prof_id) %>%
-    dplyr::filter(anyNA(n_depths)) %>%
+    dplyr::filter(anyNA(.data$n_depths)) %>%
     dplyr::pull(prof_id)
 
   profiles <-
@@ -218,8 +220,8 @@ same_range <- function(soilphys,
                        layers_map){
 
   sp_summ <- get_upper_lower_range(soilphys) %>%
-    dplyr::rename(umax_x = umax,
-           lmin_x = lmin) %>%
+    dplyr::rename(umax_x = "umax",
+           lmin_x = "lmin") %>%
     dplyr::left_join(get_upper_lower_range(layers_map),
               by = whats_in_both(list(cfp_id_cols(layers_map),cfp_id_cols(soilphys)))
     )
@@ -257,7 +259,7 @@ split_soilphys <- function(soilphys,
   # combine layers_map and gasdata
   all_depths <-
   layers_map[,c(sel_both, "upper")] %>%
-  dplyr::rename(depth = upper) %>%
+  dplyr::rename(depth = "upper") %>%
   dplyr::bind_rows(gasdata[,c(sel_both, "depth")])
 
   # add a single grouping variable
@@ -279,7 +281,7 @@ split_soilphys <- function(soilphys,
 
   sp_dist <-
   soilphys %>%
-    dplyr::select(depth_group,upper,lower) %>%
+    dplyr::select("depth_group", "upper", "lower") %>%
     dplyr::distinct()
 
   soilphys_new <-
@@ -289,18 +291,18 @@ split_soilphys <- function(soilphys,
            FUN = add_between,
            MoreArgs = list(df = all_depths),
            SIMPLIFY = FALSE) %>%
-    do.call(what = rbind, args = .) %>%
+    do.call(what = rbind) %>%
     data.frame() %>%
-    setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
+    stats::setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
     dplyr::left_join(soilphys,
                      by = c("upper","lower","depth_group"),
                      relationship = "many-to-many") %>%
-    dplyr::mutate(upper = upper_new,
-                  lower = lower_new) %>%
+    dplyr::mutate(upper = .data$upper_new,
+                  lower = .data$lower_new) %>%
     dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%
-    dplyr::mutate(height = (upper-lower)/100) %>%
-    dplyr::group_by(sp_id) %>%
-    dplyr::arrange(upper) %>%
+    dplyr::mutate(height = (.data$upper - .data$lower)/100) %>%
+    dplyr::group_by(.data$sp_id) %>%
+    dplyr::arrange("upper") %>%
     dplyr::mutate(step_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     new_cfp_soilphys(id_cols = sp_id_cols)

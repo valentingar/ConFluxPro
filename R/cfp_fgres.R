@@ -34,7 +34,7 @@ print.cfp_fgres <- function(x, ...){
   R2 <- x$FLUX %>%
     dplyr::select(dplyr::any_of(c(cfp_id_cols(x), "r2", "mode" ))) %>%
     dplyr::distinct() %>%
-    dplyr::pull(r2)
+    dplyr::pull("r2")
   mean_R2 <- round(mean(R2, na.rm = TRUE), digits = 6)
   n_NA <- length(R2[is.na(R2) == TRUE])
 

@@ -40,6 +40,7 @@
 #'
 #' @family FLUX
 #' @import splines
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -66,7 +67,8 @@ depths <- rev(sort(unique(c(upper, lower)))) #depths including boundaries from t
 depths_df <- rev(sort(unique(df$depth)))
 
 #true if the there are depths that exceed depths of non-NA values in df.
-ls_flag <- length(which(depths >max(depths_df,na.rm=T) | depths <min(depths_df,na.rm=T)))>0
+ls_flag <- length(which(depths > max(depths_df, na.rm = TRUE) |
+                          depths < min(depths_df,na.rm = TRUE)))>0
 
 #initializing NA-logical for return
 return_na <- F
@@ -127,8 +129,8 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
                          r2 = r2)
     return(df_ret)
   }) %>%
-    do.call(rbind, .) %>%
-    cbind.data.frame(df_ret, .)
+    do.call(what = rbind) %>%
+    cbind.data.frame(df_ret)
 
 
 
@@ -168,10 +170,10 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
                control = stats::nls.control(warnOnly = T)),silent = T)
 
     #check for convergence
-    conv_flag <- ifelse(class(mod) == "nls",conv_flag <- !mod$convInfo$isConv,F)
+    conv_flag <- ifelse(inherits(mod, "nls"),conv_flag <- !mod$convInfo$isConv,F)
 
     #na if no convergence or error
-    if (conv_flag | class(mod)=="try-error"){
+    if (conv_flag | inherits(mod, "try-error")){
       return_na <- T
     } else {
       #a <- coef(mod)[1]
