@@ -10,7 +10,7 @@ cfp_layers_map(
   gas = NULL,
   lowlim = NULL,
   highlim = NULL,
-  layer_couple = NULL
+  layer_couple = 0
 )
 }
 \arguments{
@@ -41,7 +41,7 @@ of possible production allowed in \code{pro_flux} models.}
 of possible production allowed in \code{pro_flux} models.}
 
 \item{layer_couple}{(numeric_vector) A vector the same length as gas that indicates how
-strongly the layer should be linked to the one below it (0 for no coupling)}
+strongly the layer should be linked to the one below it (0 for no coupling, the default).}
 }
 \description{
 A function to conveniently create a vaild cfp_layers_map object

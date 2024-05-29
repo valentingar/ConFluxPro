@@ -51,15 +51,9 @@ gasdata <-
  cfp_gasdata(id_cols = c("site", "Date"))
 
 
-lmap <- soilphys \%>\%
- select(upper,site) \%>\%
- distinct() \%>\%
- group_by(site) \%>\%
- slice_max(upper) \%>\%
- reframe(upper = c(upper,0),
-           lower = c(0,-100)) \%>\%
+lmap <-
+ ConFluxPro::layers_map \%>\%
  cfp_layers_map(gas = "CO2",
-                layer_couple = 0,
                 lowlim = 0,
                 highlim = 1000,
                 id_cols = "site")
