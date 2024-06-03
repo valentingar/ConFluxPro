@@ -199,13 +199,15 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
         dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower")))
     }
 
+    # get correct new n_runs
+    n_runs_new <- length(unique(run_map$run_id))
 
     run_map <- new_cfp_run_map(x = data.frame(run_map),
                                id_cols = id_cols_runmap,
                                params = params,
                                method = method,
                                type = type,
-                               n_runs = n_runs,
+                               n_runs = n_runs_new,
                                layers_different = layers_different,
                                layers_from = layers_from,
                                layers_altmap = layers_altmap,
@@ -247,6 +249,10 @@ run_map_permutation <- function(x,
   }
 
   if (layers_different == TRUE) {
+    if (length(params_notop) == 0){
+      stop("layers_different does not make sense if only topheight is changed.")
+    }
+
     n_perms <- max(run_map$perm_id)
 
     if (layers_from == "layers_map"){
@@ -283,10 +289,10 @@ run_map_permutation <- function(x,
                               names_to = "layer_id",
                               values_to = "perm_id") %>%
           dplyr::mutate(layer_id = as.numeric(layer_id)) %>%
-          dplyr::left_join(.x)
+          dplyr::left_join(.x, by = "layer_id")
 
       }) %>%
-      dplyr::left_join(run_map, relationship = "many-to-many") %>%
+      dplyr::left_join(run_map, relationship = "many-to-many", by = "perm_id") %>%
       dplyr::select(!"perm_id") %>%
       dplyr::select(!"layer_id")
   }
@@ -403,6 +409,10 @@ run_map_random <- function(x,
   }
 
   if (layers_different == TRUE){
+    if (length(params_notop) == 0){
+      stop("layers_different does not make sense if only topheight is changed.")
+    }
+
     if (layers_from == "layers_map"){
       run_map <-
         x$layers_map %>%

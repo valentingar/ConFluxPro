@@ -33,7 +33,7 @@ test_that("create runmap works", {
                                   "t" = c(1,1.05)),
                     method = "permutation",
                     type = c("factor","factor"),
-                    n_runs = NULL,
+                    n_runs = 4,
                     layers_different = FALSE,
                     layers_from = "layers_map",
                     layers_altmap = NULL,
@@ -92,7 +92,7 @@ test_that("permutation works", {
                                   "TPS" = c(1,1.2)),
                     method = "permutation",
                     type = c("addition", "factor"),
-                    n_runs = NULL,
+                    n_runs = 6,
                     layers_different = FALSE,
                     layers_from = "layers_map",
                     layers_altmap = NULL,
@@ -175,3 +175,46 @@ test_that("topheight only", {
     ))
 
 })
+
+test_that("layers_different works", {
+
+
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         params = list("TPS" = c(0.9, 1.1)),
+                         method = "random",
+                         type = c("factor"),
+                         layers_different = TRUE,
+                         n_runs = 1)
+
+  expect_equal(nrow(run_map), 4)
+  expect_equal(cfp_params_df(run_map),
+               data.frame(pmap = c(1, 2),
+                          param = c("TPS", "TPS"),
+                          param_id = c(1, 2)))
+
+})
+
+
+test_that("layers_different does not work for topheight only", {
+
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  expect_error(cfp_run_map(PROFLUX,
+                           params = list("topheight" = c(0.9, 1.1)),
+                           method = "random",
+                           type = c("factor"),
+                           layers_different = TRUE,
+                           n_runs = 1))
+
+  expect_error(cfp_run_map(PROFLUX,
+                           params = list("topheight" = c(0.9, 1.1)),
+                           method = "permutation",
+                           type = c("factor"),
+                           layers_different = TRUE,
+                           n_runs = 1))
+
+
+})
+
