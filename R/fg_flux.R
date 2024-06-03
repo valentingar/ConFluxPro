@@ -8,9 +8,8 @@
 #' @inheritParams pro_flux
 #'
 #' @inheritDotParams cfp_fgmod gases modes param funs
-
 #' @importFrom rlang .data
-
+#' @rdname fg_flux
 #' @export
 
 fg_flux <- function(x, ...){
@@ -18,22 +17,35 @@ fg_flux <- function(x, ...){
 }
 
 #'
-
+#' @rdname fg_flux
 #' @exportS3Method
-fg_flux.cfp_dat <- function(x, ...){
+fg_flux.cfp_dat <- function(x,
+                            ...,
+                            gases = NULL,
+                            modes = "LL",
+                            param = c("c_air", "DS"),
+                            funs = c("arith", "harm")){
+
+  rlang::check_dots_empty(...)
 
   x <- as_cfp_dat(x)
-  x <- cfp_fgmod(x,...)
+  x <- cfp_fgmod(x,
+                 gases = gases,
+                 modes = modes,
+                 param = param,
+                 funs = funs)
   .Class <- "cfp_fgmod"
   NextMethod()
 }
 
+#' @rdname fg_flux
 #' @exportS3Method
 fg_flux.cfp_fgres <- function(x, ...){
   x <- as_cfp_fgmod(x)
   NextMethod()
 }
 
+#' @rdname fg_flux
 #' @exportS3Method
 fg_flux.cfp_fgmod <- function(x, ...){
 

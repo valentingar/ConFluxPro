@@ -28,10 +28,10 @@
 
 
 cfp_fgmod <- function(x,
-                      gases = NULL,
-                      modes = "LL",
-                      param = c("c_air", "DS"),
-                      funs = c("arith", "harm")){
+                      gases,
+                      modes,
+                      param,
+                      funs){
 
   stopifnot(inherits(x, "cfp_dat"))
 
