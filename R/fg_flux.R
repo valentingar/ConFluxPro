@@ -7,11 +7,6 @@
 #'
 #' @inheritParams pro_flux
 #'
-#' @inheritParams cfp_dat
-#'
-#' @inheritParams cfp_gasdata
-#'
-#' @param ... Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:
 #' @inheritDotParams cfp_fgmod gases modes param funs
 
 #' @importFrom rlang .data

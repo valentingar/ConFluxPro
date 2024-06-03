@@ -5,7 +5,7 @@
 #'
 #' @param x A cfp_pfres or cfp_fgres model result.
 #'
-#' @param ... Further arguments passed on for cfp_fgres efflux calculation.
+#' @inheritDotParams fg_efflux method layers
 #'
 #' @importFrom rlang .data
 #'
@@ -48,8 +48,22 @@ pf_efflux <- function(x) {
 }
 
 
+#' @rdname efflux
+#' @param method Method(s) used to interpolate the efflux at the top of the soil
+#' from partial fluxes within the soil. One of
+#' \describe{
+#' \item{top}{Use the flux in the topmost model layer.}
+#' \item{lm}{A linear model where each partial flux is centered in the respective
+#' layer and the model is evaluated at the top of the soil.}
+#' \item{lex}{Linearly exterpolate using fluxes of two layers in the soil.}
+#' }
+#' @param layers Vector of two integers selecting the layers for the \code{lex}
+#' method. Layers are indexed from 1 (topmost) to the number of layers used in the
+#' flux calculation.
+
+
 fg_efflux <- function(x,
-                      method,
+                      method = "lm",
                       layers = NULL
                       ){
 
