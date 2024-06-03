@@ -1,11 +1,19 @@
-#' @title cfp_pfmod
+#' @title cfp_fgmod
 #'
 #' @description An S3 class for \code{fg_flux()} models. The class inherits from
 #' cfp_dat and adds any model specific parameters.
 #'
 #' @param x A \code{cfp_dat} object with all the necessary input datasets.
 #'
-#' @inheritParams fg_flux
+#' @param gases (character) A character vector defining the gases for which
+#' fluxes shall be calulated.
+#' @param modes (character) A character vector specifying mode(s) for dcdz
+#'   calculation. Can be "LL","LS","EF".
+#' @param param (character) A vector containing the the parameters of soilphys,
+#'   for which means should be calculated, must contain "c_air" and "DS", more
+#'   parameters help interpretation
+#' @param funs (character) A vector defining the type of mean to be used. One of
+#'   "arith" or "harm"
 #'
 #'
 

@@ -33,16 +33,16 @@ df (dataframe)
 }
 \description{
 A function for the correction of offsets in the whole
-  gas-dataset. The basic assumption is that atmospheric values of these gases
-  are fairly constant over long periods of time. If there are offsets in the
-  atmospheric concentrations, then these are probably introduced via
-  calibration differences or similar factors within the gas analysis. The
-  time series is smoothed by subdividing the whole dataset per gas into
-  homogeneous subsections (section). Mean values of the atmospheric
-  concentrations are then calculated, or a linear model is fit against time.
-  A correction factor is then calculated by dividing a target atmospheric
-  value (gases_std) by the mean or the values predicted by the linear model.
-  x_ppm values are then multiplied by that factor.
+gas-dataset. The basic assumption is that atmospheric values of these gases
+are fairly constant over long periods of time. If there are offsets in the
+atmospheric concentrations, then these are probably introduced via
+calibration differences or similar factors within the gas analysis. The
+time series is smoothed by subdividing the whole dataset per gas into
+homogeneous subsections (section). Mean values of the atmospheric
+concentrations are then calculated, or a linear model is fit against time.
+A correction factor is then calculated by dividing a target atmospheric
+value (gases_std) by the mean or the values predicted by the linear model.
+x_ppm values are then multiplied by that factor.
 }
 \examples{
 {

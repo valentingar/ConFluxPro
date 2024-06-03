@@ -11,6 +11,8 @@
 #'
 #' @returns data.frame with F0 (\eqn{µmol / m^2 / s})
 #'
+#' @importFrom rlang .data
+#'
 #' @export
 
 deepflux <- function(x, ...){
@@ -26,7 +28,7 @@ deepflux.cfp_pfres <- function(x, ...){
   if(zero_flux) message("zero_flux boundary condition is TRUE -> F0 is always 0.")
 
   PROD %>%
-    dplyr::select(prof_id, F0) %>%
+    dplyr::select(prof_id, .data$F0) %>%
     dplyr::distinct() %>%
     dplyr::left_join(x$profiles %>%
                        dplyr::select(dplyr::any_of(c(id_cols, "prof_id"))),

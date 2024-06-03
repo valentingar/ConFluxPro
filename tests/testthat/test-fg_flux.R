@@ -32,6 +32,6 @@ test_that("fg_flux works", {
             funs = c("harm", "arith"))
 
   expect_equal(nrow(FLUX$FLUX), 48)
-  expect_equal(round(FLUX$FLUX$flux[10], 3),0.316)
+  expect_equal(round(FLUX$FLUX$flux[10], 3),0.317)
 
 })

@@ -2,30 +2,26 @@
 % Please edit documentation in R/fg_flux.R
 \name{fg_flux}
 \alias{fg_flux}
-\alias{calculate_flux}
 \title{fg_flux}
 \usage{
 fg_flux(x, ...)
-
-calculate_flux(x, p)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
-\item{...}{Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:}
-
-\item{gases}{(character) A character vector defining the gases for which
-gluxes shall be calulated.}
-
-\item{modes}{(character) A character vector specifying mode(s) for dcdz
+\item{...}{
+  Arguments passed on to \code{\link[=cfp_fgmod]{cfp_fgmod}}
+  \describe{
+    \item{\code{gases}}{(character) A character vector defining the gases for which
+fluxes shall be calulated.}
+    \item{\code{modes}}{(character) A character vector specifying mode(s) for dcdz
 calculation. Can be "LL","LS","EF".}
-
-\item{param}{(character) A vector containing the the parameters of soilphys,
+    \item{\code{param}}{(character) A vector containing the the parameters of soilphys,
 for which means should be calculated, must contain "c_air" and "DS", more
 parameters help interpretation}
-
-\item{funs}{(character) A vector defining the type of mean to be used. One of
+    \item{\code{funs}}{(character) A vector defining the type of mean to be used. One of
 "arith" or "harm"}
+  }}
 }
 \description{
 This function takes a valid input dataset in cfp_dat

@@ -27,6 +27,8 @@
 #' @aliases error_concentration error_efflux error_funs
 #'
 #' @rdname error_funs
+#' @importFrom rlang .data
+#'
 #' @export
 
 error_concentration <- function(
@@ -51,24 +53,24 @@ error_concentration.cfp_pfres <- function(
 
     gasdata <-
       x$gasdata %>%
-      dplyr::select(gd_id,
-                    x_ppm,
-                    depth) %>%
-      dplyr::rename(upper = depth,
-                    conc_ref = x_ppm)
+      dplyr::select("gd_id",
+                    "x_ppm",
+                    "depth") %>%
+      dplyr::rename(upper = "depth",
+                    conc_ref = "x_ppm")
     soilphys <-
       x$soilphys %>%
-      dplyr::select(sp_id,
-                    upper,
-                    step_id,
-                    c_air)
+      dplyr::select("sp_id",
+                    "upper",
+                    "step_id",
+                    "c_air")
 
     x$profiles %>%
       dplyr::left_join(x$PROFLUX, by = c("prof_id", "sp_id")) %>%
       dplyr::left_join(soilphys %>%
-                         dplyr::select(sp_id,
-                                       step_id,
-                                       c_air),
+                         dplyr::select("sp_id",
+                                       "step_id",
+                                       "c_air"),
                        by = c("sp_id", "step_id")) %>%
       dplyr::select(dplyr::any_of(
         {c(param_cols,
@@ -78,7 +80,7 @@ error_concentration.cfp_pfres <- function(
            "conc",
            "c_air")}
       )) %>%
-      dplyr::mutate(conc_ppm = conc/c_air) %>%
+      dplyr::mutate(conc_ppm = .data$conc / .data$c_air) %>%
       dplyr::left_join(gasdata, by = c("gd_id", "upper")) %>%
 
       # grouping by upper first
@@ -87,9 +89,9 @@ error_concentration.cfp_pfres <- function(
       dplyr::group_by(
         dplyr::across(
           dplyr::any_of({c(param_cols,"upper")}))) %>%
-      dplyr::summarise(NRMSE = nrmse(conc_ppm,
-                                     conc_ref,
-                                     norm = !!normer)) %>%
+      dplyr::summarise(NRMSE = nrmse(.data$conc_ppm,
+                                     .data$conc_ref,
+                                     normer = !!normer)) %>%
 
       # then by only the param_cols provided
       dplyr::group_by(
@@ -97,7 +99,7 @@ error_concentration.cfp_pfres <- function(
           dplyr::any_of({param_cols}))) %>%
 
       # then calculation of mean of all depth-NRMSEs
-      dplyr::summarise(NRMSE = mean(NRMSE,
+      dplyr::summarise(NRMSE = mean(.data$NRMSE,
                                     na.rm = T))
 }
 
@@ -117,7 +119,7 @@ error_concentration.cfp_fgres <- function(
   x$FLUX %>%
     dplyr::left_join(x$profiles, by = merger) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(param_cols))) %>%
-    dplyr::summarise(NRMSE = mean(dcdz_sd / abs(dcdz_ppm), na.rm = TRUE))
+    dplyr::summarise(NRMSE = mean(.data$dcdz_sd / abs(.data$dcdz_ppm), na.rm = TRUE))
 }
 
 
@@ -145,7 +147,7 @@ error_efflux <-function(x,
       data.frame() %>%
       dplyr::select(
         dplyr::any_of({c(id_cols,"efflux")})) %>%
-      dplyr::rename(efflux_ref = efflux)
+      dplyr::rename(efflux_ref = "efflux")
 
     merger <- id_cols[id_cols %in% names(EFFLUX)]
 
@@ -155,9 +157,9 @@ error_efflux <-function(x,
       dplyr::group_by(
         dplyr::across(
           dplyr::any_of({param_cols}))) %>%
-      dplyr::summarise(NRMSE = nrmse(efflux,
-                                     efflux_ref,
-                                     norm = !!normer))
+      dplyr::summarise(NRMSE = nrmse(.data$efflux,
+                                     .data$efflux_ref,
+                                     normer = !!normer))
 
   }
 

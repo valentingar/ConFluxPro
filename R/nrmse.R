@@ -28,15 +28,15 @@
   nrmse <- function(a,
                     b,
                     normer){
-    RMSE <-rmse(a,b)
+    RMSE <-rmse(a, b)
     if(normer == "mean"){
-      NRMSE <- RMSE/abs(mean(a,na.rm = TRUE))
+      NRMSE <- RMSE/abs(mean(a, na.rm = TRUE))
     } else if (normer == "range"){
-      NRMSE <- RMSE / diff(range(a,na.rm = TRUE))
+      NRMSE <- RMSE / diff(range(a, na.rm = TRUE))
     } else if (normer == "IQR"){
-      NRMSE <- RMSE / diff(IQR(a),na.rm = TRUE)
+      NRMSE <- RMSE / diff(stats::IQR(a), na.rm = TRUE)
     }  else if (normer == "sd"){
-      NRMSE <- RMSE / sd(a,na.rm = TRUE)
+      NRMSE <- RMSE / stats::sd(a, na.rm = TRUE)
     } else {
       stop("normer must be one of mean,sd , range, IQR")
     }

@@ -30,14 +30,14 @@ test_that("create runmap works", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("TPS" = c(1,1.2),
                                    "t" = c(1,1.05)),
                      method = "permutation",
                      type = c("factor","factor")
   )
   set.seed(42)
-  run_map_2 <- run_map(PROFLUX,
+  run_map_2 <- cfp_run_map(PROFLUX,
                        params = list("TPS" = c(1,1.2),
                                      "t" = c(1,1.05)),
                        method = "random",
@@ -50,7 +50,8 @@ test_that("create runmap works", {
                       param = rep(c("TPS","t"),times = 4),
                       value = c(1,1,1.2,1,1,1.05,1.2,1.05),
                       type = "factor",
-                      gas = "CO2"
+                      gas = "CO2",
+                   param_id = rep(1:2,times = 4)
   ) %>%
     ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
                     params = list("TPS" = c(1,1.2),
@@ -70,7 +71,8 @@ test_that("create runmap works", {
                        param = rep(c("TPS","t"),times = 4),
                        value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
                        type = "factor",
-                       gas = "CO2") %>%
+                       gas = "CO2",
+                    param_id = rep(1:2,times = 4)) %>%
     ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
                     params = list("TPS" = c(1,1.2),
                                   "t" = c(1,1.05)),
@@ -122,7 +124,7 @@ test_that("permutation works", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1,0,1),
                                    "TPS" = c(1,1.2)),
                      method = "permutation",
@@ -133,7 +135,8 @@ test_that("permutation works", {
                       param = rep(c("TPS","topheight"),each = 6),
                       value = c(1,1,1,1.2,1.2,1.2,-1,0,1,-1,0,1),
                       type = rep(c("factor", "addition"), each = 6),
-                      gas = "CO2"
+                      gas = "CO2",
+                   param_id = rep(1:2,each = 6)
   ) %>%
     new_cfp_run_map(id_cols = "gas",
                     params = list("topheight" = c(-1,0,1),
@@ -186,14 +189,14 @@ test_that("topheight adjust", {
 
 
   expect_error(
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-100,0,1),
                                    "TPS" = c(1,1.2)),
                      method = "permutation",
                      type = c("addition","factor")
   ))
 
-  run_mappy <- run_map(PROFLUX,
+  run_mappy <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-4,0,1),
                                    "TPS" = c(1,1.2)),
                      method = "permutation",
@@ -211,7 +214,7 @@ test_that("topheight adjust", {
                c(-4,0))
 
   expect_error(
-    run_mappo <- run_map(PROFLUX,
+    run_mappo <- cfp_run_map(PROFLUX,
                        params = list("topheight" = c(-4,1),
                                      "TPS" = c(1,1.2)),
                        method = "random",
@@ -254,20 +257,20 @@ test_that("topheight only", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1)),
                      method = "permutation",
                      type = c("addition")
   )
 
   expect_no_error(
-    run_map <- run_map(PROFLUX,
+    run_map <- cfp_run_map(PROFLUX,
                        params = list("topheight" = c(-1,2)),
                        method = "permutation",
                        type = c("addition")
     ))
   expect_no_error(
-    run_map <- run_map(PROFLUX,
+    run_map <- cfp_run_map(PROFLUX,
                        params = list("topheight" = c(-1,1)),
                        method = "random",
                        type = c("addition"),

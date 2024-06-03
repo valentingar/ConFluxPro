@@ -12,5 +12,7 @@ sobol_run_map(x, ...)
 \item{...}{Additional arguments passed on to \link{run_map}}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Modify an existing run_map for sobol indice estimation.
 }

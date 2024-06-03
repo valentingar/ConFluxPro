@@ -20,7 +20,7 @@ cfp_altres <- function(x,
                        error_funs = NULL,
                        error_args = NULL){
 
-  stopfinot(is.list(x))
+  stopifnot(is.list(x))
 
   x <- new_cfp_altres(x = x,
                       og_model = og_model,
@@ -62,13 +62,13 @@ new_cfp_altres <- function(x,
 
 validate_cfp_altres <- function(x){
 
-  stopifnot(inherist(x, "cfp_altres"))
+  stopifnot(inherits(x, "cfp_altres"))
 
 
   run_map <- cfp_run_map(x)
   runs <- unique(run_map$run_id)
 
-  stopifnot("Length of result list does not math run_map" = length(runs) == length(x))
+  stopifnot("Length of result list does not match run_map" = length(runs) == length(x))
 
 
   x

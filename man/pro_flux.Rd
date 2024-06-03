@@ -29,13 +29,13 @@ defines the weight of this penalty in the optimisation algorithm \code{\link{pro
 }
 \description{
 This implements an inverse modeling approach which optimizes
-  vertically resolved production (or consumption) of the gases in question to
-  fit a modeled concentration profile to observed data.
+vertically resolved production (or consumption) of the gases in question to
+fit a modeled concentration profile to observed data.
 
-  One boundary condition of this model is, that there is no incoming or
-  outgoing flux at the bottom of the lowest layer of the profile. If this
-  boundary condition is not met, the flux must be optimised as well. This can
-  be set in \code{zero_flux}.
+One boundary condition of this model is, that there is no incoming or
+outgoing flux at the bottom of the lowest layer of the profile. If this
+boundary condition is not met, the flux must be optimised as well. This can
+be set in \code{zero_flux}.
 }
 \examples{
 {
@@ -51,15 +51,9 @@ gasdata <-
  cfp_gasdata(id_cols = c("site", "Date"))
 
 
-lmap <- soilphys \%>\%
- select(upper,site) \%>\%
- distinct() \%>\%
- group_by(site) \%>\%
- slice_max(upper) \%>\%
- summarise(upper = c(upper,0),
-           lower = c(0,-100)) \%>\%
+lmap <-
+ ConFluxPro::layers_map \%>\%
  cfp_layers_map(gas = "CO2",
-                layer_couple = 0,
                 lowlim = 0,
                 highlim = 1000,
                 id_cols = "site")

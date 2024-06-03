@@ -7,12 +7,12 @@
 \format{
 A tibble with 8 rows and 6 variables:
 \describe{
-  \item{site}{name of the site}
-  \item{upper}{upper limit for layer in cm}
-  \item{lower}{lower limit for layer in cm}
-  \item{TPS}{total pore space as fraction of volume}
-  \item{a}{diffusion-model fit parameter a}
-  \item{b}{diffusion-model fit parameter b}
+\item{site}{name of the site}
+\item{upper}{upper limit for layer in cm}
+\item{lower}{lower limit for layer in cm}
+\item{TPS}{total pore space as fraction of volume}
+\item{a}{diffusion-model fit parameter a}
+\item{b}{diffusion-model fit parameter b}
 }
 }
 \usage{

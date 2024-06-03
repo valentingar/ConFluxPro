@@ -60,6 +60,7 @@
 #' }
 #'
 #' @importFrom lubridate %within%
+#' @importFrom rlang .data
 #'
 #' @family gasdata
 #' @export
@@ -86,34 +87,34 @@ if(any(is.na(corr_map$mode))){
 gas_map <- data.frame(gas = gases, corr_std = gases_std)
 
 df<-df %>%
-  dplyr::filter(depth_cat %in% !!depth_cal) %>%
+  dplyr::filter(.data$depth_cat %in% !!depth_cal) %>%
   dplyr::left_join(corr_map) %>%
-  dplyr::filter(is.na(section)==F) %>%
-  dplyr::filter(is.na(x_ppm)==F) %>%
-  dplyr::group_by(gas,section) %>%
+  dplyr::filter(is.na(.data$section) == F) %>%
+  dplyr::filter(is.na(.data$x_ppm) == F) %>%
+  dplyr::group_by(.data$gas, .data$section) %>%
   dplyr::group_modify(~{
   if(is.na(.x$mode[1])){
     med = 1
     grad = 0
   } else  if(.x$mode[1] == "const"){
-      med = stats::median(.x$x_ppm,na.rm=T)
+      med = stats::median(.x$x_ppm, na.rm = TRUE)
       grad = 0
   } else if (.x$mode[1]=="lin"){
-    if (.x %>% dplyr::filter(!is.na(Date),!is.na(x_ppm)) %>% nrow() <2){
-      stop(paste("section",.y$section[1],"does not have enough non-NA cases (>=2)"))
+    if (.x %>% dplyr::filter(!is.na(.data$Date),!is.na(.data$x_ppm)) %>% nrow() < 2){
+      stop(paste("section", .y$section[1], "does not have enough non-NA cases (>=2)"))
     }
-    mod <- stats::lm(x_ppm ~ Date,data = .x)
+    mod <- stats::lm(x_ppm ~ Date, data = .x)
     med <- stats::coef(mod)[1]
     grad <- stats::coef(mod)[2]
   }
-    return(.x %>% dplyr::mutate(corr_med = med,corr_grad = grad))
+    return(.x %>% dplyr::mutate(corr_med = med, corr_grad = grad))
   }) %>%
   dplyr::left_join(gas_map) %>%
-  dplyr::mutate(corr_fac = corr_std*10^6 /(corr_med + corr_grad * as.numeric( Date))) %>%
+  dplyr::mutate(corr_fac = .data$corr_std * 10^6 /(.data$corr_med + .data$corr_grad * as.numeric(.data$Date))) %>%
   dplyr::select(contains(c("Date","Plot","gas","corr_fac"))) %>%
   dplyr::right_join(df) %>%
-  dplyr::mutate(corr_fac = ifelse(is.na(corr_fac),1,corr_fac)) %>%
-  dplyr::mutate(x_ppm = x_ppm * corr_fac)
+  dplyr::mutate(corr_fac = ifelse(is.na(.data$corr_fac), 1, .data$corr_fac)) %>%
+  dplyr::mutate(x_ppm = .data$x_ppm * .data$corr_fac)
 
 
 return(df)

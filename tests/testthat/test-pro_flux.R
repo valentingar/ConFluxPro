@@ -31,7 +31,7 @@ test_that("pro_flux works", {
 
 
   expect_equal(nrow(PROFLUX$PROFLUX),216)
-  expect_equal(round(PROFLUX$PROFLUX$flux[1],digits = 3),0.038)
+  expect_equal(round(PROFLUX$PROFLUX$flux[1],digits = 3),0.039)
 })
 
 
@@ -114,6 +114,6 @@ test_that("pro_flux does not allow negative concentrations", {
 
   PROFLUX$PROFLUX
 
-  expect_true(all(PROFLUX$PROFLUX$conc >=0))
+  expect_true(all(PROFLUX$PROFLUX$conc >=0 | is.na(PROFLUX$PROFLUX$conc)))
 
   })

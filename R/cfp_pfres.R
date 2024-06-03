@@ -7,6 +7,7 @@
 #' @param x A valid \code{cfp_pfmod} object
 #' @param y The corresponding PROFULX \code{data.frame}.
 #'
+#' @importFrom rlang .data
 #'
 #'
 
@@ -49,9 +50,7 @@ get_PROFLUX.cfp_dat <- function(x){
   profiles <- x$profiles
 
   x <-
-    PROFLUX %>%
-    join_with_profiles(profiles) %>%
-    {.[[1]]}
+    join_with_profiles(PROFLUX, profiles)[[1]]
 
   x
 }

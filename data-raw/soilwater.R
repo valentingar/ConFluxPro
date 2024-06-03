@@ -58,7 +58,7 @@ soilwater <- data.frame(site = c(rep("site_a",7),
 soilwater <-
 soilwater %>%
   rowwise()%>%
-  summarise(Date = dates,
+  reframe(Date = dates,
             date_factor = date_factor,
             site = rep(site),
             upper = rep(upper),

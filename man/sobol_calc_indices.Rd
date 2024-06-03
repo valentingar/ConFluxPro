@@ -19,6 +19,8 @@ id_cols (e.g. different sites or gases) you may want to calculate indices per id
 how the data is to be changed with each distinct \code{run_id}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 From any result parameter and its corresponding run_map calculate
 first-order and total sobol indices using the Azzini (2021) method.
 }

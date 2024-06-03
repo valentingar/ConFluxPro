@@ -27,6 +27,8 @@
 #'
 #' @aliases alternate_model
 #'
+#' @importFrom rlang .data
+#'
 #' @export
 
 
@@ -92,7 +94,7 @@ apply_one_run <- function(run_map,
                      error_funs,
                      error_args)
 
-  df_ret$run_id <- r_id
+  df_ret$run_id <- run_map$run_id[1]
   df_ret
 }
 
@@ -171,9 +173,9 @@ update_param <- function(run_param,
         "step_id"))) %>%
       dplyr::left_join(run_param, by = merger) %>%
       dplyr::mutate(dplyr::across({param},
-                                  ~dplyr::case_when(type == "factor" ~ .x * value,
-                                             type == "abs" ~ value,
-                                             type == "addition" ~ .x + value)
+                                  ~dplyr::case_when(type == "factor" ~ .x * .data$value,
+                                             type == "abs" ~ .data$value,
+                                             type == "addition" ~ .x + .data$value)
       )) %>%
       dplyr::select({param})
   }
@@ -193,18 +195,18 @@ update_topheight <-
     topheight_gd <- topheight_sp <- topheight %>%
       dplyr::left_join(x$profiles,
                        by = {m_lmap})
-    topheight_gd <- topheight_gd %>% dplyr::select(gd_id, value, type)
-    topheight_sp <- topheight_sp %>% dplyr::select(sp_id, value, type)
+    topheight_gd <- topheight_gd %>% dplyr::select("gd_id", "value", "type")
+    topheight_sp <- topheight_sp %>% dplyr::select("sp_id", "value", "type")
 
     x$layers_map <-
       x$layers_map %>%
       dplyr::left_join(topheight, by = m_lmap ) %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_lmap))) %>%
-      dplyr::mutate(upper = ifelse(upper == max(upper),
-                                   change_param(upper,
-                                                value,
-                                                type),
-                                   upper)) %>%
+      dplyr::mutate(upper = ifelse(.data$upper == max(.data$upper),
+                                   change_param(.data$upper,
+                                                .data$value,
+                                                .data$type),
+                                   .data$upper)) %>%
       dplyr::ungroup() %>%
       dplyr::select(!dplyr::any_of(c("param",
                                      "type",
@@ -215,11 +217,11 @@ update_topheight <-
       x$soilphys %>%
       dplyr::left_join(topheight_sp, by = "sp_id") %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_sp))) %>%
-      dplyr::mutate(upper = ifelse(upper == max(upper),
-                                   change_param(upper,
-                                                value,
-                                                type),
-                                   upper)) %>%
+      dplyr::mutate(upper = ifelse(.data$upper == max(.data$upper),
+                                   change_param(.data$upper,
+                                                .data$value,
+                                                .data$type),
+                                   .data$upper)) %>%
       dplyr::ungroup()%>%
       dplyr::select(!dplyr::any_of(c("param",
                                      "type",
@@ -232,11 +234,11 @@ update_topheight <-
       x$gasdata %>%
       dplyr::left_join(topheight_gd, by = "gd_id") %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_gd))) %>%
-      dplyr::mutate(depth = ifelse(depth == max(depth),
-                                   change_param(depth,
-                                                value,
-                                                type),
-                                   depth)) %>%
+      dplyr::mutate(depth = ifelse(.data$depth == max(.data$depth),
+                                   change_param(.data$depth,
+                                                .data$value,
+                                                .data$type),
+                                   .data$depth)) %>%
       dplyr::ungroup() %>%
       dplyr::select(!dplyr::any_of(c("param",
                                      "type",

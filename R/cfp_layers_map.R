@@ -27,7 +27,7 @@
 #' @param highlim (numeric vecotr)  A vector the same length as gas with the upper limit
 #' of possible production allowed in \code{pro_flux} models.
 #' @param layer_couple (numeric_vector) A vector the same length as gas that indicates how
-#' strongly the layer should be linked to the one below it (0 for no coupling)
+#' strongly the layer should be linked to the one below it (0 for no coupling, the default).
 #'
 #'
 #' @export
@@ -36,7 +36,7 @@ cfp_layers_map <- function(layers_map,
                            gas = NULL,
                            lowlim = NULL,
                            highlim = NULL,
-                           layer_couple = NULL
+                           layer_couple = 0
 ){
 
   stopifnot("layers_map must be a data frame!" = is.data.frame(layers_map))

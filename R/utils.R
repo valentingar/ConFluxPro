@@ -1,4 +1,4 @@
-
+#' @importFrom rlang .data
 # internal functions only
 
 
@@ -61,14 +61,14 @@ is_ul_consistent <- function(df,
 
 
   df <- df %>%
-    dplyr::arrange(upper) %>%
+    dplyr::arrange(.data$upper) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols)))
 
   n_no_fit <-
     df %>%
-    dplyr::mutate(is_lowest = lower == min(lower)) %>%
-    dplyr::filter(!(lower == dplyr::lag(upper) |
-                    is_lowest)) %>%
+    dplyr::mutate(is_lowest = (.data$lower == min(.data$lower))) %>%
+    dplyr::filter(!(lower == dplyr::lag(.data$upper) |
+                    .data$is_lowest)) %>%
     nrow()
 
   n_no_fit == 0

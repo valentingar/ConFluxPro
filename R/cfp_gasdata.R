@@ -12,6 +12,8 @@
 #'}
 #'@inheritParams cfp_layers_map
 #'
+#'
+#' @importFrom rlang .data
 #'@return cfp_gasdata
 #'
 
@@ -71,7 +73,7 @@ validate_cfp_gasdata <- function(x){
     x %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
     dplyr::summarise(n_depths = length(unique(depth[!is.na(x_ppm)]))) %>%
-    dplyr::filter(n_depths < 2)
+    dplyr::filter(.data$n_depths < 2)
 
   stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
               nrow(problem_groups) == 0 )

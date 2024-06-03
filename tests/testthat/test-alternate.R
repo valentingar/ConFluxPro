@@ -29,7 +29,7 @@ test_that("topheight only", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1)),
                      method = "permutation",
                      type = c("addition")
@@ -77,7 +77,7 @@ test_that("layers from soilphys", {
     pro_flux()
 
 
-  run_map <- run_map(PROFLUX,
+  run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1, 1),
                                    "TPS" = c(0.8, 1.2)),
                      method = "random",

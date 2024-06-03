@@ -82,6 +82,7 @@
 #'
 #' @import splines
 #' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @examples {
 #'
@@ -93,7 +94,7 @@
 #'   distinct() %>%
 #'   group_by(site) %>%
 #'   slice_max(depth) %>%
-#'   summarise(depth = c(depth,seq(0,-100,-10)))
+#'   reframe(depth = c(depth,seq(0,-100,-10)))
 #'
 #' discretize_depth(soiltemp,
 #'                  "t",
@@ -231,7 +232,7 @@ if(length(target_id)>0){
   depth_target <-
     depth_target %>%
     dplyr::ungroup() %>%
-    dplyr::group_by(dplyr::across({target_id})) %>%
+    dplyr::group_by(dplyr::across(target_id)) %>%
     dplyr::mutate(gr_id = dplyr::cur_group_id())
 
 }
@@ -240,11 +241,11 @@ if(length(target_id)>0){
 # each group will have one less row than it started with
 depth_target_mid <-
   depth_target %>%
-  dplyr::group_by(gr_id) %>% #must be grouped! each group has its own structure
-  dplyr::mutate(depth_l = dplyr::lag(depth,1)) %>%
-  dplyr::mutate(depth = (depth+depth_l) / 2) %>%
-  dplyr::select(-depth_l) %>%
-  dplyr::filter(!is.na(depth)) #remove additional rows
+  dplyr::group_by(.data$gr_id) %>% #must be grouped! each group has its own structure
+  dplyr::mutate(depth_l = dplyr::lag(.data$depth, 1)) %>%
+  dplyr::mutate(depth = (.data$depth + .data$depth_l) / 2) %>%
+  dplyr::select(-"depth_l") %>%
+  dplyr::filter(!is.na(.data$depth)) #remove additional rows
 
 
 #checking for duplicates and stopping if necessary
@@ -269,7 +270,7 @@ df <-depth_target %>%
 }
 
 df <- df%>%
-  dplyr::group_by(dplyr::across({id_cols})) %>%
+  dplyr::group_by(dplyr::across(!!id_cols)) %>%
   dplyr::mutate(prof_id = dplyr::cur_group_id()) %>% #add profile id
   as.data.frame() #faster than tibble?
 
@@ -311,9 +312,9 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
   lower <- dt[-length(dt)]
   upper <- dt[-1]
 
-  df_ret$depth <- rep(dt_mid,times = k)
-  df_ret$upper <- rep(upper,times = k)
-  df_ret$lower <- rep(lower,times = k)
+  df_ret$depth <- rep(dt_mid, times = k)
+  df_ret$upper <- rep(upper, times = k)
+  df_ret$lower <- rep(lower, times = k)
   df_ret$prof_id <- rep(sort(unique(df_tmp$prof_id)),
                         each = length(upper))
 
@@ -324,9 +325,9 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
 
 
 df_ret <- df %>%
-  dplyr::select(any_of({c(id_cols,"prof_id")})) %>%
+  dplyr::select(any_of({c(id_cols, "prof_id")})) %>%
   dplyr::distinct() %>%
-  dplyr::left_join(df_ret,by = "prof_id")
+  dplyr::left_join(df_ret, by = "prof_id")
 
 return(df_ret %>% dplyr::select(-"prof_id"))
 
