@@ -2,21 +2,18 @@
 % Please edit documentation in R/efflux.R
 \name{efflux}
 \alias{efflux}
-\alias{fg_efflux}
+\alias{efflux.cfp_pfres}
+\alias{efflux.cfp_fgres}
 \title{efflux}
 \usage{
 efflux(x, ...)
 
-fg_efflux(x, method = "lm", layers = NULL)
+\method{efflux}{cfp_pfres}(x, ...)
+
+\method{efflux}{cfp_fgres}(x, ..., method = "lm", layers = NULL)
 }
 \arguments{
 \item{x}{A cfp_pfres or cfp_fgres model result.}
-
-\item{...}{
-  Arguments passed on to \code{\link[=fg_efflux]{fg_efflux}}
-  \describe{
-    \item{\code{}}{}
-  }}
 
 \item{method}{Method(s) used to interpolate the efflux at the top of the soil
 from partial fluxes within the soil. One of
@@ -33,5 +30,5 @@ flux calculation.}
 }
 \description{
 Calculate or extract the soil/atmosphere efflux
-from cfp_pfres or cfp_fgres model results.
+from \code{cfp_pfres} or \code{cfp_fgres} model results.
 }

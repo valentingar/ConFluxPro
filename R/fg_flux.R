@@ -1,4 +1,4 @@
-#' @title fg_flux
+#' @title Flux gradient method
 #'
 #' @description This function takes a valid input dataset in cfp_dat
 #' and calculates fluxes accordingly. Fluxes are calculated for each layer defined
@@ -11,8 +11,7 @@
 
 #' @importFrom rlang .data
 
-#' @rdname fg_flux
-#' @export fg_flux
+#' @export
 
 fg_flux <- function(x, ...){
   UseMethod("fg_flux")

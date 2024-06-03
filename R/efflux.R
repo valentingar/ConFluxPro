@@ -1,11 +1,9 @@
 #' @title efflux
 #'
 #' @description Calculate or extract the soil/atmosphere efflux
-#' from cfp_pfres or cfp_fgres model results.
+#' from \code{cfp_pfres} or \code{cfp_fgres} model results.
 #'
 #' @param x A cfp_pfres or cfp_fgres model result.
-#'
-#' @inheritDotParams fg_efflux method layers
 #'
 #' @importFrom rlang .data
 #'
@@ -15,18 +13,33 @@ efflux <- function(x, ...){
   UseMethod("efflux")
 }
 
+#' @rdname efflux
 #' @exportS3Method
 efflux.cfp_pfres <- function(x, ...){
   pf_efflux(x)
 }
 
+#' @rdname efflux
+#' @param method Method(s) used to interpolate the efflux at the top of the soil
+#' from partial fluxes within the soil. One of
+#' \describe{
+#' \item{top}{Use the flux in the topmost model layer.}
+#' \item{lm}{A linear model where each partial flux is centered in the respective
+#' layer and the model is evaluated at the top of the soil.}
+#' \item{lex}{Linearly exterpolate using fluxes of two layers in the soil.}
+#' }
+#' @param layers Vector of two integers selecting the layers for the \code{lex}
+#' method. Layers are indexed from 1 (topmost) to the number of layers used in the
+#' flux calculation.
 #' @exportS3Method
-efflux.cfp_fgres <- function(x, ...){
-  fg_efflux(x, ...)
+efflux.cfp_fgres <- function(x,
+                             ...,
+                             method = "lm",
+                             layers = NULL){
+  fg_efflux(x, method = method, layers = layers)
 }
 
 # helpers ----------------------
-
 pf_efflux <- function(x) {
 
   PROFLUX <- x$PROFLUX
@@ -48,23 +61,9 @@ pf_efflux <- function(x) {
 }
 
 
-#' @rdname efflux
-#' @param method Method(s) used to interpolate the efflux at the top of the soil
-#' from partial fluxes within the soil. One of
-#' \describe{
-#' \item{top}{Use the flux in the topmost model layer.}
-#' \item{lm}{A linear model where each partial flux is centered in the respective
-#' layer and the model is evaluated at the top of the soil.}
-#' \item{lex}{Linearly exterpolate using fluxes of two layers in the soil.}
-#' }
-#' @param layers Vector of two integers selecting the layers for the \code{lex}
-#' method. Layers are indexed from 1 (topmost) to the number of layers used in the
-#' flux calculation.
-
-
 fg_efflux <- function(x,
-                      method = "lm",
-                      layers = NULL
+                      method,
+                      layers
                       ){
 
   method <- match.arg(method, c("top", "lm", "lex"), several.ok = TRUE)
