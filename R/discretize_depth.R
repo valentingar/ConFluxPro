@@ -232,7 +232,7 @@ if(length(target_id)>0){
   depth_target <-
     depth_target %>%
     dplyr::ungroup() %>%
-    dplyr::group_by(dplyr::across(target_id)) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(target_id))) %>%
     dplyr::mutate(gr_id = dplyr::cur_group_id())
 
 }
