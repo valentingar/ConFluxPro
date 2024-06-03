@@ -188,11 +188,27 @@ test_that("layers_different works", {
                          layers_different = TRUE,
                          n_runs = 1)
 
+  run_map2 <- cfp_run_map(PROFLUX,
+                         params = list("TPS" = c(0.9, 1.1)),
+                         method = "permutation",
+                         type = c("factor"),
+                         layers_different = TRUE)
+
+
   expect_equal(nrow(run_map), 4)
   expect_equal(cfp_params_df(run_map),
                data.frame(pmap = c(1, 2),
                           param = c("TPS", "TPS"),
                           param_id = c(1, 2)))
+
+  expect_equal(nrow(run_map2), 16)
+  expect_equal(cfp_params_df(run_map2),
+               data.frame(site = rep(c("site_a", "site_b"), each = 2),
+                          gas = "CO2",
+                          pmap = rep(c(1, 2), times = 2),
+                          param = rep("TPS", 4),
+                          param_id = c(1, 2, 1, 2)))
+
 
 })
 
