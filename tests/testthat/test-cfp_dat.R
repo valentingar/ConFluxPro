@@ -216,3 +216,19 @@ test_that("incomplete profiles are checked",{
   expect_equal(n_profiles(my_dat), 4)
 
 })
+
+
+test_that("filter cfp_dat objects works", {
+
+  base_dat <- readRDS(testthat::test_path("fixtures", "base_dat.rds"))
+
+  base_dat_site_a <- filter(base_dat, site == "site_a")
+  base_dat_prof1 <- filter(base_dat, prof_id == 1)
+
+  expect_equal(unique(base_dat_site_a$profiles$site), "site_a")
+  expect_equal(unique(base_dat_prof1$profiles$prof_id), 1)
+  expect_equal(n_profiles(base_dat_site_a), 12)
+
+  expect_equal(nrow(base_dat_prof1$soilphys), 9)
+
+})
