@@ -1,32 +1,6 @@
 test_that("topheight only", {
-  require(dplyr)
 
-  soilphys <-
-    ConFluxPro::soilphys %>%
-    cfp_soilphys(id_cols = c("site", "Date"))
-
-  gasdata <-
-    ConFluxPro::gasdata %>%
-    cfp_gasdata(id_cols = c("site", "Date"))
-
-
-  lmap <- soilphys %>%
-    select(upper,site) %>%
-    distinct() %>%
-    group_by(site) %>%
-    slice_max(upper) %>%
-    reframe(upper = c(upper,0),
-            lower = c(0,-100)) %>%
-    cfp_layers_map(gas = "CO2",
-                   layer_couple = 0,
-                   lowlim = 0,
-                   highlim = 1000,
-                   id_cols = "site")
-  PROFLUX <-
-    cfp_dat(gasdata,
-            soilphys,
-            lmap ) %>%
-    pro_flux()
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
 
 
   run_map <- cfp_run_map(PROFLUX,
@@ -47,34 +21,8 @@ test_that("topheight only", {
 })
 
 test_that("layers from soilphys", {
-  require(dplyr)
 
-  soilphys <-
-    ConFluxPro::soilphys %>%
-    cfp_soilphys(id_cols = c("site", "Date"))
-
-  gasdata <-
-    ConFluxPro::gasdata %>%
-    cfp_gasdata(id_cols = c("site", "Date"))
-
-
-  lmap <- soilphys %>%
-    select(upper,site) %>%
-    distinct() %>%
-    group_by(site) %>%
-    slice_max(upper) %>%
-    reframe(upper = c(upper,0),
-            lower = c(0,-100)) %>%
-    cfp_layers_map(gas = "CO2",
-                   layer_couple = 0,
-                   lowlim = 0,
-                   highlim = 1000,
-                   id_cols = "site")
-  PROFLUX <-
-    cfp_dat(gasdata,
-            soilphys,
-            lmap ) %>%
-    pro_flux()
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
 
 
   run_map <- cfp_run_map(PROFLUX,
