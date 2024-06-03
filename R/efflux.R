@@ -36,6 +36,11 @@ efflux.cfp_fgres <- function(x,
                              ...,
                              method = "lm",
                              layers = NULL){
+  dots_list <- list(...)
+  if(length(dots_list) != 0){
+    stop(paste0("unknown arguments: ", names(dots_list), " \n Did you mistype something?"))
+  }
+
   fg_efflux(x, method = method, layers = layers)
 }
 
