@@ -1,3 +1,13 @@
+test_that("base_dat fixture is correct", {
+
+
+  base_dat <- readRDS(testthat::test_path("fixtures", "base_dat.rds"))
+
+  expect_equal(testhelp_make_dat(), base_dat)
+
+
+})
+
 test_that("create cfp_dat object",{
 
   library(dplyr)
@@ -206,8 +216,3 @@ test_that("incomplete profiles are checked",{
   expect_equal(n_profiles(my_dat), 4)
 
 })
-
-
-
-
-

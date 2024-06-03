@@ -1,6 +1,6 @@
 #' Helper functions for test suite.
 
-testhelp_make_proflux <- function(){
+testhelp_make_dat <- function(){
 
   soilphys <-
     cfp_soilphys(ConFluxPro::soilphys,
@@ -19,9 +19,8 @@ testhelp_make_proflux <- function(){
                    id_cols = "site")
 
   cfp_dat(gasdata,
-            soilphys,
-            lmap) |>
-    pro_flux()
+          soilphys,
+          lmap)
 
 
 }
