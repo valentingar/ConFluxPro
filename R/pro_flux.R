@@ -16,27 +16,32 @@
 #'
 #' @examples {
 #'
-#'library(dplyr)
-#'
 #'soilphys <-
-#'  ConFluxPro::soilphys %>%
-#'  cfp_soilphys(id_cols = c("site", "Date"))
+#'  cfp_soilphys(
+#'    ConFluxPro::soilphys,
+#'    id_cols = c("site", "Date")
+#'  )
 #'
 #'gasdata <-
-#'  ConFluxPro::gasdata %>%
-#'  cfp_gasdata(id_cols = c("site", "Date"))
+#'  cfp_gasdata(
+#'    ConFluxPro::gasdata,
+#'    id_cols = c("site", "Date")
+#'  )
 #'
 #'
 #'lmap <-
-#'  ConFluxPro::layers_map %>%
-#'  cfp_layers_map(gas = "CO2",
-#'                 lowlim = 0,
-#'                 highlim = 1000,
-#'                 id_cols = "site")
+#'  cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    gas = "CO2",
+#'    lowlim = 0,
+#'    highlim = 1000,
+#'    id_cols = "site"
+#'  )
+#'
 #'PROFLUX <-
 #'  cfp_dat(gasdata,
 #'          soilphys,
-#'          lmap ) %>%
+#'          lmap ) |>
 #'  pro_flux()
 #' }
 #'
@@ -55,15 +60,28 @@ pro_flux <- function(x,
 UseMethod("pro_flux")
 }
 
+#' @rdname pro_flux
 #'@exportS3Method
 pro_flux.cfp_dat <- function(x,
-                             ...){
+                             ...,
+                             zero_flux = TRUE,
+                             zero_limits = c(-Inf,Inf),
+                             DSD0_optim = FALSE,
+                             evenness_factor = 0,
+                             known_flux_factor = 0){
+  rlang::check_dots_empty(...)
+
   x <- cfp_pfmod(x,
-                 ...)
+                 zero_flux = zero_flux,
+                 zero_limits = zero_limits,
+                 DSD0_optim = DSD0_optim,
+                 evenness_factor = evenness_factor,
+                 known_flux_factor = known_flux_factor)
   .Class <- "cfp_pfmod"
   NextMethod()
 }
 
+#' @rdname pro_flux
 #'@exportS3Method
 pro_flux.cfp_pfres <- function(x,
                                ...){
@@ -71,6 +89,7 @@ pro_flux.cfp_pfres <- function(x,
   NextMethod()
 }
 
+#' @rdname pro_flux
 #'@exportS3Method
 pro_flux.cfp_pfmod <- function(x,
                              ...){

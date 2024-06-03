@@ -4,13 +4,7 @@
 \alias{cfp_fgmod}
 \title{cfp_fgmod}
 \usage{
-cfp_fgmod(
-  x,
-  gases = NULL,
-  modes = "LL",
-  param = c("c_air", "DS"),
-  funs = c("arith", "harm")
-)
+cfp_fgmod(x, gases, modes, param, funs)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
