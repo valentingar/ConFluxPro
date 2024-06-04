@@ -194,8 +194,10 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
         dplyr::select(dplyr::any_of(c("pmap", "step_id", cfp_id_cols(layers_altmap)))) %>%
         dplyr::distinct() %>%
         dplyr::right_join(layers_altmap[, c("pmap", "upper", "lower", cfp_id_cols(layers_altmap))],
-                          by = c("pmap" ,cfp_id_cols(layers_altmap))) %>%
-        dplyr::right_join(run_map, by = c("upper", "lower", cfp_id_cols(layers_altmap))) %>%
+                          by = c("pmap" ,cfp_id_cols(layers_altmap)),
+                          relationship = "many-to-many") %>%
+        dplyr::right_join(run_map, by = c("upper", "lower", cfp_id_cols(layers_altmap)),
+                          relationship = "many-to-many") %>%
         dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower")))
     }
 

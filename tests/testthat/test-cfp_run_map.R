@@ -234,3 +234,49 @@ test_that("layers_different does not work for topheight only", {
 
 })
 
+test_that("layers_altmap works", {
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  layers_altmap <- cfp_layers_map(
+    data.frame(site = rep(c("site_a", "site_b"), each = 3),
+               upper = c(5, 0, -10, 7, 0, -10),
+               lower = c(0, -10, -100, 0, -10, -100)),
+    id_cols = "site",
+    lowlim = 0,
+    highlim = 1000,
+    gas = c("CO2"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         list("TPS" = c(0.9,1.1)),
+                         type = c("factor"),
+                         n_runs = 2,
+                         layers_different = TRUE,
+                         layers_from = "layers_altmap",
+                         layers_altmap = layers_altmap)
+
+  expect_equal(cfp_n_runs(run_map), 2)
+  expect_equal(nrow(run_map), 36)
+  expect_equal(cfp_params_df(run_map),
+               data.frame(param = "TPS",
+                          upper = c(-10,0,5,7),
+                          lower = c(-100, -10, -0, 0),
+                          param_id = c(1,2,3,4)))
+
+})
+
+test_that("layers_from soilphys works", {
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         list("TPS" = c(0.9,1.1)),
+                         type = c("factor"),
+                         n_runs = 2,
+                         layers_different = TRUE,
+                         layers_from = "soilphys")
+
+  expect_equal(nrow(cfp_params_df(run_map)), 16)
+
+
+
+
+})
