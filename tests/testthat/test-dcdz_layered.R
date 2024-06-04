@@ -17,7 +17,10 @@ test_that("dcdz_layered works", {
                  mode = "LS")
 
   EF <-
-    dcdz_layered(df,
+    dcdz_layered(df %>%
+                   rbind(data.frame(depth = c(-50),
+                                    x_ppm = c(3000),
+                                    gd_id = 1)),
                  lmap,
                  mode = "EF")
 
@@ -26,4 +29,5 @@ test_that("dcdz_layered works", {
   expect_equal(nrow(LL),2)
   expect_equal(LL$dcdz_ppm,c(-4000,-4200))
   expect_equal(LL$dcdz_ppm,c(-4000,-4200))
+  expect_equal(round(EF$dcdz_ppm,3),c(-4199.150,-4024.069))
 })
