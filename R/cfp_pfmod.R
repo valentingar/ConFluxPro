@@ -105,7 +105,7 @@ print.cfp_pfmod <- function(x, ...){
 
 
 ### EXTRACTORS #####
-#' @describeIn extractors zero_flux
+#' @rdname extractors
 #' @export
 cfp_zero_flux <- function(x){
   UseMethod("cfp_zero_flux")
@@ -117,7 +117,7 @@ cfp_zero_flux.default <- function(x){
 }
 
 
-#' @describeIn extractors zero_limits
+#' @rdname extractors
 #' @export
 cfp_zero_limits <- function(x){
   UseMethod("cfp_zero_limits")
@@ -128,7 +128,7 @@ cfp_zero_limits.default <- function(x){
   out
 }
 
-#' @describeIn extractors DSD0_optim
+#' @rdname extractors
 #' @export
 cfp_DSD0_optim <- function(x){
   UseMethod("cfp_DSD0_optim")
@@ -140,7 +140,7 @@ cfp_DSD0_optim.default <- function(x){
 }
 
 
-#' @describeIn extractors evenness_factor
+#' @rdname extractors
 #' @export
 cfp_evenness_factor <- function(x){
   UseMethod("cfp_evenness_factor")
@@ -152,7 +152,7 @@ cfp_evenness_factor.default <- function(x){
 }
 
 
-#' @describeIn extractors known_flux_factor
+#' @rdname extractors
 #' @export
 cfp_known_flux_factor <- function(x){
   UseMethod("cfp_known_flux_factor")

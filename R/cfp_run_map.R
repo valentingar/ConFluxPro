@@ -551,7 +551,7 @@ validate_cfp_run_map <- function(x){
 ###############
 
 # extractors ---------
-#' @describeIn extractors runmap_type
+#' @rdname extractors
 #' @export
 cfp_runmap_type <- function(x){
   UseMethod("cfp_runmap_type")
@@ -563,7 +563,7 @@ cfp_runmap_type.cfp_run_map <- function(x){
 }
 
 
-#' @describeIn extractors params_df
+#' @rdname extractors
 #' @export
 cfp_params_df <- function(x){
   UseMethod("cfp_params_df")
@@ -576,7 +576,7 @@ cfp_params_df.cfp_run_map <- function(x){
 
 
 
-#' @describeIn extractors n_runs
+#' @rdname extractors
 #' @export
 cfp_n_runs <- function(x){
   UseMethod("cfp_n_runs")
@@ -587,7 +587,7 @@ cfp_n_runs.cfp_run_map <- function(x){
   attr(x, "n_runs")
 }
 
-#' @describeIn extractors layers_different
+#' @rdname extractors
 #' @export
 cfp_layers_different <- function(x){
   UseMethod("cfp_layers_different")
@@ -598,7 +598,7 @@ cfp_layers_different.cfp_run_map <- function(x){
   attr(x, "layers_different")
 }
 
-#' @describeIn extractors layers_from
+#' @rdname extractors
 #' @export
 cfp_layers_from <- function(x){
   UseMethod("cfp_layers_from")
@@ -608,7 +608,7 @@ cfp_layers_from <- function(x){
 cfp_layers_from.cfp_run_map <- function(x){
   attr(x, "layers_from")
 }
-#' @describeIn extractors layers_altmap
+#' @rdname extractors
 #' @export
 cfp_layers_altmap <- function(x){
   UseMethod("cfp_layers_altmap")
