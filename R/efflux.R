@@ -88,7 +88,9 @@ fg_efflux <- function(x,
 
   EFFLUX %>%
     dplyr::left_join(x$profiles,
-                     by = "prof_id")
+                     by = "prof_id") %>%
+    dplyr::ungroup() %>%
+    dplyr::select(!dplyr::any_of(c("gd_id", "sp_id", "group_id")))
 }
 
 
