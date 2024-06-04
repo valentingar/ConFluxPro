@@ -110,14 +110,14 @@ discretize_depth<- function(df,
                           method,
                           depth_target,
                           id_cols = NULL,
-                          boundary_nearest = F,
+                          boundary_nearest = FALSE,
                           boundary_average = "none",
                           int_depth = 0.5,
                           knots = NULL){
 
 
 #make knots into a list if it isnt.
-if (is.list(knots)==F){
+if (!is.list(knots)){
   knots <-list(knots)
 }
 
