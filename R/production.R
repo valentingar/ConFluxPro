@@ -46,6 +46,7 @@ production.cfp_fgres <- function(x, ...){
                   flux_lead = ifelse(is.na(.data$flux_lead), .data$efflux, .data$flux_lead)) %>%
     dplyr::mutate(prod_abs = .data$flux_lead - .data$flux_lag ) %>%
     dplyr::mutate(prod_rel = .data$prod_abs / .data$efflux) %>%
+    dplyr::ungroup() %>%
     dplyr::select(dplyr::any_of(c(id_cols,
                                   "upper",
                                   "lower",
@@ -73,6 +74,7 @@ production.cfp_pfres <- function(x, ...){
     dplyr::left_join(EFFLUX, by = "prof_id") %>%
     dplyr::mutate(prod_rel = prod_abs / efflux) %>%
      dplyr::left_join(x$layers_map, by = merger) %>%
+    dplyr::ungroup() %>%
     dplyr::select(dplyr::any_of(c(id_cols,
                                   "upper",
                                   "lower",
