@@ -130,7 +130,7 @@ plot_profile.cfp_pfres <- function(x) {
       labels = function(x)
         x * x_max,
       sec.axis = ggplot2::sec_axis(
-        trans = ~ (. - prod_start) * prod_max / prod_scale,
+        transform = ~ (. - prod_start) * prod_max / prod_scale,
         name = expression("production ["*mu*"mol m" ^
                             "-3" ~ "s" ^ "-1" ~ "]")
       ))
@@ -226,7 +226,7 @@ plot_profile.cfp_fgres <- function(x) {
       labels = function(x)
         x * x_max,
       sec.axis = ggplot2::sec_axis(
-        trans = ~ (. - flux_start) * flux_max / flux_scale,
+        transform = ~ (. - flux_start) * flux_max / flux_scale,
         name = expression("flux ["*mu*"mol m" ^
                             "-2" ~ "s" ^ "-1" ~ "]")
       )
@@ -280,7 +280,7 @@ plot_profile.cfp_soilphys <- function(x) {
       labels = function(x)
         (x * (t_max - t_min)) + t_min,
       sec.axis = ggplot2::sec_axis(
-        trans = ~ . * DS_max,
+        transform = ~ . * DS_max,
         name = expression("DS [m" ^ "2" ~
                             "s" ^ "-1" ~ "]")
       )

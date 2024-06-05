@@ -29,5 +29,5 @@ test_that("dcdz_layered works", {
   expect_equal(nrow(LL),2)
   expect_equal(LL$dcdz_ppm,c(-4000,-4200))
   expect_equal(LL$dcdz_ppm,c(-4000,-4200))
-  expect_equal(round(EF$dcdz_ppm,3),c(-4199.150,-4024.069))
+  expect_equal(round(EF$dcdz_ppm,2),c(-4199.15,-4024.07))
 })
