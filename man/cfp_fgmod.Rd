@@ -13,14 +13,23 @@ cfp_fgmod(x, gases, modes, param, funs)
 fluxes shall be calulated.}
 
 \item{modes}{(character) A character vector specifying mode(s) for dcdz
-calculation. Can be "LL","LS","EF".}
+calculation. Can be \code{"LL"},\code{"LS"},\code{"EF"}.
+\describe{
+\item{LL}{local linear approach: within each layer a linear model is
+evaluated of concentration over the depth.}
+\item{LS}{linear spline approach: A linear spline is fitted over the
+complete profile with nodes at the layer intersections.}
+\item{EF}{exponential fit approach: An exponential function of form
+y=a+b*x^c is fit of concentration against depth. Using the first derivative of
+that function the concentration gradient is evaluated for each layer.}
+}}
 
 \item{param}{(character) A vector containing the the parameters of soilphys,
 for which means should be calculated, must contain "c_air" and "DS", more
-parameters help interpretation}
+parameters may help interpretation.}
 
-\item{funs}{(character) A vector defining the type of mean to be used. One of
-"arith" or "harm"}
+\item{funs}{(character) A vector defining the type of mean to be used for
+each parameter in \code{param}. One of "arith" or "harm".}
 }
 \description{
 An S3 class for \code{fg_flux()} models. The class inherits from

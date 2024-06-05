@@ -39,7 +39,7 @@ validate_cfp_pfres <- function(x){
 #### methods ----------------------
 
 ##### EXTRACTION ######
-#' @describeIn extractors get_PROFLUX
+#' @rdname extractors
 #' @export
 get_PROFLUX <- function(x){
   UseMethod("get_PROFLUX")

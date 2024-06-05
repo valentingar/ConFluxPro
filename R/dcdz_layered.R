@@ -77,7 +77,7 @@ if (mode == "LS"){
 
 #not enough non-NA values or outside range.
 if (nrow(df)<length(depths) | ls_flag){
-  return_na <- T
+  return_na <- TRUE
 } else {
 #spline model
 mod<-stats::lm(x_ppm~splines::bs(depth,knots=depth_steps,#depth_steps,
@@ -101,7 +101,7 @@ if (!length(dcdz_sd)==length(layers)){
 r2 <- summary(mod)$r.squared
 }
 #create return table
-create_return <- T
+create_return <- TRUE
 
 } else if (mode == "LL"){
 
@@ -135,9 +135,9 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
 
 
   if(all(is.na(df_ret))){
-    return_na <- T
+    return_na <- TRUE
   } else {
-    create_return <- F
+    create_return <- FALSE
 
   }
 
@@ -157,7 +157,7 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
 
   if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){
     #preventing model errors before they occur and replacing with NA
-    return_na <- T
+    return_na <- TRUE
   } else {
     #exponential model
 
@@ -174,7 +174,7 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
 
     #na if no convergence or error
     if (conv_flag | inherits(mod, "try-error")){
-      return_na <- T
+      return_na <- TRUE
     } else {
       #a <- coef(mod)[1]
       b <- stats::coef(mod)[1]
@@ -189,7 +189,7 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       dc<--diff(starts[1]+(b*((depths-min(depths))^c)))
       r2 <- summary(stats::lm(x_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
 
-      create_return <- T
+      create_return <- TRUE
     }
   }
     }
@@ -200,7 +200,7 @@ if (return_na){
   dcdz_sd <- NA
   r2 <- NA
 
-  create_return <- T
+  create_return <- TRUE
 
 
 }

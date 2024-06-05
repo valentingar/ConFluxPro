@@ -236,3 +236,24 @@ test_that("method harmonic",{
 })
 
 
+test_that("method linear spline",{
+  df <- data.frame(depth = c(-10,0,10),
+                   value = c(1,1,2))
+  dt <- c(10,5,-5,-10)
+
+  df_test <-
+    discretize_depth(df,
+                     "value",
+                     "linspline",
+                     dt)
+
+  df_res <-
+    data.frame(value = c(0.958,1.333,1.708),
+               depth = c(-7.5,0,7.5),
+               upper = c(-5,5,10),
+               lower = c(-10,-5,5)
+    )
+  expect_equal(round(df_test,3),df_res)
+})
+
+

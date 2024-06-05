@@ -4,7 +4,7 @@
 \alias{harm}
 \title{harm}
 \usage{
-harm(x, w = 1, na.rm = F)
+harm(x, w = 1, na.rm = FALSE)
 }
 \arguments{
 \item{x}{(numeric vector)}

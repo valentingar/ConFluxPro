@@ -20,7 +20,7 @@
 #'
 #'@export
 
-harm <- function(x,w=1,na.rm=F){
+harm <- function(x, w = 1, na.rm = FALSE){
   if (length(w) == 1){
     w <- rep(w, length(x))
   } else if (!length(w) == length(x)){
@@ -28,11 +28,11 @@ harm <- function(x,w=1,na.rm=F){
   } else if (anyNA(w)){
     stop("Cannot compute weighted harmonic mean if w contains NAs")
   }
-  if (na.rm==T & anyNA(x)){
-    toremove <- which(is.na(x)==T)
+  if (na.rm & anyNA(x)){
+    toremove <- which(is.na(x))
     x <- x[-toremove]
     w <- w[-toremove]
   }
-  h <- (sum(w*x^-1)/sum(w))^-1
-  return(h)
+  (sum(w*x^-1)/sum(w))^-1
+
 }

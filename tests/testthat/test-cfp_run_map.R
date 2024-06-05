@@ -2,32 +2,7 @@ test_that("create runmap works", {
 
   library(dplyr)
 
-  soilphys <-
-    ConFluxPro::soilphys %>%
-    cfp_soilphys(id_cols = c("site", "Date"))
-
-  gasdata <-
-    ConFluxPro::gasdata %>%
-    cfp_gasdata(id_cols = c("site", "Date"))
-
-
-  lmap <- soilphys %>%
-    select(upper,site) %>%
-    distinct() %>%
-    group_by(site) %>%
-    slice_max(upper) %>%
-    reframe(upper = c(upper,0),
-            lower = c(0,-100)) %>%
-    cfp_layers_map(gas = "CO2",
-                   layer_couple = 0,
-                   lowlim = 0,
-                   highlim = 1000,
-                   id_cols = "site")
-  PROFLUX <-
-    cfp_dat(gasdata,
-            soilphys,
-            lmap ) %>%
-    pro_flux()
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
 
 
   run_map <- cfp_run_map(PROFLUX,
@@ -58,7 +33,7 @@ test_that("create runmap works", {
                                   "t" = c(1,1.05)),
                     method = "permutation",
                     type = c("factor","factor"),
-                    n_runs = NULL,
+                    n_runs = 4,
                     layers_different = FALSE,
                     layers_from = "layers_map",
                     layers_altmap = NULL,
@@ -96,33 +71,7 @@ test_that("create runmap works", {
 test_that("permutation works", {
 
 
-  soilphys <-
-    ConFluxPro::soilphys %>%
-    cfp_soilphys(id_cols = c("site", "Date"))
-
-  gasdata <-
-    ConFluxPro::gasdata %>%
-    cfp_gasdata(id_cols = c("site", "Date"))
-
-
-  lmap <- soilphys %>%
-    select(upper,site) %>%
-    distinct() %>%
-    group_by(site) %>%
-    slice_max(upper) %>%
-    reframe(upper = c(upper,0),
-            lower = c(0,-100)) %>%
-    cfp_layers_map(gas = "CO2",
-                   layer_couple = 0,
-                   lowlim = 0,
-                   highlim = 1000,
-                   id_cols = "site")
-  PROFLUX <-
-    cfp_dat(gasdata,
-            soilphys,
-            lmap ) %>%
-    pro_flux()
-
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
 
   run_map <- cfp_run_map(PROFLUX,
                      params = list("topheight" = c(-1,0,1),
@@ -143,7 +92,7 @@ test_that("permutation works", {
                                   "TPS" = c(1,1.2)),
                     method = "permutation",
                     type = c("addition", "factor"),
-                    n_runs = NULL,
+                    n_runs = 6,
                     layers_different = FALSE,
                     layers_from = "layers_map",
                     layers_altmap = NULL,
@@ -159,34 +108,7 @@ test_that("permutation works", {
 
 test_that("topheight adjust", {
 
-
-  soilphys <-
-    ConFluxPro::soilphys %>%
-    cfp_soilphys(id_cols = c("site", "Date"))
-
-  gasdata <-
-    ConFluxPro::gasdata %>%
-    cfp_gasdata(id_cols = c("site", "Date"))
-
-
-  lmap <- soilphys %>%
-    select(upper,site) %>%
-    distinct() %>%
-    group_by(site) %>%
-    slice_max(upper) %>%
-    reframe(upper = c(upper,0),
-            lower = c(0,-100)) %>%
-    cfp_layers_map(gas = "CO2",
-                   layer_couple = 0,
-                   lowlim = 0,
-                   highlim = 1000,
-                   id_cols = "site")
-  PROFLUX <-
-    cfp_dat(gasdata,
-            soilphys,
-            lmap ) %>%
-    pro_flux()
-
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
 
   expect_error(
   run_map <- cfp_run_map(PROFLUX,
@@ -227,34 +149,9 @@ test_that("topheight adjust", {
 
 })
 test_that("topheight only", {
-  require(dplyr)
-
-  soilphys <-
-    ConFluxPro::soilphys %>%
-    cfp_soilphys(id_cols = c("site", "Date"))
-
-  gasdata <-
-    ConFluxPro::gasdata %>%
-    cfp_gasdata(id_cols = c("site", "Date"))
 
 
-  lmap <- soilphys %>%
-    select(upper,site) %>%
-    distinct() %>%
-    group_by(site) %>%
-    slice_max(upper) %>%
-    reframe(upper = c(upper,0),
-            lower = c(0,-100)) %>%
-    cfp_layers_map(gas = "CO2",
-                   layer_couple = 0,
-                   lowlim = 0,
-                   highlim = 1000,
-                   id_cols = "site")
-  PROFLUX <-
-    cfp_dat(gasdata,
-            soilphys,
-            lmap ) %>%
-    pro_flux()
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
 
 
   run_map <- cfp_run_map(PROFLUX,
@@ -276,5 +173,161 @@ test_that("topheight only", {
                        type = c("addition"),
                        n_runs = 2
     ))
+
+})
+
+test_that("layers_different works", {
+
+
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         params = list("TPS" = c(0.9, 1.1)),
+                         method = "random",
+                         type = c("factor"),
+                         layers_different = TRUE,
+                         n_runs = 1)
+
+  run_map2 <- cfp_run_map(PROFLUX,
+                         params = list("TPS" = c(0.9, 1.1)),
+                         method = "permutation",
+                         type = c("factor"),
+                         layers_different = TRUE)
+
+
+  expect_equal(nrow(run_map), 4)
+  expect_equal(cfp_params_df(run_map),
+               data.frame(pmap = c(1, 2),
+                          param = c("TPS", "TPS"),
+                          param_id = c(1, 2)))
+
+  expect_equal(nrow(run_map2), 16)
+  expect_equal(cfp_params_df(run_map2),
+               data.frame(site = rep(c("site_a", "site_b"), each = 2),
+                          gas = "CO2",
+                          pmap = rep(c(1, 2), times = 2),
+                          param = rep("TPS", 4),
+                          param_id = c(1, 2, 1, 2)))
+
+
+})
+
+
+test_that("layers_different does not work for topheight only", {
+
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  expect_error(cfp_run_map(PROFLUX,
+                           params = list("topheight" = c(0.9, 1.1)),
+                           method = "random",
+                           type = c("factor"),
+                           layers_different = TRUE,
+                           n_runs = 1))
+
+  expect_error(cfp_run_map(PROFLUX,
+                           params = list("topheight" = c(0.9, 1.1)),
+                           method = "permutation",
+                           type = c("factor"),
+                           layers_different = TRUE,
+                           n_runs = 1))
+
+
+})
+
+test_that("layers_altmap random works", {
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  layers_altmap <- cfp_layers_map(
+    data.frame(site = rep(c("site_a", "site_b"), each = 3),
+               upper = c(5, 0, -10, 7, 0, -10),
+               lower = c(0, -10, -100, 0, -10, -100)),
+    id_cols = "site",
+    lowlim = 0,
+    highlim = 1000,
+    gas = c("CO2"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         list("TPS" = c(0.9,1.1)),
+                         type = c("factor"),
+                         n_runs = 2,
+                         layers_different = TRUE,
+                         layers_from = "layers_altmap",
+                         layers_altmap = layers_altmap)
+
+  expect_equal(cfp_n_runs(run_map), 2)
+  expect_equal(nrow(run_map), 36)
+  expect_equal(cfp_params_df(run_map),
+               data.frame(param = "TPS",
+                          upper = c(-10,0,5,7),
+                          lower = c(-100, -10, -0, 0),
+                          param_id = c(1,2,3,4)))
+
+})
+
+test_that("layers_from soilphys random works", {
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         list("TPS" = c(0.9,1.1)),
+                         type = c("factor"),
+                         n_runs = 2,
+                         layers_different = TRUE,
+                         layers_from = "soilphys")
+
+  expect_equal(nrow(cfp_params_df(run_map)), 16)
+
+
+
+
+})
+
+
+test_that("layers_altmap permutation works", {
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  layers_altmap <- cfp_layers_map(
+    data.frame(site = rep(c("site_a", "site_b"), each = 3),
+               upper = c(5, 0, -10, 7, 0, -10),
+               lower = c(0, -10, -100, 0, -10, -100)),
+    id_cols = "site",
+    lowlim = 0,
+    highlim = 1000,
+    gas = c("CO2"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         list("TPS" = c(0.9,1.1)),
+                         type = c("factor"),
+                         method = "permutation",
+                         layers_different = TRUE,
+                         layers_from = "layers_altmap",
+                         layers_altmap = layers_altmap)
+
+  expect_equal(cfp_n_runs(run_map), 8)
+  expect_equal(nrow(run_map), 144)
+  expect_equal(cfp_params_df(run_map),
+               data.frame(
+                 site = rep(c("site_a", "site_b"), each = 3),
+                 gas = "CO2",
+                 param = "TPS",
+                 upper = c(-10, 0, 5, -10, 0, 7),
+                 lower = c(-100, -10, 0, -100, -10, 0),
+                 param_id = c(1, 2, 3, 1, 2, 3)))
+
+})
+
+test_that("layers_from soilphys permutation works", {
+  PROFLUX <- readRDS(testthat::test_path("fixtures", "base_proflux.rds"))
+
+  run_map <- cfp_run_map(PROFLUX,
+                         list("TPS" = c(0.9,1.1)),
+                         type = c("factor"),
+                         method = "permutation",
+                         layers_different = TRUE,
+                         layers_from = "soilphys")
+
+  expect_equal(nrow(cfp_params_df(run_map)), 18)
+
+
+
 
 })

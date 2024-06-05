@@ -378,7 +378,7 @@ print.cfp_dat <- function(x, ...){
 
 
 ###### EXTRACTION #####
-#' @describeIn extractors id_cols
+#' @rdname extractors
 #' @export
 cfp_id_cols <- function(x){
   UseMethod("cfp_id_cols")
@@ -386,6 +386,24 @@ cfp_id_cols <- function(x){
 #' @export
 cfp_id_cols.default <- function(x){
   attr(x,"id_cols")
+}
+
+#' n_groups
+#'
+#'
+#'
+#' @inheritParams cfp_pfmod
+
+#' @rdname extractors
+#' @export
+n_groups <- function(x) {
+  UseMethod("n_groups")
+}
+
+
+#' @exportS3Method
+n_groups.cfp_dat <- function(x) {
+  length(unique(x$profiles$group_id))
 }
 
 
@@ -406,7 +424,7 @@ join_with_profiles <- function(target_data,
   list(x, id_cols)
 }
 
-#' @describeIn extractors get_soilphys
+#' @rdname extractors
 #' @export
 get_soilphys <- function(x){
   UseMethod("get_soilphys")
@@ -427,7 +445,7 @@ get_soilphys.cfp_dat <- function(x){
   x
 }
 
-#' @describeIn extractors get_gasdata
+#' @rdname extractors
 #' @export
 get_gasdata <- function(x){
   UseMethod("get_gasdata")
@@ -447,7 +465,7 @@ get_gasdata.cfp_dat <- function(x){
 }
 
 
-#' @describeIn extractors get_layers_map
+#' @rdname extractors
 #' @export
 get_layers_map <- function(x){
   UseMethod("get_layers_map")

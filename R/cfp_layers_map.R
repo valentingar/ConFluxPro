@@ -84,7 +84,7 @@ cfp_layers_map <- function(layers_map,
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
       dplyr::mutate(layer = 1:dplyr::n())
 
-    message("automatically added 'layer' column")
+    #message("automatically added 'layer' column")
   }
 
   layers_map <-

@@ -2,9 +2,26 @@
 % Please edit documentation in R/pro_flux.R
 \name{pro_flux}
 \alias{pro_flux}
+\alias{pro_flux.cfp_dat}
+\alias{pro_flux.cfp_pfres}
+\alias{pro_flux.cfp_pfmod}
 \title{pro_flux}
 \usage{
 pro_flux(x, ...)
+
+\method{pro_flux}{cfp_dat}(
+  x,
+  ...,
+  zero_flux = TRUE,
+  zero_limits = c(-Inf, Inf),
+  DSD0_optim = FALSE,
+  evenness_factor = 0,
+  known_flux_factor = 0
+)
+
+\method{pro_flux}{cfp_pfres}(x, ...)
+
+\method{pro_flux}{cfp_pfmod}(x, ...)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
@@ -12,20 +29,26 @@ pro_flux(x, ...)
 \item{...}{
   Arguments passed on to \code{\link[=cfp_pfmod]{cfp_pfmod}}
   \describe{
-    \item{\code{zero_flux}}{(logical) Applies the zero-flux boundary condition? If
+    \item{\code{}}{}
+  }}
+
+\item{zero_flux}{(logical) Applies the zero-flux boundary condition? If
 FALSE, the first value in X represents the incoming flux to the lowest
 layer.}
-    \item{\code{zero_limits}}{(numeric vector) a vector of length 2 defining the lower
+
+\item{zero_limits}{(numeric vector) a vector of length 2 defining the lower
 and upper limit of the lowest flux if zero_flux = F.}
-    \item{\code{known_flux_factor}}{RESERVED FOR FUTURE EXPANSION}
-    \item{\code{DSD0_optim}}{RESERVED FOR FUTURE EXPANSION}
-    \item{\code{evenness_factor}}{(numeric) A user defined factor used to penalise strong
+
+\item{DSD0_optim}{RESERVED FOR FUTURE EXPANSION}
+
+\item{evenness_factor}{(numeric) A user defined factor used to penalise strong
 differences between the optimised production rates. This must be identified by
 trial-and-error and can help prevent that production rates are simply set to zero
 basically the lower a production is relative to the the maximum of the absolute of
 all productions, the higher it is penalised. The \code{evenness_factor} then
 defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.}
-  }}
+
+\item{known_flux_factor}{RESERVED FOR FUTURE EXPANSION}
 }
 \description{
 This implements an inverse modeling approach which optimizes
@@ -40,27 +63,32 @@ be set in \code{zero_flux}.
 \examples{
 {
 
-library(dplyr)
-
 soilphys <-
- ConFluxPro::soilphys \%>\%
- cfp_soilphys(id_cols = c("site", "Date"))
+ cfp_soilphys(
+   ConFluxPro::soilphys,
+   id_cols = c("site", "Date")
+ )
 
 gasdata <-
- ConFluxPro::gasdata \%>\%
- cfp_gasdata(id_cols = c("site", "Date"))
+ cfp_gasdata(
+   ConFluxPro::gasdata,
+   id_cols = c("site", "Date")
+ )
 
 
 lmap <-
- ConFluxPro::layers_map \%>\%
- cfp_layers_map(gas = "CO2",
-                lowlim = 0,
-                highlim = 1000,
-                id_cols = "site")
+ cfp_layers_map(
+   ConFluxPro::layers_map,
+   gas = "CO2",
+   lowlim = 0,
+   highlim = 1000,
+   id_cols = "site"
+ )
+
 PROFLUX <-
  cfp_dat(gasdata,
          soilphys,
-         lmap ) \%>\%
+         lmap ) |>
  pro_flux()
 }
 

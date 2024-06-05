@@ -1,9 +1,9 @@
 #' @title extractors
 #'
-#' @name extractors
-#' @description These functions help extract information from
-#' different objects that can be defined in ConFluxPro.
+#' @description These functions extract components from
+#' different objects that can be created in ConFluxPro.
 #'
 #' @param x An object from which to extract the information.
-#' @rdname extractors
+#' @name extractors
+#' @order 1
 NULL
