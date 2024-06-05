@@ -10,7 +10,7 @@ discretize_depth(
   method,
   depth_target,
   id_cols = NULL,
-  boundary_nearest = F,
+  boundary_nearest = FALSE,
   boundary_average = "none",
   int_depth = 0.5,
   knots = NULL

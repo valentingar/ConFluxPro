@@ -3,13 +3,19 @@
 #' @description
 #' `r lifecycle::badge('experimental')`
 #'
-#' Modify an existing run_map for sobol indice estimation.
+#' Modify an existing \code{cfp_run_map} for sobol indice estimation or create a new one
+#' from scratch.
 #'
-#' @param x An object of class cfp_run_map created by a call to run_map().
+#' @param x Either an object of class \code{cfp_run_map} created by a call to
+#' \code{cfp_run_map()} with \code{method = 'random'}, or a \code{cfp_pfres} or
+#' \code{cfp_fgres} model result.
 #'
-#' @param ... Additional arguments passed on to \link{run_map}
+#' @inheritDotParams run_map
+#@param ... Additional arguments passed on to \link{run_map}
 #'
 #' @importFrom rlang .data
+#'
+#' @family sobol
 #'
 #'
 #' @export
@@ -18,13 +24,15 @@ sobol_run_map <- function(x, ...){
   UseMethod("sobol_run_map")
 }
 
+#' @rdname sobol_run_map
 #' @exportS3Method
-sobol_run_map.default <- function(x, ...){
+sobol_run_map.cfp_dat <- function(x, ...){
   x <- run_map(x, ...)
   .Class <- "cfp_run_map"
   NextMethod()
 }
 
+#' @rdname sobol_run_map
 #' @exportS3Method
 sobol_run_map.cfp_run_map <- function(x, ...){
 
