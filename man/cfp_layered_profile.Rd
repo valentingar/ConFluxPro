@@ -9,7 +9,7 @@ cfp_layered_profile(x, id_cols = NULL)
 \arguments{
 \item{x}{A \code{data.frame} with columns \code{upper} and \code{lower}.}
 
-\item{id_cols}{Column names in x that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \description{
 A subclass of \code{\link{cfp_profile}()} where each profile consists of

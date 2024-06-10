@@ -7,7 +7,7 @@
 #'
 #' @param x A \code{data.frame} with columns \code{upper} and \code{lower}.
 #'
-#' @param id_cols Column names in x that uniquely identify each profile.
+#' @inheritParams cfp_profile
 #'
 #' @details \code{upper} and \code{lower} define the upper and lower bounds of
 #' each layer in cm. Higher values lay on top of lower values.

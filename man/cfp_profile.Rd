@@ -9,7 +9,7 @@ cfp_profile(x, id_cols = NULL)
 \arguments{
 \item{x}{A \code{data.frame}}
 
-\item{id_cols}{Column names in x that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \description{
 A central S3 class that defines a \code{data.frame} where columns given in

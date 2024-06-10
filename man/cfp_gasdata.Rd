@@ -15,8 +15,7 @@ cfp_gasdata(gasdata, id_cols)
 \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 }}
 
-\item{id_cols}{(character vector) The names of the columns that together
-uniquely identify one profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{
 cfp_gasdata

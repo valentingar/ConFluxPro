@@ -6,7 +6,7 @@
 #'
 #' @param x A \code{data.frame}
 #'
-#' @param id_cols Column names in x that uniquely identify each profile.
+#' @param id_cols Column names in data.frame that uniquely identify each profile.
 #'
 #'
 #' @export

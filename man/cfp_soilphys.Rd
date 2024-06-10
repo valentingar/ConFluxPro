@@ -18,8 +18,7 @@ cfp_soilphys(soilphys, id_cols)
 
 }}
 
-\item{id_cols}{(character vector) The names of the columns that together
-uniquely identify one profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{
 cfp_soilphys
