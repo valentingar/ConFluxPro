@@ -45,7 +45,12 @@ new_cfp_profile <- function(x,
 validate_cfp_profile <- function(x){
 
   stopifnot(inherits(x, c("cfp_profile", "data.frame")))
-  stopifnot(all(cfp_id_cols(x) %in% names(x)))
+  id_cols <- cfp_id_cols(x)
+  id_cols_present <- id_cols %in% names(x)
+
+  if (any(!id_cols_present)){
+    stop(paste0("missing id_cols ", paste0(id_cols[!id_cols_present], collapse = " ")))
+  }
 
   x
 }

@@ -43,14 +43,16 @@ cfp_soilphys <- function(soilphys,
   )
 
   x <- validate_cfp_soilphys(x)
+  x
 }
 
 #constructor
 new_cfp_soilphys <- function(soilphys,
                              id_cols){
-  x <- structure(soilphys,
-                 class = c("cfp_soilphys","data.frame"),
-                 id_cols = id_cols)
+  x <- new_cfp_layered_profile(
+    soilphys,
+    id_cols = id_cols,
+    class = "cfp_soilphys")
   x
 }
 
@@ -59,23 +61,16 @@ validate_cfp_soilphys <- function(x){
 
   # are the classes correct?
   stopifnot(inherits(x,"cfp_soilphys"))
-  stopifnot(inherits(x,"data.frame"))
+  validate_cfp_layered_profile(x)
 
   # are the necessary columns present?
   base_cols <- c("upper","lower","DS","c_air","gas")
-  id_cols <- cfp_id_cols(x)
   base_cols_present <- base_cols %in% names(x)
-  id_cols_present <- id_cols %in% names(x)
 
   if (any(!base_cols_present) ){
-    stop(paste0("missing columns ", base_cols[base_cols_present]))
-  }
-  if (any(!id_cols_present)){
-    stop(paste0("missing id_cols ", id_cols[id_cols_present]))
+    stop(paste0("missing columns ", base_cols[!base_cols_present]))
   }
 
-  # is the data frame upper/lower consistent?
-  stopifnot("The data is not unique and upper/lower consistent!" = is_ul_consistent(x,id_cols))
 
   # no negative values in DS and c_air
   any_negative_DS <- min(x$DS, na.rm = TRUE) < 0
@@ -92,9 +87,6 @@ validate_cfp_soilphys <- function(x){
 # PRINTING
 #' @exportS3Method
 print.cfp_soilphys <- function(x, ...){
-  cat("\nA cfp_soilphys object \n")
-  print_id_cols(x)
-  cat("\n")
   NextMethod()
 }
 

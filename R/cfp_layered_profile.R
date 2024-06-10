@@ -34,12 +34,12 @@ cfp_layered_profile <- function(
 
 new_cfp_layered_profile <- function(
     x,
-    class = "cfp_layered_profile",
+    class = character(),
     id_cols){
 
   x <- new_cfp_profile(x = x,
                        id_cols = id_cols,
-                       class = class)
+                       class = c(class,"cfp_layered_profile"))
 
   x
 }
