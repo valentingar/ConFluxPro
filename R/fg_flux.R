@@ -80,7 +80,8 @@ fg_flux.cfp_fgmod <- function(x, ...){
            "dc_ppm",
            "c_air",
            "DS",
-           "r2")
+           "r2") %>%
+    cfp_layered_profile(id_cols = "prof_id")
 
   cfp_fgres(x, y)
 }

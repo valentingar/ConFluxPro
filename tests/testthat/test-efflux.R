@@ -29,14 +29,14 @@ test_that("efflux from fgres works", {
 
   expect_equal(nrow(EFFLUX), 24)
   expect_equal(round(EFFLUX$efflux[4],3), 0.441)
-  expect_mapequal(efflux(FLUX, method = "top"),
+  expect_mapequal(efflux(FLUX, method = "top") |> data.frame(),
             FLUX$FLUX |>
-              tibble::tibble() |>
               dplyr::filter(lower == 0) |>
               dplyr::rename(efflux = flux) |>
               dplyr::left_join(FLUX$profiles) |>
               dplyr::select(site, Date, prof_id, efflux, mode, gas) |>
-              dplyr::arrange(prof_id))
+              dplyr::arrange(prof_id) |>
+              data.frame())
   expect_equal(nrow(EFFLUX_lex),24)
   expect_equal(round(EFFLUX_lex$efflux[5], 3), 0.766)
 

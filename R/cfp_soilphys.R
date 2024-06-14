@@ -23,8 +23,30 @@
 #'
 #' @export
 #helper
-cfp_soilphys <- function(soilphys,
-                         id_cols){
+cfp_soilphys <- function(x,
+                         ...){
+  UseMethod("cfp_soilphys")
+}
+
+#'@rdname cfp_soilphys
+#'@exportS3Method
+cfp_soilphys.cfp_dat <- function(
+    x,
+    ...){
+  rlang::check_dots_empty(...)
+
+  x <- get_soilphys(x)
+  x
+}
+
+
+#'@rdname cfp_soilphys
+#'@exportS3Method
+cfp_soilphys.data.frame <- function(
+    x,
+    id_cols,
+    ...){
+  rlang::check_dots_empty(...)
 
 
   stopifnot("id_cols must be provided!" = !missing(id_cols))
@@ -34,11 +56,11 @@ cfp_soilphys <- function(soilphys,
     id_cols <- c(id_cols,"gas")
   }
 
-  soilphys <-
-    soilphys %>%
+  x <-
+    x %>%
     dplyr::mutate(depth = (upper + lower) / 2)
 
-  x <- new_cfp_soilphys(soilphys,
+  x <- new_cfp_soilphys(x,
                         id_cols
   )
 
