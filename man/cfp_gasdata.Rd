@@ -2,12 +2,18 @@
 % Please edit documentation in R/cfp_gasdata.R
 \name{cfp_gasdata}
 \alias{cfp_gasdata}
+\alias{cfp_gasdata.data.frame}
+\alias{cfp_gasdata.cfp_dat}
 \title{cfp_gasdata}
 \usage{
-cfp_gasdata(gasdata, id_cols)
+cfp_gasdata(x, ...)
+
+\method{cfp_gasdata}{data.frame}(x, id_cols, ...)
+
+\method{cfp_gasdata}{cfp_dat}(x, ...)
 }
 \arguments{
-\item{gasdata}{A \code{data.frame} with the following columns:
+\item{x}{A \code{data.frame} with the following columns:
 \describe{
 \item{gas}{The gas of that observation.}
 \item{depth (cm)}{The depth of the observation.}

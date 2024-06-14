@@ -118,7 +118,8 @@ pro_flux.cfp_pfmod <- function(x,
     as.data.frame() %>%
     dplyr::left_join(x$profiles, by = "sp_id") %>%
     dplyr::select(upper, lower, step_id, prof_id, sp_id, pmap) %>%
-    dplyr::right_join(y, by = c("step_id", "prof_id"))
+    dplyr::right_join(y, by = c("step_id", "prof_id")) %>%
+    cfp_layered_profile(id_cols ="prof_id")
 
   #create cfp_pfres object
   y <- cfp_pfres(x,y)

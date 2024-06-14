@@ -3,7 +3,7 @@
 #' object is characterised by the following criteria: Each row is one observation
 #' of the concentration of a gas at a depth and can be attributed to a distinct
 #' profileidentified by any \code{id_cols} columns.
-#' @param gasdata A \code{data.frame} with the following columns:
+#' @param x A \code{data.frame} with the following columns:
 #' \describe{
 #' \item{gas}{The gas of that observation.}
 #' \item{depth (cm)}{The depth of the observation.}
@@ -11,7 +11,7 @@
 #' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 #'}
 #'@inheritParams cfp_layers_map
-#'
+#' @name cfp_gasdata
 #'
 #' @importFrom rlang .data
 #'@return cfp_gasdata
@@ -20,8 +20,17 @@
 
 #'@export
 # helper
-cfp_gasdata <- function(gasdata,
-                        id_cols){
+cfp_gasdata <- function(x,
+                        ...){
+  UseMethod("cfp_gasdata")
+}
+
+#' @rdname cfp_gasdata
+#' @exportS3Method
+cfp_gasdata.data.frame <-
+  function(x,
+           id_cols,
+           ...){
 
 
   stopifnot("id_cols must be provided!" = !missing(id_cols))
@@ -31,20 +40,33 @@ cfp_gasdata <- function(gasdata,
     id_cols <- c(id_cols,"gas")
   }
 
-  x <- new_cfp_gasdata(gasdata,
+  x <- new_cfp_gasdata(x,
                 id_cols)
 
   validate_cfp_gasdata(x)
-}
+  }
+
+#' @rdname cfp_gasdata
+#' @exportS3Method
+cfp_gasdata.cfp_dat <-
+  function(x,
+           ...){
+    rlang::check_dots_empty(...)
+    get_gasdata(x)
+  }
+
 
 #'
 # constructor
-new_cfp_gasdata <- function(gasdata,
+new_cfp_gasdata <- function(x,
                      id_cols){
 
-  structure(gasdata,
-            class = c("cfp_gasdata","data.frame"),
-            id_cols = id_cols)
+
+  x <- new_cfp_profile(
+    x,
+    class = "cfp_gasdata",
+    id_cols = id_cols)
+  x
 }
 
 
@@ -90,8 +112,5 @@ validate_cfp_gasdata <- function(x){
 
 #' @exportS3Method
 print.cfp_gasdata <- function(x, ...){
-  cat("\nA cfp_gasdata object \n")
-  print_id_cols(x)
-  cat("\n")
   NextMethod()
 }

@@ -127,7 +127,8 @@ cfp_dat <- function(gasdata,
   profiles <-
     profiles %>%
     dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
-    data.frame()
+    data.frame() %>%
+    cfp_profile(id_cols = "prof_id")
 
   stopifnot("No valid profiles! Maybe the input data dont match?" = nrow(profiles) > 0)
 
