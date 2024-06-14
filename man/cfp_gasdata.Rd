@@ -14,8 +14,6 @@ cfp_gasdata(gasdata, id_cols)
 \item{x_ppm (ppm)}{The observed concentration of that gas.}
 \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 }}
-
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{
 cfp_gasdata

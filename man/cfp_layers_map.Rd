@@ -4,17 +4,10 @@
 \alias{cfp_layers_map}
 \title{cfp_layers_map}
 \usage{
-cfp_layers_map(
-  layers_map,
-  id_cols,
-  gas = NULL,
-  lowlim = NULL,
-  highlim = NULL,
-  layer_couple = 0
-)
+cfp_layers_map(x, ...)
 }
 \arguments{
-\item{layers_map}{(data.frame) That defines the layers for which the
+\item{x}{(data.frame) That defines the layers for which the
 production or flux is modeled. Note that some parameters can also be provided
 directly to the function call instead (see Details).
 \itemize{
@@ -28,10 +21,8 @@ production rate to be modeled in \eqn{\mu~mol~m^{-3}}
 strongly the layer should be linked to the one below it (0 for no coupling)
 }}
 
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
-
 \item{gas}{(character vector) of gas names to be added to
-layers_map. The input layers_map is then repeated for each gas.}
+x which is then repeated for each gas.}
 
 \item{lowlim}{(numeric vector) the same length as \code{gas} with the
 lower limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}} models.}

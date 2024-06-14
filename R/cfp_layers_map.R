@@ -3,7 +3,7 @@
 #' @description A function to create a cfp_layers_map object that defines the
 #' layers of both [fg_flux()] and [pro_flux()] models.
 #'
-#' @param layers_map (data.frame) That defines the layers for which the
+#' @param x (data.frame) That defines the layers for which the
 #' production or flux is modeled. Note that some parameters can also be provided
 #' directly to the function call instead (see Details).
 #'   \itemize{
@@ -18,7 +18,7 @@
 #'   }
 #' @inheritParams cfp_profile
 #' @param gas (character vector) of gas names to be added to
-#' layers_map. The input layers_map is then repeated for each gas.
+#' x which is then repeated for each gas.
 #' @param lowlim (numeric vector) the same length as \code{gas} with the
 #' lower limit of possible production allowed in [pro_flux()] models.
 #' @param highlim (numeric vector)  the same length as gas with the
@@ -59,13 +59,28 @@
 #'   layer_couple = 0
 #' )
 #' @export
-cfp_layers_map <- function(layers_map,
+cfp_layers_map <- function(x,
+                           ...){
+  UseMethod("cfp_layers_map")
+}
+
+#' @exportS3Method
+cfp_layers_map.cfp_dat <- function(x){
+  get_layers_map(x)
+}
+
+
+#' @exportS3Method
+cfp_layers_map.data.frame <- function(x,
                            id_cols,
                            gas = NULL,
                            lowlim = NULL,
                            highlim = NULL,
-                           layer_couple = 0
+                           layer_couple = 0,
+                           ...
 ){
+
+  rlang::check_dots_empty(...)
 
   stopifnot("layers_map must be a data frame!" = is.data.frame(layers_map))
   stopifnot("id_cols must be provided!" = !missing(id_cols))

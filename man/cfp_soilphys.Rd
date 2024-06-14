@@ -17,8 +17,6 @@ cfp_soilphys(soilphys, id_cols)
 \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 
 }}
-
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{
 cfp_soilphys
