@@ -66,3 +66,20 @@ print.cfp_profile <- function(x, ...){
   NextMethod()
 }
 
+# SUBSETTING
+#' @export
+'[.cfp_profile' <- function(x,
+                            ...){
+  id_cols <- cfp_id_cols(x)
+  x_class <- class(x)
+  x_class <- x_class[-match(class(new_cfp_profile(data.frame(), id_cols = NULL)),
+                           x_class)]
+  x <- data.frame(x)
+  x <- x[...]
+  id_cols <- id_cols[id_cols %in% names(x)]
+  if(length(id_cols) == 0) id_cols <- NULL
+
+  new_cfp_profile(x,
+                  id_cols = id_cols,
+                  class = x_class)
+}
