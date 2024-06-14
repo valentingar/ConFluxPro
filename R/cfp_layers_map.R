@@ -82,7 +82,7 @@ cfp_layers_map.data.frame <- function(x,
 
   rlang::check_dots_empty(...)
 
-  stopifnot("layers_map must be a data frame!" = is.data.frame(layers_map))
+  stopifnot("layers_map must be a data frame!" = is.data.frame(x))
   stopifnot("id_cols must be provided!" = !missing(id_cols))
 
   if (!"gas" %in% id_cols){
@@ -93,30 +93,30 @@ cfp_layers_map.data.frame <- function(x,
   #convenient way of adding multiple gases to layers_map
   if (!is.null(gas)){
 
-    stopifnot("gas must not be present in layers_map already!" = !"gas" %in% names(layers_map))
+    stopifnot("gas must not be present in layers_map already!" = !"gas" %in% names(x))
     stopifnot("gas must be a character (-vector)!" = is.character(gas))
     stopifnot("gas must contain unique values only!" = length(gas) == length(unique(gas)))
 
-    layers_map <-
+    x <-
       lapply(gas, function(i){
-        layers_map$gas <- i
-        layers_map
+        x$gas <- i
+        x
       }) %>%
       dplyr::bind_rows()
 
 
-    layers_map <- add_if_missing(layers_map,
-                                 gas,
-                                 lowlim = lowlim)
+    x <- add_if_missing(x,
+                        gas,
+                        lowlim = lowlim)
 
-    layers_map <- add_if_missing(layers_map,
-                                 gas,
-                                 highlim = highlim)
-    layers_map <- add_if_missing(layers_map,
-                                 gas,
-                                 layer_couple = layer_couple)
+    x <- add_if_missing(x,
+                        gas,
+                        highlim = highlim)
+    x <- add_if_missing(x,
+                        gas,
+                        layer_couple = layer_couple)
 
-  } else if (!("gas" %in% names(layers_map))){
+  } else if (!("gas" %in% names(x))){
     stop("Please provide 'gas' parameter either as variable in layers_map or directly to this function.")
   } else if (!is.null(lowlim) | !is.null(highlim)){
     message("'lowlim' and/or 'highlim' ignored because 'gas' argument missing")
@@ -124,9 +124,9 @@ cfp_layers_map.data.frame <- function(x,
 
 
   #automated adding of "layer" column
-  if(!"layer" %in% names(layers_map)){
-    layers_map <-
-      layers_map %>%
+  if(!"layer" %in% names(x)){
+    x <-
+      x %>%
       dplyr::arrange(upper) %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
       dplyr::mutate(layer = 1:dplyr::n())
@@ -134,13 +134,13 @@ cfp_layers_map.data.frame <- function(x,
     #message("automatically added 'layer' column")
   }
 
-  layers_map <-
-  layers_map %>%
+  x <-
+  x %>%
     dplyr::arrange(upper) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
     dplyr::mutate(pmap = dplyr::row_number())
 
-  x <- new_cfp_layers_map(layers_map,
+  x <- new_cfp_layers_map(x,
                           id_cols)
 
   x <- validate_cfp_layers_map(x)
@@ -150,11 +150,11 @@ cfp_layers_map.data.frame <- function(x,
 
 
 #constructor
-new_cfp_layers_map <- function(layers_map,
+new_cfp_layers_map <- function(x,
                                id_cols){
 
   x <- new_cfp_layered_profile(
-    layers_map,
+    x,
     id_cols = id_cols,
     class = "cfp_layers_map")
   x

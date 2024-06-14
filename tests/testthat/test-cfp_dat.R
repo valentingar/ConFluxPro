@@ -232,3 +232,22 @@ test_that("filter cfp_dat objects works", {
   expect_equal(nrow(base_dat_prof1$soilphys), 9)
 
 })
+
+
+
+test_that("cfp_dat fails when no valid profiles", {
+
+  base_dat <- readRDS(testthat::test_path("fixtures", "base_dat.rds"))
+
+  gd <- base_dat$gasdata
+
+  base_dat$gasdata$x_ppm[base_dat$gasdata$depth > 0] <- NA
+
+  expect_error(
+  cfp_dat(base_dat$soilphys,
+          base_dat$gasdata,
+          base_dat$layers_map)
+  )
+
+})
+

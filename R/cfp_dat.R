@@ -129,6 +129,8 @@ cfp_dat <- function(gasdata,
     dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
     data.frame()
 
+  stopifnot("No valid profiles! Maybe the input data dont match?" = nrow(profiles) > 0)
+
   soilphys <- soilphys %>%
     dplyr::filter(sp_id %in% profiles$sp_id) %>%
     new_cfp_soilphys(id_cols = cfp_id_cols(soilphys))
