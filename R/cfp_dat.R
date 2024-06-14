@@ -304,6 +304,7 @@ split_soilphys <- function(soilphys,
                   lower = .data$lower_new) %>%
     dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%
     dplyr::mutate(height = (.data$upper - .data$lower)/100) %>%
+    dplyr::mutate(depth = (.data$upper + .data$lower)/2) %>%
     dplyr::group_by(.data$sp_id) %>%
     dplyr::arrange("upper") %>%
     dplyr::mutate(step_id = dplyr::row_number()) %>%
