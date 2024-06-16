@@ -21,14 +21,25 @@ fg_flux <- function(x, ...){
 #' @exportS3Method
 fg_flux.cfp_dat <- function(x,
                             ...,
-                            gases = NULL,
+                            gases = unique_gases(x),
                             modes = "LL",
                             param = c("c_air", "DS"),
-                            funs = c("arith", "harm")){
+                            funs = c("arith", "harm"),
+                            quiet = FALSE){
 
   rlang::check_dots_empty(...)
 
   x <- as_cfp_dat(x)
+
+  if (length(gases) > 1){
+    if ( length(modes) == 1){
+      if (!quiet) message("applying same mode('",modes,"') to all gases")
+      modes <- rep(modes, length(gases))
+    } else if (is.null(match.call()$gases)){
+      stop("Please manually assign each gas a mode when using multiple modes.")
+    }
+  }
+
   x <- cfp_fgmod(x,
                  gases = gases,
                  modes = modes,
