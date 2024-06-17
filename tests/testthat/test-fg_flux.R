@@ -35,3 +35,26 @@ test_that("fg_flux multiple gases", {
   expect_equal(nrow(FLUX$FLUX), 96)
 
 })
+
+test_that("fg_flux invalid profiles", {
+
+  base_dat <- readRDS(testthat::test_path("fixtures",
+                                          "base_dat.rds"))
+  #lmap <-
+  #data.frame(site = rep(c("site_a", "site_b"), each = 3),
+  #           upper = c(5,0,-20,7,0,-20),
+  #           lower = c(0,-20,-100, 0, -20, -100)) |>
+  #  cfp_layers_map(gas = "CO2", id_cols = "site")
+  #base_dat$layers_map <- lmap
+
+  base_dat$gasdata$x_ppm <- 1000
+  base_dat <- as_cfp_dat(base_dat)
+  FLUX <- fg_flux(base_dat)
+
+  expect_identical(max(abs(FLUX$FLUX$flux)), 0)
+  expect_equal(sum(is.na(FLUX$FLUX$r2)), 48)
+
+
+})
+
+

@@ -123,6 +123,13 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
     dcdz_sd <- as.numeric(mod_summary$coefficients[2,2])*100 #error of gradient in ppm/m
     r2 <- mod_summary$r.squared
 
+    if (abs(dcdz/100) < 1E-9){
+      dcdz <- 0
+      dc <- 0
+      dcdz_sd <- NA
+      r2 <- 0
+    }
+
     df_ret <- data.frame(dcdz_ppm = dcdz,
                          dcdz_sd = dcdz_sd,
                          dc_ppm = dc,

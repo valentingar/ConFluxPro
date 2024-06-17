@@ -15,7 +15,8 @@ fg_flux(x, ...)
   gases = unique_gases(x),
   modes = "LL",
   param = c("c_air", "DS"),
-  funs = c("arith", "harm")
+  funs = c("arith", "harm"),
+  quiet = FALSE
 )
 
 \method{fg_flux}{cfp_fgres}(x, ...)

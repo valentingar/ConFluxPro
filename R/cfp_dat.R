@@ -36,11 +36,10 @@
 #' @importFrom rlang .data
 #'
 #' @export
-# helper
-
-cfp_dat <- function(gasdata,
-                    soilphys,
-                    layers_map){
+cfp_dat <- function(
+    gasdata,
+    soilphys,
+    layers_map){
 
   stopifnot("gasdata must be created with cfp_gasdata() first" = inherits(gasdata,"cfp_gasdata"),
             "soilphys must be created with cfp_soilphys() first" = inherits(soilphys,"cfp_soilphys"),
@@ -198,7 +197,6 @@ validate_cfp_dat <- function(x){
 
   x
 }
-
 
 
 
@@ -488,24 +486,26 @@ get_layers_map.cfp_dat <- function(x){
 
 
 ##### COERSION #######
-#' @describeIn coercion to cfp_dat
+#' @rdname cfp_dat
 #' @export
 as_cfp_dat <- function(x){
   UseMethod("as_cfp_dat")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 as_cfp_dat.cfp_dat <- function(x){
-  x <-
-    new_cfp_dat(x$gasdata,
-              x$soilphys,
-              x$layers_map,
-              x$profiles,
-              cfp_id_cols(x))
+
+  gasdata <- cfp_gasdata(x)
+  soilphys <- cfp_soilphys(x)
+  layers_map <- cfp_layers_map(x)
+
+  x <- cfp_dat(gasdata, soilphys, layers_map)
   x
 }
 
 ##### FILTER ######
+#' @rdname cfp_dat
 #' @exportS3Method
 filter.cfp_dat <- function(.data,
                            ...,
@@ -554,6 +554,7 @@ split_by_group <- function(x){
   UseMethod("split_by_group")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 split_by_group.cfp_dat <- function(x){
 
@@ -590,6 +591,7 @@ split_by_prof <- function(x){
   UseMethod("split_by_prof")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 split_by_prof.cfp_dat <- function(x){
 
