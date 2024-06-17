@@ -639,6 +639,24 @@ split_by_prof.cfp_dat <- function(x){
   out
 }
 
+#' @rdname cfp_profile
+#' @exportS3Method
+split_by_prof.cfp_profile <- function(x){
+  id_cols <- cfp_id_cols(x)
+  x_class <- class(x)
+  x_class <- x_class[!(x_class) %in% class(cfp_profile(data.frame()))]
+
+  x <-
+  x %>%
+    dplyr::group_by(dplyr::across(tidyr::all_of(id_cols))) %>%
+    dplyr::group_split() %>%
+    lapply(data.frame) %>%
+    lapply(new_cfp_profile,
+           id_cols = id_cols,
+           class = x_class)
+  x
+
+}
 
 
 

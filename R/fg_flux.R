@@ -67,8 +67,8 @@ fg_flux.cfp_fgmod <- function(x, ...){
   x$profiles %>%
     dplyr::left_join(
       data.frame(gas = cfp_gases(x),
-                 mode = cfp_modes(x),
-                 by = "gas")
+                 mode = cfp_modes(x)),
+      by = "gas"
     ) %>%
     nrow()
 
@@ -149,8 +149,7 @@ calculate_flux <- function(x, p){
          .f = function(gas, mode){
            gasdata <- gasdata[gasdata$gas == gas, ]
 
-           gasdata_split <-
-             split(gasdata, gasdata$gd_id, drop = TRUE)
+           gasdata_split <- split_by_prof(gasdata)
 
            FLUX <-
              furrr::future_map(
