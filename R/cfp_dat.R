@@ -596,29 +596,38 @@ split_by_prof <- function(x){
 split_by_prof.cfp_dat <- function(x){
 
   profiles <- x$profiles
+  profiles_list <- profiles %>%
+    dplyr::arrange(.data$prof_id) %>%
+    dplyr::group_by(.data$prof_id) %>%
+    dplyr::group_split()
 
-  soilphys <-
+  soilphys_list <-
   profiles %>%
     dplyr::select(sp_id, prof_id) %>%
-    dplyr::left_join(x$soilphys, by = "sp_id")
+    dplyr::left_join(x$soilphys, by = "sp_id") %>%
+    dplyr::arrange(.data$prof_id) %>%
+    dplyr::group_by(.data$prof_id) %>%
+    dplyr::group_split()
 
-  gasdata <-
+  gasdata_list <-
     profiles %>%
     dplyr::select(gd_id, prof_id) %>%
-    dplyr::left_join(x$gasdata, by = "gd_id")
+    dplyr::left_join(x$gasdata, by = "gd_id") %>%
+    dplyr::arrange(.data$prof_id) %>%
+    dplyr::group_by(.data$prof_id) %>%
+    dplyr::group_split()
 
   lmap <- x$layers_map
-
 
   atts <- attributes(x)
 
 
   out <-
-    mapply(split(profiles, profiles$prof_id),
-           split(soilphys, soilphys$prof_id),
-           split(gasdata, gasdata$prof_id),
+    mapply(profiles_list,
+           soilphys_list,
+           gasdata_list,
            MoreArgs = list(
-           lmap = lmap,
+             lmap = lmap,
            id_cols = cfp_id_cols(x),
            atts = list(atts)),
            FUN = function(profs,
