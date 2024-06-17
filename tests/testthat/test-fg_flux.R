@@ -55,6 +55,7 @@ test_that("fg_flux invalid profiles", {
   expect_equal(sum(is.na(FLUX$FLUX$r2)), 48)
 
 
-})
+
+  })
 
 

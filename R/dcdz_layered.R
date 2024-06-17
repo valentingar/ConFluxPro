@@ -119,7 +119,7 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
     dcdz <- as.numeric(stats::coef(mod)[2]) * 100 #gradient in ppm/m
     dc <- dcdz * (abs(diff(c(upper[i], lower[i]))) / 100)
 
-    mod_summary <- summary(mod)
+    suppressWarnings(mod_summary <- summary(mod))
     dcdz_sd <- as.numeric(mod_summary$coefficients[2,2])*100 #error of gradient in ppm/m
     r2 <- mod_summary$r.squared
 
@@ -127,7 +127,7 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       dcdz <- 0
       dc <- 0
       dcdz_sd <- NA
-      r2 <- 0
+      r2 <- NA
     }
 
     df_ret <- data.frame(dcdz_ppm = dcdz,
