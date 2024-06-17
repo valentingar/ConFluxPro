@@ -27,7 +27,7 @@ fg_flux.cfp_dat <- function(x,
                             funs = c("arith", "harm"),
                             quiet = FALSE){
 
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   x <- as_cfp_dat(x)
 

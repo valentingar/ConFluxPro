@@ -16,7 +16,7 @@ efflux <- function(x, ...){
 #' @rdname efflux
 #' @exportS3Method
 efflux.cfp_pfres <- function(x, ...){
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
   pf_efflux(x)
 }
 
@@ -38,7 +38,7 @@ efflux.cfp_fgres <- function(x,
                              method = "lm",
                              layers = NULL){
 
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   fg_efflux(x, method = method, layers = layers)
 }

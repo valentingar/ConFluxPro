@@ -33,7 +33,7 @@ cfp_soilphys <- function(x,
 cfp_soilphys.cfp_dat <- function(
     x,
     ...){
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   x <- get_soilphys(x)
   x
@@ -46,7 +46,7 @@ cfp_soilphys.data.frame <- function(
     x,
     id_cols,
     ...){
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
 
   stopifnot("id_cols must be provided!" = !missing(id_cols))

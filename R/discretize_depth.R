@@ -131,7 +131,7 @@ discretize_depth.cfp_profile <-
            int_depth = 0.5,
            knots = NULL,
            ...){
-    rlang::check_dots_empty(...)
+    rlang::check_dots_empty()
 
     id_cols <- cfp_id_cols(df)
     NextMethod(id_cols = id_cols)
@@ -153,7 +153,7 @@ discretize_depth.data.frame <-
            int_depth = 0.5,
            knots = NULL,
            ...){
-rlang::check_dots_empty(...)
+rlang::check_dots_empty()
 
 
 #make knots into a list if it isnt.

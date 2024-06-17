@@ -69,7 +69,7 @@ pro_flux.cfp_dat <- function(x,
                              DSD0_optim = FALSE,
                              evenness_factor = 0,
                              known_flux_factor = 0){
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   x <- cfp_pfmod(x,
                  zero_flux = zero_flux,

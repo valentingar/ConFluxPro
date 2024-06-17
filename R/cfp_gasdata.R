@@ -51,7 +51,7 @@ cfp_gasdata.data.frame <-
 cfp_gasdata.cfp_dat <-
   function(x,
            ...){
-    rlang::check_dots_empty(...)
+    rlang::check_dots_empty()
     get_gasdata(x)
   }
 

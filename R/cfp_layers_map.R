@@ -80,7 +80,7 @@ cfp_layers_map.data.frame <- function(x,
                            ...
 ){
 
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   stopifnot("layers_map must be a data frame!" = is.data.frame(x))
   stopifnot("id_cols must be provided!" = !missing(id_cols))
