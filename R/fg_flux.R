@@ -65,9 +65,11 @@ fg_flux.cfp_fgmod <- function(x, ...){
 
   n_steps <-
   x$profiles %>%
-    dplyr::left_join(data.frame(gas = cfp_gases(x),
-                                mode = cfp_modes(x))
-                     ) %>%
+    dplyr::left_join(
+      data.frame(gas = cfp_gases(x),
+                 mode = cfp_modes(x),
+                 by = "gas")
+    ) %>%
     nrow()
 
   p <- progressr::progressor(n_steps)
@@ -148,7 +150,7 @@ calculate_flux <- function(x, p){
            gasdata <- gasdata[gasdata$gas == gas, ]
 
            gasdata_split <-
-             split(gasdata, gasdata[, names(gasdata) %in% id_cols], drop = TRUE)
+             split(gasdata, gasdata$gd_id, drop = TRUE)
 
            FLUX <-
              furrr::future_map(
