@@ -13,21 +13,7 @@ cfp_soilphys(x, ...)
 \method{cfp_soilphys}{data.frame}(x, id_cols, ...)
 }
 \arguments{
-\item{x}{(data.frame) That defines the layers for which the
-production or flux is modeled. Note that some parameters can also be provided
-directly to the function call instead (see Details).
-\itemize{
-\item \code{id_cols} the relevant id_cols (see below)
-\item \code{gas}, the gas that is modelled.
-\item \code{upper}, \code{lower} the upper and lower boundaries
-of each layer
-\item \code{lowlim}, \code{highlim} as the lower and upper limits of the
-production rate to be modeled in \eqn{\mu~mol~m^{-3}}
-\item the parameter \code{layer_couple}, that indicates how
-strongly the layer should be linked to the one below it (0 for no coupling)
-}}
-
-\item{soilphys}{A data.frame with (at least) the following columns:
+\item{x}{A data.frame with (at least) the following columns:
 \describe{
 \item{upper (cm) }{The upper bound of each step.}
 \item{lower (cm)}{The lower bound of each step.}
@@ -37,13 +23,27 @@ strongly the layer should be linked to the one below it (0 for no coupling)
 \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 
 }}
+
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{
-cfp_soilphys
+A \code{cfp_soilphys} object.
 }
 \description{
-Create and validate cfp_soilphys objects. A cfp_soilphys object has the following
-characteristics. Each profile is uniquely identifiable by its \code{id_cols} without duplicates.
-The data is upper/lower consistent, meaning that the steps of each profile cover a range
-from min(lower) to max(upper) without gaps, overlap or duplicates.
+Create a \link{cfp_soilphys} object. This is a data.frame containing layered
+data of soil physical properties, at the minimum of the air density
+\code{c_air} and diffsution coeffecient \code{DS} for one or multiple soil
+profiles.
+Each soil profile is uniquely identified by columns in the data.frame
+specified by the \code{id_cols} attribute. Each profile is further subdivided
+into layers by columns \code{upper} and \code{lower}
+(see \link{cfp_layered_profile}).
+}
+\examples{
+cfp_soilphys(
+  ConFluxPro::soilphys,
+  id_cols = c("site", "Date", "gas")
+)
+### Also used to extract an soilphys object from cfp_dat
+cfp_soilphys(ConFluxPro::base_dat)
 }

@@ -1,23 +1,34 @@
 #' @title cfp_gasdata
-#' @description A function to create and validate cfp_gasdata objects. A gasdata
-#' object is characterised by the following criteria: Each row is one observation
-#' of the concentration of a gas at a depth and can be attributed to a distinct
-#' profileidentified by any \code{id_cols} columns.
+#' @description
+#' Create a [cfp_gasdata] object. This is a data.frame containing gas
+#' concentration data for one or multiple soil profiles.
+#' Each soil profile is uniquely identified by columns in the data.frame
+#' specified by the \code{id_cols} attribute.
+#'
 #' @param x A \code{data.frame} with the following columns:
 #' \describe{
 #' \item{gas}{The gas of that observation.}
 #' \item{depth (cm)}{The depth of the observation.}
-#' \item{x_ppm (ppm)}{The observed concentration of that gas.}
+#' \item{x_ppm (ppm)}{The concentration in ppm.}
 #' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 #'}
-#'@inheritParams cfp_layers_map
+#' @param ... not used
+#'
+#' @returns A \code{cfp_gasdata} object.
+#'
+#' @examples
+#' cfp_gasdata(
+#'   ConFluxPro::gasdata,
+#'   id_cols = c("site", "Date"))
+#' ### Also used to extract the gasdata object from cfp_dat
+#' cfp_gasdata(ConFluxPro::base_dat)
+
+
+
 #' @name cfp_gasdata
 #'
 #' @importFrom rlang .data
-#'@return cfp_gasdata
 #'
-
-
 #'@export
 # helper
 cfp_gasdata <- function(x,
@@ -26,6 +37,7 @@ cfp_gasdata <- function(x,
 }
 
 #' @rdname cfp_gasdata
+#' @inheritParams cfp_profile
 #' @exportS3Method
 cfp_gasdata.data.frame <-
   function(x,

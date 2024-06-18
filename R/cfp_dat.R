@@ -31,6 +31,27 @@
 #' "gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
 #' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
 #'}
+#'
+#'
+#' @examples
+#' gasdata <- cfp_gasdata(
+#'   ConFluxPro::gasdata,
+#'   id_cols = c("site", "Date"))
+#' soilphys <- cfp_soilphys(
+#'   ConFluxPro::soilphys,
+#'   id_cols = c("site", "Date"))
+#' layers_map <-
+#'  cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    gas = "CO2",
+#'    lowlim = 0,
+#'    highlim = 1000,
+#'    id_cols = "site")
+#' base_dat <- cfp_dat(gasdata, soilphys, layers_map)
+#'
+#' ### filter similar to dplyr::fliter
+#' filter(base_dat, site == "site_a")
+#' filter(base_dat, prof_id %in%  1:5)
 
 #' @importFrom dplyr filter
 #' @importFrom rlang .data

@@ -26,6 +26,7 @@
 #' @param layer_couple (numeric_vector) A vector the same length as gas that
 #' indicates how strongly the layer should be linked to the one below it
 #' (0 for no coupling, the default).
+#' @param ... not used
 #'
 #' @details
 #' # Add lowlim and highlim for multiple gases
@@ -46,30 +47,38 @@
 #' each layer with an integer (ascending from bottom to top).
 #'
 #' @examples
-#' df <- data.frame(
-#'   site = rep(c("site_a", "site_b"), each = 2),
-#'   upper = c(5, 0, 7, 0),
-#'   lower = c(0, -100, 0, -100))
+#' cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    gas = "CO2",
+#'    lowlim = 0,
+#'    highlim = 1000,
+#'    id_cols = "site")
 #'
-#' cfp_layers_map(df,
-#'   id_cols = "site",
-#'   gas = c("CO2", "CH4"),
-#'   lowlim = c(0, -1000),
-#'   highlim = c(1000, 1000),
-#'   layer_couple = 0
-#' )
+#' ### add multiple gases at once
+#' cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    id_cols = "site",
+#'    gas = c("CO2", "CH4"),
+#'    lowlim = c(0, -1000),
+#'    highlim = c(1000, 1000))
+#'
+#' ### Extract from an existing cfp_dat
+#' cfp_layers_map(ConFluxPro::base_dat)
+
 #' @export
 cfp_layers_map <- function(x,
                            ...){
   UseMethod("cfp_layers_map")
 }
 
+#' @rdname cfp_layers_map
 #' @exportS3Method
-cfp_layers_map.cfp_dat <- function(x){
+cfp_layers_map.cfp_dat <- function(x,
+                                   ...){
   get_layers_map(x)
 }
 
-
+#' @rdname cfp_layers_map
 #' @exportS3Method
 cfp_layers_map.data.frame <- function(x,
                            id_cols,

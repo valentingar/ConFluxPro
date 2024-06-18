@@ -2,9 +2,23 @@
 % Please edit documentation in R/cfp_layers_map.R
 \name{cfp_layers_map}
 \alias{cfp_layers_map}
+\alias{cfp_layers_map.cfp_dat}
+\alias{cfp_layers_map.data.frame}
 \title{cfp_layers_map}
 \usage{
 cfp_layers_map(x, ...)
+
+\method{cfp_layers_map}{cfp_dat}(x, ...)
+
+\method{cfp_layers_map}{data.frame}(
+  x,
+  id_cols,
+  gas = NULL,
+  lowlim = NULL,
+  highlim = NULL,
+  layer_couple = 0,
+  ...
+)
 }
 \arguments{
 \item{x}{(data.frame) That defines the layers for which the
@@ -20,6 +34,10 @@ production rate to be modeled in \eqn{\mu~mol~m^{-3}}
 \item the parameter \code{layer_couple}, that indicates how
 strongly the layer should be linked to the one below it (0 for no coupling)
 }}
+
+\item{...}{not used}
+
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 
 \item{gas}{(character vector) of gas names to be added to
 x which is then repeated for each gas.}
@@ -58,16 +76,21 @@ each gas with the respective values of the production limits provided.
 }
 
 \examples{
-df <- data.frame(
-  site = rep(c("site_a", "site_b"), each = 2),
-  upper = c(5, 0, 7, 0),
-  lower = c(0, -100, 0, -100))
+cfp_layers_map(
+   ConFluxPro::layers_map,
+   gas = "CO2",
+   lowlim = 0,
+   highlim = 1000,
+   id_cols = "site")
 
-cfp_layers_map(df,
-  id_cols = "site",
-  gas = c("CO2", "CH4"),
-  lowlim = c(0, -1000),
-  highlim = c(1000, 1000),
-  layer_couple = 0
-)
+### add multiple gases at once
+cfp_layers_map(
+   ConFluxPro::layers_map,
+   id_cols = "site",
+   gas = c("CO2", "CH4"),
+   lowlim = c(0, -1000),
+   highlim = c(1000, 1000))
+
+### Extract from an existing cfp_dat
+cfp_layers_map(ConFluxPro::base_dat)
 }

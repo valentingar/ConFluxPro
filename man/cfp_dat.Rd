@@ -52,3 +52,23 @@ input data to run a ConFluxPro model. It automatically combines the different
 datasets and checks them for validity. It may split soilphys layers to correspond
 with layers_map and gasdata depths.
 }
+\examples{
+gasdata <- cfp_gasdata(
+  ConFluxPro::gasdata,
+  id_cols = c("site", "Date"))
+soilphys <- cfp_soilphys(
+  ConFluxPro::soilphys,
+  id_cols = c("site", "Date"))
+layers_map <-
+ cfp_layers_map(
+   ConFluxPro::layers_map,
+   gas = "CO2",
+   lowlim = 0,
+   highlim = 1000,
+   id_cols = "site")
+base_dat <- cfp_dat(gasdata, soilphys, layers_map)
+
+### filter similar to dplyr::fliter
+filter(base_dat, site == "site_a")
+filter(base_dat, prof_id \%in\%  1:5)
+}
