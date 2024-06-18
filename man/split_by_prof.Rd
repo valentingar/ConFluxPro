@@ -30,4 +30,7 @@ df <- cfp_profile(
       variable = 1:4),
    id_cols = "site")
 split_by_prof(df)
+
+base_dat <- ConFluxPro::base_dat
+split_by_prof(base_dat)
 }

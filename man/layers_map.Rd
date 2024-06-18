@@ -3,7 +3,7 @@
 \docType{data}
 \name{layers_map}
 \alias{layers_map}
-\title{soilphys}
+\title{layers_map}
 \format{
 A data.frame with 4 rows and 3 variables:
 \describe{

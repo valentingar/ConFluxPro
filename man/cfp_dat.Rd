@@ -7,8 +7,6 @@
 \alias{filter.cfp_dat}
 \alias{split_by_group}
 \alias{split_by_group.cfp_dat}
-\alias{split_by_prof}
-\alias{split_by_prof.cfp_dat}
 \title{cfp_dat}
 \usage{
 cfp_dat(gasdata, soilphys, layers_map)
@@ -22,10 +20,6 @@ as_cfp_dat(x)
 split_by_group(x)
 
 \method{split_by_group}{cfp_dat}(x)
-
-split_by_prof(x)
-
-\method{split_by_prof}{cfp_dat}(x)
 }
 \arguments{
 \item{gasdata}{A cfp_gasdata object created by running \code{cfp_gasdata()}.}
