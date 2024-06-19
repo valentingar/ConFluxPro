@@ -4,7 +4,13 @@
 \alias{cfp_fgmod}
 \title{cfp_fgmod}
 \usage{
-cfp_fgmod(x, gases, modes, param, funs)
+cfp_fgmod(
+  x,
+  gases = unique_gases(x),
+  modes = "LL",
+  param = c("c_air", "DS"),
+  funs = c("arith", "harm")
+)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
@@ -31,7 +37,14 @@ parameters may help interpretation.}
 \item{funs}{(character) A vector defining the type of mean to be used for
 each parameter in \code{param}. One of "arith" or "harm".}
 }
+\value{
+A \code{cfp_fgmod} object. This inherits from \code{\link[=cfp_dat]{cfp_dat()}} and
+adds model specific parameters.
+}
 \description{
 An S3 class for \code{fg_flux()} models. The class inherits from
 cfp_dat and adds any model specific parameters.
+}
+\examples{
+cfp_fgmod(ConFluxPro::base_dat)
 }

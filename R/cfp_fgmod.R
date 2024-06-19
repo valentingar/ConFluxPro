@@ -24,14 +24,20 @@
 #' @param funs (character) A vector defining the type of mean to be used for
 #' each parameter in \code{param}. One of "arith" or "harm".
 #'
+#' @returns A \code{cfp_fgmod} object. This inherits from [cfp_dat()] and
+#' adds model specific parameters.
 #'
+#' @examples
+#' cfp_fgmod(ConFluxPro::base_dat)
+
+#' @export
 
 
 cfp_fgmod <- function(x,
-                      gases,
-                      modes,
-                      param,
-                      funs){
+                      gases = unique_gases(x),
+                      modes = "LL",
+                      param = c("c_air", "DS"),
+                      funs = c("arith", "harm")){
 
   stopifnot(inherits(x, "cfp_dat"))
 
