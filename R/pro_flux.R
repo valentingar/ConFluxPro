@@ -96,8 +96,6 @@ pro_flux.cfp_pfmod <- function(x,
 
   stopifnot(inherits(x,"cfp_pfmod"))
 
-  #make sure soilphys is in ascending order
-  x$soilphys <- dplyr::arrange(x$soilphys,upper)
 
   # first separate groups
   x_split <- split_by_group(x)

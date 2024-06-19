@@ -9,10 +9,22 @@
 #'
 #' @inheritParams cfp_profile
 #'
+#' @returns A \code{cfp_layered_profile} object. This is a
+#' \[cfp_profile()] that is further subdivided into layers by the
+#' columns \code{upper} and \code{lower}.
+#'
 #' @details \code{upper} and \code{lower} define the upper and lower bounds of
 #' each layer in cm. Higher values lay on top of lower values.
 #'
+#' @examples
+#' df <- data.frame(
+#'   site = rep(c("site_a", "site_b"), each = 2),
+#'   upper = c(10, 0, 7, 0),
+#'   lower = c(0, -100, 0, -100),
+#'   variable = 1:4)
 #'
+#' cfp_layered_profile(df, id_cols = "site")
+
 #' @export
 
 cfp_layered_profile <- function(

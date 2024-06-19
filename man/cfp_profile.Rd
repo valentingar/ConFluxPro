@@ -11,7 +11,26 @@ cfp_profile(x, id_cols = NULL)
 
 \item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
+\value{
+A \code{cfp_profile} object. This is a \code{data.frame}
+with the \code{id_cols} attribute.
+}
 \description{
 A central S3 class that defines a \code{data.frame} where columns given in
 \code{id_cols} define distinct soil profiles.
+}
+\examples{
+df <- data.frame(
+  site = rep(c("site_a", "site_b"), each = 2),
+  variable = 1:4)
+
+cfp_profile(df, id_cols = "site")
+
+### multiple id_cols
+df <- data.frame(
+  site = rep(c("site_a", "site_b"), each = 4),
+  replicate = rep(c(1,2), times = 4),
+  variable = 1:8)
+
+cfp_profile(df, id_cols = c("site", "replicate"))
 }

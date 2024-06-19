@@ -7,9 +7,17 @@
 #' @param x A valid \code{cfp_pfmod} object
 #' @param y The corresponding PROFULX \code{data.frame}.
 #'
+#' @returns A \code{cfp_pfres} object. This inherits from [cfp_pfmod()].
+#'
 #' @importFrom rlang .data
 #'
-#'
+#' @examplesIf interactive()
+#' PROFLUX <- pro_flux(ConFluxPro::base_dat)
+#' cfp_pfres(
+#'   cfp_pfmod(ConFluxPro::base_dat),
+#'   PROFLUX$PROFLUX
+#' )
+#' @export
 
 cfp_pfres <- function(x,y){
 

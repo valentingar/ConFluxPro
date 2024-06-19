@@ -8,7 +8,24 @@
 #'
 #' @param id_cols Column names in data.frame that uniquely identify each profile.
 #'
+#' @returns A \code{cfp_profile} object. This is a \code{data.frame}
+#' with the \code{id_cols} attribute.
 #'
+#' @examples
+#' df <- data.frame(
+#'   site = rep(c("site_a", "site_b"), each = 2),
+#'   variable = 1:4)
+#'
+#' cfp_profile(df, id_cols = "site")
+#'
+#' ### multiple id_cols
+#' df <- data.frame(
+#'   site = rep(c("site_a", "site_b"), each = 4),
+#'   replicate = rep(c(1,2), times = 4),
+#'   variable = 1:8)
+#'
+#' cfp_profile(df, id_cols = c("site", "replicate"))
+
 #' @export
 
 cfp_profile <- function(
