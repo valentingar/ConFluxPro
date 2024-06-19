@@ -30,6 +30,7 @@
 #' @examples
 #' cfp_fgmod(ConFluxPro::base_dat)
 
+#' @keywords internal
 #' @export
 
 

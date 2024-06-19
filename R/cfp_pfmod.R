@@ -42,6 +42,7 @@
 #' @examples
 #' cfp_pfmod(ConFluxPro::base_dat)
 
+#' @keywords internal
 #' @export
 
 cfp_pfmod <- function(x,

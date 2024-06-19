@@ -15,6 +15,9 @@
 #'   cfp_fgmod(ConFluxPro::base_dat),
 #'   FLUX$FLUX
 #' )
+#'
+#' @keywords internal
+#'
 #' @export
 cfp_fgres <- function(x,y){
 

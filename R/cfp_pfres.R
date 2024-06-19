@@ -17,6 +17,9 @@
 #'   cfp_pfmod(ConFluxPro::base_dat),
 #'   PROFLUX$PROFLUX
 #' )
+#'
+#' @keywords internal
+#'
 #' @export
 
 cfp_pfres <- function(x,y){
