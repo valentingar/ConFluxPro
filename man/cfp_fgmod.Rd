@@ -48,3 +48,4 @@ cfp_dat and adds any model specific parameters.
 \examples{
 cfp_fgmod(ConFluxPro::base_dat)
 }
+\keyword{internal}

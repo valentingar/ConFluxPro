@@ -28,3 +28,4 @@ cfp_fgres(
 )
 \dontshow{\}) # examplesIf}
 }
+\keyword{internal}

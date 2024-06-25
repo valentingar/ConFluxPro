@@ -28,3 +28,4 @@ cfp_pfres(
 )
 \dontshow{\}) # examplesIf}
 }
+\keyword{internal}

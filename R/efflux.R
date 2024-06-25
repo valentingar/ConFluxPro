@@ -55,12 +55,13 @@ pf_efflux <- function(x) {
   PROFLUX %>%
     dplyr::group_by(.data$prof_id) %>%
     dplyr::arrange(dplyr::desc(.data$step_id)) %>%
-    dplyr::summarise(flux = .data$flux[1]) %>%
+    dplyr::summarise(efflux = .data$flux[1],
+                     dplyr::across(dplyr::any_of(c("DELTA_flux")), ~.x[1])) %>%
+    dplyr::rename(dplyr::any_of(c(DELTA_efflux = "DELTA_flux"))) %>%
     dplyr::left_join(profiles, by = "prof_id") %>%
     dplyr::select(dplyr::any_of({
-      c(id_cols, "flux", "prof_id")
+      c(id_cols, "efflux", "prof_id", "DELTA_efflux")
     })) %>%
-    dplyr::rename(efflux = "flux") %>%
     dplyr::ungroup() %>%
     cfp_profile(id_cols = id_cols)
 }
