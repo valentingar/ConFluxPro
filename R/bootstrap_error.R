@@ -193,15 +193,24 @@ create_extended_gasdata <- function(x,
 
 create_bootstrap_gasdata <- function(gasdata, n_samples){
 
+
+  split_id <- gasdata %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(c(cfp_id_cols(gasdata),"depth")))) %>%
+    group_indices()
+
+  split_id_split <- split(1:length(split_id), split_id)
+
   gasdata <-
     lapply(1:n_samples, function(i){
-      gasdata %>%
-        dplyr::group_by(dplyr::across(dplyr::any_of(c(cfp_id_cols(gasdata),
-                                                      "depth")))) %>%
-        dplyr::slice_sample(prop = 1, replace = TRUE)
+      gd <- gasdata[sapply(split_id_split, function(x){
+        sample(x, length(x), replace = TRUE)
+      })%>% unlist(),]
+
     }) %>%
     dplyr::bind_rows(.id = "bootstrap_id") %>%
     cfp_gasdata(id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
+
+  rownames(gasdata) <- 1:nrow(gasdata)
 
   gasdata
 }
