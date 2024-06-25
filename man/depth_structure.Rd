@@ -17,6 +17,9 @@ depth_structure(x, id_cols = NULL, ...)
 }
 \arguments{
 \item{x}{An object to get general structure of.}
+
+\item{id_cols}{The columns that identify each set of depth structures
+to extract (e.g. a site identifier).}
 }
 \description{
 Get the unique layers or depths, i.e. the backbone

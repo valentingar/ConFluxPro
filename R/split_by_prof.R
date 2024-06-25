@@ -40,7 +40,7 @@ split_by_prof.cfp_dat <- function(x){
   soilphys_list <-
     profiles %>%
     dplyr::select(sp_id, prof_id) %>%
-    dplyr::left_join(x$soilphys, by = "sp_id") %>%
+    dplyr::left_join(x$soilphys, by = "sp_id", relationship = "many-to-many") %>%
     dplyr::arrange(.data$prof_id) %>%
     dplyr::group_by(.data$prof_id) %>%
     dplyr::group_split()

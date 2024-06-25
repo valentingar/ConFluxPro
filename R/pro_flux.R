@@ -114,7 +114,9 @@ pro_flux.cfp_pfmod <- function(x,
   # add some columns
   y <- x$soilphys %>%
     as.data.frame() %>%
-    dplyr::left_join(x$profiles, by = "sp_id") %>%
+    dplyr::left_join(x$profiles,
+                     by = c(names(x$soilphys)[names(x$soilphys) %in% names(x$profiles)]),
+                     relationship = "many-to-many") %>%
     dplyr::select(upper, lower, step_id, prof_id, sp_id, pmap) %>%
     dplyr::right_join(y, by = c("step_id", "prof_id")) %>%
     cfp_layered_profile(id_cols ="prof_id")

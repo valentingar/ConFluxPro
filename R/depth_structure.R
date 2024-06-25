@@ -5,7 +5,8 @@
 #' of an object given a set of identifying columns.
 #'
 #' @param x An object to get general structure of.
-#' @inheritParams cfp_profile id_cols
+#' @param id_cols The columns that identify each set of depth structures
+#' to extract (e.g. a site identifier).
 #'
 #' @name depth_structure
 #' @export
