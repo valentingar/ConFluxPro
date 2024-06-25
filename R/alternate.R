@@ -195,8 +195,12 @@ update_topheight <-
     topheight_gd <- topheight_sp <- topheight %>%
       dplyr::left_join(x$profiles,
                        by = {m_lmap})
-    topheight_gd <- topheight_gd %>% dplyr::select("gd_id", "value", "type")
-    topheight_sp <- topheight_sp %>% dplyr::select("sp_id", "value", "type")
+    topheight_gd <- topheight_gd %>%
+      dplyr::select("gd_id", "value", "type") %>%
+      dplyr::distinct()
+    topheight_sp <- topheight_sp %>%
+      dplyr::select("sp_id", "value", "type") %>%
+      dplyr::distinct()
 
     x$layers_map <-
       x$layers_map %>%
