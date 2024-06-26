@@ -200,15 +200,27 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
 
   split_id_split <- split(1:length(split_id), split_id)
 
-  gasdata <-
-    lapply(1:n_samples, function(i){
-      gd <- gasdata[sapply(split_id_split, function(x){
-        sample(x, length(x), replace = TRUE)
-      })%>% unlist(),]
+  new_sel <-
+  replicate(n_samples, sapply(split_id_split, function(x){
+          sample.vec(x, length(x), replace = TRUE)
+        })%>% unlist()) %>%
+    c()
 
-    }) %>%
-    dplyr::bind_rows(.id = "bootstrap_id") %>%
-    cfp_gasdata(id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
+  gasdata <- gasdata[new_sel, ]
+  gasdata$bootstrap_id <- rep(1:n_samples, each = length(split_id))
+
+  gasdata <- cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
+
+
+  #gasdata <-
+  #  lapply(1:n_samples, function(i){
+  #    gd <- gasdata[sapply(split_id_split, function(x){
+  #      sample(x, length(x), replace = TRUE)
+  #    })%>% unlist(),]
+#
+ #   }) %>%
+  #  dplyr::bind_rows(.id = "bootstrap_id") %>%
+   # cfp_gasdata(id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
 
   rownames(gasdata) <- 1:nrow(gasdata)
 

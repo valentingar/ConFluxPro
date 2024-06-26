@@ -136,3 +136,7 @@ any_negative_values <- function(x){
   if (length(x) == 0) return(FALSE)
   min(x) < 0
 }
+
+
+## sample function that can handle 1 length vectors
+sample.vec <- function(x, ...) x[sample(length(x), ...)]
