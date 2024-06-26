@@ -180,13 +180,27 @@ pro_flux_group <-  function(x, p){
       highlim_tmp <- c(max(cfp_zero_limits(x)), highlim_tmp)
     }
 
-    x <- split_by_prof(x)
-    df_ret <-furrr::future_map(x,
+
+    DSD0_optim <- cfp_DSD0_optim(x)
+    evenness_factor <- cfp_evenness_factor(x)
+    zero_flux <- cfp_zero_flux(x)
+    known_flux_factor <- cfp_known_flux_factor(x)
+
+
+    dmin <- min(x$layers_map$lower)
+
+    x <- split_by_prof_barebones(x)
+    df_ret <-furrr::future_imap(x,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,
                          lowlim_tmp = lowlim_tmp,
                          highlim_tmp = highlim_tmp,
+                         DSD0_optim = DSD0_optim,
+                         evenness_factor = evenness_factor,
+                         zero_flux = zero_flux,
+                         known_flux_factor = known_flux_factor,
+                         dmin = dmin,
                          p = p,
                          prof_optim#,
                          #.options = furrr::furrr_options(globals = FALSE),
@@ -202,18 +216,18 @@ pro_flux_group <-  function(x, p){
 #########################################-
 ### Function for per profile optimisation
 prof_optim <- function(x,
+                       prof_id,
                        prod_start,
                        F0,
                        layer_couple_tmp,
                        lowlim_tmp,
                        highlim_tmp,
+                       DSD0_optim,
+                       evenness_factor,
+                       zero_flux,
+                       known_flux_factor,
+                       dmin,
                        p){
-
-  DSD0_optim <- cfp_DSD0_optim(x)
-  evenness_factor <- cfp_evenness_factor(x)
-  zero_flux <- cfp_zero_flux(x)
-  known_flux_factor <- cfp_known_flux_factor(x)
-
 
   #mapping productions to soilphys_tmp
   pmap <- x$soilphys$pmap
@@ -240,7 +254,6 @@ prof_optim <- function(x,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  dmin <- min(x$layers_map$lower)
   C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
 
   #DS and D0
@@ -315,13 +328,13 @@ prof_optim <- function(x,
 
   #toggle progress bar
 
-  if(x$profiles$prof_id %% 53 == 0){
+  if(as.numeric(prof_id) %% 53 == 0){
   p()
   }
 
   #generating return data_frame
   df <- data.frame(
-    prof_id = x$profiles$prof_id[1],
+    prof_id = as.numeric(prof_id),
     step_id = x$soilphys$step_id,
     flux = fluxs,
     F0 = F0,

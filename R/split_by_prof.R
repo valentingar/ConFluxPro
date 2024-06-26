@@ -106,4 +106,46 @@ split_by_prof.cfp_profile <- function(x){
 
 
 
+### barebones-version:
 
+split_by_prof_barebones <- function(x){
+  x <- trim_cfp_dat(x)
+
+  soilphys_list <-
+    x$profiles %>%
+    dplyr::select(sp_id, prof_id) %>%
+    dplyr::left_join(x$soilphys, by = "sp_id", relationship = "many-to-many") %>%
+    dplyr::select(!all_of("sp_id")) %>%
+    dplyr::arrange(.data$prof_id)%>%
+    dplyr::group_by(.data$prof_id) %>%
+    dplyr::group_split(.keep = FALSE)
+
+  #sp_prof_id <- soilphys$prof_id
+  #soilphys <- soilphys[, !names(soilphys) == "prof_id"]
+
+  #soilphys_list <- split(soilphys, sp_prof_id)
+
+  gasdata_list <-
+    x$profiles %>%
+    dplyr::select(gd_id, prof_id) %>%
+    dplyr::left_join(x$gasdata, by = "gd_id") %>%
+    dplyr::select(!all_of("gd_id")) %>%
+    dplyr::arrange(.data$prof_id) %>%
+    dplyr::group_by(.data$prof_id) %>%
+    dplyr::group_split(.keep = FALSE)
+
+
+  #gd_prof_id <- gasdata$prof_id
+  #gasdata <- gasdata[,!names(gasdata) == "prof_id"]
+
+  #gasdata_list <- split(gasdata, gd_prof_id)
+
+  mapply(gasdata_list,
+         soilphys_list,
+         FUN = function(gd, sp){
+           list("gasdata" = data.frame(gd),
+                "soilphys" = data.frame(sp))
+         },
+         SIMPLIFY = FALSE) |> stats::setNames(x$profiles$prof_id)
+
+}
