@@ -196,7 +196,7 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
 
   split_id <- gasdata %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(c(cfp_id_cols(gasdata),"depth")))) %>%
-    group_indices()
+    dplyr::group_indices()
 
   split_id_split <- split(1:length(split_id), split_id)
 

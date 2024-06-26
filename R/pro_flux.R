@@ -98,7 +98,7 @@ pro_flux.cfp_pfmod <- function(x,
 
 
   # first separate groups
-  x_split <- split_by_group(trim_cfp_dat(x))
+  x_split <- split_by_group(x)
 
   #apply function to all grouped cfp_pfmods
   p <- progressr::progressor(steps = nrow(x$profiles)/50)
@@ -188,9 +188,9 @@ pro_flux_group <-  function(x, p){
                          lowlim_tmp = lowlim_tmp,
                          highlim_tmp = highlim_tmp,
                          p = p,
-                         prof_optim,
-                         .options = furrr::furrr_options(globals = FALSE),
-                         .env_globals = environment()
+                         prof_optim#,
+                         #.options = furrr::furrr_options(globals = FALSE),
+                         #.env_globals = environment()
                          )
 
     df_ret <- df_ret %>%
@@ -312,6 +312,7 @@ prof_optim <- function(x,
     RMSE <- NA
   }
 
+  p(amount = 0, message = "aaa")
   #toggle progress bar
   if(x$profiles$prof_id %% 50 == 0){
   p()
@@ -329,8 +330,6 @@ prof_optim <- function(x,
   if(DSD0_optim == TRUE){
     df$DSD0_fit <- DSD0_fit[pmap]
   }
-  rm(list = ls()[-(ls()== "df")])
-  gc()
   df
 }
 

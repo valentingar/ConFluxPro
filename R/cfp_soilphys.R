@@ -124,21 +124,21 @@ print.cfp_soilphys <- function(x, ...){
 
 
 # SUBSETTING
-# @export
-# '[.cfp_soilphys' <- function(x,
-#                              ...){
-#   id_cols <- cfp_id_cols(x)
-#   x_class <- class(x)
-#
-#   x <- data.frame(x)
-#   x <- x[...]
-#
-#   if (all(id_cols %in% names(x))){
-#     # if all id_cols present, coerce back to soilphys object
-#     attr(x, "id_cols") <- id_cols
-#     class(x) <- x_class
-#   }
-#
-#   x
-# }
-#
+#' @export
+'[.cfp_soilphys' <- function(x,
+                             ...){
+  id_cols <- cfp_id_cols(x)
+  x_class <- class(x)
+
+  x <- data.frame(x)
+  x <- x[...]
+
+  if (all(id_cols %in% names(x))){
+    # if all id_cols present, coerce back to soilphys object
+    attr(x, "id_cols") <- id_cols
+    class(x) <- x_class
+  }
+
+  x
+}
+

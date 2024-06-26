@@ -75,7 +75,7 @@ fg_flux.cfp_fgmod <- function(x, ...){
   p <- progressr::progressor(n_steps)
 
 
-  y <- furrr::future_map(x_split,
+  y <- purrr::map(x_split,
                          calculate_flux,
                          p = p
   )
