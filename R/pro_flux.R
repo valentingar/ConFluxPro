@@ -101,7 +101,7 @@ pro_flux.cfp_pfmod <- function(x,
   x_split <- split_by_group(x)
 
   #apply function to all grouped cfp_pfmods
-  p <- progressr::progressor(steps = nrow(x$profiles)/50)
+  p <- progressr::progressor(steps = nrow(x$profiles)/53)
   y <- purrr::map(x_split,
                   pro_flux_group,
                   p = p
@@ -312,9 +312,10 @@ prof_optim <- function(x,
     RMSE <- NA
   }
 
-  p(amount = 0, message = "aaa")
+
   #toggle progress bar
-  if(x$profiles$prof_id %% 50 == 0){
+
+  if(x$profiles$prof_id %% 53 == 0){
   p()
   }
 
