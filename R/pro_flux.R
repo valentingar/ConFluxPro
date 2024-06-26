@@ -98,14 +98,14 @@ pro_flux.cfp_pfmod <- function(x,
 
 
   # first separate groups
-  x_split <- split_by_group(x)
+  x_split <- split_by_group(trim_cfp_dat(x))
 
   #apply function to all grouped cfp_pfmods
   p <- progressr::progressor(steps = nrow(x$profiles)/50)
-  y <- furrr::future_map(x_split,
-                         pro_flux_group,
-                         p = p
-                         )
+  y <- purrr::map(x_split,
+                  pro_flux_group,
+                  p = p
+  )
   #y <- purrr::map(x_split,pro_flux_group)
 
   #combine PROFLUX result
@@ -188,7 +188,10 @@ pro_flux_group <-  function(x, p){
                          lowlim_tmp = lowlim_tmp,
                          highlim_tmp = highlim_tmp,
                          p = p,
-                         prof_optim)
+                         prof_optim,
+                         .options = furrr::furrr_options(globals = FALSE),
+                         .env_globals = environment()
+                         )
 
     df_ret <- df_ret %>%
       dplyr::bind_rows()
@@ -326,7 +329,9 @@ prof_optim <- function(x,
   if(DSD0_optim == TRUE){
     df$DSD0_fit <- DSD0_fit[pmap]
   }
-  return(df)
+  rm(list = ls()[-(ls()== "df")])
+  gc()
+  df
 }
 
 

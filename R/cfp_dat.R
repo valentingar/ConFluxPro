@@ -597,7 +597,7 @@ split_by_group.cfp_dat <- function(x){
 
     lmap <-
       x$layers_map[x$layers_map$group_id %in% profs_tmp$group_id,] %>%
-      cfp_layers_map(id_cols = cfp_id_cols(x$layers_map))
+      new_cfp_layers_map(id_cols = cfp_id_cols(x$layers_map))
 
     cfp_dat_group <- new_cfp_dat(gd,sp,lmap,profs_tmp,id_cols = cfp_id_cols(x))
     attributes(cfp_dat_group) <- attributes(x)
