@@ -31,16 +31,36 @@
 #' "gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
 #' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
 #'}
+#'
+#'
+#' @examples
+#' gasdata <- cfp_gasdata(
+#'   ConFluxPro::gasdata,
+#'   id_cols = c("site", "Date"))
+#' soilphys <- cfp_soilphys(
+#'   ConFluxPro::soilphys,
+#'   id_cols = c("site", "Date"))
+#' layers_map <-
+#'  cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    gas = "CO2",
+#'    lowlim = 0,
+#'    highlim = 1000,
+#'    id_cols = "site")
+#' base_dat <- cfp_dat(gasdata, soilphys, layers_map)
+#'
+#' ### filter similar to dplyr::fliter
+#' filter(base_dat, site == "site_a")
+#' filter(base_dat, prof_id %in%  1:5)
 
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
 #'
 #' @export
-# helper
-
-cfp_dat <- function(gasdata,
-                    soilphys,
-                    layers_map){
+cfp_dat <- function(
+    gasdata,
+    soilphys,
+    layers_map){
 
   stopifnot("gasdata must be created with cfp_gasdata() first" = inherits(gasdata,"cfp_gasdata"),
             "soilphys must be created with cfp_soilphys() first" = inherits(soilphys,"cfp_soilphys"),
@@ -127,7 +147,10 @@ cfp_dat <- function(gasdata,
   profiles <-
     profiles %>%
     dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
-    data.frame()
+    data.frame() %>%
+    cfp_profile(id_cols = "prof_id")
+
+  stopifnot("No valid profiles! Maybe the input data dont match?" = nrow(profiles) > 0)
 
   soilphys <- soilphys %>%
     dplyr::filter(sp_id %in% profiles$sp_id) %>%
@@ -195,7 +218,6 @@ validate_cfp_dat <- function(x){
 
   x
 }
-
 
 
 
@@ -301,6 +323,7 @@ split_soilphys <- function(soilphys,
                   lower = .data$lower_new) %>%
     dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%
     dplyr::mutate(height = (.data$upper - .data$lower)/100) %>%
+    dplyr::mutate(depth = (.data$upper + .data$lower)/2) %>%
     dplyr::group_by(.data$sp_id) %>%
     dplyr::arrange("upper") %>%
     dplyr::mutate(step_id = dplyr::row_number()) %>%
@@ -484,24 +507,26 @@ get_layers_map.cfp_dat <- function(x){
 
 
 ##### COERSION #######
-#' @describeIn coercion to cfp_dat
+#' @rdname cfp_dat
 #' @export
 as_cfp_dat <- function(x){
   UseMethod("as_cfp_dat")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 as_cfp_dat.cfp_dat <- function(x){
-  x <-
-    new_cfp_dat(x$gasdata,
-              x$soilphys,
-              x$layers_map,
-              x$profiles,
-              cfp_id_cols(x))
+
+  gasdata <- cfp_gasdata(x)
+  soilphys <- cfp_soilphys(x)
+  layers_map <- cfp_layers_map(x)
+
+  x <- cfp_dat(gasdata, soilphys, layers_map)
   x
 }
 
 ##### FILTER ######
+#' @rdname cfp_dat
 #' @exportS3Method
 filter.cfp_dat <- function(.data,
                            ...,
@@ -550,6 +575,7 @@ split_by_group <- function(x){
   UseMethod("split_by_group")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 split_by_group.cfp_dat <- function(x){
 
@@ -579,63 +605,3 @@ split_by_group.cfp_dat <- function(x){
   })
   out
 }
-
-#' @rdname cfp_dat
-#' @export
-split_by_prof <- function(x){
-  UseMethod("split_by_prof")
-}
-
-#' @exportS3Method
-split_by_prof.cfp_dat <- function(x){
-
-  profiles <- x$profiles
-
-  soilphys <-
-  profiles %>%
-    dplyr::select(sp_id, prof_id) %>%
-    dplyr::left_join(x$soilphys, by = "sp_id")
-
-  gasdata <-
-    profiles %>%
-    dplyr::select(gd_id, prof_id) %>%
-    dplyr::left_join(x$gasdata, by = "gd_id")
-
-  lmap <- x$layers_map
-
-
-  atts <- attributes(x)
-
-
-  out <-
-    mapply(split(profiles, profiles$prof_id),
-           split(soilphys, soilphys$prof_id),
-           split(gasdata, gasdata$prof_id),
-           MoreArgs = list(
-           lmap = lmap,
-           id_cols = cfp_id_cols(x),
-           atts = list(atts)),
-           FUN = function(profs,
-                    sp,
-                    gd,
-                    lmap,
-                    id_cols,
-                    atts){
-      cfp_dat_group <- new_cfp_dat(gd[!colnames(gd) == "prof_id"],
-                                   sp[!colnames(sp) == "prof_id"],
-                                   lmap,
-                                   profs,
-                                   id_cols = id_cols)
-      attributes(cfp_dat_group) <- unlist(atts, recursive = FALSE)
-      cfp_dat_group
-    },
-    SIMPLIFY = FALSE)
-  out
-}
-
-
-
-
-
-
-

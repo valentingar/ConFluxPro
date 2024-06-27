@@ -7,6 +7,18 @@
 #' @param x A valid \code{cfp_fgmod} object
 #' @param y The corresponding FLUX \code{data.frame}.
 #'
+#' @returns A \code{cfp_fgres} object. This inherits from [cfp_fgmod()].
+#'
+#' @examplesIf interactive()
+#' FLUX <- fg_flux(ConFluxPro::base_dat)
+#' cfp_fgres(
+#'   cfp_fgmod(ConFluxPro::base_dat),
+#'   FLUX$FLUX
+#' )
+#'
+#' @keywords internal
+#'
+#' @export
 cfp_fgres <- function(x,y){
 
   stopifnot(inherits(x,"cfp_fgmod"))

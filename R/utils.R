@@ -75,6 +75,37 @@ is_ul_consistent <- function(df,
 }
 
 
+# reduce size of cfp_dat to necessary only
+trim_cfp_dat <- function(x){
+
+  x$soilphys <- x$soilphys[,c(
+                                "upper",
+                                "lower",
+                                "depth",
+                                "height",
+                                "sp_id",
+                                "pmap",
+                                "step_id",
+                                "DS",
+                                "c_air")]
+  x$gasdata <- x$gasdata[,c(
+                                  "gd_id",
+                                  "depth",
+                                  "x_ppm")]
+  x$layers_map <- x$layers_map[,c(
+                                  "group_id",
+                                  "pmap",
+                                  "layer",
+                                  "layer_couple",
+                                  "highlim",
+                                  "lowlim",
+                                  "upper",
+                                  "lower")]
+  x
+
+}
+
+
 
 
 # For printing methods
@@ -105,3 +136,7 @@ any_negative_values <- function(x){
   if (length(x) == 0) return(FALSE)
   min(x) < 0
 }
+
+
+## sample function that can handle 1 length vectors
+sample.vec <- function(x, ...) x[sample(length(x), ...)]

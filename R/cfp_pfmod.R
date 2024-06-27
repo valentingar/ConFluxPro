@@ -37,14 +37,20 @@
 #' all productions, the higher it is penalised. The \code{evenness_factor} then
 #' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
 #'
+#' @returns A \code{cfp_pfmod} object that inherits from [cfp_dat()]
 #'
+#' @examples
+#' cfp_pfmod(ConFluxPro::base_dat)
+
+#' @keywords internal
+#' @export
 
 cfp_pfmod <- function(x,
-                      zero_flux,
-                      zero_limits,
-                      DSD0_optim,
-                      evenness_factor,
-                      known_flux_factor){
+                      zero_flux = TRUE,
+                      zero_limits = c(-Inf, Inf),
+                      DSD0_optim = FALSE,
+                      evenness_factor = 0,
+                      known_flux_factor = 0){
 
   x <- new_cfp_pfmod(x,
                       zero_flux,
@@ -66,6 +72,10 @@ new_cfp_pfmod <- function(x,
                           known_flux_factor
 ){
   stopifnot(inherits(x,"cfp_dat"))
+
+  #make sure soilphys is in ascending order
+  x$soilphys <- dplyr::arrange(x$soilphys,upper)
+
 
   x <- structure(x,
                  class = c("cfp_pfmod","cfp_dat"),

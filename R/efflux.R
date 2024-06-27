@@ -16,6 +16,7 @@ efflux <- function(x, ...){
 #' @rdname efflux
 #' @exportS3Method
 efflux.cfp_pfres <- function(x, ...){
+  rlang::check_dots_empty()
   pf_efflux(x)
 }
 
@@ -37,7 +38,7 @@ efflux.cfp_fgres <- function(x,
                              method = "lm",
                              layers = NULL){
 
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   fg_efflux(x, method = method, layers = layers)
 }
@@ -54,13 +55,15 @@ pf_efflux <- function(x) {
   PROFLUX %>%
     dplyr::group_by(.data$prof_id) %>%
     dplyr::arrange(dplyr::desc(.data$step_id)) %>%
-    dplyr::summarise(flux = .data$flux[1]) %>%
+    dplyr::summarise(efflux = .data$flux[1],
+                     dplyr::across(dplyr::any_of(c("DELTA_flux")), ~.x[1])) %>%
+    dplyr::rename(dplyr::any_of(c(DELTA_efflux = "DELTA_flux"))) %>%
     dplyr::left_join(profiles, by = "prof_id") %>%
     dplyr::select(dplyr::any_of({
-      c(id_cols, "flux", "prof_id")
+      c(id_cols, "efflux", "prof_id", "DELTA_efflux")
     })) %>%
-    dplyr::rename(efflux = "flux") %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    cfp_profile(id_cols = id_cols)
 }
 
 
@@ -90,7 +93,8 @@ fg_efflux <- function(x,
     dplyr::left_join(x$profiles,
                      by = "prof_id") %>%
     dplyr::ungroup() %>%
-    dplyr::select(!dplyr::any_of(c("gd_id", "sp_id", "group_id")))
+    dplyr::select(!dplyr::any_of(c("gd_id", "sp_id", "group_id")))%>%
+    cfp_profile(id_cols = cfp_id_cols(x))
 }
 
 

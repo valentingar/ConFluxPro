@@ -12,10 +12,11 @@ fg_flux(x, ...)
 \method{fg_flux}{cfp_dat}(
   x,
   ...,
-  gases = NULL,
+  gases = unique_gases(x),
   modes = "LL",
   param = c("c_air", "DS"),
-  funs = c("arith", "harm")
+  funs = c("arith", "harm"),
+  quiet = FALSE
 )
 
 \method{fg_flux}{cfp_fgres}(x, ...)

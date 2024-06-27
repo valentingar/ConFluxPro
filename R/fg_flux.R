@@ -21,14 +21,25 @@ fg_flux <- function(x, ...){
 #' @exportS3Method
 fg_flux.cfp_dat <- function(x,
                             ...,
-                            gases = NULL,
+                            gases = unique_gases(x),
                             modes = "LL",
                             param = c("c_air", "DS"),
-                            funs = c("arith", "harm")){
+                            funs = c("arith", "harm"),
+                            quiet = FALSE){
 
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   x <- as_cfp_dat(x)
+
+  if (length(gases) > 1){
+    if ( length(modes) == 1){
+      if (!quiet) message("applying same mode('",modes,"') to all gases")
+      modes <- rep(modes, length(gases))
+    } else if (is.null(match.call()$gases)){
+      stop("Please manually assign each gas a mode when using multiple modes.")
+    }
+  }
+
   x <- cfp_fgmod(x,
                  gases = gases,
                  modes = modes,
@@ -52,10 +63,19 @@ fg_flux.cfp_fgmod <- function(x, ...){
   # first separate groups
   x_split <- split_by_group(x)
 
-  p <- progressr::progressor(steps = nrow(x$profiles) * length(cfp_modes(x)))
+  n_steps <-
+  x$profiles %>%
+    dplyr::left_join(
+      data.frame(gas = cfp_gases(x),
+                 mode = cfp_modes(x)),
+      by = "gas"
+    ) %>%
+    nrow()
+
+  p <- progressr::progressor(n_steps)
 
 
-  y <- furrr::future_map(x_split,
+  y <- purrr::map(x_split,
                          calculate_flux,
                          p = p
   )
@@ -80,7 +100,8 @@ fg_flux.cfp_fgmod <- function(x, ...){
            "dc_ppm",
            "c_air",
            "DS",
-           "r2")
+           "r2") %>%
+    cfp_layered_profile(id_cols = "prof_id")
 
   cfp_fgres(x, y)
 }
@@ -123,13 +144,12 @@ calculate_flux <- function(x, p){
   id_lmap <- id_cols[id_cols %in% names(layers_map)]
 
   FLUX <-
-  furrr::future_map2(.x = gases,
+  purrr::map2(.x = gases,
          .y = modes,
          .f = function(gas, mode){
            gasdata <- gasdata[gasdata$gas == gas, ]
 
-           gasdata_split <-
-             split(gasdata, gasdata[, names(gasdata) %in% id_cols])
+           gasdata_split <- split_by_prof(gasdata)
 
            FLUX <-
              furrr::future_map(

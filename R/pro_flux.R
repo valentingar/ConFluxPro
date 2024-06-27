@@ -69,7 +69,7 @@ pro_flux.cfp_dat <- function(x,
                              DSD0_optim = FALSE,
                              evenness_factor = 0,
                              known_flux_factor = 0){
-  rlang::check_dots_empty(...)
+  rlang::check_dots_empty()
 
   x <- cfp_pfmod(x,
                  zero_flux = zero_flux,
@@ -96,18 +96,16 @@ pro_flux.cfp_pfmod <- function(x,
 
   stopifnot(inherits(x,"cfp_pfmod"))
 
-  #make sure soilphys is in ascending order
-  x$soilphys <- dplyr::arrange(x$soilphys,upper)
 
   # first separate groups
   x_split <- split_by_group(x)
 
   #apply function to all grouped cfp_pfmods
-  p <- progressr::progressor(steps = nrow(x$profiles)/50)
-  y <- furrr::future_map(x_split,
-                         pro_flux_group,
-                         p = p
-                         )
+  p <- progressr::progressor(steps = nrow(x$profiles)/53)
+  y <- purrr::map(x_split,
+                  pro_flux_group,
+                  p = p
+  )
   #y <- purrr::map(x_split,pro_flux_group)
 
   #combine PROFLUX result
@@ -116,9 +114,12 @@ pro_flux.cfp_pfmod <- function(x,
   # add some columns
   y <- x$soilphys %>%
     as.data.frame() %>%
-    dplyr::left_join(x$profiles, by = "sp_id") %>%
+    dplyr::left_join(x$profiles,
+                     by = c(names(x$soilphys)[names(x$soilphys) %in% names(x$profiles)]),
+                     relationship = "many-to-many") %>%
     dplyr::select(upper, lower, step_id, prof_id, sp_id, pmap) %>%
-    dplyr::right_join(y, by = c("step_id", "prof_id"))
+    dplyr::right_join(y, by = c("step_id", "prof_id")) %>%
+    cfp_layered_profile(id_cols ="prof_id")
 
   #create cfp_pfres object
   y <- cfp_pfres(x,y)
@@ -179,15 +180,32 @@ pro_flux_group <-  function(x, p){
       highlim_tmp <- c(max(cfp_zero_limits(x)), highlim_tmp)
     }
 
-    x <- split_by_prof(x)
-    df_ret <-furrr::future_map(x,
+
+    DSD0_optim <- cfp_DSD0_optim(x)
+    evenness_factor <- cfp_evenness_factor(x)
+    zero_flux <- cfp_zero_flux(x)
+    known_flux_factor <- cfp_known_flux_factor(x)
+
+
+    dmin <- min(x$layers_map$lower)
+
+    x <- split_by_prof_barebones(x)
+    df_ret <-furrr::future_imap(x,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,
                          lowlim_tmp = lowlim_tmp,
                          highlim_tmp = highlim_tmp,
+                         DSD0_optim = DSD0_optim,
+                         evenness_factor = evenness_factor,
+                         zero_flux = zero_flux,
+                         known_flux_factor = known_flux_factor,
+                         dmin = dmin,
                          p = p,
-                         prof_optim)
+                         prof_optim#,
+                         #.options = furrr::furrr_options(globals = FALSE),
+                         #.env_globals = environment()
+                         )
 
     df_ret <- df_ret %>%
       dplyr::bind_rows()
@@ -198,18 +216,18 @@ pro_flux_group <-  function(x, p){
 #########################################-
 ### Function for per profile optimisation
 prof_optim <- function(x,
+                       prof_id,
                        prod_start,
                        F0,
                        layer_couple_tmp,
                        lowlim_tmp,
                        highlim_tmp,
+                       DSD0_optim,
+                       evenness_factor,
+                       zero_flux,
+                       known_flux_factor,
+                       dmin,
                        p){
-
-  DSD0_optim <- cfp_DSD0_optim(x)
-  evenness_factor <- cfp_evenness_factor(x)
-  zero_flux <- cfp_zero_flux(x)
-  known_flux_factor <- cfp_known_flux_factor(x)
-
 
   #mapping productions to soilphys_tmp
   pmap <- x$soilphys$pmap
@@ -236,7 +254,6 @@ prof_optim <- function(x,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  dmin <- min(x$layers_map$lower)
   C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
 
   #DS and D0
@@ -249,26 +266,26 @@ prof_optim <- function(x,
 
   #optimisation with error handling returning NA
   prod_optimised <- tryCatch({stats::optim(par=prod_start,
-                                                           fn = prod_optim,
-                                                           lower = lowlim_tmp,
-                                                           upper = highlim_tmp,
-                                                           method = "L-BFGS-B",
-                                                           height = height,
-                                                           DS = DS,
-                                                           #D0 = D0,
-                                                           C0 = C0,
-                                                           pmap = pmap,
-                                                           cmap = cmap,
-                                                           conc = conc,
-                                                           #dstor = dstor,
-                                                           zero_flux = zero_flux,
-                                                           F0 = F0,
-                                                           #known_flux = known_flux,
-                                                           known_flux_factor = known_flux_factor,
-                                                           DSD0_optim = DSD0_optim,
-                                                           layer_couple = layer_couple_tmp,
-                                                           wmap = wmap,
-                                                           evenness_factor = evenness_factor
+                                           fn = prod_optim,
+                                           lower = lowlim_tmp,
+                                           upper = highlim_tmp,
+                                           method = "L-BFGS-B",
+                                           height = height,
+                                           DS = DS,
+                                           #D0 = D0,
+                                           C0 = C0,
+                                           pmap = pmap,
+                                           cmap = cmap,
+                                           conc = conc,
+                                           #dstor = dstor,
+                                           zero_flux = zero_flux,
+                                           F0 = F0,
+                                           #known_flux = known_flux,
+                                           known_flux_factor = known_flux_factor,
+                                           DSD0_optim = DSD0_optim,
+                                           layer_couple = layer_couple_tmp,
+                                           wmap = wmap,
+                                           evenness_factor = evenness_factor
   )},
   error = function(cond) NA)
 
@@ -308,14 +325,16 @@ prof_optim <- function(x,
     RMSE <- NA
   }
 
+
   #toggle progress bar
-  if(x$profiles$prof_id %% 50 == 0){
+
+  if(as.numeric(prof_id) %% 53 == 0){
   p()
   }
 
   #generating return data_frame
   df <- data.frame(
-    prof_id = x$profiles$prof_id[1],
+    prof_id = as.numeric(prof_id),
     step_id = x$soilphys$step_id,
     flux = fluxs,
     F0 = F0,
@@ -325,7 +344,7 @@ prof_optim <- function(x,
   if(DSD0_optim == TRUE){
     df$DSD0_fit <- DSD0_fit[pmap]
   }
-  return(df)
+  df
 }
 
 

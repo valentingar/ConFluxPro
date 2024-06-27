@@ -1,45 +1,97 @@
 #' @title cfp_layers_map
 #'
-#' @description A function to conveniently create a vaild cfp_layers_map object
-#' with options to add more gases and corresponding parameters for \code{\link{pro_flux}} models.
-#' Please note that only \code{layers_map} and code{id_cols} are obligatory. Adding the necessary
-#' columns to \code{layers_map} beforehand allows for more fine-tuned control of models.
+#' @description A function to create a cfp_layers_map object that defines the
+#' layers of both [fg_flux()] and [pro_flux()] models.
 #'
-#' @param layers_map (dataframe) That defines the layers of homogeneous
-#'   production as well as the upper and lower limits of production rate. \ Must
-#'   include
+#' @param x (data.frame) That defines the layers for which the
+#' production or flux is modeled. Note that some parameters can also be provided
+#' directly to the function call instead (see Details).
 #'   \itemize{
-#'   \item the relevant id_cols (see below)
-#'   \item the upper
-#'   and lower boundaries of each layer (upper, lower)
-#'   \item upper and lower
-#'   limits of the production rate to be modeled in \eqn{\mu mol m^{-3}}
-#'   (highlim, lowlim)
-#'   \item the parameter layer_couple, that indicates how
+#'   \item \code{id_cols} the relevant id_cols (see below)
+#'   \item \code{gas}, the gas that is modelled.
+#'   \item \code{upper}, \code{lower} the upper and lower boundaries
+#'   of each layer
+#'   \item \code{lowlim}, \code{highlim} as the lower and upper limits of the
+#'   production rate to be modeled in \eqn{\mu~mol~m^{-3}}
+#'   \item the parameter \code{layer_couple}, that indicates how
 #'   strongly the layer should be linked to the one below it (0 for no coupling)
 #'   }
-#' @param id_cols (character vector) The names of the columns that together
-#'   uniquely identify one profile.
-#' @param gas (character vector) A vector of gas names to be added to layers_map.
-#' The input layers_map is then repeated for each gas.
-#' @param lowlim (numeric vector) A vector the same length as gas with the lower limit
-#' of possible production allowed in \code{pro_flux} models.
-#' @param highlim (numeric vecotr)  A vector the same length as gas with the upper limit
-#' of possible production allowed in \code{pro_flux} models.
-#' @param layer_couple (numeric_vector) A vector the same length as gas that indicates how
-#' strongly the layer should be linked to the one below it (0 for no coupling, the default).
+#' @inheritParams cfp_profile
+#' @param gas (character vector) of gas names to be added to
+#' x which is then repeated for each gas.
+#' @param lowlim (numeric vector) the same length as \code{gas} with the
+#' lower limit of possible production allowed in [pro_flux()] models.
+#' @param highlim (numeric vector)  the same length as gas with the
+#' upper limit of possible production allowed in [pro_flux()] models.
+#' @param layer_couple (numeric_vector) A vector the same length as gas that
+#' indicates how strongly the layer should be linked to the one below it
+#' (0 for no coupling, the default).
+#' @param ... not used
 #'
+#' @details
+#' # Add lowlim and highlim for multiple gases
+#' Sometimes it is practical to model different gases with different limits.
+#' For example, it is a reasonable assumption that CO2 is not consumed in
+#' relevant amounts in most soils, whereas CH4 may be both produced or consumed.
+#' Therefore we may want to limit production rates of CO2 to only positive
+#' values, whereas allowing for negative CH4 production rates (i.e. consumption)
+#' as well.
 #'
+#' To make this setup easy, you can provide a \code{gas} vector to the function
+#' together with \code{highlim} and \code{lowlim} vectors of the same length.
+#' The provided \code{layers_map} \code{data.frame} will then be replicated for
+#' each gas with the respective values of the production limits provided.
+#'
+#' @returns A [cfp_layered_profile()] \code{data.frame} with the columns
+#' described above as well as \code{layer} and \code{pmap} columns that identify
+#' each layer with an integer (ascending from bottom to top).
+#'
+#' @examples
+#' cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    gas = "CO2",
+#'    lowlim = 0,
+#'    highlim = 1000,
+#'    id_cols = "site")
+#'
+#' ### add multiple gases at once
+#' cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    id_cols = "site",
+#'    gas = c("CO2", "CH4"),
+#'    lowlim = c(0, -1000),
+#'    highlim = c(1000, 1000))
+#'
+#' ### Extract from an existing cfp_dat
+#' cfp_layers_map(ConFluxPro::base_dat)
+
 #' @export
-cfp_layers_map <- function(layers_map,
+cfp_layers_map <- function(x,
+                           ...){
+  UseMethod("cfp_layers_map")
+}
+
+#' @rdname cfp_layers_map
+#' @exportS3Method
+cfp_layers_map.cfp_dat <- function(x,
+                                   ...){
+  get_layers_map(x)
+}
+
+#' @rdname cfp_layers_map
+#' @exportS3Method
+cfp_layers_map.data.frame <- function(x,
                            id_cols,
                            gas = NULL,
                            lowlim = NULL,
                            highlim = NULL,
-                           layer_couple = 0
+                           layer_couple = 0,
+                           ...
 ){
 
-  stopifnot("layers_map must be a data frame!" = is.data.frame(layers_map))
+  rlang::check_dots_empty()
+
+  stopifnot("layers_map must be a data frame!" = is.data.frame(x))
   stopifnot("id_cols must be provided!" = !missing(id_cols))
 
   if (!"gas" %in% id_cols){
@@ -50,36 +102,40 @@ cfp_layers_map <- function(layers_map,
   #convenient way of adding multiple gases to layers_map
   if (!is.null(gas)){
 
-    stopifnot("gas must not be present in layers_map already!" = !"gas" %in% names(layers_map))
+    stopifnot("gas must not be present in layers_map already!" = !"gas" %in% names(x))
     stopifnot("gas must be a character (-vector)!" = is.character(gas))
     stopifnot("gas must contain unique values only!" = length(gas) == length(unique(gas)))
 
-    layers_map <-
+    x <-
       lapply(gas, function(i){
-        layers_map$gas <- i
-        layers_map
+        x$gas <- i
+        x
       }) %>%
       dplyr::bind_rows()
 
 
-    layers_map <- add_if_missing(layers_map,
-                                 gas,
-                                 lowlim = lowlim)
+    x <- add_if_missing(x,
+                        gas,
+                        lowlim = lowlim)
 
-    layers_map <- add_if_missing(layers_map,
-                                 gas,
-                                 highlim = highlim)
-    layers_map <- add_if_missing(layers_map,
-                                 gas,
-                                 layer_couple = layer_couple)
+    x <- add_if_missing(x,
+                        gas,
+                        highlim = highlim)
+    x <- add_if_missing(x,
+                        gas,
+                        layer_couple = layer_couple)
 
+  } else if (!("gas" %in% names(x))){
+    stop("Please provide 'gas' parameter either as variable in layers_map or directly to this function.")
+  } else if (!is.null(lowlim) | !is.null(highlim)){
+    message("'lowlim' and/or 'highlim' ignored because 'gas' argument missing")
   }
 
 
   #automated adding of "layer" column
-  if(!"layer" %in% names(layers_map)){
-    layers_map <-
-      layers_map %>%
+  if(!"layer" %in% names(x)){
+    x <-
+      x %>%
       dplyr::arrange(upper) %>%
       dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
       dplyr::mutate(layer = 1:dplyr::n())
@@ -87,13 +143,13 @@ cfp_layers_map <- function(layers_map,
     #message("automatically added 'layer' column")
   }
 
-  layers_map <-
-  layers_map %>%
+  x <-
+  x %>%
     dplyr::arrange(upper) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
     dplyr::mutate(pmap = dplyr::row_number())
 
-  x <- new_cfp_layers_map(layers_map,
+  x <- new_cfp_layers_map(x,
                           id_cols)
 
   x <- validate_cfp_layers_map(x)
@@ -103,12 +159,13 @@ cfp_layers_map <- function(layers_map,
 
 
 #constructor
-new_cfp_layers_map <- function(layers_map,
+new_cfp_layers_map <- function(x,
                                id_cols){
 
-  x <- structure(layers_map,
-                 id_cols = id_cols,
-                 class = c("cfp_layers_map","data.frame"))
+  x <- new_cfp_layered_profile(
+    x,
+    id_cols = id_cols,
+    class = "cfp_layers_map")
   x
 }
 
@@ -185,9 +242,5 @@ error_if_missing <- function(df,cols){
 
 #' @exportS3Method
 print.cfp_layers_map <- function(x, ...){
-  cat("\nA cfp_layers_map object \n")
-  id_cols <- cfp_id_cols(x)
-  cat("id_cols:", id_cols, "\n")
-  cat("\n")
   NextMethod()
 }

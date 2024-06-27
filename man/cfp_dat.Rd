@@ -2,15 +2,24 @@
 % Please edit documentation in R/cfp_dat.R
 \name{cfp_dat}
 \alias{cfp_dat}
+\alias{as_cfp_dat}
+\alias{as_cfp_dat.cfp_dat}
+\alias{filter.cfp_dat}
 \alias{split_by_group}
-\alias{split_by_prof}
+\alias{split_by_group.cfp_dat}
 \title{cfp_dat}
 \usage{
 cfp_dat(gasdata, soilphys, layers_map)
 
+as_cfp_dat(x)
+
+\method{as_cfp_dat}{cfp_dat}(x)
+
+\method{filter}{cfp_dat}(.data, ..., .preserve = FALSE)
+
 split_by_group(x)
 
-split_by_prof(x)
+\method{split_by_group}{cfp_dat}(x)
 }
 \arguments{
 \item{gasdata}{A cfp_gasdata object created by running \code{cfp_gasdata()}.}
@@ -42,4 +51,24 @@ This is the essential object class that binds all necessary
 input data to run a ConFluxPro model. It automatically combines the different
 datasets and checks them for validity. It may split soilphys layers to correspond
 with layers_map and gasdata depths.
+}
+\examples{
+gasdata <- cfp_gasdata(
+  ConFluxPro::gasdata,
+  id_cols = c("site", "Date"))
+soilphys <- cfp_soilphys(
+  ConFluxPro::soilphys,
+  id_cols = c("site", "Date"))
+layers_map <-
+ cfp_layers_map(
+   ConFluxPro::layers_map,
+   gas = "CO2",
+   lowlim = 0,
+   highlim = 1000,
+   id_cols = "site")
+base_dat <- cfp_dat(gasdata, soilphys, layers_map)
+
+### filter similar to dplyr::fliter
+filter(base_dat, site == "site_a")
+filter(base_dat, prof_id \%in\%  1:5)
 }
