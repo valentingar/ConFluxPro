@@ -189,8 +189,14 @@ pro_flux_group <-  function(x, p){
 
     dmin <- min(x$layers_map$lower)
 
-    x <- split_by_prof_barebones(x)
-    df_ret <-furrr::future_imap(x,
+    #x <- split_by_prof_barebones(x)
+    env <- split_by_prof_env(x)
+
+
+    df_ret <-furrr::future_pmap(list(gd_id = x$profiles$gd_id,
+                                sp_id = x$profiles$sp_id,
+                                prof_id = x$profiles$prof_id),
+                                env = env,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,
@@ -215,8 +221,10 @@ pro_flux_group <-  function(x, p){
 
 #########################################-
 ### Function for per profile optimisation
-prof_optim <- function(x,
+prof_optim <- function(gd_id,
+                       sp_id,
                        prof_id,
+                       env,
                        prod_start,
                        F0,
                        layer_couple_tmp,
@@ -228,6 +236,10 @@ prof_optim <- function(x,
                        known_flux_factor,
                        dmin,
                        p){
+
+  x <- list(gasdata = get(as.character(gd_id),envir = env$gasdata),
+            soilphys = get(as.character(sp_id),envir = env$soilphys))
+
 
   #mapping productions to soilphys_tmp
   pmap <- x$soilphys$pmap

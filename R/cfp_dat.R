@@ -357,6 +357,8 @@ add_between <- function(upper,
 sp_add_pmap <- function(soilphys,
                         layers_map){
 
+  soilphys <- soilphys[,names(soilphys) != "pmap"]
+
   id_cols_sp <- cfp_id_cols(soilphys)
   id_cols_lmap <- cfp_id_cols(layers_map)
   merger <- id_cols_lmap[id_cols_lmap %in% id_cols_sp]
