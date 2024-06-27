@@ -144,7 +144,7 @@ calculate_flux <- function(x, p){
   id_lmap <- id_cols[id_cols %in% names(layers_map)]
 
   FLUX <-
-  furrr::future_map2(.x = gases,
+  purrr::map2(.x = gases,
          .y = modes,
          .f = function(gas, mode){
            gasdata <- gasdata[gasdata$gas == gas, ]
