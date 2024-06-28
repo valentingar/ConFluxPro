@@ -82,6 +82,7 @@ This function is embedded in pro_flux and is not intended to be used manually.
 \seealso{
 Other proflux: 
 \code{\link{pro_flux}()},
+\code{\link{pro_flux2}()},
 \code{\link{prod_mod_conc}()}
 }
 \concept{proflux}
