@@ -190,14 +190,15 @@ pro_flux_group <-  function(x, p){
     dmin <- min(x$layers_map$lower)
 
     #x <- split_by_prof_barebones(x)
-    env <- split_by_prof_env(x)
     #env <- rlang::new_environment(trim_cfp_dat(x))
 
     profs_split <- split(data.frame(x$profiles[,names(x$profiles) %in% c("gd_id", "sp_id")]),
                          x$profiles$prof_id)
+    x <- split_by_prof_env(x)
+
 
     df_ret <-furrr::future_imap(profs_split,
-                                env = env,
+                                env = x,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,
@@ -216,8 +217,6 @@ pro_flux_group <-  function(x, p){
 
     df_ret <- df_ret %>%
       dplyr::bind_rows()
-
-    rm(env)
 
     return(df_ret)
   }

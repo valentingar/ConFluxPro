@@ -133,6 +133,10 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
                      DELTA_F0 = sd(F0, na.rm = TRUE),
                      DELTA_prod = sd(prod, na.rm = TRUE))
 
+  if(cfp_zero_flux(x)){
+    BOOTSTRAP_FLUX$DELTA_F0 <- NA # makes no sense if F0 set to zero
+  }
+
   x_profiles <- x$profiles
   x_FLUX <- data.frame(x$PROFLUX)
 
