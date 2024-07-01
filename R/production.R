@@ -72,6 +72,13 @@ production.cfp_pfres <- function(x, ...){
   merger <- names(x$layers_map)[names(x$layers_map) %in% names(EFFLUX)]
   merger <- c(merger, "pmap")
 
+  bootstrap_exists <- "DELTA_prod" %in% names(PROD)
+
+  if(!bootstrap_exists){
+    PROD$DELTA_F0 <- NA
+    PROD$DELTA_prod <- NA
+    EFFLUX$DELTA_efflux <- NA
+  }
 
   PROD %>%
     dplyr::mutate(height = (upper - lower) / 100) %>%
