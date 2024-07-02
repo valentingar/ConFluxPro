@@ -161,6 +161,10 @@ if (!is.list(knots)){
   knots <-list(knots)
 }
 
+if (any(id_cols %in% param)){
+  to_keep <- !(param %in% id_cols)
+  param <- param[to_keep]
+}
 
 l_param <- length(param)
 l_meth <- length(method)
@@ -176,11 +180,12 @@ warn_lengths <- c(l_meth,l_incl,l_b.av,l_int,l_knots)
 for (i in 1:5){
   l <- warn_lengths[i]
   warn_name <- warn_names[i]
-
+  if(l != 1){
+    assign(warn_name, get(warn_name)[to_keep]) # trim to new params
+    l <- length(get(warn_name))
+  }
   if(!l == l_param & !l == 1 ){
     stop(paste0("'",warn_name,"' must be the same length of param or of length 1"))
-  } else if (l == 1 & !l_param ==1){
-    message(paste("applying the same '",warn_name,"' to all parameters"))
   }
 }
 
