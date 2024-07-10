@@ -441,6 +441,8 @@ join_with_profiles <- function(target_data,
 
   x <-
     profiles %>%
+    dplyr::select(dplyr::all_of(join_cols)) %>%
+    dplyr::distinct() %>%
     dplyr::left_join(target_data,
                      by = join_cols,
                      relationship = "one-to-many") %>%

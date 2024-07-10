@@ -63,7 +63,9 @@
 bootstrap_error <- function(x,
                             n_samples = 50,
                             sd_x_ppm = NULL,
-                            n_replicates = NULL){
+                            n_replicates = NULL,
+                            sample_from = "gasdata",
+                            rep_cols = NULL){
   UseMethod("bootstrap_error")
 }
 
@@ -72,9 +74,24 @@ bootstrap_error <- function(x,
 bootstrap_error.cfp_pfres <- function(x,
                                       n_samples = 50,
                                       sd_x_ppm = NULL,
-                                      n_replicates = NULL){
+                                      n_replicates = NULL,
+                                      sample_from = "gasdata",
+                                      rep_cols = NULL){
 
-  y <- make_bootstrap_model(x, n_samples, sd_x_ppm, n_replicates)
+  sample_from <- match.arg(sample_from, c("gasdata", "soilphys", "both"))
+
+  if(sample_from != "gasdata" & is.null(rep_cols)){
+    stop("Provide rep_cols that identify the repetition of each profile!")
+  }
+
+  stopifnot("rep_cols must be in id_cols or NULL" = is.null(rep_cols) || all(rep_cols %in% cfp_id_cols(x)))
+
+  y <- make_bootstrap_model(x,
+                            n_samples,
+                            sd_x_ppm,
+                            n_replicates,
+                            sample_from,
+                            rep_cols)
 
   y <- pro_flux(y)
 
@@ -88,7 +105,9 @@ bootstrap_error.cfp_pfres <- function(x,
 make_bootstrap_model <- function(x,
                                  n_samples = 50,
                                  sd_x_ppm = NULL,
-                                 n_replicates = NULL){
+                                 n_replicates = NULL,
+                                 sample_from = "gasdata",
+                                 rep_cols = NULL){
   UseMethod("make_bootstrap_model")
 }
 
@@ -97,9 +116,19 @@ make_bootstrap_model <- function(x,
 make_bootstrap_model.cfp_pfres <- function(x,
                                  n_samples = 50,
                                  sd_x_ppm = NULL,
-                                 n_replicates = NULL){
+                                 n_replicates = NULL,
+                                 sample_from = "gasdata",
+                                 rep_cols = NULL){
+  gasdata <- x$gasdata
 
-  gasdata <- create_extended_gasdata(x, sd_x_ppm, n_replicates)
+  if (!is.null(rep_cols)){
+    gasdata <- cfp_gasdata(gasdata[!names(gasdata) %in% rep_cols],
+                             id_cols = cfp_id_cols(x$gasdata)[!cfp_id_cols(x$gasdata) %in% rep_cols])
+  }
+
+  gasdata <- create_extended_gasdata(gasdata,
+                                     depth_structure(x, structure_from = "gasdata"),
+                                     sd_x_ppm, n_replicates)
 
   gasdata <- create_bootstrap_gasdata(gasdata, n_samples)
 
@@ -154,21 +183,21 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
 
 
 ### helpers --------------------------------------------------------------------
-create_extended_gasdata <- function(x,
-                             sd_x_ppm = NULL,
-                             n_replicates = NULL){
+create_extended_gasdata <- function(
+    gasdata,
+    gasdata_depths,
+    sd_x_ppm = NULL,
+    n_replicates = NULL){
 
   if (is.null(n_replicates)){
-    return(x$gasdata)
+    return(gasdata)
   }
 
   stopifnot("'n_replicates' must be an integer!" = (round(n_replicates) == n_replicates))
 
   message(paste0("Adding gasdata replicates as normal distribution of ", n_replicates, " samples around the mean."))
 
-  gasdata_depths <- depth_structure(x, structure_from = "gasdata")
-
-  if ("sd_x_ppm" %in% names(x$gasdata)){
+  if ("sd_x_ppm" %in% names(gasdata)){
     if (!is.null(sd_x_ppm)) message("Ignoring sd_x_ppm, because it's present in gasdata.")
   } else if (is.data.frame(sd_x_ppm)){
     gasdata_depths <- gasdata_depths %>%
@@ -180,8 +209,6 @@ create_extended_gasdata <- function(x,
     stopifnot("Length of 'sd_x_ppm' must be 1 or be a data.frame" = length(sd_x_ppm) == 1)
     gasdata_depths$sd_x_ppm <- sd_x_ppm
   }
-
-  gasdata <- x$gasdata
 
   gasdata %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(c(cfp_id_cols(gasdata), "depth")))) %>%

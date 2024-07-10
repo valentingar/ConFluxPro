@@ -9,13 +9,41 @@
 \alias{calculate_bootstrap_error.cfp_pfres}
 \title{Bootstrap-estimate of Flux-error}
 \usage{
-bootstrap_error(x, n_samples = 50, sd_x_ppm = NULL, n_replicates = NULL)
+bootstrap_error(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
 
-\method{bootstrap_error}{cfp_pfres}(x, n_samples = 50, sd_x_ppm = NULL, n_replicates = NULL)
+\method{bootstrap_error}{cfp_pfres}(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
 
-make_bootstrap_model(x, n_samples = 50, sd_x_ppm = NULL, n_replicates = NULL)
+make_bootstrap_model(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
 
-\method{make_bootstrap_model}{cfp_pfres}(x, n_samples = 50, sd_x_ppm = NULL, n_replicates = NULL)
+\method{make_bootstrap_model}{cfp_pfres}(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
 
 calculate_bootstrap_error(x, y)
 
