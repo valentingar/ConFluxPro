@@ -74,3 +74,28 @@ test_that("bootstrapping provide rep_cols for gasdata",{
 
 
 })
+
+
+
+test_that("make_bootstrap_model works for soilphys",{
+
+  gasdata <- ConFluxPro::gasdata %>%
+    filter(site == "site_a", Date == "2021-02-01") %>%
+    dplyr::select(!c("Date")) %>%
+    cfp_gasdata(c("site"))
+  soilphys <- ConFluxPro::soilphys %>%
+    filter(site == "site_a") %>%
+    cfp_soilphys(id_cols = c("site", "Date"))
+  lmap <- cfp_layers_map(ConFluxPro::layers_map %>%
+                           filter(site == "site_a"),
+                         "site", gas = "CO2", highlim = 1000, lowlim = 0)
+  PROFLUX <- pro_flux(cfp_dat(gasdata, soilphys, lmap))
+
+
+  mod_BSE <- make_bootstrap_model(PROFLUX,
+                                  n_samples = 2,
+                                  rep_cols = "Date",
+                                  sample_from = "soilphys")
+  expect_equal(n_profiles(mod_BSE), 2)
+
+})

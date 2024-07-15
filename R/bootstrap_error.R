@@ -119,20 +119,43 @@ make_bootstrap_model.cfp_pfres <- function(x,
                                  n_replicates = NULL,
                                  sample_from = "gasdata",
                                  rep_cols = NULL){
-  gasdata <- x$gasdata
 
-  if (!is.null(rep_cols)){
-    gasdata <- cfp_gasdata(gasdata[!names(gasdata) %in% rep_cols],
+  sample_from_gasdata <- any(c("gasdata", "both") %in% sample_from)
+  sample_from_soilphys <- any(c("soilphys", "both") %in% sample_from)
+
+  gasdata <- x$gasdata
+  soilphys <- x$soilphys
+
+  if (sample_from_gasdata){
+    if (!is.null(rep_cols)){
+      gasdata <- cfp_gasdata(gasdata[!names(gasdata) %in% rep_cols],
                              id_cols = cfp_id_cols(x$gasdata)[!cfp_id_cols(x$gasdata) %in% rep_cols])
+    }
+
+    gasdata <- create_extended_gasdata(gasdata,
+                                       depth_structure(x, structure_from = "gasdata"),
+                                       sd_x_ppm, n_replicates)
+
+    gasdata <- create_bootstrap_gasdata(gasdata, n_samples)
   }
 
-  gasdata <- create_extended_gasdata(gasdata,
-                                     depth_structure(x, structure_from = "gasdata"),
-                                     sd_x_ppm, n_replicates)
+  if (sample_from_soilphys){
+    stopifnot("provide rep_cols if sampling from soilphys" = !is.null(rep_cols))
+    stopifnot("rep_cols lead to profiles that don't fit" =
+                check_matching_repetitions(soilphys, rep_cols))
 
-  gasdata <- create_bootstrap_gasdata(gasdata, n_samples)
+    soilphys <- create_bootstrap_soilphys(
+      soilphys,
+      n_samples,
+      rep_cols
+    )
 
-  y <- cfp_pfmod(cfp_dat(gasdata, cfp_soilphys(x), cfp_layers_map(x)),
+
+
+
+  }
+
+  y <- cfp_pfmod(cfp_dat(gasdata, soilphys, cfp_layers_map(x)),
                  cfp_zero_flux(x),
                  cfp_zero_limits(x),
                  cfp_DSD0_optim(x),
@@ -256,5 +279,41 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
   rownames(gasdata) <- 1:nrow(gasdata)
 
   gasdata
+}
+
+
+create_bootstrap_soilphys <- function(
+    soilphys,
+    n_samples,
+    rep_cols){
+
+  id_cols <- cfp_id_cols(soilphys)
+  attr(soilphys, "id_cols") <- id_cols[!id_cols %in% rep_cols]
+
+  split_id <- soilphys %>%
+    dplyr::group_by(
+      dplyr::across(
+        dplyr::any_of(c(cfp_id_cols(soilphys), "upper", "lower")))) %>%
+    dplyr::group_indices()
+
+  split_id_split <- split(1:length(split_id), split_id)
+
+  new_sel <-
+    replicate(n_samples, sapply(split_id_split, function(x){
+      sample.vec(x, 1, replace = TRUE)
+    })%>% unlist()) %>%
+    c()
+
+  soilphys <- soilphys[new_sel, ]
+  soilphys$bootstrap_id <- rep(1:n_samples, each = length(split_id_split))
+
+  soilphys <- cfp_soilphys(
+    soilphys,
+    id_cols = c(cfp_id_cols(soilphys),
+                "bootstrap_id"))
+
+    rownames(soilphys) <- 1:nrow(soilphys)
+
+  soilphys
 }
 
