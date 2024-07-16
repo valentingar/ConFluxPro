@@ -123,7 +123,8 @@ cfp_dat <- function(
 
   profiles_insufficient_gasdata <-
     profiles %>%
-    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id")) %>%
+    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id"),
+                     relationship = "many-to-many") %>%
     dplyr::left_join(layers_map,
                      by = c(cfp_id_cols(layers_map),"group_id"),
                      relationship = "many-to-many") %>%

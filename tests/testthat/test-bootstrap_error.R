@@ -96,6 +96,11 @@ test_that("make_bootstrap_model works for soilphys",{
                                   n_samples = 2,
                                   rep_cols = "Date",
                                   sample_from = "soilphys")
+  PF_BSE <- pro_flux(mod_BSE)
+  PF_BSE_res <- calculate_bootstrap_error(x = PROFLUX,
+                                          PF_BSE)
+
   expect_equal(n_profiles(mod_BSE), 2)
+  expect_equal(n_profiles(PF_BSE_res), 1)
 
 })

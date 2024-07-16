@@ -68,6 +68,12 @@ way to create it.}
 \item{n_replicates}{The number of replicates to be generated if sd_x_ppm is
 set.}
 
+\item{sample_from}{From which dataset to sample the bootstrapping dataset.
+Can either be \code{'gasdata'} or \code{'soilphys'} or \code{'both'}.}
+
+\item{rep_cols}{The id_cols that represent repetitions. If removed, the
+repetitions in soilphys of each profile must match in their structure exactly.}
+
 \item{y}{The result of the bootstrap model.}
 }
 \value{
@@ -81,22 +87,31 @@ Bootstrap-estimate of Flux-error
 \code{\link[=bootstrap_error]{bootstrap_error()}} is mostly a wrapper around two functions that can also be
 run separately.
 
-In \code{\link[=make_bootstrap_model]{make_bootstrap_model()}}, the \code{gasdata} concentration data is
-resampled for every depth and profile a total number of \code{n_samples}.
-This is done by randomly sampling the observations at each depth without
-changing the number of observations but while allowing replacing. Each newly
-sampled profile is identifiable by the added \code{bootstrap_id} column which
-is also added to \code{id_cols}.
+In \code{\link[=make_bootstrap_model]{make_bootstrap_model()}}, for \code{sample_from = "gasdata"} the
+\code{gasdata} concentration data is resampled for every depth and profile
+a total number of \code{n_samples}. This is done by randomly sampling the
+observations at each depth without changing the number of observations but
+while allowing replacing. If \code{rep_cols} are given, these columns are
+removed from the \code{id_cols} and the resulting profiles combined as one.
+
+For \code{sample_from = "soilphys"}, the \code{soilphys} data is combined
+using the \code{rep_cols} as repetitions. Among every remaining profile and
+depth, one observation across all repetitions is chosen for each of
+\code{n_samples}. \code{sample_from = "both"} applies both methods above.
+Each newly sampled profile is identifiable by the
+added \code{bootstrap_id} column which is also added to \code{id_cols}.
 
 After this new model is run again, the bootstap error is caculated in
 \code{\link[=calculate_bootstrap_error]{calculate_bootstrap_error()}}. This is the standard deviation of the
 production and flux parameters across all bootstrapped model runs and is
-calculated for each profile and layer of the original model.
-These are added to the \code{PROFLUX} data of the original model and can
-thereby be extracted by \code{\link[=efflux]{efflux()}}.
+calculated for each profile and layer of the original model, or for each
+destinct profile in the new model without \code{rep_cols}.
+These are returned together with the mean values of \code{prod}, \code{flux}
+and \code{F0} across all runs in the \code{PROFLUX} data.frame and can
+thereby be extracted by \code{\link[=efflux]{efflux()}} and \code{\link[=production]{production()}}.
 }
 
-\section{Artificial observations}{
+\section{Artificial observations in gasdata}{
 If there are not enough observations per depth (e.g.) because there is only
 one measurement per depth, it is possible to create artificial observations
 by providing \code{n_replicates} and \code{sd_x_ppm}. Here, every depth of

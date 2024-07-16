@@ -14,6 +14,10 @@
 #' }
 #' @param n_replicates The number of replicates to be generated if sd_x_ppm is
 #' set.
+#' @param sample_from From which dataset to sample the bootstrapping dataset.
+#' Can either be \code{'gasdata'} or \code{'soilphys'} or \code{'both'}.
+#' @param rep_cols The id_cols that represent repetitions. If removed, the
+#' repetitions in soilphys of each profile must match in their structure exactly.
 #'
 #' @returns x with added columns DELTA_flux and DELTA_prod as an estimate
 #' of the error of of the corresponding columns in the same units.
@@ -23,21 +27,30 @@
 #' [bootstrap_error()] is mostly a wrapper around two functions that can also be
 #' run separately.
 #'
-#' In [make_bootstrap_model()], the \code{gasdata} concentration data is
-#' resampled for every depth and profile a total number of \code{n_samples}.
-#' This is done by randomly sampling the observations at each depth without
-#' changing the number of observations but while allowing replacing. Each newly
-#' sampled profile is identifiable by the added \code{bootstrap_id} column which
-#' is also added to \code{id_cols}.
+#' In [make_bootstrap_model()], for \code{sample_from = "gasdata"} the
+#' \code{gasdata} concentration data is resampled for every depth and profile
+#' a total number of \code{n_samples}. This is done by randomly sampling the
+#' observations at each depth without changing the number of observations but
+#' while allowing replacing. If \code{rep_cols} are given, these columns are
+#' removed from the \code{id_cols} and the resulting profiles combined as one.
+#'
+#' For \code{sample_from = "soilphys"}, the \code{soilphys} data is combined
+#' using the \code{rep_cols} as repetitions. Among every remaining profile and
+#' depth, one observation across all repetitions is chosen for each of
+#' \code{n_samples}. \code{sample_from = "both"} applies both methods above.
+#' Each newly sampled profile is identifiable by the
+#' added \code{bootstrap_id} column which is also added to \code{id_cols}.
 #'
 #' After this new model is run again, the bootstap error is caculated in
 #' [calculate_bootstrap_error()]. This is the standard deviation of the
 #' production and flux parameters across all bootstrapped model runs and is
-#' calculated for each profile and layer of the original model.
-#' These are added to the \code{PROFLUX} data of the original model and can
-#' thereby be extracted by [efflux()].
+#' calculated for each profile and layer of the original model, or for each
+#' destinct profile in the new model without \code{rep_cols}.
+#' These are returned together with the mean values of \code{prod}, \code{flux}
+#' and \code{F0} across all runs in the \code{PROFLUX} data.frame and can
+#' thereby be extracted by [efflux()] and [production()].
 #'
-#' # Artificial observations
+#' # Artificial observations in gasdata
 #' If there are not enough observations per depth (e.g.) because there is only
 #' one measurement per depth, it is possible to create artificial observations
 #' by providing \code{n_replicates} and \code{sd_x_ppm}. Here, every depth of
@@ -126,6 +139,13 @@ make_bootstrap_model.cfp_pfres <- function(x,
   gasdata <- x$gasdata
   soilphys <- x$soilphys
 
+  gd_id_cols <- cfp_id_cols(gasdata)
+  sp_id_cols <- cfp_id_cols(soilphys)
+  stopifnot("rep_cols also id_cols in gasdata! Can't aggregate model." =
+              !(!sample_from_gasdata && any(rep_cols %in% gd_id_cols)))
+  stopifnot("rep_cols also id_cols in soilphys! Can't aggregate model." =
+              !(!sample_from_soilphys && any(rep_cols %in% sp_id_cols)))
+
   if (sample_from_gasdata){
     if (!is.null(rep_cols)){
       gasdata <- cfp_gasdata(gasdata[!names(gasdata) %in% rep_cols],
@@ -180,13 +200,44 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
   BOOTSTRAP_FLUX <-
     y$PROFLUX %>%
     dplyr::left_join(y$profiles, by = c("prof_id", "sp_id")) %>%
-    dplyr::group_by(dplyr::across(dplyr::all_of(c(y_id_cols, "pmap")))) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(c(y_id_cols,
+                                                  "pmap",
+                                                  "upper",
+                                                  "lower",
+                                                  "step_id")))) %>%
     dplyr::summarise(DELTA_flux = sd(flux, na.rm = TRUE),
                      DELTA_F0 = sd(F0, na.rm = TRUE),
-                     DELTA_prod = sd(prod, na.rm = TRUE))
+                     DELTA_prod = sd(prod, na.rm = TRUE),
+                     flux = mean(flux, na.rm = TRUE),
+                     F0 = mean(F0, na.rm = TRUE),
+                     prod = mean(prod, na.rm = TRUE),
+                     conc = mean(conc, na.rm = TRUE),
+                     RMSE = mean(RMSE, na.rm = TRUE),
+                     )
 
   if(cfp_zero_flux(x)){
     BOOTSTRAP_FLUX$DELTA_F0 <- NA # makes no sense if F0 set to zero
+  }
+
+  x_id_cols <- cfp_id_cols(x)
+
+  if (!all(x_id_cols %in% y_id_cols)){
+    soilphys <- x$soilphys %>%
+      dplyr::select(!"sp_id") %>%
+      dplyr::group_by(dplyr::across(
+        dplyr::all_of(c(y_id_cols[y_id_cols %in% cfp_id_cols(x$soilphys)],
+                        "upper", "lower", "depth", "pmap", "step_id")))) %>%
+      dplyr::summarise(dplyr::across(dplyr::where(is.numeric), function(x) mean(x, na.rm = TRUE))) %>%
+      cfp_soilphys(id_cols = y_id_cols[y_id_cols %in% cfp_id_cols(x$soilphys)])
+
+    gasdata <- cfp_gasdata(x$gasdata,
+                           id_cols = y_id_cols[y_id_cols %in% cfp_id_cols(x$gasdata)])
+
+    x_new <- cfp_dat(gasdata, soilphys, x$layers_map)
+    x$profiles <- x_new$profiles
+    x$soilphys <- x_new$soilphys
+    x$gasdata <- x_new$gasdata
+    attr(x, "id_cols") <- y_id_cols
   }
 
   x_profiles <- x$profiles
@@ -196,9 +247,23 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
     x_profiles %>%
     dplyr::left_join(BOOTSTRAP_FLUX, by = cfp_id_cols(x)[cfp_id_cols(x) %in% names(BOOTSTRAP_FLUX)]) %>%
     dplyr::ungroup() %>%
-    dplyr::select(dplyr::all_of(c("prof_id", "pmap", "DELTA_flux", "DELTA_F0", "DELTA_prod"))) %>%
-    dplyr::right_join(x_FLUX, by = c("prof_id", "pmap")) %>%
-    cfp_layered_profile(id_cols = cfp_id_cols(x$PROFLUX))
+    dplyr::select(dplyr::all_of(c(
+      "upper",
+      "lower",
+      "prof_id",
+      "sp_id",
+      "step_id",
+      "pmap",
+      "DELTA_flux",
+      "DELTA_F0",
+      "DELTA_prod",
+      "flux",
+      "F0",
+      "prod",
+      "conc",
+      "RMSE"))) %>%
+    #dplyr::right_join(x_FLUX, by = c("prof_id", "pmap")) %>%
+    cfp_layered_profile(id_cols = "prof_id")
 
   x
 }
@@ -264,17 +329,6 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
   gasdata$bootstrap_id <- rep(1:n_samples, each = length(split_id))
 
   gasdata <- cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
-
-
-  #gasdata <-
-  #  lapply(1:n_samples, function(i){
-  #    gd <- gasdata[sapply(split_id_split, function(x){
-  #      sample(x, length(x), replace = TRUE)
-  #    })%>% unlist(),]
-#
- #   }) %>%
-  #  dplyr::bind_rows(.id = "bootstrap_id") %>%
-   # cfp_gasdata(id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
 
   rownames(gasdata) <- 1:nrow(gasdata)
 
