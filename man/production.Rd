@@ -13,7 +13,7 @@ production(x, ...)
 }
 \value{
 data.frame with \code{prod_abs} (\eqn{µmol / m^2 / s}),
-\code{efflux\ (\eqn{µmol / m^2 / s}) and \code{prod_rel} where
+\code{efflux} (\eqn{µmol / m^2 / s}) and \code{prod_rel} where
 \eqn{prod_{rel} = efflux / prod_{abs}}.
 }
 \description{

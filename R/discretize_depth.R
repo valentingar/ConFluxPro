@@ -181,7 +181,7 @@ for (i in 1:5){
   l <- warn_lengths[i]
   warn_name <- warn_names[i]
   if(l != 1){
-    assign(warn_name, get(warn_name)[to_keep]) # trim to new params
+    assign(warn_name, get(warn_name)) # trim to new params
     l <- length(get(warn_name))
   }
   if(!l == l_param & !l == 1 ){
