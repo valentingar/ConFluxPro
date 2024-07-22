@@ -189,8 +189,16 @@ pro_flux_group <-  function(x, p){
 
     dmin <- min(x$layers_map$lower)
 
-    x <- split_by_prof_barebones(x)
-    df_ret <-furrr::future_imap(x,
+    #x <- split_by_prof_barebones(x)
+    #env <- rlang::new_environment(trim_cfp_dat(x))
+
+    profs_split <- split(data.frame(x$profiles[,names(x$profiles) %in% c("gd_id", "sp_id")]),
+                         x$profiles$prof_id)
+    x <- split_by_prof_env(x)
+
+
+    df_ret <-furrr::future_imap(profs_split,
+                                env = x,
                          prod_start = prod_start,
                          F0 = F0,
                          layer_couple_tmp = layer_couple_tmp,
@@ -215,8 +223,9 @@ pro_flux_group <-  function(x, p){
 
 #########################################-
 ### Function for per profile optimisation
-prof_optim <- function(x,
+prof_optim <- function(y,
                        prof_id,
+                       env,
                        prod_start,
                        F0,
                        layer_couple_tmp,
@@ -228,19 +237,24 @@ prof_optim <- function(x,
                        known_flux_factor,
                        dmin,
                        p){
+  gasdata <- get(as.character(y$gd_id),envir = env$gasdata)
+  soilphys <- get(as.character(y$sp_id),envir = env$soilphys)
+  #gasdata <- env$gasdata[env$gasdata$gd_id == y$gd_id, ]
+  #soilphys <- env$soilphys[env$soilphys$sp_id == y$sp_id, ]
+
 
   #mapping productions to soilphys_tmp
-  pmap <- x$soilphys$pmap
+  pmap <- soilphys$pmap
 
   #calculating height of each step in m
-  height <- x$soilphys$height
+  height <- soilphys$height
 
   #mapping measured concentrations to soilphys_tmp
-  cmap <- x$soilphys$step_id[match(x$gasdata$depth,
-                                     x$soilphys$upper)]
+  cmap <- soilphys$step_id[match(gasdata$depth,
+                                     soilphys$upper)]
 
   #from ppm to mumol/m^3
-  conc <- x$gasdata$x_ppm * x$soilphys$c_air[cmap]
+  conc <- gasdata$x_ppm * soilphys$c_air[cmap]
 
   #shortening to valid cmaps
   conc <- conc[is.finite(cmap)]
@@ -254,10 +268,10 @@ prof_optim <- function(x,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  C0 <- stats::median(x$gasdata$x_ppm[x$gasdata$depth == dmin]*x$soilphys$c_air[x$soilphys$lower == dmin])
+  C0 <- stats::median(gasdata$x_ppm[gasdata$depth == dmin]*soilphys$c_air[soilphys$lower == dmin])
 
   #DS and D0
-  DS <- x$soilphys$DS
+  DS <- soilphys$DS
 
   #temporary until implementation
   # D0 <- DS
@@ -315,7 +329,7 @@ prof_optim <- function(x,
 
   #calculating flux
   fluxs <- prod_mod_flux(prod,height,F0)
-  conc_mod <- prod_mod_conc(prod,height,x$soilphys$DS,F0,C0)
+  conc_mod <- prod_mod_conc(prod,height,soilphys$DS,F0,C0)
 
   # do not allow negative concentrations!
   if (any_negative_values(conc_mod)){
@@ -335,7 +349,7 @@ prof_optim <- function(x,
   #generating return data_frame
   df <- data.frame(
     prof_id = as.numeric(prof_id),
-    step_id = x$soilphys$step_id,
+    step_id = soilphys$step_id,
     flux = fluxs,
     F0 = F0,
     prod = prod,

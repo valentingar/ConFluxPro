@@ -12,8 +12,9 @@ production(x, ...)
 \item{...}{Further parameters passed on to \code{efflux()} in case of \code{cfp_fgres}.}
 }
 \value{
-data.frame with prod_abs (\eqn{µmol / m^2 / s}), efflux (\eqn{µmol / m^2 / s}) and
-\eqn{prod_rel = efflux / prod_abs}.
+data.frame with \code{prod_abs} (\eqn{µmol / m^2 / s}),
+\code{efflux} (\eqn{µmol / m^2 / s}) and \code{prod_rel} where
+\eqn{prod_{rel} = efflux / prod_{abs}}.
 }
 \description{
 Easily extract the production of \code{cfp_pfres()} and
@@ -30,4 +31,10 @@ For \code{fg_flux()}, the assumption is made that the production of the layer
 \eqn{F_{i-1}}. The flux below the lowest layer is assumed to be zero and the flux above the
 topmost layer is the efflux. This approach has some uncertainties and it should be
 evaluated if it applies to your model.
+
+If there are error estimates available from a call to \code{\link[=bootstrap_error]{bootstrap_error()}},
+the errors are propagated as follows:
+\deqn{\Delta prod_{rel} = |\Delta efflux \cdot
+\frac{prod_{abs}}{efflux^2}| +
+|\Delta prod_{abs}\cdot\frac{1}{efflux}|}
 }

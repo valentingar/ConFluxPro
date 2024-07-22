@@ -3,13 +3,24 @@ test_that("extend gasdata works", {
   base_dat2 <- base_dat <- ConFluxPro::base_dat
   base_dat2$gasdata$sd_x_ppm <- 25
 
-  gd_ext <- create_extended_gasdata(base_dat, sd_x_ppm = 25, 5)
-  gd_ext2 <- create_extended_gasdata(base_dat,
+  gd_ext <- create_extended_gasdata(base_dat$gasdata,
+                                    gasdata_depths =
+                                      depth_structure(base_dat,
+                                                      structure_from = "gasdata"),
+                                    sd_x_ppm = 25, 5)
+  gd_ext2 <- create_extended_gasdata(base_dat$gasdata,
+                                     gasdata_depths =
+                                       depth_structure(base_dat,
+                                                       structure_from = "gasdata"),
                                     sd_x_ppm = depth_structure(base_dat,
                                                                structure_from = "gasdata") %>%
                                       dplyr::mutate(sd_x_ppm = 0),
                                     5)
-  gd_ext3 <- create_extended_gasdata(base_dat2, n_replicates = 5)
+  gd_ext3 <- create_extended_gasdata(base_dat2$gasdata,
+                                     gasdata_depths =
+                                       depth_structure(base_dat2,
+                                                       structure_from = "gasdata"),
+                                     n_replicates = 5)
 
 
  expect_equal(nrow(gd_ext), 600)
@@ -40,3 +51,56 @@ test_that("bootstrapping works pro_flux", {
 
 })
 
+
+test_that("bootstrapping provide rep_cols for gasdata",{
+
+  gasdata <- ConFluxPro::gasdata %>%
+    filter(site == "site_a") %>%
+    cfp_gasdata(c("site", "Date"))
+  soilphys <- ConFluxPro::soilphys %>%
+    filter(site == "site_a", Date == "2021-02-01") %>%
+    dplyr::select(!c("Date")) %>%
+    cfp_soilphys(id_cols = "site")
+  lmap <- cfp_layers_map(ConFluxPro::layers_map %>%
+                           filter(site == "site_a"),
+                         "site", gas = "CO2", highlim = 1000, lowlim = 0)
+  PROFLUX <- pro_flux(cfp_dat(gasdata, soilphys, lmap))
+
+
+  mod_BSE <- make_bootstrap_model(PROFLUX,
+                                  n_samples = 2,
+                                  rep_cols = "Date")
+  expect_equal(n_profiles(mod_BSE), 2)
+
+
+})
+
+
+
+test_that("make_bootstrap_model works for soilphys",{
+
+  gasdata <- ConFluxPro::gasdata %>%
+    filter(site == "site_a", Date == "2021-02-01") %>%
+    dplyr::select(!c("Date")) %>%
+    cfp_gasdata(c("site"))
+  soilphys <- ConFluxPro::soilphys %>%
+    filter(site == "site_a") %>%
+    cfp_soilphys(id_cols = c("site", "Date"))
+  lmap <- cfp_layers_map(ConFluxPro::layers_map %>%
+                           filter(site == "site_a"),
+                         "site", gas = "CO2", highlim = 1000, lowlim = 0)
+  PROFLUX <- pro_flux(cfp_dat(gasdata, soilphys, lmap))
+
+
+  mod_BSE <- make_bootstrap_model(PROFLUX,
+                                  n_samples = 2,
+                                  rep_cols = "Date",
+                                  sample_from = "soilphys")
+  PF_BSE <- pro_flux(mod_BSE)
+  PF_BSE_res <- calculate_bootstrap_error(x = PROFLUX,
+                                          PF_BSE)
+
+  expect_equal(n_profiles(mod_BSE), 2)
+  expect_equal(n_profiles(PF_BSE_res), 1)
+
+})

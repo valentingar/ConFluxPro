@@ -142,3 +142,16 @@ split_by_prof_barebones <- function(x){
     split(x$profiles$prof_id)
 
 }
+
+split_by_prof_env <- function(x){
+  x <- trim_cfp_dat(x)
+
+  soilphys_split <- split(data.frame(x$soilphys)[,!names(x$soilphys) == "sp_id"], x$soilphys$sp_id)
+  gasdata_split <- split(data.frame(x$gasdata)[,!names(x$gasdata) == "gd_id"], x$gasdata$gd_id)
+
+  rlang::new_environment(
+    data = list(gasdata =
+                  rlang::new_environment(gasdata_split),
+                soilphys =
+                  rlang::new_environment(soilphys_split)))
+}

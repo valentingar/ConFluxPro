@@ -123,7 +123,8 @@ cfp_dat <- function(
 
   profiles_insufficient_gasdata <-
     profiles %>%
-    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id")) %>%
+    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id"),
+                     relationship = "many-to-many") %>%
     dplyr::left_join(layers_map,
                      by = c(cfp_id_cols(layers_map),"group_id"),
                      relationship = "many-to-many") %>%
@@ -357,6 +358,8 @@ add_between <- function(upper,
 sp_add_pmap <- function(soilphys,
                         layers_map){
 
+  soilphys <- soilphys[,names(soilphys) != "pmap"]
+
   id_cols_sp <- cfp_id_cols(soilphys)
   id_cols_lmap <- cfp_id_cols(layers_map)
   merger <- id_cols_lmap[id_cols_lmap %in% id_cols_sp]
@@ -439,6 +442,8 @@ join_with_profiles <- function(target_data,
 
   x <-
     profiles %>%
+    dplyr::select(dplyr::all_of(join_cols)) %>%
+    dplyr::distinct() %>%
     dplyr::left_join(target_data,
                      by = join_cols,
                      relationship = "one-to-many") %>%
