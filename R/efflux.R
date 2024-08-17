@@ -87,6 +87,8 @@ fg_efflux <- function(x,
   } else if (method == "lex"){
     stopifnot("layers must be supplied for method = lex" =
                 !is.null(layers))
+    stopifnot("undefined layer selected - check that all layers are present!",
+              !any(layers > max(FLUX$FLUX$layer)))
     EFFLUX <- get_lex_efflux(x, layers)
   }
 
@@ -142,8 +144,6 @@ get_lex_efflux <- function(x,
     dplyr::slice(layers) %>%
     dplyr::group_modify(~{
       h<-.x$topheight[1]
-      mod <- lm(flux~depth, data = .x)
-
       efflux <- tryCatch(lin_extrap(.x$depth, .x$flux,h),
                          error = function(x) NA)
       data.frame(efflux = efflux)

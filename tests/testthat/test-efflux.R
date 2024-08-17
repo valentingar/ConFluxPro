@@ -42,3 +42,19 @@ test_that("efflux from fgres works", {
 
 
 })
+
+test_that("efflux from fgres can deal with NAs", {
+
+  base_dat <- readRDS(testthat::test_path("fixtures", "base_dat.rds"))
+
+  FLUX <-
+    fg_flux(base_dat)
+
+  FLUX$FLUX$flux <- NA
+
+  EFFLUX <- efflux(FLUX, method = "lex", layers = c(1,2))
+
+  expect_equal(nrow(EFFLUX), 24)
+  expect_true(all(is.na(EFFLUX$efflux)))
+
+})
