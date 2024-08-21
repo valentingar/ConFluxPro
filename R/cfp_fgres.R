@@ -39,6 +39,11 @@ validate_cfp_fgres <- function(x){
 
 # methods ------------
 
+##### IDENTIFICATION #####
+is_cfp_fgres <- function(x){
+  inherits(x, "cfp_fgres")
+}
+
 ####### PRINTING ######
 
 #' @exportS3Method

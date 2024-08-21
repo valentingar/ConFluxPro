@@ -3,7 +3,7 @@
 #' @description Calculate or extract the soil/atmosphere efflux
 #' from \code{cfp_pfres} or \code{cfp_fgres} model results.
 #'
-#' @param x A cfp_pfres or cfp_fgres model result.
+#' @param x A [cfp_pfres] or [cfp_fgres] model result, or a [cfp_altres].
 #'
 #' @importFrom rlang .data
 #'
@@ -43,6 +43,42 @@ efflux.cfp_fgres <- function(x,
   fg_efflux(x, method = method, layers = layers)
 }
 
+
+#' @exportS3Method
+efflux.cfp_altres <- function(x,
+                              ...){
+
+  x_profiles <- dplyr::bind_rows(lapply(x, function(x) x$profiles),
+                                 .id = "run_id") %>%
+    dplyr::mutate(run_id = as.numeric(run_id))
+  max_prof_id <- max(x_profiles$prof_id)
+  x_profiles$prof_id_old <- x_profiles$prof_id
+  x_profiles$prof_id <- (x_profiles$run_id - 1)*max_prof_id + x_profiles$prof_id
+  y <- x[[1]]
+  y$profiles <- x_profiles
+  attr(y, "id_cols") <- c(cfp_id_cols(y), "run_id", "prof_id_old")
+
+  if(is_cfp_pfres(y)){
+    x_PROFLUX <- dplyr::bind_rows(lapply(x, function(x) x$PROFLUX),
+                           .id = "run_id")%>%
+      dplyr::mutate(run_id = as.numeric(run_id))
+    x_PROFLUX$prof_id <- (x_PROFLUX$run_id - 1)*max_prof_id + x_PROFLUX$prof_id
+    x_PROFLUX <- x_PROFLUX[,!names(x_PROFLUX) == "run_id"]
+    y$PROFLUX <- x_PROFLUX
+  }
+  if(is_cfp_fgres(y)){
+    x_FLUX <- dplyr::bind_rows(lapply(x, function(x) x$FLUX),
+                                  .id = "run_id")%>%
+      dplyr::mutate(run_id = as.numeric(run_id))
+    x_FLUX$prof_id <- (x_FLUX$run_id - 1)*max_prof_id + x_FLUX$prof_id
+    x_FLUX <- x_FLUX[,!names(x_FLUX) == "run_id"]
+    y$FLUX <- x_FLUX
+  }
+  efflux(y) %>%
+    dplyr::mutate(prof_id = prof_id_old) %>%
+    dplyr::select(!prof_id_old) %>%
+    dplyr::relocate(run_id, .after = prof_id)
+}
 # helpers ----------------------
 pf_efflux <- function(x) {
   PROFLUX <- x$PROFLUX

@@ -49,6 +49,13 @@ validate_cfp_pfres <- function(x){
 
 #### methods ----------------------
 
+##### IDENTIFICATION #####
+is_cfp_pfres <- function(x){
+  inherits(x, "cfp_pfres")
+}
+
+
+
 ##### EXTRACTION ######
 #' @rdname extractors
 #' @export
