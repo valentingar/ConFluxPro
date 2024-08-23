@@ -43,7 +43,7 @@ efflux.cfp_fgres <- function(x,
   fg_efflux(x, method = method, layers = layers)
 }
 
-
+#' @rdname efflux
 #' @exportS3Method
 efflux.cfp_altres <- function(x,
                               ...){
