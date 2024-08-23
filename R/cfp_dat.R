@@ -434,15 +434,16 @@ n_groups.cfp_dat <- function(x) {
 
 
 join_with_profiles <- function(target_data,
-                                profiles){
+                               profiles,
+                               id_cols){
 
   extra_cols <- c("sp_id", "gd_id", "group_id", "prof_id", "step_id", "pmap", "row_id", "depth_group")
   join_cols <- names(profiles)[names(profiles) %in% names(target_data)]
-  id_cols <- join_cols[!join_cols %in% extra_cols]
+  #id_cols <- join_cols[!join_cols %in% extra_cols]
 
   x <-
     profiles %>%
-    dplyr::select(dplyr::all_of(join_cols)) %>%
+    dplyr::select(dplyr::all_of(c(join_cols, id_cols))) %>%
     dplyr::distinct() %>%
     dplyr::left_join(target_data,
                      by = join_cols,
@@ -462,9 +463,10 @@ get_soilphys.cfp_dat <- function(x){
   soilphys <- x$soilphys
   profiles <- x$profiles
 
-  x <-
-  soilphys %>%
-    join_with_profiles(profiles)
+  x <- join_with_profiles(
+    soilphys,
+    profiles,
+    cfp_id_cols(soilphys))
 
   x<-
     cfp_soilphys(x[[1]],
@@ -484,8 +486,9 @@ get_gasdata.cfp_dat <- function(x){
   profiles <- x$profiles
 
   x <-
-  gasdata %>%
-    join_with_profiles(profiles)
+    join_with_profiles(gasdata,
+                       profiles,
+                       cfp_id_cols(gasdata))
 
   x <- cfp_gasdata(x[[1]],
                 id_cols = x[[2]])

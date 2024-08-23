@@ -64,12 +64,14 @@ plot_profile.cfp_pfres <- function(x) {
 
   x_max <- max(gasdata$x_ppm, na.rm = TRUE)
 
+  join_cols <- whats_in_both(list(names(PROFLUX),
+                                  c(names(soilphys))))
+
   gasdata_adapted <-
     soilphys %>%
-    dplyr::select(!depth) %>%
-    dplyr::rename(depth = upper) %>%
     dplyr::right_join(PROFLUX,
-                      by = whats_in_both(list(names(!!PROFLUX), names(.data)))) %>%
+                      by = join_cols) %>%
+    dplyr::mutate(depth = upper) %>%
     dplyr::arrange(dplyr::desc(depth))
 
   if(!("TPS" %in% names(soilphys))) soilphys$TPS <- 1

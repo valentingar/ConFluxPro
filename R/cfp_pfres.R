@@ -68,7 +68,8 @@ get_PROFLUX.cfp_dat <- function(x){
   profiles <- x$profiles
 
   x <-
-    join_with_profiles(PROFLUX, profiles)[[1]]
+    join_with_profiles(PROFLUX, profiles, cfp_id_cols(x))[[1]] %>%
+    cfp_profile(id_cols = cfp_id_cols(x))
 
   x
 }
