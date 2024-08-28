@@ -22,11 +22,11 @@ test_that("fg_flux multiple gases", {
   gd$gas <- "CH4"
   lmap$gas <- "CH4"
 
-  base_dat <- cfp_dat(cfp_gasdata(bind_rows(gd, gd2),
+  base_dat <- cfp_dat(cfp_gasdata(dplyr::bind_rows(gd, gd2),
                                    id_cols = c("site", "gas", "Date")),
-                      cfp_soilphys(bind_rows(sp, sp2),
+                      cfp_soilphys(dplyr::bind_rows(sp, sp2),
                                    id_cols = c("site", "gas", "Date")),
-                      cfp_layers_map(bind_rows(lmap, lmap2),
+                      cfp_layers_map(dplyr::bind_rows(lmap, lmap2),
                                    id_cols = c("site", "gas")))
 
   FLUX <-
