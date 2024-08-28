@@ -45,12 +45,12 @@ production.cfp_fgres <- function(x, ...){
 
   FLUX %>%
     dplyr::left_join(EFFLUX, by = merger) %>%
-    dplyr::arrange("upper") %>%
+    dplyr::arrange(.data$upper) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(c("mode",id_cols)))) %>%
-    dplyr::mutate(flux_lag = dplyr::lag(.data$flux),
-                  flux_lead = dplyr::lead(.data$flux)) %>%
-    dplyr::mutate(flux_lag = ifelse(is.na(.data$flux_lag), 0, .data$flux_lag),
-                  flux_lead = ifelse(is.na(.data$flux_lead), .data$efflux, .data$flux_lead)) %>%
+    dplyr::mutate(flux_lag = dplyr::lag(.data$flux, default = 0),
+                  flux_lead = dplyr::lead(.data$flux, default = .data$efflux[1])) %>%
+    #dplyr::mutate(flux_lag = ifelse(is.na(.data$flux_lag), 0, .data$flux_lag),
+    #              flux_lead = ifelse(is.na(.data$flux_lead), .data$efflux, .data$flux_lead)) %>%
     dplyr::mutate(prod_abs = .data$flux_lead - .data$flux_lag ) %>%
     dplyr::mutate(prod_rel = .data$prod_abs / .data$efflux) %>%
     dplyr::ungroup() %>%
