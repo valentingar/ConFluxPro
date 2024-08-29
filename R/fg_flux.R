@@ -8,6 +8,10 @@
 #' @inheritParams pro_flux
 #'
 #' @inheritDotParams cfp_fgmod gases modes param funs
+#'
+#' @references
+#' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
+#'
 #' @importFrom rlang .data
 #' @rdname fg_flux
 #' @export

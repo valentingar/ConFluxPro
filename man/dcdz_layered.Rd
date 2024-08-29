@@ -16,7 +16,7 @@ dcdz_layered(df, layers_map, mode)
 \item "upper"=upper limit of layer in cm;
 \item "lower" = lower limit of the layer in cm;}}
 
-\item{mode}{(character) One of ("LL","LS","EF").}
+\item{mode}{(character) One of ("LL","LS","EF","DA").}
 }
 \value{
 df (dataframe) same structure as layer_map with folowing columns:
