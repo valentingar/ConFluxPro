@@ -240,8 +240,14 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       a <- stats::coef(mod)[1]
       d <- d_max - (upper+lower)/2
 
-      da <- summary(mod)$coefficients[1,2]
-      db <- summary(mod)$coefficients[2,2]
+      sum_mod <- try(summary(mod))
+      if(inherits(sum_mod, "try-error")){
+        da <- NA
+        db <- NA
+      } else {
+        da <- summary(mod)$coefficients[1,2]
+        db <- summary(mod)$coefficients[2,2]
+      }
       #calculating dcdz via the 1st derivative of the exponential Function.
       dcdz <- -a*b*exp(-a*d) *100 #in ppm/m
       dcdz_sd <- (abs(db*a*exp(-a*d)) + abs(da*(b-a*b*d)*exp(-a*d)))  *100 #in ppm/m
