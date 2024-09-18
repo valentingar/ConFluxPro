@@ -64,13 +64,18 @@ plot_profile.cfp_pfres <- function(x) {
 
   x_max <- max(gasdata$x_ppm, na.rm = TRUE)
 
+  join_cols <- whats_in_both(list(names(PROFLUX),
+                                  c(names(soilphys))))
+
   gasdata_adapted <-
     soilphys %>%
-    dplyr::select(!depth) %>%
-    dplyr::rename(depth = upper) %>%
     dplyr::right_join(PROFLUX,
-                      by = whats_in_both(list(names(PROFLUX), names(.data)))) %>%
+                      by = join_cols) %>%
+    dplyr::mutate(depth = upper) %>%
     dplyr::arrange(dplyr::desc(depth))
+
+  if(!("TPS" %in% names(soilphys))) soilphys$TPS <- 1
+  if(!("SWC" %in% names(soilphys))) soilphys$SWC <- 0
 
   p <-
     soilphys %>%
@@ -186,6 +191,9 @@ plot_profile.cfp_fgres <- function(x) {
   x_max <- max(gasdata$x_ppm)
 
 
+  if(!("TPS" %in% names(soilphys))) soilphys$TPS <- 1
+  if(!("SWC" %in% names(soilphys))) soilphys$SWC <- 0
+
   p <-
     soilphys %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +
@@ -250,6 +258,10 @@ plot_profile.cfp_soilphys <- function(x) {
   t_max <- max(x$t)
   t_min <- min(x$t)
   DS_max <- max(x$DS)
+
+
+  if(!("TPS" %in% names(x))) x$TPS <- 1
+  if(!("SWC" %in% names(x))) x$SWC <- 0
 
   x %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +

@@ -49,6 +49,13 @@ validate_cfp_pfres <- function(x){
 
 #### methods ----------------------
 
+##### IDENTIFICATION #####
+is_cfp_pfres <- function(x){
+  inherits(x, "cfp_pfres")
+}
+
+
+
 ##### EXTRACTION ######
 #' @rdname extractors
 #' @export
@@ -61,7 +68,8 @@ get_PROFLUX.cfp_dat <- function(x){
   profiles <- x$profiles
 
   x <-
-    join_with_profiles(PROFLUX, profiles)[[1]]
+    join_with_profiles(PROFLUX, profiles, cfp_id_cols(x))[[1]] %>%
+    cfp_profile(id_cols = cfp_id_cols(x))
 
   x
 }

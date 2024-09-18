@@ -17,6 +17,10 @@
 #'   \item{EF}{exponential fit approach: An exponential function of form
 #'   y=a+b*x^c is fit of concentration against depth. Using the first derivative of
 #'   that function the concentration gradient is evaluated for each layer.}
+#'   \item{DA}{exponential fit approach: An exponential function of form
+#'   `y=a+b*(1-exp(-a*x))` is fit of concentration against depth. Using the first derivative of
+#'   that function the concentration gradient is evaluated for each layer. From
+#'   Davidson (2006)}
 #'   }
 #' @param param (character) A vector containing the the parameters of soilphys,
 #'   for which means should be calculated, must contain "c_air" and "DS", more
@@ -26,6 +30,9 @@
 #'
 #' @returns A \code{cfp_fgmod} object. This inherits from [cfp_dat()] and
 #' adds model specific parameters.
+#'
+#' @references
+#' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
 #'
 #' @examples
 #' cfp_fgmod(ConFluxPro::base_dat)
@@ -71,7 +78,7 @@ validate_fgmod <- function(x){
   stopifnot("DS mus be in param!" = "DS" %in% cfp_param(x),
             "c_air must be in param!" = "c_air" %in% cfp_param(x))
 
-  stopifnot("not a valid mode!" = all(cfp_modes(x) %in% c("LL", "LS", "EF")))
+  stopifnot("not a valid mode!" = all(cfp_modes(x) %in% c("LL", "LS", "EF", "DA")))
 
   x
 }
