@@ -17,6 +17,21 @@ including an inverse approach.
 
 <!-- TODO: Insert text to link to papers  -->
 
+## Installation
+
+Install the current development version from github:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("valentingar/ConFluxPro")
+```
+
+To get started, check out the provided vignette after installation:
+
+``` r
+vignette("overview", package = "ConFluxPro")
+```
+
 ## Basis
 
 The Flux Gradient Method (FGM) calculates diffusive flux rates $F$ of
@@ -65,13 +80,24 @@ Different classes help to set up and validate datasets:
 ``` r
 gasdata <- cfp_gasdata(ConFluxPro::gasdata,
                        id_cols = c("site", "Date"))
+#> 
+#> added 'gas' to id_cols
 
 soilphys <- cfp_soilphys(ConFluxPro::soilphys,
                          id_cols = c("site", "Date"))
+#> 
+#> added 'gas' to id_cols
 
-layers_map <- cfp_layers_map(ConFluxPro::layers_map,
-                             gas = "CO2", lowlim = 0, highlim = 1000,
-                             id_cols = "site")
+layers_map <- cfp_layers_map(
+  data.frame(site = rep(c("site_a", "site_b"), each = 3),
+             upper = c(5,   0,  -20, 7,   0,  -20),
+             lower = c(0, -20, -100, 0, -20, -100)),
+  gas = "CO2", 
+  lowlim = 0, 
+  highlim = 1000,
+  id_cols = "site")
+#> 
+#> added 'gas' to id_cols
 ```
 
 These three datasets are then combined in the central data class
@@ -119,9 +145,25 @@ production(FLUX)
 production(PROFLUX)
 ```
 
-In the case of the forward model (`FLUX`), this may require some
+In the case of the forward model `FLUX`, this may require some
 consideration for which method of extrapolation to be used (see the
 manual `?efflux`), as different approaches are implemented.
+
+`efflux()` returns a `data.frame` with one row per profile and the
+corresponding efflux rate.
+
+``` r
+library(ggplot2)
+efflux(PROFLUX) %>%
+  ggplot(aes(x = Date, y = efflux, col = site))+
+  geom_line()+
+  scale_color_viridis_d()+
+  scale_x_date(date_minor_breaks = "1 month")+
+  ylab(expression("CO"[2]~"efflux ["*mu*"mol m"^"-2"~"s"^"-1"*"]"))+
+  theme_minimal()
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.svg" width="100%" />
 
 ### Extracting information
 
@@ -144,7 +186,7 @@ For big datasets (1000+ profiles), some calculations may takes some
 time. ConFluxPro uses the excellent
 [`future`](https://github.com/HenrikBengtsson/future) and
 [`progressr`](https://github.com/HenrikBengtsson/progressr) packages for
-parallel processing and progress bars.
+parallel processing and progress bars in some cpu-intensive functions.
 
 ``` r
 library(future)
@@ -165,22 +207,90 @@ handlers(handler_progress(format = ":percent [:bar] :eta"))
 
 ### Post processing
 
-### Conveniance
+<!-- TODO: write vignette for alternate() and bootstrap_error() and link here -->
 
-## Installation
+### Subsetting
 
-Install the current development version from github:
-
-``` r
-# install.packages("remotes")
-remotes::install_github("valentingar/ConFluxPro")
-```
-
-To get started, check out the provided vignette after installation:
+Subsetting for all main data types happens analogous to `dplyr` by
+calling `filter()`. You can select profiles based on any `id_cols` or by
+selecting the `prof_id` generated in the call to `cfp_dat()`. This also
+works for model results.
 
 ``` r
-vignette("overview", package = "ConFluxPro")
+filter(soilphys, 
+       Date == "2021-04-01",
+       site == "site_b")
+#> 
+#> A cfp_soilphys object 
+#> id_cols: site Date gas 
+#> 1  unique profiles 
+#> 
+#>     site  TPS   a   b depth upper lower       Date        SWC        t    p
+#> 1 site_b 0.35 1.2 1.5 -80.0   -60  -100 2021-04-01 0.14674436 5.131912 1013
+#> 2 site_b 0.35 1.2 1.5 -50.0   -40   -60 2021-04-01 0.12995582 5.248726 1013
+#> 3 site_b 0.20 0.8 1.3 -30.0   -20   -40 2021-04-01 0.04510915 5.326602 1013
+#> 4 site_b 0.20 0.8 1.3 -16.5   -13   -20 2021-04-01 0.03230483 4.975450 1013
+#> 5 site_b 0.61 0.7 1.4  -9.0    -5   -13 2021-04-01 0.12086816 5.118654 1013
+#> 6 site_b 0.61 0.7 1.4  -2.5     0    -5 2021-04-01 0.12189161 5.242764 1013
+#> 7 site_b 0.80 0.4 1.5   1.5     3     0 2021-04-01 0.15749876 5.378220 1013
+#> 8 site_b 0.80 0.4 1.5   5.0     7     3 2021-04-01 0.12795519 5.582906 1013
+#>        AFPS       DSD0 gas           D0           DS    c_air
+#> 1 0.2032556 0.10996264 CO2 1.428319e-05 1.570618e-06 43.78390
+#> 2 0.2200442 0.12386427 CO2 1.429405e-05 1.770522e-06 43.76553
+#> 3 0.1548909 0.07081471 CO2 1.430129e-05 1.012741e-06 43.75329
+#> 4 0.1676952 0.07851755 CO2 1.426866e-05 1.120340e-06 43.80853
+#> 5 0.4891318 0.25721385 CO2 1.428196e-05 3.673518e-06 43.78599
+#> 6 0.4881084 0.25646070 CO2 1.429349e-05 3.665719e-06 43.76647
+#> 7 0.6425012 0.20600177 CO2 1.430608e-05 2.947079e-06 43.74518
+#> 8 0.6720448 0.22037247 CO2 1.432512e-05 3.156862e-06 43.71306
+filter(my_dat, Date < "2021-05-01")
+#> 
+#> A cfp_dat object to be used as input in ConFluxPro models. 
+#> id_cols: site Date gas 
+#> number of profiles:  8 
+#> number of groups:  2
+filter(PROFLUX, prof_id %in% c(1,7,9))
+#> 
+#> A cfp_pfres pro_flux model result. 
+#> mean RMSE achieved:  0.007619 
+#> number of failed fits:  0 
+#> 
+#> A cfp_pfmod pro_flux model. 
+#> zero_flux: TRUE  
+#> zero_limits:  -Inf Inf  
+#> DSD0_optim:  FALSE  
+#> evenness_factor:  0  
+#> known_flux_factor:  0  
+#> 
+#> A cfp_dat object to be used as input in ConFluxPro models. 
+#> id_cols: site Date gas 
+#> number of profiles:  3 
+#> number of groups:  1
 ```
+
+### Plotting
+
+To get a better understanding of your data, you can plot profiles with
+the `plot_profile()` function. This returns an editable `ggplot2` plot.
+
+``` r
+PROFLUX %>%
+  filter(prof_id %in% c(16, 17)) %>%
+  plot_profile()+
+  ggplot2::theme_light()
+```
+
+<img src="man/figures/README-unnamed-chunk-12-1.svg" width="75%" style="display: block; margin: auto;" />
+
+``` r
+
+soilphys %>%
+  filter(Date == "2021-08-01") %>%
+  plot_profile()+
+  ggplot2::theme_light()
+```
+
+<img src="man/figures/README-unnamed-chunk-12-2.svg" width="75%" style="display: block; margin: auto;" />
 
 ## Contact
 
