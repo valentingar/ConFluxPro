@@ -55,6 +55,13 @@ ConFluxPro comes in. This package can help to easily process raw data,
 combine datasets and set up different model variants in a
 straightforward and reproducible manner.
 
+For more background, see a
+[review](https://doi.org/10.1016/j.agrformet.2014.03.006) on the method
+and how it can be deployed especially for [long-term
+monitoring](https://doi.org/10.3390/app10238653) of soil gas fluxes.
+<!-- TODO: link to own paper as well -->
+<!-- TODO: link to paper where CFP has been used -->
+
 ## Workflow
 
 ### Data handling
@@ -106,6 +113,12 @@ This object contains then all necessary information.
 
 ``` r
 my_dat <- cfp_dat(gasdata, soilphys, layers_map)
+my_dat
+#> 
+#> A cfp_dat object to be used as input in ConFluxPro models. 
+#> id_cols: site Date gas 
+#> number of profiles:  24 
+#> number of groups:  2
 ```
 
 ### Flux modeling
@@ -130,7 +143,7 @@ FLUX <- fg_flux(my_dat, modes = "EF")
 ```
 
 The result in both cases is an object that contains the original data
-(`my_dat`) and th flux rates in different soil layers for each of the
+`my_dat` and th flux rates in different soil layers for each of the
 profiles identified in `cfp_dat()`. From this, the soil/atmoshere efflux
 rate and the specific production rate in each model soil layer can be
 extracted.
@@ -180,7 +193,7 @@ cfp_layers_map(my_dat)
 cfp_layers_map(PROFLUX)
 ```
 
-### Big datasets: Paralell processing and progress bars
+### Big datasets: Parallel processing and progress bars
 
 For big datasets (1000+ profiles), some calculations may takes some
 time. ConFluxPro uses the excellent
@@ -292,6 +305,36 @@ soilphys %>%
 
 <img src="man/figures/README-unnamed-chunk-12-2.svg" width="75%" style="display: block; margin: auto;" />
 
+### Getting help
+
+Most functionality, background and output is documented in the internal
+manual. Just run `?function_name` to access it. Furthermore, you can get
+descriptions of all parameters and their respective units with a special
+function `cfp_parameter()`.
+
+``` r
+cfp_parameter("efflux")
+#>      name                             description           unit
+#> 29 efflux efflux at the soil/atmosphere interface µmol m^-2 s^-1
+cfp_parameter(soilphys)
+#> 
+#> This object contains the following parameters:
+#>     name                    description     unit
+#> 2    gas                name of the gas     <NA>
+#> 3  depth  depth, higher values point up       cm
+#> 4  upper          upper border of layer       cm
+#> 5  lower          lower border of layer       cm
+#> 6    TPS               total pore space  vol/vol
+#> 7   AFPS          air-filled pore space  vol/vol
+#> 8    SWC             soil water content  vol/vol
+#> 9      t                    temperature       °C
+#> 10     p                       pressure      hPa
+#> 11  DSD0           relative diffusivity        1
+#> 12    DS apparent diffusion coefficient m^2 s^-1
+#> 13    D0   diffusion coefficient in air m^2 s^-1
+#> 14 c_air          number density of air mol m^-3
+```
+
 ## Contact
 
 This package is being developed by Valentin Gartiser: code \[at\]
@@ -299,3 +342,16 @@ valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I
 will be glad to help out where I can.
+
+## License
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the [GNU General Public
+License](https://www.gnu.org/licenses/gpl-3.0.html.en) as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.

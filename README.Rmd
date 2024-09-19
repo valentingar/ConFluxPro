@@ -58,6 +58,9 @@ The FGM is an excellent alternative to other methods, such as Eddy-Covariance or
 
 While the basic calculation of fluxes may be simple, FGM requires the combination of different datasets of varying methods. This is where ConFluxPro comes in. This package can help to easily process raw data, combine datasets and set up different model variants in a straightforward and reproducible manner.
 
+For more background, see a [review](https://doi.org/10.1016/j.agrformet.2014.03.006) on the method and how it can be deployed especially for [long-term monitoring](https://doi.org/10.3390/app10238653) of soil gas fluxes.
+<!-- TODO: link to own paper as well -->
+<!-- TODO: link to paper where CFP has been used -->
 
 ## Workflow
 
@@ -97,6 +100,7 @@ These three datasets are then combined in the central data class `cfp_dat()`, an
 
 ```{r}
 my_dat <- cfp_dat(gasdata, soilphys, layers_map)
+my_dat
 ```
 
 
@@ -115,7 +119,7 @@ Each modelling function can be adapted to different needs. For example, we can p
 FLUX <- fg_flux(my_dat, modes = "EF")
 ```
 
-The result in both cases is an object that contains the original data (`my_dat`) and th flux rates in different soil layers for each of the profiles identified in `cfp_dat()`. From this, the soil/atmoshere efflux rate and the specific production rate in each model soil layer can be extracted.
+The result in both cases is an object that contains the original data `my_dat` and th flux rates in different soil layers for each of the profiles identified in `cfp_dat()`. From this, the soil/atmoshere efflux rate and the specific production rate in each model soil layer can be extracted.
 ```{r, eval=FALSE}
 # soil/atmosphere efflux
 efflux(FLUX)
@@ -154,7 +158,7 @@ cfp_layers_map(my_dat)
 cfp_layers_map(PROFLUX)
 ```
 
-### Big datasets: Paralell processing and progress bars
+### Big datasets: Parallel processing and progress bars
 
 For big datasets (1000+ profiles), some calculations may takes some time. ConFluxPro uses the excellent [`future`](https://github.com/HenrikBengtsson/future) and [`progressr`](https://github.com/HenrikBengtsson/progressr) packages for parallel processing and progress bars in some cpu-intensive functions. 
 
@@ -206,9 +210,24 @@ soilphys %>%
   ggplot2::theme_light()
 ```
 
+### Getting help
+
+Most functionality, background and output is documented in the internal manual. Just run `?function_name` to access it. Furthermore, you can get descriptions of all parameters and their respective units with a special function `cfp_parameter()`.
+
+```{r}
+cfp_parameter("efflux")
+cfp_parameter(soilphys)
+```
+
+
 ## Contact
 
 This package is being developed by Valentin Gartiser: 
 code [at] valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I will be glad to help out where I can.
+
+## License
+This program is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html.en) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
