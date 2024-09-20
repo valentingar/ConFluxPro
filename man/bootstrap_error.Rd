@@ -6,7 +6,7 @@
 \alias{bootstrap_error.cfp_fgmod}
 \alias{bootstrap_error.cfp_pfmod}
 \alias{make_bootstrap_model}
-\alias{make_bootstrap_model.cfp_pfres}
+\alias{make_bootstrap_model.cfp_pfmod}
 \alias{calculate_bootstrap_error}
 \alias{calculate_bootstrap_error.cfp_pfres}
 \title{Bootstrap-estimate of Flux-error}
@@ -56,7 +56,7 @@ make_bootstrap_model(
   rep_cols = NULL
 )
 
-\method{make_bootstrap_model}{cfp_pfres}(
+\method{make_bootstrap_model}{cfp_pfmod}(
   x,
   n_samples = 50,
   sd_x_ppm = NULL,

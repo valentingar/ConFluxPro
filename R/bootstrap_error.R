@@ -149,7 +149,7 @@ make_bootstrap_model <- function(x,
 
 #' @rdname bootstrap_error
 #' @exportS3Method
-make_bootstrap_model.cfp_pfres <- function(x,
+make_bootstrap_model.cfp_pfmod <- function(x,
                                  n_samples = 50,
                                  sd_x_ppm = NULL,
                                  n_replicates = NULL,
