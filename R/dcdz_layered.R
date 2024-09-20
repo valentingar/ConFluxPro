@@ -10,7 +10,7 @@
 #' \item "layer"=name of the layer;
 #' \item "upper"=upper limit of layer in cm;
 #' \item "lower" = lower limit of the layer in cm;}
-#' @param mode (character) One of ("LL","LS","EF").
+#' @param mode (character) One of ("LL","LS","EF","DA").
 #'
 #' @return df (dataframe) same structure as layer_map with folowing columns:
 #' @return mode (character) the used gradient method.
@@ -48,7 +48,7 @@ dcdz_layered <- function(df,
                          layers_map,
                          mode
                          ){
-valid_modes = c("LS","LL","EF")
+valid_modes = c("LS","LL","EF","DA")
 
 if ((mode %in% valid_modes)==F){
   stop(paste0("wrong mode selected: ",mode,". Please use one of the following modes: ",paste0(valid_modes,collapse = ", ")))
@@ -199,7 +199,65 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       create_return <- TRUE
     }
   }
+
+}else if (mode == "DA"){
+
+  if(nrow(df)>1){
+    y_min <- mean(df$x_ppm[df$depth == max(depths)])
+    y_max <- mean(df$x_ppm[df$depth == min(depths)])
+    d_max <- max(depths)
+    starts<-stats::coef(stats::lm(I(log(1 - (x_ppm - y_min)/y_max)) ~ 0 +I(-(d_max - depth)),
+                                  data=df))
+    starts <- c(y_max, starts)
+    } else {
+    starts <- NA
+  }
+
+  if(anyNA(starts) | nrow(df)<4 | sum(starts)==0){
+    #preventing model errors before they occur and replacing with NA
+    return_na <- TRUE
+  } else {
+    #exponential model based on Davidson 2006
+
+
+    mod <- try(stats::nls(x_ppm ~ b  * (1 - exp(-a*I(d_max - depth))) + I(y_min),
+                          data = df,
+                          start = list(
+                            "a"= starts[2],
+                            "b"= starts[1]),
+                          algorithm = "plinear",
+                          control = stats::nls.control(warnOnly = T, maxiter = 50)),
+               silent = T)
+
+    #check for convergence
+    conv_flag <- ifelse(inherits(mod, "nls"),conv_flag <- !mod$convInfo$isConv,F)
+
+    #na if no convergence or error
+    if (conv_flag | inherits(mod, "try-error")){
+      return_na <- TRUE
+    } else {
+      b <- stats::coef(mod)[2]
+      a <- stats::coef(mod)[1]
+      d <- d_max - (upper+lower)/2
+
+      sum_mod <- try(summary(mod))
+      if(inherits(sum_mod, "try-error")){
+        da <- NA
+        db <- NA
+      } else {
+        da <- summary(mod)$coefficients[1,2]
+        db <- summary(mod)$coefficients[2,2]
+      }
+      #calculating dcdz via the 1st derivative of the exponential Function.
+      dcdz <- -a*b*exp(-a*d) *100 #in ppm/m
+      dcdz_sd <- (abs(db*a*exp(-a*d)) + abs(da*(b-a*b*d)*exp(-a*d)))  *100 #in ppm/m
+      dc<- ((b*exp(-a*upper)) - (b*exp(-a*lower)))
+      r2 <- 1 -(deviance(mod) / (var(df$x_ppm)*(length(df$x_ppm)-1)))
+
+      create_return <- TRUE
     }
+  }
+}
 
 if (return_na){
   dcdz <- NA

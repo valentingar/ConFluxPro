@@ -4,6 +4,7 @@
 \alias{efflux}
 \alias{efflux.cfp_pfres}
 \alias{efflux.cfp_fgres}
+\alias{efflux.cfp_altres}
 \title{efflux}
 \usage{
 efflux(x, ...)
@@ -11,9 +12,11 @@ efflux(x, ...)
 \method{efflux}{cfp_pfres}(x, ...)
 
 \method{efflux}{cfp_fgres}(x, ..., method = "lm", layers = NULL)
+
+\method{efflux}{cfp_altres}(x, ...)
 }
 \arguments{
-\item{x}{A cfp_pfres or cfp_fgres model result.}
+\item{x}{A \link{cfp_pfres} or \link{cfp_fgres} model result, or a \link{cfp_altres}.}
 
 \item{method}{Method(s) used to interpolate the efflux at the top of the soil
 from partial fluxes within the soil. One of

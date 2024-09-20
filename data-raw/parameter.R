@@ -36,7 +36,7 @@ parameter <-
                       ),
              description = c("mole fraction of a gas",               #1
                              "name of the gas",                      #2
-                             "depth, high values on top",            #3
+                             "depth, higher values point up",        #3
                              "upper border of layer",                #4
                              "lower border of layer",                #5
                              "total pore space",                     #6
@@ -45,11 +45,11 @@ parameter <-
                              "temperature",                          #9
                              "pressure",                             #10
                              "relative diffusivity",                 #11
-                             "effective diffusion coefficient",      #12
+                             "apparent diffusion coefficient",       #12
                              "diffusion coefficient in air",         #13
                              "number density of air",                #14
-                             "particle flux density",                #15
-                             "incoming particle flux density",       #16
+                             "flux density",                         #15
+                             "incoming flux density at model bottom",#16
                              "production rate (source term)",        #17
                              "number concentration",                 #18
                              "integer, mapping unique production rates 1 = lowest", #19
