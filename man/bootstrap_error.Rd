@@ -8,7 +8,7 @@
 \alias{make_bootstrap_model}
 \alias{make_bootstrap_model.cfp_pfmod}
 \alias{calculate_bootstrap_error}
-\alias{calculate_bootstrap_error.cfp_pfres}
+\alias{calculate_bootstrap_error.cfp_pfmod}
 \title{Bootstrap-estimate of Flux-error}
 \usage{
 bootstrap_error(
@@ -67,7 +67,7 @@ make_bootstrap_model(
 
 calculate_bootstrap_error(x, y)
 
-\method{calculate_bootstrap_error}{cfp_pfres}(x, y)
+\method{calculate_bootstrap_error}{cfp_pfmod}(x, y)
 }
 \arguments{
 \item{x}{A \code{cfp_pfres} model result from a call to \code{\link[=pro_flux]{pro_flux()}}.}

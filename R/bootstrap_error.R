@@ -216,7 +216,7 @@ calculate_bootstrap_error <- function(x, y){
 }
 #' @rdname bootstrap_error
 #' @exportS3Method
-calculate_bootstrap_error.cfp_pfres <- function(x, y){
+calculate_bootstrap_error.cfp_pfmod <- function(x, y){
   y_id_cols <- cfp_id_cols(y)
   y_id_cols <- y_id_cols[!(y_id_cols == "bootstrap_id")]
 
