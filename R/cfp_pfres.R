@@ -38,9 +38,15 @@ validate_cfp_pfres <- function(x){
 
   select_cols <- c("sp_id", "step_id")
 
+  a <- x$PROFLUX[,select_cols] %>% data.frame() %>% dplyr::distinct() %>%
+    dplyr::arrange(.data$sp_id, .data$step_id)
+  b <- x$soilphys[,select_cols] %>% data.frame()%>%
+    dplyr::arrange(.data$sp_id, .data$step_id)
+
+
   stopifnot("PROFLUX and soilphys must have the same structure!" =
-              all.equal(x$PROFLUX[,select_cols] %>% data.frame() %>% dplyr::distinct(),
-                        x$soilphys[,select_cols] %>% data.frame()
+              all.equal(a,
+                        b
               ))
   x
 }

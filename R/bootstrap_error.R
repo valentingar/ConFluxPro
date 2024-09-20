@@ -266,7 +266,7 @@ calculate_bootstrap_error.cfp_pfmod <- function(x, y){
   x_profiles <- x$profiles
   #x_FLUX <- data.frame(x$PROFLUX)
 
-  x$PROFLUX <-
+  y <-
     x_profiles %>%
     dplyr::left_join(BOOTSTRAP_FLUX, by = cfp_id_cols(x)[cfp_id_cols(x) %in% names(BOOTSTRAP_FLUX)]) %>%
     dplyr::ungroup() %>%
@@ -287,6 +287,8 @@ calculate_bootstrap_error.cfp_pfmod <- function(x, y){
       "RMSE"))) %>%
     #dplyr::right_join(x_FLUX, by = c("prof_id", "pmap")) %>%
     cfp_layered_profile(id_cols = "prof_id")
+
+  x <- cfp_pfres(x, y)
 
   x
 }
