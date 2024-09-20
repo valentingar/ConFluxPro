@@ -7,6 +7,18 @@
 #' @param x A valid \code{cfp_fgmod} object
 #' @param y The corresponding FLUX \code{data.frame}.
 #'
+#' @returns A \code{cfp_fgres} object. This inherits from [cfp_fgmod()].
+#'
+#' @examplesIf interactive()
+#' FLUX <- fg_flux(ConFluxPro::base_dat)
+#' cfp_fgres(
+#'   cfp_fgmod(ConFluxPro::base_dat),
+#'   FLUX$FLUX
+#' )
+#'
+#' @keywords internal
+#'
+#' @export
 cfp_fgres <- function(x,y){
 
   stopifnot(inherits(x,"cfp_fgmod"))
@@ -27,6 +39,11 @@ validate_cfp_fgres <- function(x){
 
 # methods ------------
 
+##### IDENTIFICATION #####
+is_cfp_fgres <- function(x){
+  inherits(x, "cfp_fgres")
+}
+
 ####### PRINTING ######
 
 #' @exportS3Method
@@ -34,7 +51,7 @@ print.cfp_fgres <- function(x, ...){
   R2 <- x$FLUX %>%
     dplyr::select(dplyr::any_of(c(cfp_id_cols(x), "r2", "mode" ))) %>%
     dplyr::distinct() %>%
-    dplyr::pull(r2)
+    dplyr::pull("r2")
   mean_R2 <- round(mean(R2, na.rm = TRUE), digits = 6)
   n_NA <- length(R2[is.na(R2) == TRUE])
 

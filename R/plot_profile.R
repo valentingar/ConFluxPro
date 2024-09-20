@@ -1,12 +1,25 @@
-#' plot_profile
+#'plot_profile
 #'
-#' Plot ConFluxPro profiles using ggplot. Supported objects:
+#'Plot vertical soil-profiles of ConFluxPro objects using ggplot. This is mainly
+#' intended for diagnostic purposes and better understand the underlying data.
+#' Supported objects:
 #' \describe{
-#' \item{cfp_soilphys}{Displays TPS, SWC and AFPS, as well as values of Ds and Temperature.}
-#' \item{cfp_pfres}{Displays TPS, SWC and AFPS, as well as production and measured and modelled gas concentrations.}
+#' \item{cfp_pfres}{Displays TPS, SWC and AFPS, as well as production and
+#' measured and modelled gas concentrations.}
+#' \item{cfp_fgres}{Displays TPS, SWC and AFPS, as well as the measured
+#' concentration profile, and concentration gradients for each layer.}
+#' \item{cfp_soilphys}{Displays TPS, SWC and AFPS, as well as values of
+#' Ds and Temperature.}
+#' \item{cfp_gasdata}{Displays the concentration profile.}
+#' \item{cfp_layers_map}{Displays the layer names, pmap and layer_couple,
+#' as well as the allowed production range.}
 #'}
 #'
-#' @param x
+#'@param x A cfp_pfres, cfp_fgres model result, or a cfp_soilphys, cfp_gasdata
+#'  or cfp_layers_map object
+#'
+#'@returns A ggplot2 plot with facets for each distinct profile. If more than 20
+#'profiles are plotted a message is sent because this can take a long time.
 #'
 #' @importFrom ggplot2 aes
 #' @export
@@ -21,16 +34,23 @@ plot_profile.cfp_pfres <- function(x) {
 
   profiles <- x$profiles
 
-  soilphys <- x$soilphys %>%
-    dplyr::left_join(profiles)
-  gasdata <- x$gasdata %>%
-    dplyr::left_join(profiles)
-  PROFLUX <- x$PROFLUX %>%
-    dplyr::left_join(profiles)
+  # soilphys <- x$soilphys %>%
+  #   dplyr::left_join(profiles)
+  # gasdata <- x$gasdata %>%
+  #   dplyr::left_join(profiles)
+  # PROFLUX <- x$PROFLUX %>%
+  #   dplyr::left_join(profiles)
+
+  soilphys <- get_soilphys(x)
+  gasdata <- get_gasdata(x)
+  PROFLUX <- get_PROFLUX(x)
 
   # round to account for machine precision errors (0 =/= -10^18)
-  prod_range <- round(range(PROFLUX$prod), digits = 13)
-  if (prod(prod_range) < 0)
+  prod_range <- suppressWarnings(round(range(PROFLUX$prod, na.rm = TRUE),
+                                       digits = 13))
+  if (any(!is.finite(prod_range)))
+    prod_state <- 4
+  else if (prod(prod_range) < 0)
     prod_state <- 2
   else if (prod_range[1] < 0)
     prod_state <- 3
@@ -42,22 +62,30 @@ plot_profile.cfp_pfres <- function(x) {
 
   prod_max <- max(abs(prod_range))
 
-  x_max <- max(gasdata$x_ppm)
+  x_max <- max(gasdata$x_ppm, na.rm = TRUE)
+
+  join_cols <- whats_in_both(list(names(PROFLUX),
+                                  c(names(soilphys))))
 
   gasdata_adapted <-
     soilphys %>%
-    dplyr::select(!depth) %>%
-    dplyr::rename(depth = upper) %>%
-    dplyr::right_join(PROFLUX) %>%
+    dplyr::right_join(PROFLUX,
+                      by = join_cols) %>%
+    dplyr::mutate(depth = upper) %>%
     dplyr::arrange(dplyr::desc(depth))
+
+  if(!("TPS" %in% names(soilphys))) soilphys$TPS <- 1
+  if(!("SWC" %in% names(soilphys))) soilphys$SWC <- 0
 
   p <-
     soilphys %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +
     stat_variable_bar(aes(x = 1, fill = "soil")) +
     stat_variable_bar(aes(x = TPS, fill = "AFPS")) +
-    stat_variable_bar(aes(x = SWC, fill = "SWC")) +
-    ggplot2::geom_rect(
+    stat_variable_bar(aes(x = SWC, fill = "SWC"))
+
+  if (prod_state != 4 ){
+    p <- p +ggplot2::geom_rect(
       data = PROFLUX,
       aes(
         xmin = prod_start,
@@ -67,7 +95,10 @@ plot_profile.cfp_pfres <- function(x) {
         fill = "production"
       ),
       alpha = 0.5
-    ) +
+    )
+  }
+
+  p <- p +
     ggplot2::geom_point(
       data = gasdata,
       aes(
@@ -95,18 +126,29 @@ plot_profile.cfp_pfres <- function(x) {
       ),
       inherit.aes = FALSE,
       orientation = "y"
-    ) +
-    ggplot2::scale_x_continuous(
+    )
+
+  if (prod_state != 4){
+    p <- p + ggplot2::scale_x_continuous(
       name = "concentration [ppm]",
       breaks = scales::pretty_breaks(5)(c(0,x_max)) / x_max,
       labels = function(x)
         x * x_max,
       sec.axis = ggplot2::sec_axis(
-        trans = ~ (. - prod_start) * prod_max / prod_scale,
-        name = expression("production [µmol m" ^
+        transform = ~ (. - prod_start) * prod_max / prod_scale,
+        name = expression("production ["*mu*"mol m" ^
                             "-3" ~ "s" ^ "-1" ~ "]")
+      ))
+  } else {
+    p <- p + ggplot2::scale_x_continuous(
+      name = "concentration [ppm]",
+      breaks = scales::pretty_breaks(5)(c(0,x_max)) / x_max,
+      labels = function(x)
+        x * x_max
       )
-    ) +
+  }
+
+  p <- p +
     scale_cfp_color +
     scale_cfp_fill
 
@@ -149,6 +191,9 @@ plot_profile.cfp_fgres <- function(x) {
   x_max <- max(gasdata$x_ppm)
 
 
+  if(!("TPS" %in% names(soilphys))) soilphys$TPS <- 1
+  if(!("SWC" %in% names(soilphys))) soilphys$SWC <- 0
+
   p <-
     soilphys %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +
@@ -178,8 +223,8 @@ plot_profile.cfp_fgres <- function(x) {
     ) +
     ggplot2::geom_text(data = FLUX,
               aes( x = 0.8,
-                   y = (upper + lower) / 2,
-                   label = signif(dcdz_ppm, 3))) +
+                   y = (.data$upper + .data$lower) / 2,
+                   label = signif(.data$dcdz_ppm, 3))) +
     ggplot2::geom_text(aes(x = 0.8,
                   y = 1.1*diff(range(c(upper, lower))) + min(lower),
                   label = "dcdz_ppm")) +
@@ -189,8 +234,8 @@ plot_profile.cfp_fgres <- function(x) {
       labels = function(x)
         x * x_max,
       sec.axis = ggplot2::sec_axis(
-        trans = ~ (. - flux_start) * flux_max / flux_scale,
-        name = expression("flux [µmol m" ^
+        transform = ~ (. - flux_start) * flux_max / flux_scale,
+        name = expression("flux ["*mu*"mol m" ^
                             "-2" ~ "s" ^ "-1" ~ "]")
       )
     ) +
@@ -213,6 +258,10 @@ plot_profile.cfp_soilphys <- function(x) {
   t_max <- max(x$t)
   t_min <- min(x$t)
   DS_max <- max(x$DS)
+
+
+  if(!("TPS" %in% names(x))) x$TPS <- 1
+  if(!("SWC" %in% names(x))) x$SWC <- 0
 
   x %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower)) +
@@ -237,12 +286,13 @@ plot_profile.cfp_soilphys <- function(x) {
       label = signif(c_air, 3)
     )) +
     ggplot2::scale_x_continuous(
-      name = "temperature [°C]",
-      breaks = (scales::pretty_breaks(5)(c(t_min, t_max)) - t_min) / (t_max - t_min),
+      name = expression("temperature ["*degree*"C]"),
+      breaks = (
+        scales::pretty_breaks(5)(c(t_min, t_max)) - t_min) / (t_max - t_min),
       labels = function(x)
         (x * (t_max - t_min)) + t_min,
       sec.axis = ggplot2::sec_axis(
-        trans = ~ . * DS_max,
+        transform = ~ . * DS_max,
         name = expression("DS [m" ^ "2" ~
                             "s" ^ "-1" ~ "]")
       )
@@ -260,9 +310,12 @@ plot_profile.cfp_layers_map <- function(x) {
 
   x %>%
     dplyr::mutate(depth = (upper+lower)/2) %>%
-    dplyr::mutate(range = diff(range(c(lowlim, highlim)))) %>%
+    dplyr::mutate(xrange = diff(range(c(lowlim, highlim)))) %>%
     dplyr::mutate(yrange = diff(range(c(upper, lower)))) %>%
-    dplyr::mutate(layer_couple = ifelse(lower == min(lower), NA, layer_couple)) %>%
+    dplyr::mutate(layer_couple =
+                    ifelse(lower == min(lower),
+                           NA,
+                           layer_couple)) %>%
     ggplot2::ggplot(aes(ymax = upper, ymin = lower, y = depth))+
     ggplot2::geom_rect(aes(xmin = lowlim,
                            xmax = highlim,
@@ -271,27 +324,29 @@ plot_profile.cfp_layers_map <- function(x) {
     ggplot2::geom_hline(aes(yintercept = upper), col = "black")+
     ggplot2::geom_hline(aes(yintercept = lower), col = "black")+
     ggplot2::geom_text(aes(label = layer,
-                           x = 0.2*range), col = "white")+
+                           x = 0.2*.data$xrange), col = "white")+
     ggplot2::geom_text(aes(label = pmap,
-                           x = 0.4*range), col = "white")+
+                           x = 0.4*.data$xrange), col = "white")+
     ggplot2::geom_text(aes(label = layer_couple,
-                           x = 0.8*range,
+                           x = 0.8*.data$xrange,
                            y = lower),
                        col = "white")+
     ggplot2::geom_text(aes(label = "layer",
-                           x = 0.2*range[1],
-                           y = 1.1*yrange[1] + min(lower)),
+                           x = 0.2*.data$xrange[1],
+                           y = 1.1*.data$yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::geom_text(aes(label = "pmap",
-                           x = 0.4*range[1],
-                           y = 1.1*yrange[1] + min(lower)),
+                           x = 0.4*.data$xrange[1],
+                           y = 1.1*.data$yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::geom_text(aes(label = "layer_couple",
-                           x = 0.8*range[1],
-                           y = 1.1*yrange[1] + min(lower)),
+                           x = 0.8*.data$xrange[1],
+                           y = 1.1*.data$yrange[1] + min(lower)),
                        col = "black")+
     ggplot2::facet_wrap(cfp_id_cols(x))+
-    scale_cfp_fill
+    scale_cfp_fill+
+    ggplot2::xlab(
+      expression("allowed production in "*mu*"mol m"^"-2"*" s"^"-1"))
 }
 
 

@@ -19,6 +19,10 @@ test_that("correct interpolation",{
                       value1 = c(4,6.25,8.75,12.5,17.5))
   df_res <-df_res[order(df_res$upper),]
   row.names(df_res) <- (1:5)
+  df_res1 <- df_res[,c(1,6,4,2,3)] |> cfp_layered_profile(id_cols = "site")
+  df_res2 <- df_res[,c(1,5,4,2,3)]|> cfp_layered_profile(id_cols = "site")
+
+
 
   expect_equal(
   discretize_depth(df1,
@@ -26,7 +30,7 @@ test_that("correct interpolation",{
                    depth_target = lmap,
                    method = "linear",
                    id_cols = "site"),
-  df_res[,c(1,6,4,2,3)]
+  df_res1
 
   )
   expect_equal(
@@ -35,7 +39,7 @@ test_that("correct interpolation",{
                      depth_target = lmap,
                      method = "boundary",
                      id_cols = "site"),
-    df_res[,c(1,5,4,2,3)]
+    df_res2
 
 
   )
@@ -82,7 +86,7 @@ test_that("can interpolate multiple profiles",{
   df_res <-df_res[order(df_res$site,df_res$upper),]
   row.names(df_res) <- (1:10)
 
-
+  df_res <- df_res |> cfp_layered_profile(id_cols = "site")
 
   expect_equal(
     discretize_depth(df1,
@@ -172,7 +176,7 @@ test_that("method boundary_average",{
                depth = c(-7.5,0,7.5),
                upper = c(-5,5,10),
                lower = c(-10,-5,5)
-    )
+    )|> cfp_layered_profile(id_cols = NULL)
   expect_equal(df_test,df_res)
 })
 
@@ -208,7 +212,7 @@ test_that("method nearest",{
                depth = c(-7.5,1,8.5),
                upper = c(-5,7,10),
                lower = c(-10,-5,7)
-    )
+    )|> cfp_layered_profile(id_cols = NULL)
   expect_equal(df_test,df_res)
   expect_equal(df_test2$value,c(1,4,2))
   expect_equal(df_test3$value,c(4,2,2))
@@ -231,8 +235,30 @@ test_that("method harmonic",{
                depth = c(-7.5,0,7.5),
                upper = c(-5,5,10),
                lower = c(-10,-5,5)
-    )
+    )|> cfp_layered_profile(id_cols = NULL)
   expect_equal(df_test,df_res)
+})
+
+
+test_that("method linear spline",{
+  df <- data.frame(depth = c(-10,0,10),
+                   value = c(1,1,2))
+  dt <- c(10,5,-5,-10)
+
+  df_test <-
+    discretize_depth(df,
+                     "value",
+                     "linspline",
+                     dt)
+
+  df_res <-
+    data.frame(value = c(0.958,1.333,1.708),
+               depth = c(-7.5,0,7.5),
+               upper = c(-5,5,10),
+               lower = c(-10,-5,5)
+    ) |> cfp_layered_profile(id_cols = NULL)
+
+  expect_equal(round(df_test,3),df_res)
 })
 
 

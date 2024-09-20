@@ -31,14 +31,36 @@
 #' "gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
 #' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
 #'}
+#'
+#'
+#' @examples
+#' gasdata <- cfp_gasdata(
+#'   ConFluxPro::gasdata,
+#'   id_cols = c("site", "Date"))
+#' soilphys <- cfp_soilphys(
+#'   ConFluxPro::soilphys,
+#'   id_cols = c("site", "Date"))
+#' layers_map <-
+#'  cfp_layers_map(
+#'    ConFluxPro::layers_map,
+#'    gas = "CO2",
+#'    lowlim = 0,
+#'    highlim = 1000,
+#'    id_cols = "site")
+#' base_dat <- cfp_dat(gasdata, soilphys, layers_map)
+#'
+#' ### filter similar to dplyr::fliter
+#' filter(base_dat, site == "site_a")
+#' filter(base_dat, prof_id %in%  1:5)
 
 #' @importFrom dplyr filter
+#' @importFrom rlang .data
+#'
 #' @export
-# helper
-
-cfp_dat <- function(gasdata,
-                    soilphys,
-                    layers_map){
+cfp_dat <- function(
+    gasdata,
+    soilphys,
+    layers_map){
 
   stopifnot("gasdata must be created with cfp_gasdata() first" = inherits(gasdata,"cfp_gasdata"),
             "soilphys must be created with cfp_soilphys() first" = inherits(soilphys,"cfp_soilphys"),
@@ -101,7 +123,8 @@ cfp_dat <- function(gasdata,
 
   profiles_insufficient_gasdata <-
     profiles %>%
-    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id")) %>%
+    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id"),
+                     relationship = "many-to-many") %>%
     dplyr::left_join(layers_map,
                      by = c(cfp_id_cols(layers_map),"group_id"),
                      relationship = "many-to-many") %>%
@@ -112,20 +135,23 @@ cfp_dat <- function(gasdata,
     dplyr::filter((is.na(gd_id) + is.na(depth) + is.na(pmap) + is.na(group_id)) == 0) %>%
     dplyr::group_by(group_id, gd_id, pmap) %>%
     dplyr::summarise(n_depths = length(unique(depth))) %>%
-    dplyr::mutate(n_depths = ifelse(n_depths == 1, NA, n_depths)) %>%
+    dplyr::mutate(n_depths = ifelse(.data$n_depths == 1, NA, .data$n_depths)) %>%
     dplyr::right_join(profiles %>%
-                        left_join(layers_map,
+                        dplyr::left_join(layers_map,
                                   by = c(cfp_id_cols(layers_map), "group_id"),
                                   relationship = "many-to-many"),
                     by = c("gd_id", "group_id", "pmap")) %>%
   dplyr::group_by(prof_id) %>%
-    dplyr::filter(anyNA(n_depths)) %>%
+    dplyr::filter(anyNA(.data$n_depths)) %>%
     dplyr::pull(prof_id)
 
   profiles <-
     profiles %>%
     dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
-    data.frame()
+    data.frame() %>%
+    cfp_profile(id_cols = "prof_id")
+
+  stopifnot("No valid profiles! Maybe the input data dont match?" = nrow(profiles) > 0)
 
   soilphys <- soilphys %>%
     dplyr::filter(sp_id %in% profiles$sp_id) %>%
@@ -196,7 +222,6 @@ validate_cfp_dat <- function(x){
 
 
 
-
 # helpers -------
 
 select_id_cols <- function(df,id_cols){
@@ -218,8 +243,8 @@ same_range <- function(soilphys,
                        layers_map){
 
   sp_summ <- get_upper_lower_range(soilphys) %>%
-    dplyr::rename(umax_x = umax,
-           lmin_x = lmin) %>%
+    dplyr::rename(umax_x = "umax",
+           lmin_x = "lmin") %>%
     dplyr::left_join(get_upper_lower_range(layers_map),
               by = whats_in_both(list(cfp_id_cols(layers_map),cfp_id_cols(soilphys)))
     )
@@ -257,7 +282,7 @@ split_soilphys <- function(soilphys,
   # combine layers_map and gasdata
   all_depths <-
   layers_map[,c(sel_both, "upper")] %>%
-  dplyr::rename(depth = upper) %>%
+  dplyr::rename(depth = "upper") %>%
   dplyr::bind_rows(gasdata[,c(sel_both, "depth")])
 
   # add a single grouping variable
@@ -279,7 +304,7 @@ split_soilphys <- function(soilphys,
 
   sp_dist <-
   soilphys %>%
-    dplyr::select(depth_group,upper,lower) %>%
+    dplyr::select("depth_group", "upper", "lower") %>%
     dplyr::distinct()
 
   soilphys_new <-
@@ -289,18 +314,19 @@ split_soilphys <- function(soilphys,
            FUN = add_between,
            MoreArgs = list(df = all_depths),
            SIMPLIFY = FALSE) %>%
-    do.call(what = rbind, args = .) %>%
+    do.call(what = rbind) %>%
     data.frame() %>%
-    setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
+    stats::setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
     dplyr::left_join(soilphys,
                      by = c("upper","lower","depth_group"),
                      relationship = "many-to-many") %>%
-    dplyr::mutate(upper = upper_new,
-                  lower = lower_new) %>%
+    dplyr::mutate(upper = .data$upper_new,
+                  lower = .data$lower_new) %>%
     dplyr::select(!dplyr::any_of(c("upper_new","lower_new"))) %>%
-    dplyr::mutate(height = (upper-lower)/100) %>%
-    dplyr::group_by(sp_id) %>%
-    dplyr::arrange(upper) %>%
+    dplyr::mutate(height = (.data$upper - .data$lower)/100) %>%
+    dplyr::mutate(depth = (.data$upper + .data$lower)/2) %>%
+    dplyr::group_by(.data$sp_id) %>%
+    dplyr::arrange("upper") %>%
     dplyr::mutate(step_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     new_cfp_soilphys(id_cols = sp_id_cols)
@@ -331,6 +357,8 @@ add_between <- function(upper,
 
 sp_add_pmap <- function(soilphys,
                         layers_map){
+
+  soilphys <- soilphys[,names(soilphys) != "pmap"]
 
   id_cols_sp <- cfp_id_cols(soilphys)
   id_cols_lmap <- cfp_id_cols(layers_map)
@@ -376,7 +404,7 @@ print.cfp_dat <- function(x, ...){
 
 
 ###### EXTRACTION #####
-#' @describeIn extractors id_cols
+#' @rdname extractors
 #' @export
 cfp_id_cols <- function(x){
   UseMethod("cfp_id_cols")
@@ -386,26 +414,127 @@ cfp_id_cols.default <- function(x){
   attr(x,"id_cols")
 }
 
+#' n_groups
+#'
+#'
+#'
+#' @inheritParams cfp_pfmod
+
+#' @rdname extractors
+#' @export
+n_groups <- function(x) {
+  UseMethod("n_groups")
+}
+
+
+#' @exportS3Method
+n_groups.cfp_dat <- function(x) {
+  length(unique(x$profiles$group_id))
+}
+
+
+join_with_profiles <- function(target_data,
+                               profiles,
+                               id_cols){
+
+  extra_cols <- c("sp_id", "gd_id", "group_id", "prof_id", "step_id", "pmap", "row_id", "depth_group")
+  join_cols <- names(profiles)[names(profiles) %in% names(target_data)]
+  #id_cols <- join_cols[!join_cols %in% extra_cols]
+
+  x <-
+    profiles %>%
+    dplyr::select(dplyr::all_of(c(join_cols, id_cols))) %>%
+    dplyr::distinct() %>%
+    dplyr::left_join(target_data,
+                     by = join_cols,
+                     relationship = "one-to-many") %>%
+    dplyr::select(!dplyr::any_of(extra_cols))
+
+  list(x, id_cols)
+}
+
+#' @rdname extractors
+#' @export
+get_soilphys <- function(x){
+  UseMethod("get_soilphys")
+}
+#' @export
+get_soilphys.cfp_dat <- function(x){
+  soilphys <- x$soilphys
+  profiles <- x$profiles
+
+  x <- join_with_profiles(
+    soilphys,
+    profiles,
+    cfp_id_cols(soilphys))
+
+  x<-
+    cfp_soilphys(x[[1]],
+                 id_cols = x[[2]])
+
+  x
+}
+
+#' @rdname extractors
+#' @export
+get_gasdata <- function(x){
+  UseMethod("get_gasdata")
+}
+#' @export
+get_gasdata.cfp_dat <- function(x){
+  gasdata <- x$gasdata
+  profiles <- x$profiles
+
+  x <-
+    join_with_profiles(gasdata,
+                       profiles,
+                       cfp_id_cols(gasdata))
+
+  x <- cfp_gasdata(x[[1]],
+                id_cols = x[[2]])
+  x
+}
+
+
+#' @rdname extractors
+#' @export
+get_layers_map <- function(x){
+  UseMethod("get_layers_map")
+}
+#' @export
+get_layers_map.cfp_dat <- function(x){
+  layers_map <- x$layers_map
+
+  layers_map <-
+  layers_map %>%
+    dplyr::select(
+      !dplyr::any_of(c("group_id")))
+  layers_map
+}
+
+
 
 ##### COERSION #######
-#' @describeIn coercion to cfp_dat
+#' @rdname cfp_dat
 #' @export
 as_cfp_dat <- function(x){
   UseMethod("as_cfp_dat")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 as_cfp_dat.cfp_dat <- function(x){
-  x <-
-    new_cfp_dat(x$gasdata,
-              x$soilphys,
-              x$layers_map,
-              x$profiles,
-              cfp_id_cols(x))
+
+  gasdata <- cfp_gasdata(x)
+  soilphys <- cfp_soilphys(x)
+  layers_map <- cfp_layers_map(x)
+
+  x <- cfp_dat(gasdata, soilphys, layers_map)
   x
 }
 
 ##### FILTER ######
+#' @rdname cfp_dat
 #' @exportS3Method
 filter.cfp_dat <- function(.data,
                            ...,
@@ -454,6 +583,7 @@ split_by_group <- function(x){
   UseMethod("split_by_group")
 }
 
+#' @rdname cfp_dat
 #' @exportS3Method
 split_by_group.cfp_dat <- function(x){
 
@@ -483,63 +613,3 @@ split_by_group.cfp_dat <- function(x){
   })
   out
 }
-
-#' @rdname cfp_dat
-#' @export
-split_by_prof <- function(x){
-  UseMethod("split_by_prof")
-}
-
-#' @exportS3Method
-split_by_prof.cfp_dat <- function(x){
-
-  profiles <- x$profiles
-
-  soilphys <-
-  profiles %>%
-    dplyr::select(sp_id, prof_id) %>%
-    dplyr::left_join(x$soilphys, by = "sp_id")
-
-  gasdata <-
-    profiles %>%
-    dplyr::select(gd_id, prof_id) %>%
-    dplyr::left_join(x$gasdata, by = "gd_id")
-
-  lmap <- x$layers_map
-
-
-  atts <- attributes(x)
-
-
-  out <-
-    mapply(split(profiles, profiles$prof_id),
-           split(soilphys, soilphys$prof_id),
-           split(gasdata, gasdata$prof_id),
-           MoreArgs = list(
-           lmap = lmap,
-           id_cols = cfp_id_cols(x),
-           atts = list(atts)),
-           FUN = function(profs,
-                    sp,
-                    gd,
-                    lmap,
-                    id_cols,
-                    atts){
-      cfp_dat_group <- new_cfp_dat(gd[!colnames(gd) == "prof_id"],
-                                   sp[!colnames(sp) == "prof_id"],
-                                   lmap,
-                                   profs,
-                                   id_cols = id_cols)
-      attributes(cfp_dat_group) <- unlist(atts, recursive = FALSE)
-      cfp_dat_group
-    },
-    SIMPLIFY = FALSE)
-  out
-}
-
-
-
-
-
-
-

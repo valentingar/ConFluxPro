@@ -32,7 +32,6 @@ fixed production and known diffusion coefficient Ds. The basis is a stepwise
 calculation beginning from the bottom-most layer with incoming flux F0 and
 known concentration C0 at the lower end of the step.
 
-
 The following input parameters must be vectors sorted from the lowest depth of the profile to the highest.
 Note that the assigned units are examples. However, units should be concise and match over all parameters.
 The functions are designed to be used in optimization and are hence as fast as possible.
@@ -43,9 +42,9 @@ The functions are designed to be used in optimization and are hence as fast as p
 
 examples{
 prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
-              height = c(0.5,0.2,0.1,0.03,0.02),
-              F0=0
-              )
+height = c(0.5,0.2,0.1,0.03,0.02),
+F0=0
+)
 }
 
 }}

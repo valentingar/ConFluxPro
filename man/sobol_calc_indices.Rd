@@ -7,18 +7,49 @@
 sobol_calc_indices(Y, effect_cols, id_cols = character(), run_map)
 }
 \arguments{
-\item{Y}{A data.frame with the desired effect parameter(s) of the model output. E.g.: efflux.}
+\item{Y}{A data.frame with the desired effect parameter(s) of the model
+output, e.g. \code{efflux()}. The output should come from a list of model
+results produced by a call to \code{\link{alternate}()} with a valid
+\code{cfp_run_map} produced by \code{\link{sobol_run_map}()}.}
 
-\item{effect_cols}{character vector of the column names in Y giving the target effects for which sobol indices
-should be calculated}
+\item{effect_cols}{character vector of the column names in \code{Y} for which
+sobol indices should be calculated, e.g. \code{'efflux'}.}
 
-\item{id_cols}{character vector of column names specifying grouping columns. If the original model had
-id_cols (e.g. different sites or gases) you may want to calculate indices per id_cols combination separately.}
+\item{id_cols}{character vector of column names in \code{Y} specifying
+grouping variables. Indices are then calculated for each group individually.}
 
-\item{run_map}{A data.frame created by \code{run_map()} with the necessary information
-how the data is to be changed with each distinct \code{run_id}.}
+\item{run_map}{The \code{cfp_run_map} used for the calculaton of Y
+produced by a call to \code{\link{sobol_run_map}()}.}
+}
+\value{
+A \code{data.frame} with the following columns
+\describe{
+\item{\code{...}}{Any \code{id_cols} specified}
+\item{\code{param_id, param, pmap}}{Parameter identificators from the
+\code{cfp_run_map} used.}
+\item{\code{effect_param}}{The parameter for which the effect was calulated.}
+\item{\code{Vt, Vi, VY}}{Internal parameters for the indice calculation.}
+\item{\code{Si}}{First order sobol indice.}
+\item{\code{ST}}{Total order sobol indice.}
+}
 }
 \description{
-From any result parameter and its corresponding run_map calculate
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+From any result parameter and its corresponding \code{cfp_run_map} calculate
 first-order and total sobol indices using the Azzini (2021) method.
 }
+\details{
+This implements the approach outlined in Azzini et al (2021).
+}
+\references{
+Azzini, Ivano; Mara, Thierry A.; Rosati, Rossana: Comparison of
+two sets of Monte Carlo estimators of Sobol’ indices, Environmental Modelling
+& Software, Volume 144, 2021, 105167, ISSN 1364-8152,
+https://doi.org/10.1016/j.envsoft.2021.105167
+}
+\seealso{
+Other sobol: 
+\code{\link{sobol_run_map}()}
+}
+\concept{sobol}

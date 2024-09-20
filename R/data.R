@@ -75,3 +75,30 @@
 #'   \item{t}{temperature in °C}
 #' }
 "soilphys"
+
+#' layers_map
+#'
+#' An example dataset for \code{layers_map} that devides each \code{site} into
+#' two layers.
+#'
+#' @format A data.frame with 4 rows and 3 variables:
+#' \describe{
+#'   \item{site}{name of the site}
+#'   \item{upper}{upper limit for layer in cm}
+#'   \item{lower}{lower limit for layer in cm}
+#' }
+"layers_map"
+
+
+#' base_dat
+#'
+#' An example [cfp_dat()] object that combines all other example data.
+#'
+#' @format A [cfp_dat()] object as a list with
+#' \describe{
+#'   \item{profiles}{The profiles of the data.}
+#'   \item{gasdata}{The [gasdata] object.}
+#'   \item{soilphys}{The [soilphys] object.}
+#'   \item{layers_map}{The [layers_map] object.}
+#' }
+"base_dat"

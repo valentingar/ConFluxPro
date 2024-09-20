@@ -1,4 +1,4 @@
-#' @title fg_flux
+#' @title Flux gradient method
 #'
 #' @description This function takes a valid input dataset in cfp_dat
 #' and calculates fluxes accordingly. Fluxes are calculated for each layer defined
@@ -7,55 +7,79 @@
 #'
 #' @inheritParams pro_flux
 #'
-#' @inheritParams cfp_dat
+#' @inheritDotParams cfp_fgmod gases modes param funs
 #'
-#' @inheritParams cfp_gasdata
+#' @references
+#' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
 #'
-#' @param ... Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:
-#'
-#' @param gases (character) A character vector defining the gases for which
-#' gluxes shall be calulated.
-#' @param modes (character) A character vector specifying mode(s) for dcdz
-#'   calculation. Can be "LL","LS","EF".
-#' @param param (character) A vector containing the the parameters of soilphys,
-#'   for which means should be calculated, must contain "c_air" and "DS", more
-#'   parameters help interpretation
-#' @param funs (character) A vector defining the type of mean to be used. One of
-#'   "arith" or "harm"
+#' @importFrom rlang .data
 #' @rdname fg_flux
-#' @export fg_flux
+#' @export
 
 fg_flux <- function(x, ...){
   UseMethod("fg_flux")
 }
 
 #'
-
+#' @rdname fg_flux
 #' @exportS3Method
-fg_flux.cfp_dat <- function(x, ...){
+fg_flux.cfp_dat <- function(x,
+                            ...,
+                            gases = unique_gases(x),
+                            modes = "LL",
+                            param = c("c_air", "DS"),
+                            funs = c("arith", "harm"),
+                            quiet = FALSE){
+
+  rlang::check_dots_empty()
 
   x <- as_cfp_dat(x)
-  x <- cfp_fgmod(x,...)
+
+  if (length(gases) > 1){
+    if ( length(modes) == 1){
+      if (!quiet) message("applying same mode('",modes,"') to all gases")
+      modes <- rep(modes, length(gases))
+    } else if (is.null(match.call()$gases)){
+      stop("Please manually assign each gas a mode when using multiple modes.")
+    }
+  }
+
+  x <- cfp_fgmod(x,
+                 gases = gases,
+                 modes = modes,
+                 param = param,
+                 funs = funs)
   .Class <- "cfp_fgmod"
   NextMethod()
 }
 
+#' @rdname fg_flux
 #' @exportS3Method
 fg_flux.cfp_fgres <- function(x, ...){
   x <- as_cfp_fgmod(x)
   NextMethod()
 }
 
+#' @rdname fg_flux
 #' @exportS3Method
 fg_flux.cfp_fgmod <- function(x, ...){
 
   # first separate groups
   x_split <- split_by_group(x)
 
-  p <- progressr::progressor(steps = nrow(x$profiles) * length(cfp_modes(x)))
+  n_steps <-
+  x$profiles %>%
+    dplyr::left_join(
+      data.frame(gas = cfp_gases(x),
+                 mode = cfp_modes(x)),
+      by = "gas"
+    ) %>%
+    nrow()
+
+  p <- progressr::progressor(n_steps)
 
 
-  y <- furrr::future_map(x_split,
+  y <- purrr::map(x_split,
                          calculate_flux,
                          p = p
   )
@@ -66,29 +90,30 @@ fg_flux.cfp_fgmod <- function(x, ...){
 
   y <- y %>%
     dplyr::left_join(x$profiles, by = names(y)[names(y) %in% names(x$profiles)]) %>%
-    dplyr::select(prof_id,
-           upper,
-           lower,
-           depth,
-           layer,
-           gas,
-           mode,
-           flux,
-           flux_sd,
-           dcdz_ppm,
-           dcdz_sd,
-           dc_ppm,
-           c_air,
-           DS,
-           r2)
+    dplyr::select("prof_id",
+           "upper",
+           "lower",
+           "depth",
+           "layer",
+           "gas",
+           "mode",
+           "flux",
+           "flux_sd",
+           "dcdz_ppm",
+           "dcdz_sd",
+           "dc_ppm",
+           "c_air",
+           "DS",
+           "r2") %>%
+    cfp_layered_profile(id_cols = c("prof_id", "mode"))
 
-  cfp_fgres(x,y)
+  cfp_fgres(x, y)
 }
 
 
 
 
-#' @rdname fg_flux
+#'
 calculate_flux <- function(x, p){
 
   gasdata <- x$gasdata
@@ -117,19 +142,18 @@ calculate_flux <- function(x, p){
 
   #removes all NAs from gasdata
   gasdata <- gasdata %>%
-    dplyr::filter(is.na(x_ppm) == F, is.na(depth) == F)
+    dplyr::filter(is.na(.data$x_ppm) == F, is.na(.data$depth) == F)
 
   id_cols <- c(id_cols, "mode")
   id_lmap <- id_cols[id_cols %in% names(layers_map)]
 
   FLUX <-
-  furrr::future_map2(.x = gases,
+  purrr::map2(.x = gases,
          .y = modes,
          .f = function(gas, mode){
            gasdata <- gasdata[gasdata$gas == gas, ]
 
-           gasdata_split <-
-             split(gasdata, gasdata[, names(gasdata) %in% id_cols])
+           gasdata_split <- split_by_prof(gasdata)
 
            FLUX <-
              furrr::future_map(
@@ -179,8 +203,8 @@ calculate_flux <- function(x, p){
 
     FLUX <- FLUX %>%
     dplyr::left_join(soilphys_layers, by = c("prof_id", "upper", "lower")) %>%
-    dplyr::mutate(flux = -DS*c_air*dcdz_ppm) %>%
-    dplyr::mutate(depth = (upper+lower)/2) %>%
-    dplyr::mutate(flux_sd = abs(flux*abs(dcdz_sd/dcdz_ppm))) %>%
+    dplyr::mutate(flux = -.data$DS * .data$c_air * .data$dcdz_ppm) %>%
+    dplyr::mutate(depth = (.data$upper + .data$lower)/2) %>%
+    dplyr::mutate(flux_sd = abs(.data$flux * abs(.data$dcdz_sd / .data$dcdz_ppm))) %>%
     dplyr::ungroup()
 }

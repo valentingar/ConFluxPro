@@ -2,6 +2,7 @@
 % Please edit documentation in R/cfp_altres.R
 \name{cfp_altres}
 \alias{cfp_altres}
+\alias{cfp_og_model.cfp_altres}
 \title{cfp_altres}
 \usage{
 cfp_altres(
@@ -13,6 +14,8 @@ cfp_altres(
   error_funs = NULL,
   error_args = NULL
 )
+
+\method{cfp_og_model}{cfp_altres}(x)
 }
 \arguments{
 \item{x}{A named list of cfp_pfres or cfp_fgres models.}

@@ -7,8 +7,20 @@
 #' @param x A valid \code{cfp_pfmod} object
 #' @param y The corresponding PROFULX \code{data.frame}.
 #'
+#' @returns A \code{cfp_pfres} object. This inherits from [cfp_pfmod()].
 #'
+#' @importFrom rlang .data
 #'
+#' @examplesIf interactive()
+#' PROFLUX <- pro_flux(ConFluxPro::base_dat)
+#' cfp_pfres(
+#'   cfp_pfmod(ConFluxPro::base_dat),
+#'   PROFLUX$PROFLUX
+#' )
+#'
+#' @keywords internal
+#'
+#' @export
 
 cfp_pfres <- function(x,y){
 
@@ -27,7 +39,7 @@ validate_cfp_pfres <- function(x){
   select_cols <- c("sp_id", "step_id")
 
   stopifnot("PROFLUX and soilphys must have the same structure!" =
-              all.equal(x$PROFLUX[,select_cols] %>% dplyr::distinct(),
+              all.equal(x$PROFLUX[,select_cols] %>% data.frame() %>% dplyr::distinct(),
                         x$soilphys[,select_cols] %>% data.frame()
               ))
   x
@@ -36,6 +48,33 @@ validate_cfp_pfres <- function(x){
 
 
 #### methods ----------------------
+
+##### IDENTIFICATION #####
+is_cfp_pfres <- function(x){
+  inherits(x, "cfp_pfres")
+}
+
+
+
+##### EXTRACTION ######
+#' @rdname extractors
+#' @export
+get_PROFLUX <- function(x){
+  UseMethod("get_PROFLUX")
+}
+#' @export
+get_PROFLUX.cfp_dat <- function(x){
+  PROFLUX <- x$PROFLUX
+  profiles <- x$profiles
+
+  x <-
+    join_with_profiles(PROFLUX, profiles, cfp_id_cols(x))[[1]] %>%
+    cfp_profile(id_cols = cfp_id_cols(x))
+
+  x
+}
+
+
 
 ###### PRINTING #######
 #' @exportS3Method

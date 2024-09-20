@@ -21,31 +21,13 @@ test_that("create cfp_gasdata object", {
 
 })
 
-test_that("create cfp_soilphys object",{
+test_that("cfp_gasdatasoilphys no negatives allowed", {
+  library(dplyr)
 
-  df <- data.frame(site = rep(c("site_a","site_b"),
-                              each = 3),
-                   upper = rep(c(10,0,-20),
-                               times = 2),
-                   lower = rep(c(0,-20,-100),
-                               times = 2),
-                   c_air = 1,
-                   DS = 1,
-                   gas = "CO2")
+  gasdata <- ConFluxPro::gasdata %>%
+    mutate(x_ppm = -x_ppm)
 
-  x <- cfp_soilphys(df,
-                    id_cols = "site")
-
-  expect_message(cfp_soilphys(df,
-                              id_cols = "site"))
-  expect_error(cfp_soilphys(df))
-  expect_true(inherits(x, "cfp_soilphys"))
-  expect_equal(cfp_id_cols(x),c("site","gas"))
-
-  # should result in error because of upper / lower consistency
-  expect_error(cfp_soilphys(df,id_cols = c()))
-
-
-
-
+  expect_error(gasdata %>%
+                 cfp_gasdata(id_cols = c("site", "Date"))
+  )
 })

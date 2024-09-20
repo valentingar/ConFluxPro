@@ -4,7 +4,13 @@
 \alias{complete_soilphys}
 \title{complete_soilphys}
 \usage{
-complete_soilphys(soilphys, DSD0_formula = NULL, gases, overwrite = TRUE)
+complete_soilphys(
+  soilphys,
+  DSD0_formula = NULL,
+  gases = NULL,
+  overwrite = TRUE,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{soilphys}{(dataframe) the soilphys dataframe}
@@ -17,15 +23,17 @@ examples below.}
 calculate D0 and DS.}
 
 \item{overwrite}{(logical) If true, already existing columns are overwritten.}
+
+\item{quiet}{(logical) Suppress messages.}
 }
 \description{
 This function completes the soilphys dataset by calculating
-  different parameters if necessary, as long as all required parameters are
-  available. Diffusion coefficients, as well as the air density are
-  calculated if missing.
+different parameters if necessary, as long as all required parameters are
+available. Diffusion coefficients, as well as the air density are
+calculated if missing.
 }
 \examples{
-soilphys <- complete_soilphys(soilphys,DSD0 = "a*AFPS^b")
+soilphys <- complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b")
 
 
 }

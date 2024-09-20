@@ -2,16 +2,36 @@
 % Please edit documentation in R/efflux.R
 \name{efflux}
 \alias{efflux}
+\alias{efflux.cfp_pfres}
+\alias{efflux.cfp_fgres}
+\alias{efflux.cfp_altres}
 \title{efflux}
 \usage{
 efflux(x, ...)
+
+\method{efflux}{cfp_pfres}(x, ...)
+
+\method{efflux}{cfp_fgres}(x, ..., method = "lm", layers = NULL)
+
+\method{efflux}{cfp_altres}(x, ...)
 }
 \arguments{
-\item{x}{A cfp_pfres or cfp_fgres model result.}
+\item{x}{A \link{cfp_pfres} or \link{cfp_fgres} model result, or a \link{cfp_altres}.}
 
-\item{...}{Further arguments passed on for cfp_fgres efflux calculation.}
+\item{method}{Method(s) used to interpolate the efflux at the top of the soil
+from partial fluxes within the soil. One of
+\describe{
+\item{top}{Use the flux in the topmost model layer.}
+\item{lm}{A linear model where each partial flux is centered in the respective
+layer and the model is evaluated at the top of the soil.}
+\item{lex}{Linearly exterpolate using fluxes of two layers in the soil.}
+}}
+
+\item{layers}{Vector of two integers selecting the layers for the \code{lex}
+method. Layers are indexed from 1 (topmost) to the number of layers used in the
+flux calculation.}
 }
 \description{
 Calculate or extract the soil/atmosphere efflux
-from cfp_pfres or cfp_fgres model results.
+from \code{cfp_pfres} or \code{cfp_fgres} model results.
 }

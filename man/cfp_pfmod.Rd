@@ -34,7 +34,14 @@ defines the weight of this penalty in the optimisation algorithm \code{\link{pro
 
 \item{known_flux_factor}{RESERVED FOR FUTURE EXPANSION}
 }
+\value{
+A \code{cfp_pfmod} object that inherits from \code{\link[=cfp_dat]{cfp_dat()}}
+}
 \description{
 An S3 class for \code{pro_flux()} models. The class inherits from
 cfp_dat and adds any model specific parameters.
 }
+\examples{
+cfp_pfmod(ConFluxPro::base_dat)
+}
+\keyword{internal}

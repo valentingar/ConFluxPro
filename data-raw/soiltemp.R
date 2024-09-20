@@ -29,7 +29,7 @@ soiltemp <- data.frame(site = rep(sites,each = 5),
                        depth_factor = rep(depth_factors,
                                           times =2)) %>%
   rowwise() %>%
-  summarise(Date = !!dates,
+  reframe(Date = !!dates,
             site = site,
             depth = depth,
             depth_factor = depth_factor) %>%

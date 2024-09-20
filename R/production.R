@@ -18,8 +18,17 @@
 #' topmost layer is the efflux. This approach has some uncertainties and it should be
 #' evaluated if it applies to your model.
 #'
-#' @returns data.frame with prod_abs (\eqn{µmol / m^2 / s}), efflux (\eqn{µmol / m^2 / s}) and
-#' \eqn{prod_rel = efflux / prod_abs}.
+#' If there are error estimates available from a call to [bootstrap_error()],
+#' the errors are propagated as follows:
+#' \deqn{\Delta prod_{rel} = |\Delta efflux \cdot
+#' \frac{prod_{abs}}{efflux^2}| +
+#' |\Delta prod_{abs}\cdot\frac{1}{efflux}|}
+#'
+#' @returns data.frame with \code{prod_abs} (\eqn{µmol / m^2 / s}),
+#' \code{efflux} (\eqn{µmol / m^2 / s}) and \code{prod_rel} where
+#' \eqn{prod_{rel} = efflux / prod_{abs}}.
+#'
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -36,15 +45,17 @@ production.cfp_fgres <- function(x, ...){
 
   FLUX %>%
     dplyr::left_join(EFFLUX, by = merger) %>%
-    dplyr::arrange(upper) %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::mutate(flux_lag = dplyr::lag(flux),
-                  flux_lead = dplyr::lead(flux)) %>%
-    dplyr::mutate(flux_lag = ifelse(is.na(flux_lag), 0, flux_lag),
-                  flux_lead = ifelse(is.na(flux_lead), efflux, flux_lead)) %>%
-    dplyr::mutate(prod_abs = flux_lead - flux_lag ) %>%
-    dplyr::mutate(prod_rel = prod_abs / efflux) %>%
+    dplyr::arrange(.data$upper) %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(c("mode",id_cols)))) %>%
+    dplyr::mutate(flux_lag = dplyr::lag(.data$flux, default = 0),
+                  flux_lead = dplyr::lead(.data$flux, default = .data$efflux[1])) %>%
+    #dplyr::mutate(flux_lag = ifelse(is.na(.data$flux_lag), 0, .data$flux_lag),
+    #              flux_lead = ifelse(is.na(.data$flux_lead), .data$efflux, .data$flux_lead)) %>%
+    dplyr::mutate(prod_abs = .data$flux_lead - .data$flux_lag ) %>%
+    dplyr::mutate(prod_rel = .data$prod_abs / .data$efflux) %>%
+    dplyr::ungroup() %>%
     dplyr::select(dplyr::any_of(c(id_cols,
+                                  "mode",
                                   "upper",
                                   "lower",
                                   "depth",
@@ -62,15 +73,29 @@ production.cfp_pfres <- function(x, ...){
   merger <- names(x$layers_map)[names(x$layers_map) %in% names(EFFLUX)]
   merger <- c(merger, "pmap")
 
+  bootstrap_exists <- "DELTA_prod" %in% names(PROD)
+
+  if(!bootstrap_exists){
+    PROD$DELTA_F0 <- NA
+    PROD$DELTA_prod <- NA
+    EFFLUX$DELTA_efflux <- NA
+  }
 
   PROD %>%
     dplyr::mutate(height = (upper - lower) / 100) %>%
-    dplyr::mutate(flux = prod * height) %>%
+    dplyr::mutate(prod_abs = prod * height) %>%
+    dplyr::mutate(DELTA_prod_abs = DELTA_prod * height) %>%
     dplyr::group_by(prof_id, pmap) %>%
-    dplyr::summarise(prod_abs = sum(flux)) %>%
+    dplyr::summarise(prod_abs = sum(prod_abs),
+                     DELTA_prod_abs = sum(DELTA_prod_abs),
+                     F0 = F0[1],
+                     DELTA_F0 = DELTA_F0[1]) %>%
     dplyr::left_join(EFFLUX, by = "prof_id") %>%
-    dplyr::mutate(prod_rel = prod_abs / efflux) %>%
+    dplyr::mutate(prod_rel = prod_abs / efflux,
+                  DELTA_prod_rel = abs(DELTA_prod_abs / efflux) +
+                    abs(DELTA_efflux * prod_abs / efflux^2)) %>%
      dplyr::left_join(x$layers_map, by = merger) %>%
+    dplyr::ungroup() %>%
     dplyr::select(dplyr::any_of(c(id_cols,
                                   "upper",
                                   "lower",
@@ -78,7 +103,12 @@ production.cfp_pfres <- function(x, ...){
                                   "layer",
                                   "prod_abs",
                                   "prod_rel",
-                                  "efflux")))
+                                  "efflux",
+                                  "F0",
+                                  "DELTA_F0",
+                                  "DELTA_prod_abs",
+                                  "DELTA_prod_rel"))) %>%
+    cfp_layered_profile(id_cols = id_cols)
 
 
 }

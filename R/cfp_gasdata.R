@@ -1,25 +1,48 @@
 #' @title cfp_gasdata
-#' @description A function to create and validate cfp_gasdata objects. A gasdata
-#' object is characterised by the following criteria: Each row is one observation
-#' of the concentration of a gas at a depth and can be attributed to a distinct
-#' profileidentified by any \code{id_cols} columns.
-#' @param gasdata A \code{data.frame} with the following columns:
+#' @description
+#' Create a [cfp_gasdata] object. This is a data.frame containing gas
+#' concentration data for one or multiple soil profiles.
+#' Each soil profile is uniquely identified by columns in the data.frame
+#' specified by the \code{id_cols} attribute.
+#'
+#' @param x A \code{data.frame} with the following columns:
 #' \describe{
 #' \item{gas}{The gas of that observation.}
 #' \item{depth (cm)}{The depth of the observation.}
-#' \item{x_ppm (ppm)}{The observed concentration of that gas.}
+#' \item{x_ppm (ppm)}{The concentration in ppm.}
 #' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 #'}
-#'@inheritParams cfp_layers_map
+#' @param ... not used
 #'
-#'@return cfp_gasdata
+#' @returns A \code{cfp_gasdata} object.
 #'
+#' @examples
+#' cfp_gasdata(
+#'   ConFluxPro::gasdata,
+#'   id_cols = c("site", "Date"))
+#' ### Also used to extract the gasdata object from cfp_dat
+#' cfp_gasdata(ConFluxPro::base_dat)
 
 
+
+#' @name cfp_gasdata
+#'
+#' @importFrom rlang .data
+#'
 #'@export
 # helper
-cfp_gasdata <- function(gasdata,
-                        id_cols){
+cfp_gasdata <- function(x,
+                        ...){
+  UseMethod("cfp_gasdata")
+}
+
+#' @rdname cfp_gasdata
+#' @inheritParams cfp_profile
+#' @exportS3Method
+cfp_gasdata.data.frame <-
+  function(x,
+           id_cols,
+           ...){
 
 
   stopifnot("id_cols must be provided!" = !missing(id_cols))
@@ -29,20 +52,33 @@ cfp_gasdata <- function(gasdata,
     id_cols <- c(id_cols,"gas")
   }
 
-  x <- new_cfp_gasdata(gasdata,
+  x <- new_cfp_gasdata(x,
                 id_cols)
 
   validate_cfp_gasdata(x)
-}
+  }
+
+#' @rdname cfp_gasdata
+#' @exportS3Method
+cfp_gasdata.cfp_dat <-
+  function(x,
+           ...){
+    rlang::check_dots_empty()
+    get_gasdata(x)
+  }
+
 
 #'
 # constructor
-new_cfp_gasdata <- function(gasdata,
+new_cfp_gasdata <- function(x,
                      id_cols){
 
-  structure(gasdata,
-            class = c("cfp_gasdata","data.frame"),
-            id_cols = id_cols)
+
+  x <- new_cfp_profile(
+    x,
+    class = "cfp_gasdata",
+    id_cols = id_cols)
+  x
 }
 
 
@@ -71,10 +107,14 @@ validate_cfp_gasdata <- function(x){
     x %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
     dplyr::summarise(n_depths = length(unique(depth[!is.na(x_ppm)]))) %>%
-    dplyr::filter(n_depths < 2)
+    dplyr::filter(.data$n_depths < 2)
 
   stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
               nrow(problem_groups) == 0 )
+
+  # no negative values in x_ppm
+  any_negative_x_ppm <- min(x$x_ppm, na.rm = TRUE) < 0
+  stopifnot("Negative mixing ratios are not allowed!" = !any_negative_x_ppm)
 
   x
 }
@@ -84,8 +124,5 @@ validate_cfp_gasdata <- function(x){
 
 #' @exportS3Method
 print.cfp_gasdata <- function(x, ...){
-  cat("\nA cfp_gasdata object \n")
-  print_id_cols(x)
-  cat("\n")
   NextMethod()
 }

@@ -1,4 +1,4 @@
-
+#' @importFrom rlang .data
 # internal functions only
 
 
@@ -61,17 +61,48 @@ is_ul_consistent <- function(df,
 
 
   df <- df %>%
-    dplyr::arrange(upper) %>%
+    dplyr::arrange(.data$upper) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols)))
 
   n_no_fit <-
     df %>%
-    dplyr::mutate(is_lowest = lower == min(lower)) %>%
-    dplyr::filter(!(lower == dplyr::lag(upper) |
-                    is_lowest)) %>%
+    dplyr::mutate(is_lowest = (.data$lower == min(.data$lower))) %>%
+    dplyr::filter(!(lower == dplyr::lag(.data$upper) |
+                    .data$is_lowest)) %>%
     nrow()
 
   n_no_fit == 0
+}
+
+
+# reduce size of cfp_dat to necessary only
+trim_cfp_dat <- function(x){
+
+  x$soilphys <- x$soilphys[,c(
+                                "upper",
+                                "lower",
+                                "depth",
+                                "height",
+                                "sp_id",
+                                "pmap",
+                                "step_id",
+                                "DS",
+                                "c_air")]
+  x$gasdata <- x$gasdata[,c(
+                                  "gd_id",
+                                  "depth",
+                                  "x_ppm")]
+  x$layers_map <- x$layers_map[,c(
+                                  "group_id",
+                                  "pmap",
+                                  "layer",
+                                  "layer_couple",
+                                  "highlim",
+                                  "lowlim",
+                                  "upper",
+                                  "lower")]
+  x
+
 }
 
 
@@ -96,3 +127,16 @@ lin_extrap<-function(x,
   y_new <- (x_new-x[1])*(diff(y) / diff(x)) + y[1]
   return(y_new)
 }
+
+
+# any negatives
+
+any_negative_values <- function(x){
+  x <- x[is.finite(x)]
+  if (length(x) == 0) return(FALSE)
+  min(x) < 0
+}
+
+
+## sample function that can handle 1 length vectors
+sample.vec <- function(x, ...) x[sample(length(x), ...)]

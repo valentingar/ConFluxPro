@@ -2,28 +2,42 @@
 % Please edit documentation in R/cfp_gasdata.R
 \name{cfp_gasdata}
 \alias{cfp_gasdata}
+\alias{cfp_gasdata.data.frame}
+\alias{cfp_gasdata.cfp_dat}
 \title{cfp_gasdata}
 \usage{
-cfp_gasdata(gasdata, id_cols)
+cfp_gasdata(x, ...)
+
+\method{cfp_gasdata}{data.frame}(x, id_cols, ...)
+
+\method{cfp_gasdata}{cfp_dat}(x, ...)
 }
 \arguments{
-\item{gasdata}{A \code{data.frame} with the following columns:
+\item{x}{A \code{data.frame} with the following columns:
 \describe{
 \item{gas}{The gas of that observation.}
 \item{depth (cm)}{The depth of the observation.}
-\item{x_ppm (ppm)}{The observed concentration of that gas.}
+\item{x_ppm (ppm)}{The concentration in ppm.}
 \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 }}
 
-\item{id_cols}{(character vector) The names of the columns that together
-uniquely identify one profile.}
+\item{...}{not used}
+
+\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{
-cfp_gasdata
+A \code{cfp_gasdata} object.
 }
 \description{
-A function to create and validate cfp_gasdata objects. A gasdata
-object is characterised by the following criteria: Each row is one observation
-of the concentration of a gas at a depth and can be attributed to a distinct
-profileidentified by any \code{id_cols} columns.
+Create a \link{cfp_gasdata} object. This is a data.frame containing gas
+concentration data for one or multiple soil profiles.
+Each soil profile is uniquely identified by columns in the data.frame
+specified by the \code{id_cols} attribute.
+}
+\examples{
+cfp_gasdata(
+  ConFluxPro::gasdata,
+  id_cols = c("site", "Date"))
+### Also used to extract the gasdata object from cfp_dat
+cfp_gasdata(ConFluxPro::base_dat)
 }

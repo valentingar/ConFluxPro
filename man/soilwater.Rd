@@ -7,11 +7,11 @@
 \format{
 A tibble with 180 rows and 5 variables:
 \describe{
-  \item{site}{name of the site}
-  \item{Date}{Date in the format "YYYY-MM-DD"}
-  \item{upper}{upper limit for layer in cm}
-  \item{lower}{lower limit for layer in cm}
-  \item{SWC}{soil water content as fraction of volume}
+\item{site}{name of the site}
+\item{Date}{Date in the format "YYYY-MM-DD"}
+\item{upper}{upper limit for layer in cm}
+\item{lower}{lower limit for layer in cm}
+\item{SWC}{soil water content as fraction of volume}
 }
 }
 \usage{

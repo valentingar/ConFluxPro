@@ -1,7 +1,7 @@
 Package: ConFluxPro
 Type: Package
 Title: A Toolkit for Soil Gas Analysis
-Version: 1.0.3
+Version: 1.0.10.9007
 Authors@R: person("Valentin","Gartiser",email = "code@valentingartiser.de",role = c("aut", "cre"),comment = c(ORCID = "0000-0001-5320-374X"))
 Description: A collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation based on the gradient-flux method and includes an inverse model for production-based flux estimation.
 Imports: 
@@ -12,17 +12,17 @@ Imports:
     magrittr (>= 2.0.3),
     splines (>= 4.1.0),
     tidyr (>= 1.3.0),
-    purrr (>= 1.0.1),
     rlang (>= 1.1.0),
     future (>= 1.24.0),
     furrr (>= 0.2.3),
     progressr (>= 0.10.0),
     ggplot2 (>= 3.4.2),
-    scales (>= 1.2.1)
-License: CC BY 4.0
+    scales (>= 1.2.1),
+    lifecycle
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Depends: 
     R (>= 4.1.0)
 Suggests: 
@@ -33,3 +33,4 @@ Suggests:
 VignetteBuilder: 
     knitr, 
     rmarkdown
+Roxygen: list(markdown = TRUE)

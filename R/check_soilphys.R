@@ -28,6 +28,7 @@
 #' @family soilphys
 #'
 #' @import tidyr
+#' @importFrom rlang .data
 #'
 #' @export
 
@@ -79,10 +80,17 @@ check_soilphys <-function(df,
 
   #checking for suspicious NAs
   susp <-df %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of({c(id_cols,"upper")}))) %>%
-    dplyr::mutate(across(any_of(params_grouping),is.na),.groups = "keep") %>%
+    dplyr::group_by(dplyr::across(dplyr::any_of(c(id_cols, "upper")))) %>%
+    dplyr::mutate(dplyr::across(
+      dplyr::any_of(params_grouping),
+      is.na),
+      .groups = "keep") %>%
     dplyr::select(dplyr::any_of(c(params_grouping, id_cols, "upper"))) %>%
-    dplyr::summarise(across(any_of(params_grouping),all))
+    dplyr::summarise(dplyr::across(
+      dplyr::any_of(params_grouping),
+      all
+      )
+      )
 
   #finding column names of suspects
   class_susp <- sapply(susp, class)
@@ -95,7 +103,7 @@ check_soilphys <-function(df,
     tidyr::pivot_longer(cols = {pars_susp},
                         names_to = "param",
                         values_to = "value") %>%
-    dplyr::filter(value == T)
+    dplyr::filter(.data$value == T)
 
   if(anyNA(df$upper)){
     susp <- susp %>%

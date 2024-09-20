@@ -53,6 +53,9 @@
 #' @seealso offset_correction
 #' @seealso offset_override
 #'
+#'
+#' @importFrom rlang .data
+#'
 #' @export
 
 
@@ -72,9 +75,9 @@ offset_subsetting <- function(df,
   }
 
   corr_map <- df %>%
-    dplyr::select(Date, SAMPLE_NO) %>%
+    dplyr::select("Date", "SAMPLE_NO") %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(section = which(Date %within% date_map$int)) %>%
-    dplyr::mutate(mode = mode_selector(section))
+    dplyr::mutate(section = which(.data$Date %within% date_map$int)) %>%
+    dplyr::mutate(mode = mode_selector(.data$section))
   return(corr_map)
 }

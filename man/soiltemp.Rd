@@ -7,10 +7,10 @@
 \format{
 A tibble with 120 rows and 4 variables:
 \describe{
-  \item{site}{name of the site}
-  \item{Date}{Date in the format "YYYY-MM-DD"}
-  \item{depth}{depth in cm}
-  \item{t}{temperature in °C}
+\item{site}{name of the site}
+\item{Date}{Date in the format "YYYY-MM-DD"}
+\item{depth}{depth in cm}
+\item{t}{temperature in °C}
 }
 }
 \usage{

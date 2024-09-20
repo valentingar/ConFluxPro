@@ -1,9 +1,5 @@
-#' n_profiles
-#'
-#' Get the number of profiles in cfp objects.
-#'
 #' @inheritParams cfp_pfmod
-#'
+#' @rdname extractors
 #' @export
 n_profiles <- function(x) {
   UseMethod("n_profiles")

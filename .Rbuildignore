@@ -5,3 +5,6 @@
 ^inst/data_structure.xlsx$
 ^README\.Rmd$
 ^R/series_correction.R$
+^doc$
+^Meta$
+^LICENSE\.md$

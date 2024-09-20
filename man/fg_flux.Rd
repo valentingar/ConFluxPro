@@ -2,33 +2,62 @@
 % Please edit documentation in R/fg_flux.R
 \name{fg_flux}
 \alias{fg_flux}
-\alias{calculate_flux}
-\title{fg_flux}
+\alias{fg_flux.cfp_dat}
+\alias{fg_flux.cfp_fgres}
+\alias{fg_flux.cfp_fgmod}
+\title{Flux gradient method}
 \usage{
 fg_flux(x, ...)
 
-calculate_flux(x, p)
+\method{fg_flux}{cfp_dat}(
+  x,
+  ...,
+  gases = unique_gases(x),
+  modes = "LL",
+  param = c("c_air", "DS"),
+  funs = c("arith", "harm"),
+  quiet = FALSE
+)
+
+\method{fg_flux}{cfp_fgres}(x, ...)
+
+\method{fg_flux}{cfp_fgmod}(x, ...)
 }
 \arguments{
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
-\item{...}{Additional arguments passed to fg_flux.cfp_fgmod. Can be of the following:}
-
-\item{gases}{(character) A character vector defining the gases for which
-gluxes shall be calulated.}
-
-\item{modes}{(character) A character vector specifying mode(s) for dcdz
-calculation. Can be "LL","LS","EF".}
-
-\item{param}{(character) A vector containing the the parameters of soilphys,
+\item{...}{
+  Arguments passed on to \code{\link[=cfp_fgmod]{cfp_fgmod}}
+  \describe{
+    \item{\code{gases}}{(character) A character vector defining the gases for which
+fluxes shall be calulated.}
+    \item{\code{modes}}{(character) A character vector specifying mode(s) for dcdz
+calculation. Can be \code{"LL"},\code{"LS"},\code{"EF"}.
+\describe{
+\item{LL}{local linear approach: within each layer a linear model is
+evaluated of concentration over the depth.}
+\item{LS}{linear spline approach: A linear spline is fitted over the
+complete profile with nodes at the layer intersections.}
+\item{EF}{exponential fit approach: An exponential function of form
+y=a+b*x^c is fit of concentration against depth. Using the first derivative of
+that function the concentration gradient is evaluated for each layer.}
+\item{DA}{exponential fit approach: An exponential function of form
+\code{y=a+b*(1-exp(-a*x))} is fit of concentration against depth. Using the first derivative of
+that function the concentration gradient is evaluated for each layer. From
+Davidson (2006)}
+}}
+    \item{\code{param}}{(character) A vector containing the the parameters of soilphys,
 for which means should be calculated, must contain "c_air" and "DS", more
-parameters help interpretation}
-
-\item{funs}{(character) A vector defining the type of mean to be used. One of
-"arith" or "harm"}
+parameters may help interpretation.}
+    \item{\code{funs}}{(character) A vector defining the type of mean to be used for
+each parameter in \code{param}. One of "arith" or "harm".}
+  }}
 }
 \description{
 This function takes a valid input dataset in cfp_dat
 and calculates fluxes accordingly. Fluxes are calculated for each layer defined
 in layers map and are given in mumol/m^2/s.
+}
+\references{
+DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
 }

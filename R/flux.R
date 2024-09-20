@@ -17,4 +17,5 @@ flux.cfp_pfmod <- function(x){
 }
 #' @exportS3Method
 flux.cfp_fgmod <- function(x){
+  fg_flux(x)
 }

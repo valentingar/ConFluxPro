@@ -11,11 +11,11 @@ soilphys_layered(soilphys, layers_map, param, funs, id_cols)
 
 \item{layers_map}{(dataframe) containing the following parameters:
 \describe{
-  \item{upper}{upper limit of the layer in cm}
-  \item{lower}{lower limit of the layer in cm}
-  \item{layer}{the name of the layer}
-  \item{...}{any \code{id_cols} necessary}
-  }}
+\item{upper}{upper limit of the layer in cm}
+\item{lower}{lower limit of the layer in cm}
+\item{layer}{the name of the layer}
+\item{...}{any \code{id_cols} necessary}
+}}
 
 \item{param}{(character vector) A vector containing the names of the
 variables in soilphys to be carried over}
@@ -32,24 +32,24 @@ summarised to the layers provided in \code{layers_map}
 
 #' @examples {data(soildiff)
 layers_map <- data.frame(site = rep(c("site_a",
-                                      "site_b"),each = 2),
-                         upper = c(5,0,7,0),
-                         lower = c(0,-100,0,-100),
-                         layer = rep(c("HU","M1"),times = 2)
+"site_b"),each = 2),
+upper = c(5,0,7,0),
+lower = c(0,-100,0,-100),
+layer = rep(c("HU","M1"),times = 2)
 )
 
 soildiff$depth <- (soildiff$upper + soildiff$lower) / 2
 
 soilphys_layered(soilphys = soildiff,
-                 layers_map = layers_map,
-                 param = c("TPS","a"),
-                 funs = c("harm","arith"),
-                 id_cols = c("site"))
+layers_map = layers_map,
+param = c("TPS","a"),
+funs = c("harm","arith"),
+id_cols = c("site"))
 }
 }
 \description{
 This function calculates (harmonic-) means of the soilphys
-  dataframe per layer for the flux calculation.
+dataframe per layer for the flux calculation.
 }
 \seealso{
 Other soilphys: 

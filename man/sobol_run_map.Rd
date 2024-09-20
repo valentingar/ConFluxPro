@@ -2,15 +2,64 @@
 % Please edit documentation in R/sobol_run_map.R
 \name{sobol_run_map}
 \alias{sobol_run_map}
+\alias{sobol_run_map.cfp_dat}
+\alias{sobol_run_map.cfp_run_map}
 \title{sobol_run_map}
 \usage{
 sobol_run_map(x, ...)
+
+\method{sobol_run_map}{cfp_dat}(x, ...)
+
+\method{sobol_run_map}{cfp_run_map}(x, ...)
 }
 \arguments{
-\item{x}{An object of class cfp_run_map created by a call to run_map().}
+\item{x}{Either an object of class \code{cfp_run_map} created by a call to
+\code{cfp_run_map()} with \code{method = 'random'}, or a \code{cfp_pfres} or
+\code{cfp_fgres} model result.}
 
-\item{...}{Additional arguments passed on to \link{run_map}}
+\item{...}{
+  Arguments passed on to \code{\link[=run_map]{run_map}}
+  \describe{
+    \item{\code{params}}{A named list of numeric vectors. Names indicate column names in
+soilphys, vectors either distinct values (method permutation) or limits
+(method random).}
+    \item{\code{type}}{A vector of length param indicating what the values in params
+represent. One of
+\describe{
+\item{abs}{Absolute values that are applied as-is.}
+\item{factor}{Factors to be multiplied with the original values.}
+\item{addition}{Factors to be added to the original values.}
+}}
+    \item{\code{method}}{Either 'random', where a random value is chosen within the
+bounds set in \code{params} or 'permutation', where every permutation of the
+values in \code{params} is added.}
+    \item{\code{n_runs}}{Integer value of the number of alterations to be done for method
+= 'random'.}
+    \item{\code{layers_different}}{Should layers from layers_map be changed individually?
+If \code{TRUE} this allows for different changes at different depths.}
+    \item{\code{layers_from}}{(character) If layers_different is TRUE, from which source
+should the layers be created? One of:
+\describe{
+\item{layers_map}{(default) Use the layers that are defined in layers_map.}
+\item{soilphys}{Use the layers as defined in soilphys}
+\item{layers_altmap}{Use the layers as defined in the provided layers_altmap object.}
+}}
+    \item{\code{layers_altmap}}{An optional layers_map created using layers_map() that
+defines the layers to be used if layers_different = TRUE.}
+    \item{\code{topheight_adjust}}{(logical) If the proposed change in topheight is
+larger than the highest layer in soilphys, should the limits be
+automatically adjusted per id_cols indivdually? Default is FALSE, which
+leads to an error in that case.}
+  }}
 }
 \description{
-Modify an existing run_map for sobol indice estimation.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Modify an existing \code{cfp_run_map} for sobol indice estimation or create a new one
+from scratch.
 }
+\seealso{
+Other sobol: 
+\code{\link{sobol_calc_indices}()}
+}
+\concept{sobol}

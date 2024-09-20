@@ -16,9 +16,7 @@ dcdz_layered(df, layers_map, mode)
 \item "upper"=upper limit of layer in cm;
 \item "lower" = lower limit of the layer in cm;}}
 
-\item{mode}{(character) One of ("LL","LS","EF").}
-
-\item{depth_steps}{(numeric) The interfaces between the layers}
+\item{mode}{(character) One of ("LL","LS","EF","DA").}
 }
 \value{
 df (dataframe) same structure as layer_map with folowing columns:
@@ -45,15 +43,15 @@ This function calculates concentration gradients using different approaches.
 \examples{
 {
 df <- data.frame(depth = c(10,0,-100),
-                 x_ppm = c(400,800,5000))
+                 x_ppm = c(400,800,5000),
+                 gd_id = c(1,1,1))
 
 lmap <- data.frame(upper = c(10,0),
                    lower = c(0,-100),
                    layer = c("HU","MIN"))
 dcdz_layered(df,
              lmap,
-             mode = "LL",
-             depth_steps = c(0) #interface depths
+             mode = "LL"
 )
 
 

@@ -53,11 +53,11 @@ x_ppm, corrected for balance
 }
 \description{
 A function to correct the measured values for non-complete gas
-  exchange. Per sample, a total balance (b_tot) is obtained by adding the
-  measurements of all gases and, if necessary, corrected for missing gases.
-  \cr Theoretically, bal is between (0;1), however values over 1 can result
-  from calibration errors. Values over 1 are treated the same and are
-  corrected. Then, each x_ppm is corrected: x_ppm / b_tot
+exchange. Per sample, a total balance (b_tot) is obtained by adding the
+measurements of all gases and, if necessary, corrected for missing gases.
+\cr Theoretically, bal is between (0;1), however values over 1 can result
+from calibration errors. Values over 1 are treated the same and are
+corrected. Then, each x_ppm is corrected: x_ppm / b_tot
 }
 \examples{
 {

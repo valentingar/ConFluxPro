@@ -37,11 +37,17 @@
 #' all productions, the higher it is penalised. The \code{evenness_factor} then
 #' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
 #'
+#' @returns A \code{cfp_pfmod} object that inherits from [cfp_dat()]
 #'
+#' @examples
+#' cfp_pfmod(ConFluxPro::base_dat)
+
+#' @keywords internal
+#' @export
 
 cfp_pfmod <- function(x,
                       zero_flux = TRUE,
-                      zero_limits = c(-Inf,Inf),
+                      zero_limits = c(-Inf, Inf),
                       DSD0_optim = FALSE,
                       evenness_factor = 0,
                       known_flux_factor = 0){
@@ -66,6 +72,10 @@ new_cfp_pfmod <- function(x,
                           known_flux_factor
 ){
   stopifnot(inherits(x,"cfp_dat"))
+
+  #make sure soilphys is in ascending order
+  x$soilphys <- dplyr::arrange(x$soilphys,upper)
+
 
   x <- structure(x,
                  class = c("cfp_pfmod","cfp_dat"),
@@ -105,7 +115,7 @@ print.cfp_pfmod <- function(x, ...){
 
 
 ### EXTRACTORS #####
-#' @describeIn extractors zero_flux
+#' @rdname extractors
 #' @export
 cfp_zero_flux <- function(x){
   UseMethod("cfp_zero_flux")
@@ -117,7 +127,7 @@ cfp_zero_flux.default <- function(x){
 }
 
 
-#' @describeIn extractors zero_limits
+#' @rdname extractors
 #' @export
 cfp_zero_limits <- function(x){
   UseMethod("cfp_zero_limits")
@@ -128,7 +138,7 @@ cfp_zero_limits.default <- function(x){
   out
 }
 
-#' @describeIn extractors DSD0_optim
+#' @rdname extractors
 #' @export
 cfp_DSD0_optim <- function(x){
   UseMethod("cfp_DSD0_optim")
@@ -140,7 +150,7 @@ cfp_DSD0_optim.default <- function(x){
 }
 
 
-#' @describeIn extractors evenness_factor
+#' @rdname extractors
 #' @export
 cfp_evenness_factor <- function(x){
   UseMethod("cfp_evenness_factor")
@@ -152,7 +162,7 @@ cfp_evenness_factor.default <- function(x){
 }
 
 
-#' @describeIn extractors known_flux_factor
+#' @rdname extractors
 #' @export
 cfp_known_flux_factor <- function(x){
   UseMethod("cfp_known_flux_factor")

@@ -39,7 +39,8 @@ soilphys <-
                                id_cols = c("site","Date")
               )) %>%
   dplyr::mutate(p = 1013) %>%
-  complete_soilphys(gases = "CO2")
+  complete_soilphys(gases = "CO2",
+                    DSD0_formula = "a*AFPS^b")
 
 usethis::use_data(soilphys,
                   overwrite = T)
