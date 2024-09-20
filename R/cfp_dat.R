@@ -73,11 +73,30 @@ cfp_dat <- function(
 
   # get id_cols
   id_cols_list <- lapply(list(gasdata,soilphys,layers_map), cfp_id_cols)
+  names_list <- lapply(list(gasdata,soilphys,layers_map), names)
+  normal_cols_list <- mapply(id_cols_list,
+                             names_list,
+                             FUN = function(x,y) y[!y %in% x])
   id_cols <- unlist(id_cols_list) %>% unique()
-  message(paste0("id_cols: ", paste0(id_cols, collapse = ", "), collapse = ""))
+
+  if(any(unlist(normal_cols_list) %in% id_cols)){
+    problem_cols <- lapply(normal_cols_list, function(x) x[x %in% id_cols])
+    problem_datasets <- sapply(problem_cols, length)
+    problem_message <-
+    mapply(problem_cols[problem_datasets],
+           c("gasdata", "soilphys", "layers_map")[problem_datasets],
+           FUN = function(x,y) paste0(paste0(paste0('"',x,'"'), collapse = ", "), " in ", y)) %>%
+      paste0(collapse = " and ")
+    stop("id_col of one dataset cannot be a non-id_col in another!\n",
+         "remove/rename non-id_cols: ",
+         problem_message)
+  }
+
 
   stopifnot("All id_cols of layers_map must be present in soilphys!" =
               all(id_cols_list[[3]] %in% id_cols_list[[2]]))
+
+  message(paste0("id_cols: ", paste0(id_cols, collapse = ", "), collapse = ""))
 
   merger_1 <- whats_in_both(id_cols_list[c(1,2)])
   merger_2 <- list(unlist(id_cols_list[c(1,2)][[1]]),
