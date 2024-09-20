@@ -84,7 +84,30 @@ bootstrap_error <- function(x,
 
 #' @rdname bootstrap_error
 #' @exportS3Method
-bootstrap_error.cfp_pfres <- function(x,
+bootstrap_error.cfp_dat <- function(x,
+                            n_samples = 50,
+                            sd_x_ppm = NULL,
+                            n_replicates = NULL,
+                            sample_from = "gasdata",
+                            rep_cols = NULL){
+  stop("Can't bootstrap error from data alone!
+       Create a model frame first with cfp_pfmod() or cfp_fgmod().")
+}
+
+#' @rdname bootstrap_error
+#' @exportS3Method
+bootstrap_error.cfp_fgmod <- function(x,
+                                    n_samples = 50,
+                                    sd_x_ppm = NULL,
+                                    n_replicates = NULL,
+                                    sample_from = "gasdata",
+                                    rep_cols = NULL){
+  stop("Bootstrapping error for cfp_fgmod() models is not yet implemented.")
+}
+
+#' @rdname bootstrap_error
+#' @exportS3Method
+bootstrap_error.cfp_pfmod  <- function(x,
                                       n_samples = 50,
                                       sd_x_ppm = NULL,
                                       n_replicates = NULL,
@@ -241,7 +264,7 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
   }
 
   x_profiles <- x$profiles
-  x_FLUX <- data.frame(x$PROFLUX)
+  #x_FLUX <- data.frame(x$PROFLUX)
 
   x$PROFLUX <-
     x_profiles %>%

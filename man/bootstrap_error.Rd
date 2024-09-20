@@ -2,7 +2,9 @@
 % Please edit documentation in R/bootstrap_error.R
 \name{bootstrap_error}
 \alias{bootstrap_error}
-\alias{bootstrap_error.cfp_pfres}
+\alias{bootstrap_error.cfp_dat}
+\alias{bootstrap_error.cfp_fgmod}
+\alias{bootstrap_error.cfp_pfmod}
 \alias{make_bootstrap_model}
 \alias{make_bootstrap_model.cfp_pfres}
 \alias{calculate_bootstrap_error}
@@ -18,7 +20,25 @@ bootstrap_error(
   rep_cols = NULL
 )
 
-\method{bootstrap_error}{cfp_pfres}(
+\method{bootstrap_error}{cfp_dat}(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
+
+\method{bootstrap_error}{cfp_fgmod}(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
+
+\method{bootstrap_error}{cfp_pfmod}(
   x,
   n_samples = 50,
   sd_x_ppm = NULL,
