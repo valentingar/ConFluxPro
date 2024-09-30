@@ -353,7 +353,7 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
   gasdata <- gasdata[new_sel, ]
   gasdata$bootstrap_id <- rep(1:n_samples, each = length(split_id))
 
-  gasdata <- cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
+  gasdata <- new_cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
 
   rownames(gasdata) <- 1:nrow(gasdata)
 
@@ -386,7 +386,7 @@ create_bootstrap_soilphys <- function(
   soilphys <- soilphys[new_sel, ]
   soilphys$bootstrap_id <- rep(1:n_samples, each = length(split_id_split))
 
-  soilphys <- cfp_soilphys(
+  soilphys <- new_cfp_soilphys(
     soilphys,
     id_cols = c(cfp_id_cols(soilphys),
                 "bootstrap_id"))
