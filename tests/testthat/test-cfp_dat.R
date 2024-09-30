@@ -251,3 +251,18 @@ test_that("cfp_dat fails when no valid profiles", {
 
 })
 
+test_that("cfp_dat fails when id cols of one dataset are present in another.",{
+
+  base_dat <- readRDS(testthat::test_path("fixtures", "base_dat.rds"))
+
+  soilphys <- cfp_soilphys(base_dat)
+  gasdata <- cfp_gasdata(base_dat)
+  layers_map <- cfp_layers_map(base_dat)
+
+  attr(gasdata, "id_cols") <- c("gas", "Date")
+
+  expect_error(
+    cfp_dat(gasdata, soilphys, layers_map),
+    regexp = "id_col of one dataset cannot be a non-id_col in another!"
+    )
+})
