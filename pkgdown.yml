@@ -1,0 +1,9 @@
+pandoc: 3.1.11
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  overview: overview.html
+last_built: 2024-09-30T09:54Z
+urls:
+  reference: https://valentingar.github.io/ConFluxPro/reference
+  article: https://valentingar.github.io/ConFluxPro/articles
