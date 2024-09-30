@@ -4,11 +4,26 @@
 \alias{error_concentration}
 \alias{error_efflux}
 \alias{error_funs}
+\alias{error_concentration.cfp_pfres}
+\alias{error_concentration.cfp_fgres}
+\alias{error_concentration.cfp_altres}
+\alias{error_efflux.cfp_pfres}
+\alias{error_efflux.cfp_altres}
 \title{error_funs}
 \usage{
 error_concentration(x, param_cols = NULL, normer)
 
+\method{error_concentration}{cfp_pfres}(x, param_cols = NULL, normer)
+
+\method{error_concentration}{cfp_fgres}(x, param_cols = NULL, normer = NULL)
+
+\method{error_concentration}{cfp_altres}(x, param_cols = NULL, normer)
+
 error_efflux(x, param_cols, EFFLUX, normer, ...)
+
+\method{error_efflux}{cfp_pfres}(x, param_cols, EFFLUX, normer, ...)
+
+\method{error_efflux}{cfp_altres}(x, param_cols, EFFLUX, normer, ...)
 }
 \arguments{
 \item{x}{A cfp_pfres object, that is returned by a call

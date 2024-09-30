@@ -39,6 +39,7 @@ error_concentration <- function(
   UseMethod("error_concentration")
 }
 
+#' @rdname error_funs
 #' @exportS3Method
 error_concentration.cfp_pfres <- function(
     x,
@@ -103,6 +104,7 @@ error_concentration.cfp_pfres <- function(
                                     na.rm = T))
 }
 
+#' @rdname error_funs
 #' @exportS3Method
 error_concentration.cfp_fgres <- function(
   x,
@@ -122,6 +124,15 @@ error_concentration.cfp_fgres <- function(
     dplyr::summarise(NRMSE = mean(.data$dcdz_sd / abs(.data$dcdz_ppm), na.rm = TRUE))
 }
 
+#' @rdname error_funs
+#' @exportS3Method
+error_concentration.cfp_altres <- function(x,
+                                           param_cols = NULL,
+                                           normer){
+  cfp_altapply(x, error_concentration, param_cols = param_cols, normer = normer)
+
+}
+
 
 #' @rdname error_funs
 #' @export
@@ -133,12 +144,14 @@ error_efflux <-function(x,
   UseMethod("error_efflux")
 }
 
+#' @rdname error_funs
 #' @exportS3Method
-  error_efflux.default <- function(x,
-                           param_cols,
-                           EFFLUX,
-                           normer,
-                           ...){
+  error_efflux.cfp_pfres <- error_efflux.cfp_fgres <- function(
+    x,
+    param_cols,
+    EFFLUX,
+    normer,
+    ...){
 
     id_cols <- cfp_id_cols(x)
 
@@ -163,3 +176,16 @@ error_efflux <-function(x,
 
   }
 
+#' @rdname error_funs
+#' @exportS3Method
+error_efflux.cfp_altres <- function(
+    x,
+    param_cols,
+    EFFLUX,
+    normer,
+    ...){
+    cfp_altapply(x, function(x, ...) { error_efflux(x, ...)},
+                 param_cols = param_cols,
+                 EFFLUX = EFFLUX,
+                 normer = normer)
+  }
