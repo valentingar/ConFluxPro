@@ -5,9 +5,27 @@
 \alias{evaluate_models.cfp_altres}
 \title{evaluate_models}
 \usage{
-evaluate_models(x, eval_funs = NULL, eval_args = NULL)
+evaluate_models(
+  x,
+  eval_funs = NULL,
+  eval_weigths = 1,
+  param_cols,
+  eval_cols,
+  n_best,
+  f_best = 0.01,
+  scaling_fun = scale_min_median
+)
 
-\method{evaluate_models}{cfp_altres}(x, eval_funs = NULL, eval_args = NULL)
+\method{evaluate_models}{cfp_altres}(
+  x,
+  eval_funs = NULL,
+  eval_weigths = 1,
+  param_cols = cfp_id_cols(cfp_layers_map(cfp_og_model(PF_alt))),
+  eval_cols,
+  n_best,
+  f_best,
+  scaling_fun = scale_min_median
+)
 }
 \description{
 Evaluate the model runs produced by a call to \code{\link[=alternate]{alternate()}} with user-defined
