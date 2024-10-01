@@ -37,8 +37,9 @@ accept the arguments \code{x} and \code{param_cols} that are passed from this
 function.}
 
 \item{eval_weights}{A vector of weights the same length of \code{eval_funs} or
-one. Alternatively a \code{data.frame()} that specifies the weight for any wished
-\code{error_parameter} (names of \code{eval_funs}) and \code{param_cols} combinations.
+one. Alternatively a \code{data.frame()} that specifies the weight for any
+wished \code{error_parameter} (names of \code{eval_funs}) and \code{param_cols}
+combinations.
 Provide the weights as a numeric in the \code{parameter_weight} column.}
 
 \item{param_cols}{The columns that, together, define different parameters (e.g. different gases)
@@ -56,12 +57,16 @@ the best. Defaults to 0.01.}
 
 \item{scaling_fun}{A scaling function. Defaults to min-median scaling.}
 
-\item{...}{Further arguments passed to \code{efflux()} in case of cfp_fgres.}
+\item{...}{Any arguments that need to be passed to the \code{error_funs}. Note
+that all matching arguments will be applied to each function!}
 }
 \value{
 A list with components \code{best_runs} the runs with the lowest model
-error (ME), \code{model_error} the model error for all runs and
-\code{models_evaluated} the raw values returned by error_funs.
+error (ME), \code{model_error} the model error for all runs,
+\code{models_evaluated} the raw values returned by error_funs and
+\code{best_runs_runmap}, a \code{\link[=cfp_run_map]{cfp_run_map()}} which can be used to rerun the
+\code{best_runs} model configurations. Note, that for \code{best_runs_runmap} the
+value of \code{run_id} is remapped to values \code{1:n_best}.
 }
 \description{
 Evaluate the model runs produced by a call to \code{\link[=alternate]{alternate()}} with

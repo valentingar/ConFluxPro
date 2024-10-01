@@ -8,8 +8,9 @@
 #'   accept the arguments `x` and `param_cols` that are passed from this
 #'   function.
 #' @param eval_weights A vector of weights the same length of `eval_funs` or
-#'   one. Alternatively a `data.frame()` that specifies the weight for any wished
-#'   `error_parameter` (names of `eval_funs`) and `param_cols` combinations.
+#'   one. Alternatively a `data.frame()` that specifies the weight for any
+#'   wished `error_parameter` (names of `eval_funs`) and `param_cols`
+#'   combinations.
 #'    Provide the weights as a numeric in the `parameter_weight` column.
 #' @param eval_cols A character vector of columns for which the model error
 #'   should be returned separately. Must be a subset of `param_cols` and
@@ -18,13 +19,17 @@
 #' @param f_best A numeric between 0 to 1 as the fraction of runs to select as
 #'   the best. Defaults to 0.01.
 #' @param scaling_fun A scaling function. Defaults to min-median scaling.
+#' @param ... Any arguments that need to be passed to the `error_funs`. Note
+#'   that all matching arguments will be applied to each function!
 #'
 #' @inherit error_concentration params
 #'
 #' @returns A list with components `best_runs` the runs with the lowest model
-#'   error (ME), `model_error` the model error for all runs and
-#'   `models_evaluated` the raw values returned by error_funs.
-#'
+#'   error (ME), `model_error` the model error for all runs,
+#'   `models_evaluated` the raw values returned by error_funs and
+#'   `best_runs_runmap`, a [cfp_run_map()] which can be used to rerun the
+#'   `best_runs` model configurations. Note, that for `best_runs_runmap` the
+#'   value of `run_id` is remapped to values `1:n_best`.
 #'
 #' @export
 evaluate_models <- function(x,
@@ -116,9 +121,26 @@ evaluate_models.cfp_altres <-
     dplyr::group_by(dplyr::across(dplyr::all_of(c(eval_cols)))) %>%
     dplyr::slice_min(ME, n = n_best)
 
+  best_runs_runmap <- best_runs %>%
+    dplyr::select(!"ME") %>%
+    dplyr::left_join(cfp_run_map(x), by = c("run_id", eval_cols)) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(eval_cols))) %>%
+    dplyr::arrange(run_id) %>%
+    dplyr::mutate(run_id = tapply(run_id, run_id)) %>%
+    dplyr::ungroup() %>%
+    data.frame()
+
+  rmap_attrs <- attributes(cfp_run_map(x))
+
+  attributes(best_runs_runmap) <-
+  c(attributes(best_runs_runmap),
+    rmap_attrs[!names(rmap_attrs) %in% c("names", "row.names")])
+  attr(best_runs_runmap, "n_runs") <- n_best
+
   list(best_runs = best_runs,
        model_error = x_model_error,
-       models_evaluated = x_eval_funs_applied)
+       models_evaluated = x_eval_funs_applied,
+       best_runs_runmap = best_runs_runmap)
 }
 
 
