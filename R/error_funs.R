@@ -34,7 +34,7 @@
 error_concentration <- function(
   x,
   param_cols = NULL,
-  normer
+  normer = "sd"
 ){
   UseMethod("error_concentration")
 }
@@ -44,7 +44,7 @@ error_concentration <- function(
 error_concentration.cfp_pfres <- function(
     x,
     param_cols = NULL,
-    normer
+    normer = "sd"
   ) {
 
   if (is.null(param_cols)){
@@ -109,7 +109,7 @@ error_concentration.cfp_pfres <- function(
 error_concentration.cfp_fgres <- function(
   x,
   param_cols = NULL,
-  normer = NULL){
+  normer = "sd"){
 
   if (is.null(param_cols)){
     #using layers map id_cols as default
@@ -128,7 +128,7 @@ error_concentration.cfp_fgres <- function(
 #' @exportS3Method
 error_concentration.cfp_altres <- function(x,
                                            param_cols = NULL,
-                                           normer){
+                                           normer = "sd"){
   cfp_altapply(x, error_concentration, param_cols = param_cols, normer = normer)
 
 }
@@ -139,7 +139,7 @@ error_concentration.cfp_altres <- function(x,
 error_efflux <-function(x,
          param_cols,
          EFFLUX,
-         normer,
+         normer = "sd",
          ...){
   UseMethod("error_efflux")
 }
@@ -150,7 +150,7 @@ error_efflux <-function(x,
     x,
     param_cols,
     EFFLUX,
-    normer,
+    normer = "sd",
     ...){
 
     id_cols <- cfp_id_cols(x)
@@ -182,7 +182,7 @@ error_efflux.cfp_altres <- function(
     x,
     param_cols,
     EFFLUX,
-    normer,
+    normer = "sd",
     ...){
     cfp_altapply(x, function(x, ...) { error_efflux(x, ...)},
                  param_cols = param_cols,

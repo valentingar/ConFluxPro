@@ -8,26 +8,62 @@
 evaluate_models(
   x,
   eval_funs = NULL,
-  eval_weigths = 1,
+  eval_weights = 1,
   param_cols,
   eval_cols,
-  n_best,
+  n_best = NULL,
   f_best = 0.01,
-  scaling_fun = scale_min_median
+  scaling_fun = scale_min_median,
+  ...
 )
 
 \method{evaluate_models}{cfp_altres}(
   x,
   eval_funs = NULL,
-  eval_weigths = 1,
+  eval_weights = 1,
   param_cols = cfp_id_cols(cfp_layers_map(cfp_og_model(PF_alt))),
-  eval_cols,
-  n_best,
-  f_best,
-  scaling_fun = scale_min_median
+  eval_cols = NULL,
+  n_best = NULL,
+  f_best = 0.01,
+  scaling_fun = scale_min_median,
+  ...
 )
 }
+\arguments{
+\item{x}{A \link{cfp_altres} object, as returned by \code{\link[=alternate]{alternate()}}.}
+
+\item{eval_funs}{A named list of evaluation functions. Each function must
+accept the arguments \code{x} and \code{param_cols} that are passed from this
+function.}
+
+\item{eval_weights}{A vector of weights the same length of \code{eval_funs} or
+one. Alternatively a \code{data.frame()} that specifies the weight for any wished
+\code{error_parameter} (names of \code{eval_funs}) and \code{param_cols} combinations.
+Provide the weights as a numeric in the \code{parameter_weight} column.}
+
+\item{param_cols}{The columns that, together, define different parameters (e.g. different gases)
+for which NRMSEs should be calculated separately (e.g. "gas"). Defaults to
+the id_cols of layers_map. If no such destinction is wished, set to \code{character()}}
+
+\item{eval_cols}{A character vector of columns for which the model error
+should be returned separately. Must be a subset of \code{param_cols} and
+defaults to the complete set.}
+
+\item{n_best}{An integer number of runs to select as the best runs.}
+
+\item{f_best}{A numeric between 0 to 1 as the fraction of runs to select as
+the best. Defaults to 0.01.}
+
+\item{scaling_fun}{A scaling function. Defaults to min-median scaling.}
+
+\item{...}{Further arguments passed to \code{efflux()} in case of cfp_fgres.}
+}
+\value{
+A list with components \code{best_runs} the runs with the lowest model
+error (ME), \code{model_error} the model error for all runs and
+\code{models_evaluated} the raw values returned by error_funs.
+}
 \description{
-Evaluate the model runs produced by a call to \code{\link[=alternate]{alternate()}} with user-defined
-error functions.
+Evaluate the model runs produced by a call to \code{\link[=alternate]{alternate()}} with
+user-defined error functions.
 }
