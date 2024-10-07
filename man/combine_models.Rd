@@ -12,6 +12,14 @@ combine_models(x)
 
 \method{combine_models}{list}(x)
 }
+\arguments{
+\item{x}{A list of models, must inherit from \code{\link[=cfp_dat]{cfp_dat()}}}
+}
 \description{
-A short description...
+Combinea list of multiple models or \code{\link[=cfp_dat]{cfp_dat()}} objects into a single object.
+}
+\examples{
+mod1 <- filter(base_dat, site == "site_a")
+mod2 <- filter(base_dat, site == "site_b")
+combine_models(list(mod1, mod2))
 }

@@ -57,7 +57,7 @@ cfp_fgmod <- function(x,
   }
 
   x <- structure(x,
-                 class = c("cfp_fgmod", class(x)),
+                 class = c("cfp_fgmod", "cfp_dat", "list"),
                  gases = gases,
                  modes = modes,
                  param = param,

@@ -1,15 +1,14 @@
 #' @title Combine Models
 #'
 #' @description
-#' A short description...
+#' Combinea list of multiple models or [cfp_dat()] objects into a single object.
 #'
+#' @param x A list of models, must inherit from [cfp_dat()]
 #'
-#'
-#'
-#'
-#'
-#'
-#'
+#' @examples
+#' mod1 <- filter(base_dat, site == "site_a")
+#' mod2 <- filter(base_dat, site == "site_b")
+#' combine_models(list(mod1, mod2))
 #' @export
 
 combine_models <- function(x){
@@ -34,29 +33,17 @@ combine_models.list <- function(x){
 
   stopifnot("All elements must have the same class" = all(sapply(lapply(x, class), identical, y = class(x[[1]]))))
 
-
-  # F_list <- NULL
-  # if( "PROFLUX" %in% names(x[[1]])){
-  #   F_list <- lapply(x, function(x) x$PROFLUX) %>%
-  #     dplyr::bind_rows(.id = "cmb_id") %>%
-  #     cfp_layered_profile(id_cols = c(cfp_id_cols(x$PROFLUX), "cmb_id"))
-  # } else if ("FLUX" %in% names(x[[1]])){
-  #   F_list <- lapply(x, function(x) x$FLUX)%>%
-  #     dplyr::bind_rows(.id = "cmb_id") %>%
-  #     cfp_layered_profile(id_cols = c(cfp_id_cols(x$FLUX), "cmb_id"))
-  # }
-
-
   combine_models_by_reference(x[[1]], x)
 }
 
 
 ### helpers ------
-
+#' @export
 combine_models_by_reference <- function(x_ref, x){
   UseMethod("combine_models_by_reference")
 }
 
+#' @exportS3Method
 combine_models_by_reference.cfp_pfres <- function(x_ref, x){
 
 
@@ -81,6 +68,7 @@ combine_models_by_reference.cfp_pfres <- function(x_ref, x){
   y
 }
 
+#' @exportS3Method
 combine_models_by_reference.cfp_pfmod <- function(x_ref, x){
 
 
@@ -92,16 +80,37 @@ combine_models_by_reference.cfp_pfmod <- function(x_ref, x){
                 known_flux_factor = cfp_known_flux_factor(x_ref))
 }
 
-
+#' @exportS3Method
 combine_models_by_reference.cfp_fgres <- function(x_ref, x){
-  NextMethod()
+
+  y <- NextMethod()
+
+  y <- cfp_fgres(
+    y,
+    lapply(x, function(x) x$FLUX %>%
+             dplyr::left_join(x$profiles, by = c("prof_id", "gas"))) %>%
+      dplyr::bind_rows(.id = "cmb_id") %>%
+      dplyr::select(!any_of("prof_id")) %>%
+      dplyr::right_join(y$profiles %>%
+                          dplyr::select(
+                            dplyr::all_of(c(cfp_id_cols(y),
+                                            "prof_id"))),
+                        by = cfp_id_cols(y))%>%
+      cfp_layered_profile(id_cols = "prof_id")
+  )
+  y
 }
 
+#' @exportS3Method
 combine_models_by_reference.cfp_fgmod <- function(x_ref, x){
-  NextMethod()
+  cfp_fgmod(NextMethod(),
+            gases = cfp_gases(x_ref),
+            modes = cfp_modes(x_ref),
+            param = cfp_param(x_ref),
+            funs = cfp_funs(x_ref))
 }
 
-
+#' @exportS3Method
 combine_models_by_reference.cfp_dat <- function(x_ref, x){
   lmap_list <- lapply(x, cfp_layers_map)
   lmap_first <- lmap_list[[1]]
@@ -115,7 +124,7 @@ combine_models_by_reference.cfp_dat <- function(x_ref, x){
     lmap_cmb <- lmap_first
   } else {
     lmap_cmb <- dplyr::bind_rows(lapply(x, cfp_layers_map), .id = "cmb_id") %>%
-      cfp_layers_map(id_cols = c(unique(sapply(lmap_list, cfp_id_cols)), "cmb_id"))
+      cfp_layers_map(id_cols = c(unique(unlist(lapply(lmap_list, cfp_id_cols))), "cmb_id"))
   }
   if (all(sapply(sp_list, identical, y = sp_first))){
     soilphys_cmb <- sp_first
@@ -134,28 +143,4 @@ combine_models_by_reference.cfp_dat <- function(x_ref, x){
 
 }
 
-
-
-
-reconstruct_class <- function(dat_ref, dat_new, ...){
-  UseMethod("reconstruct_class")
-}
-
-reconstruct_class.cfp_pfres <- function(dat_ref, dat_new, y = NULL){
-
-  dat_new <- cfp_pfres(NextMethod(), y)
-
-}
-
-
-reconstruct_class.cfp_pfmod <- function(dat_ref, dat_new){
-
-  new_cfp_pfmod(dat_new,
-                zero_flux = cfp_zero_flux(dat_ref),
-                zero_limits = cfp_zero_limits(dat_ref),
-                DSD0_optim = cfp_DSD0_optim(dat_ref),
-                evenness_factor = cfp_evenness_factor(dat_ref),
-                known_flux_factor = cfp_known_flux_factor(dat_ref))
-
-}
 
