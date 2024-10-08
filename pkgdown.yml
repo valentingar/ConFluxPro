@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   overview: overview.html
-last_built: 2024-10-08T09:55Z
+last_built: 2024-10-08T10:13Z
 urls:
   reference: https://valentingar.github.io/ConFluxPro/reference
   article: https://valentingar.github.io/ConFluxPro/articles
