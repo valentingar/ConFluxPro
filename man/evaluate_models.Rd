@@ -21,7 +21,7 @@ evaluate_models(
   x,
   eval_funs = NULL,
   eval_weights = 1,
-  param_cols = cfp_id_cols(cfp_layers_map(cfp_og_model(PF_alt))),
+  param_cols = cfp_id_cols(cfp_layers_map(cfp_og_model(x))),
   eval_cols = NULL,
   n_best = NULL,
   f_best = 0.01,

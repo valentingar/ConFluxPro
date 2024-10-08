@@ -75,8 +75,8 @@ efflux.cfp_altres <- function(x,
     y$FLUX <- x_FLUX
   }
   efflux(y) %>%
-    dplyr::mutate(prof_id = prof_id_old) %>%
-    dplyr::select(!prof_id_old) %>%
+    dplyr::mutate(prof_id = .data$prof_id_old) %>%
+    dplyr::select(!dplyr::all_of("prof_id_old")) %>%
     dplyr::relocate(run_id, .after = prof_id)
 }
 # helpers ----------------------
