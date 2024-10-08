@@ -49,6 +49,15 @@ cfp_fgmod <- function(x,
 
   stopifnot(inherits(x, "cfp_dat"))
 
+
+  if (length(gases) > 1){
+    if ( length(modes) == 1){
+      modes <- rep(modes, length(gases))
+    } else if (is.null(match.call()$gases)){
+      stop("Please manually assign each gas a mode when using multiple modes.")
+    }
+  }
+
   if(is.null(gases)){
     if(length(modes) != 1){
       stop("Only provide one modes or use gases argument.")
@@ -57,7 +66,7 @@ cfp_fgmod <- function(x,
   }
 
   x <- structure(x,
-                 class = c("cfp_fgmod", class(x)),
+                 class = c("cfp_fgmod", "cfp_dat", "list"),
                  gases = gases,
                  modes = modes,
                  param = param,

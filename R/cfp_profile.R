@@ -63,6 +63,7 @@ validate_cfp_profile <- function(x){
 
   stopifnot(inherits(x, c("cfp_profile", "data.frame")))
   id_cols <- cfp_id_cols(x)
+  stopifnot("id_cols must be unique!" = length(unique(id_cols)) == length(id_cols))
   id_cols_present <- id_cols %in% names(x)
 
   if (any(!id_cols_present)){

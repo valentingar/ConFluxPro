@@ -1,4 +1,3 @@
-#' @inheritParams cfp_pfmod
 #' @rdname extractors
 #' @export
 n_profiles <- function(x) {

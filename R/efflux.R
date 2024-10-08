@@ -5,6 +5,8 @@
 #'
 #' @param x A [cfp_pfres] or [cfp_fgres] model result, or a [cfp_altres].
 #'
+#' @param ... Arguments passed to methods.
+#'
 #' @importFrom rlang .data
 #'
 #' @export
@@ -75,8 +77,8 @@ efflux.cfp_altres <- function(x,
     y$FLUX <- x_FLUX
   }
   efflux(y) %>%
-    dplyr::mutate(prof_id = prof_id_old) %>%
-    dplyr::select(!prof_id_old) %>%
+    dplyr::mutate(prof_id = .data$prof_id_old) %>%
+    dplyr::select(!dplyr::all_of("prof_id_old")) %>%
     dplyr::relocate(run_id, .after = prof_id)
 }
 # helpers ----------------------
@@ -125,7 +127,7 @@ fg_efflux <- function(x,
     stopifnot("layers must be supplied for method = lex" =
                 !is.null(layers))
     stopifnot("undefined layer selected - check that all layers are present!" =
-              !any(layers > max(FLUX$FLUX$layer)))
+              !any(layers > max(x$FLUX$layer)))
     EFFLUX <- get_lex_efflux(x, layers)
   }
 

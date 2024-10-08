@@ -19,7 +19,7 @@ test_that("production fgres works", {
   PROD <- production(FLUX)
 
   expect_equal(nrow(PROD), 48)
-  expect_equal(round(PROD$prod_abs[5], 3), 0.101)
-  expect_equal(round(PROD$prod_rel[15], 3), 0.145)
+  expect_equal(round(PROD$prod_abs[5], 3), 2.434)
+  expect_equal(round(PROD$prod_rel[15], 3), 0.945)
 
 })

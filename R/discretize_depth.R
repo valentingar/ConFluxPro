@@ -76,6 +76,9 @@
 #'   list of numeric vectors with the same length as "param" can be provided.
 #'   Cannot differ between id_cols.
 #'
+#' @inheritDotParams cfp_profile id_cols
+#'
+#'
 #' @return A [cfp_layered_profile()] data.frame with the variables \code{upper}
 #' and \code{lower} defining the layers derived from depth_target.
 #' The column \code{depth} is the middle of each layer. And all variables from
@@ -99,10 +102,11 @@
 #'   slice_max(depth) %>%
 #'   reframe(depth = c(depth,seq(0,-100,-10)))
 #'
-#' discretize_depth(soiltemp,
-#'                  "t",
-#'                  "linear",
-#'                  dt,c(
+#' discretize_depth(df = soiltemp,
+#'                  param = "t",
+#'                  method = "linear",
+#'                  depth_target = dt,
+#'                  id_cols = c(
 #'                    "site","Date"))
 #' }
 #'
@@ -147,11 +151,11 @@ discretize_depth.data.frame <-
            param,
            method,
            depth_target,
-           id_cols = NULL,
            boundary_nearest = FALSE,
            boundary_average = "none",
            int_depth = 0.5,
            knots = NULL,
+           id_cols = NULL,
            ...){
 rlang::check_dots_empty()
 

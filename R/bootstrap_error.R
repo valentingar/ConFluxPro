@@ -62,7 +62,7 @@
 #' sampling error in the field and not the measurement error of the measurement
 #' device, which is much lower.
 
-#' @examples
+#' @examplesIf interactive()
 #' PROFLUX <- pro_flux(ConFluxPro::base_dat)
 #' PROFLUX_BSE <- bootstrap_error(PROFLUX)
 #' efflux(PROFLUX_BSE)
@@ -84,7 +84,51 @@ bootstrap_error <- function(x,
 
 #' @rdname bootstrap_error
 #' @exportS3Method
-bootstrap_error.cfp_pfres <- function(x,
+bootstrap_error.cfp_altres <- function(x,
+                                       n_samples = 50,
+                                       sd_x_ppm = NULL,
+                                       n_replicates = NULL,
+                                       sample_from = "gasdata",
+                                       rep_cols = NULL){
+
+  x <- combine_models(x)
+
+  if (!is.null(rep_cols)){
+    rep_cols <- unique(c(rep_cols, "cmb_id"))
+  }
+
+  .Class <- class(x)
+  NextMethod()
+}
+
+
+
+#' @rdname bootstrap_error
+#' @exportS3Method
+bootstrap_error.cfp_dat <- function(x,
+                            n_samples = 50,
+                            sd_x_ppm = NULL,
+                            n_replicates = NULL,
+                            sample_from = "gasdata",
+                            rep_cols = NULL){
+  stop("Can't bootstrap error from data alone!
+       Create a model frame first with cfp_pfmod() or cfp_fgmod().")
+}
+
+#' @rdname bootstrap_error
+#' @exportS3Method
+bootstrap_error.cfp_fgmod <- function(x,
+                                    n_samples = 50,
+                                    sd_x_ppm = NULL,
+                                    n_replicates = NULL,
+                                    sample_from = "gasdata",
+                                    rep_cols = NULL){
+  stop("Bootstrapping error for cfp_fgmod() models is not yet implemented.")
+}
+
+#' @rdname bootstrap_error
+#' @exportS3Method
+bootstrap_error.cfp_pfmod  <- function(x,
                                       n_samples = 50,
                                       sd_x_ppm = NULL,
                                       n_replicates = NULL,
@@ -126,7 +170,7 @@ make_bootstrap_model <- function(x,
 
 #' @rdname bootstrap_error
 #' @exportS3Method
-make_bootstrap_model.cfp_pfres <- function(x,
+make_bootstrap_model.cfp_pfmod <- function(x,
                                  n_samples = 50,
                                  sd_x_ppm = NULL,
                                  n_replicates = NULL,
@@ -193,7 +237,7 @@ calculate_bootstrap_error <- function(x, y){
 }
 #' @rdname bootstrap_error
 #' @exportS3Method
-calculate_bootstrap_error.cfp_pfres <- function(x, y){
+calculate_bootstrap_error.cfp_pfmod <- function(x, y){
   y_id_cols <- cfp_id_cols(y)
   y_id_cols <- y_id_cols[!(y_id_cols == "bootstrap_id")]
 
@@ -205,14 +249,14 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
                                                   "upper",
                                                   "lower",
                                                   "step_id")))) %>%
-    dplyr::summarise(DELTA_flux = sd(flux, na.rm = TRUE),
-                     DELTA_F0 = sd(F0, na.rm = TRUE),
-                     DELTA_prod = sd(prod, na.rm = TRUE),
+    dplyr::summarise(DELTA_flux = stats::sd(flux, na.rm = TRUE),
+                     DELTA_F0 = stats::sd(F0, na.rm = TRUE),
+                     DELTA_prod = stats::sd(prod, na.rm = TRUE),
                      flux = mean(flux, na.rm = TRUE),
                      F0 = mean(F0, na.rm = TRUE),
                      prod = mean(prod, na.rm = TRUE),
                      conc = mean(conc, na.rm = TRUE),
-                     RMSE = mean(RMSE, na.rm = TRUE),
+                     RMSE = mean(.data$RMSE, na.rm = TRUE),
                      )
 
   if(cfp_zero_flux(x)){
@@ -241,9 +285,9 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
   }
 
   x_profiles <- x$profiles
-  x_FLUX <- data.frame(x$PROFLUX)
+  #x_FLUX <- data.frame(x$PROFLUX)
 
-  x$PROFLUX <-
+  y <-
     x_profiles %>%
     dplyr::left_join(BOOTSTRAP_FLUX, by = cfp_id_cols(x)[cfp_id_cols(x) %in% names(BOOTSTRAP_FLUX)]) %>%
     dplyr::ungroup() %>%
@@ -264,6 +308,8 @@ calculate_bootstrap_error.cfp_pfres <- function(x, y){
       "RMSE"))) %>%
     #dplyr::right_join(x_FLUX, by = c("prof_id", "pmap")) %>%
     cfp_layered_profile(id_cols = "prof_id")
+
+  x <- cfp_pfres(x, y)
 
   x
 }
@@ -328,7 +374,7 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
   gasdata <- gasdata[new_sel, ]
   gasdata$bootstrap_id <- rep(1:n_samples, each = length(split_id))
 
-  gasdata <- cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
+  gasdata <- new_cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
 
   rownames(gasdata) <- 1:nrow(gasdata)
 
@@ -361,7 +407,7 @@ create_bootstrap_soilphys <- function(
   soilphys <- soilphys[new_sel, ]
   soilphys$bootstrap_id <- rep(1:n_samples, each = length(split_id_split))
 
-  soilphys <- cfp_soilphys(
+  soilphys <- new_cfp_soilphys(
     soilphys,
     id_cols = c(cfp_id_cols(soilphys),
                 "bootstrap_id"))

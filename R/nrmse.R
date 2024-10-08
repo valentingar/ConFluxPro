@@ -9,7 +9,7 @@
 #' normalization to be applied. Can be one of
 #' \describe{
 #' \item{mean}{the arithmetic mean of a}
-#' \item{sd}{the standard deviation of a}
+#' \item{sd}{the standard deviation of a (default).}
 #' \item{range}{the difference between the range of a}
 #' \item{IQR}{the difference between the interquantile range of a}
 #' }
@@ -27,7 +27,7 @@
 #' @rdname rmse
   nrmse <- function(a,
                     b,
-                    normer){
+                    normer = "sd"){
     RMSE <-rmse(a, b)
     if(normer == "mean"){
       NRMSE <- RMSE/abs(mean(a, na.rm = TRUE))

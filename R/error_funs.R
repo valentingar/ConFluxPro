@@ -34,16 +34,17 @@
 error_concentration <- function(
   x,
   param_cols = NULL,
-  normer
+  normer = "sd"
 ){
   UseMethod("error_concentration")
 }
 
+#' @rdname error_funs
 #' @exportS3Method
 error_concentration.cfp_pfres <- function(
     x,
     param_cols = NULL,
-    normer
+    normer = "sd"
   ) {
 
   if (is.null(param_cols)){
@@ -103,11 +104,12 @@ error_concentration.cfp_pfres <- function(
                                     na.rm = T))
 }
 
+#' @rdname error_funs
 #' @exportS3Method
 error_concentration.cfp_fgres <- function(
   x,
   param_cols = NULL,
-  normer = NULL){
+  normer = "sd"){
 
   if (is.null(param_cols)){
     #using layers map id_cols as default
@@ -122,23 +124,34 @@ error_concentration.cfp_fgres <- function(
     dplyr::summarise(NRMSE = mean(.data$dcdz_sd / abs(.data$dcdz_ppm), na.rm = TRUE))
 }
 
+#' @rdname error_funs
+#' @exportS3Method
+error_concentration.cfp_altres <- function(x,
+                                           param_cols = NULL,
+                                           normer = "sd"){
+  cfp_altapply(x, error_concentration, param_cols = param_cols, normer = normer)
+
+}
+
 
 #' @rdname error_funs
 #' @export
 error_efflux <-function(x,
          param_cols,
          EFFLUX,
-         normer,
+         normer = "sd",
          ...){
   UseMethod("error_efflux")
 }
 
+#' @rdname error_funs
 #' @exportS3Method
-  error_efflux.default <- function(x,
-                           param_cols,
-                           EFFLUX,
-                           normer,
-                           ...){
+  error_efflux.cfp_pfres <- error_efflux.cfp_fgres <- function(
+    x,
+    param_cols,
+    EFFLUX,
+    normer = "sd",
+    ...){
 
     id_cols <- cfp_id_cols(x)
 
@@ -163,3 +176,16 @@ error_efflux <-function(x,
 
   }
 
+#' @rdname error_funs
+#' @exportS3Method
+error_efflux.cfp_altres <- function(
+    x,
+    param_cols,
+    EFFLUX,
+    normer = "sd",
+    ...){
+    cfp_altapply(x, function(x, ...) { error_efflux(x, ...)},
+                 param_cols = param_cols,
+                 EFFLUX = EFFLUX,
+                 normer = normer)
+  }

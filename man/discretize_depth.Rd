@@ -35,11 +35,11 @@ discretize_depth(
   param,
   method,
   depth_target,
-  id_cols = NULL,
   boundary_nearest = FALSE,
   boundary_average = "none",
   int_depth = 0.5,
   knots = NULL,
+  id_cols = NULL,
   ...
 )
 }
@@ -88,6 +88,12 @@ Default = 0.5}
 'linspline' method are to be placed. If this differs for the parameters, a
 list of numeric vectors with the same length as "param" can be provided.
 Cannot differ between id_cols.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=cfp_profile]{cfp_profile}}
+  \describe{
+    \item{\code{}}{}
+  }}
 
 \item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
@@ -146,10 +152,11 @@ dt <- soiltemp \%>\%
   slice_max(depth) \%>\%
   reframe(depth = c(depth,seq(0,-100,-10)))
 
-discretize_depth(soiltemp,
-                 "t",
-                 "linear",
-                 dt,c(
+discretize_depth(df = soiltemp,
+                 param = "t",
+                 method = "linear",
+                 depth_target = dt,
+                 id_cols = c(
                    "site","Date"))
 }
 

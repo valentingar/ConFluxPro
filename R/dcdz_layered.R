@@ -252,7 +252,7 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       dcdz <- -a*b*exp(-a*d) *100 #in ppm/m
       dcdz_sd <- (abs(db*a*exp(-a*d)) + abs(da*(b-a*b*d)*exp(-a*d)))  *100 #in ppm/m
       dc<- ((b*exp(-a*upper)) - (b*exp(-a*lower)))
-      r2 <- 1 -(deviance(mod) / (var(df$x_ppm)*(length(df$x_ppm)-1)))
+      r2 <- 1 -(stats::deviance(mod) / (stats::var(df$x_ppm)*(length(df$x_ppm)-1)))
 
       create_return <- TRUE
     }
