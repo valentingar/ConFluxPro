@@ -84,6 +84,27 @@ bootstrap_error <- function(x,
 
 #' @rdname bootstrap_error
 #' @exportS3Method
+bootstrap_error.cfp_altres <- function(x,
+                                       n_samples = 50,
+                                       sd_x_ppm = NULL,
+                                       n_replicates = NULL,
+                                       sample_from = "gasdata",
+                                       rep_cols = NULL){
+
+  x <- combine_models(x)
+
+  if (!is.null(rep_cols)){
+    rep_cols <- unique(c(rep_cols, "cmb_id"))
+  }
+
+  .Class <- class(x)
+  NextMethod()
+}
+
+
+
+#' @rdname bootstrap_error
+#' @exportS3Method
 bootstrap_error.cfp_dat <- function(x,
                             n_samples = 50,
                             sd_x_ppm = NULL,

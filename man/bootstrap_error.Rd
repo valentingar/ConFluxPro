@@ -2,6 +2,7 @@
 % Please edit documentation in R/bootstrap_error.R
 \name{bootstrap_error}
 \alias{bootstrap_error}
+\alias{bootstrap_error.cfp_altres}
 \alias{bootstrap_error.cfp_dat}
 \alias{bootstrap_error.cfp_fgmod}
 \alias{bootstrap_error.cfp_pfmod}
@@ -12,6 +13,15 @@
 \title{Bootstrap-estimate of Flux-error}
 \usage{
 bootstrap_error(
+  x,
+  n_samples = 50,
+  sd_x_ppm = NULL,
+  n_replicates = NULL,
+  sample_from = "gasdata",
+  rep_cols = NULL
+)
+
+\method{bootstrap_error}{cfp_altres}(
   x,
   n_samples = 50,
   sd_x_ppm = NULL,
