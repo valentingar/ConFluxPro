@@ -437,7 +437,6 @@ cfp_id_cols.default <- function(x){
 #'
 #'
 #'
-#' @inheritParams cfp_pfmod
 
 #' @rdname extractors
 #' @export
