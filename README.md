@@ -6,6 +6,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ConFluxPro)](https://CRAN.R-project.org/package=ConFluxPro)
+[![R-CMD-check](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 # ConFluxPro <a href="https://valentingar.github.io/ConFluxPro/"><img src="man/figures/logo.svg" align="right" height="139" alt="ConFluxPro website" /></a>
