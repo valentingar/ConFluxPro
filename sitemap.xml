@@ -30,6 +30,7 @@
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/check_matching_repetitions.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/check_soilphys.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/coercion.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/reference/combine_models.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/complete_soilphys.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/dcdz_layered.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/deepflux.html</loc></url>
@@ -37,6 +38,7 @@
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/discretize_depth.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/efflux.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/error_funs.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/reference/evaluate_models.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/extractors.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/fg_flux.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/flux.html</loc></url>
@@ -46,7 +48,6 @@
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/layers_map.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/offset_correction.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/offset_subsetting.html</loc></url>
-<url><loc>https://valentingar.github.io/ConFluxPro/reference/plan_parallel_automatic.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/plot_profile.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/pro_flux.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/prod_mod_conc.html</loc></url>
