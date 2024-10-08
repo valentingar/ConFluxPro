@@ -62,7 +62,7 @@
 #' sampling error in the field and not the measurement error of the measurement
 #' device, which is much lower.
 
-#' @examples
+#' @examplesIf interactive()
 #' PROFLUX <- pro_flux(ConFluxPro::base_dat)
 #' PROFLUX_BSE <- bootstrap_error(PROFLUX)
 #' efflux(PROFLUX_BSE)

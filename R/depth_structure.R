@@ -7,7 +7,8 @@
 #' @param x An object to get general structure of.
 #' @param id_cols The columns that identify each set of depth structures
 #' to extract (e.g. a site identifier).
-#'
+#' @param ... internal
+#' One of `"gasdata"` `"soilphys"` or `"layers_map"`.
 #' @name depth_structure
 #' @export
 depth_structure <- function(x, id_cols = NULL, ...){
@@ -58,6 +59,7 @@ depth_structure.cfp_profile <- function(x, id_cols = NULL, ...){
 
 
 #' @rdname depth_structure
+#' @param structure_from From which element should the structure be returned?
 #' @exportS3Method
 depth_structure.cfp_dat <- function(x, id_cols = NULL, structure_from = NULL, ...){
   rlang::check_dots_empty0()

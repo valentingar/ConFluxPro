@@ -4,6 +4,7 @@
 \alias{combine_models}
 \alias{combine_models.cfp_altres}
 \alias{combine_models.list}
+\alias{combine_models_by_reference}
 \title{Combine Models}
 \usage{
 combine_models(x)
@@ -11,9 +12,13 @@ combine_models(x)
 \method{combine_models}{cfp_altres}(x)
 
 \method{combine_models}{list}(x)
+
+combine_models_by_reference(x_ref, x)
 }
 \arguments{
 \item{x}{A list of models, must inherit from \code{\link[=cfp_dat]{cfp_dat()}}}
+
+\item{x_ref}{Reference element of x that controls the return class and attributes.}
 }
 \description{
 Combinea list of multiple models or \code{\link[=cfp_dat]{cfp_dat()}} objects into a single object.

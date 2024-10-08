@@ -76,6 +76,9 @@
 #'   list of numeric vectors with the same length as "param" can be provided.
 #'   Cannot differ between id_cols.
 #'
+#' @inheritDotParams cfp_profile id_cols
+#'
+#'
 #' @return A [cfp_layered_profile()] data.frame with the variables \code{upper}
 #' and \code{lower} defining the layers derived from depth_target.
 #' The column \code{depth} is the middle of each layer. And all variables from

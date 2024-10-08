@@ -5,6 +5,8 @@
 #'
 #' @param x A [cfp_pfres] or [cfp_fgres] model result, or a [cfp_altres].
 #'
+#' @param ... Arguments passed to methods.
+#'
 #' @importFrom rlang .data
 #'
 #' @export

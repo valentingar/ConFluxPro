@@ -20,6 +20,11 @@ depth_structure(x, id_cols = NULL, ...)
 
 \item{id_cols}{The columns that identify each set of depth structures
 to extract (e.g. a site identifier).}
+
+\item{...}{internal
+One of \code{"gasdata"} \code{"soilphys"} or \code{"layers_map"}.}
+
+\item{structure_from}{From which element should the structure be returned?}
 }
 \description{
 Get the unique layers or depths, i.e. the backbone
