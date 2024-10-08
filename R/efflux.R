@@ -125,7 +125,7 @@ fg_efflux <- function(x,
     stopifnot("layers must be supplied for method = lex" =
                 !is.null(layers))
     stopifnot("undefined layer selected - check that all layers are present!" =
-              !any(layers > max(FLUX$FLUX$layer)))
+              !any(layers > max(x$FLUX$layer)))
     EFFLUX <- get_lex_efflux(x, layers)
   }
 

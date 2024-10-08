@@ -13,7 +13,6 @@ Imports:
     splines (>= 4.1.0),
     tidyr (>= 1.3.0),
     rlang (>= 1.1.0),
-    future (>= 1.24.0),
     furrr (>= 0.2.3),
     progressr (>= 0.10.0),
     ggplot2 (>= 3.4.2),
@@ -29,7 +28,8 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     knitr,
-    DiagrammeR
+    DiagrammeR,
+    purrr
 VignetteBuilder: 
     knitr, 
     rmarkdown
