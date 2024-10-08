@@ -7,7 +7,7 @@
 \usage{
 rmse(a, b)
 
-nrmse(a, b, normer)
+nrmse(a, b, normer = "sd")
 }
 \arguments{
 \item{a, b}{numeric vectors of same length to be compared}
@@ -16,7 +16,7 @@ nrmse(a, b, normer)
 normalization to be applied. Can be one of
 \describe{
 \item{mean}{the arithmetic mean of a}
-\item{sd}{the standard deviation of a}
+\item{sd}{the standard deviation of a (default).}
 \item{range}{the difference between the range of a}
 \item{IQR}{the difference between the interquantile range of a}
 }}

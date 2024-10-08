@@ -574,6 +574,13 @@ cfp_params_df.cfp_run_map <- function(x){
   attr(x, "params_df")
 }
 
+#' @exportS3Method
+cfp_params_df.cfp_altres <- function(x){
+  x <- cfp_run_map(x)
+  .Class <- class(x)
+  NextMethod()
+}
+
 
 
 #' @rdname extractors

@@ -78,7 +78,7 @@ new_cfp_pfmod <- function(x,
 
 
   x <- structure(x,
-                 class = c("cfp_pfmod","cfp_dat"),
+                 class = c("cfp_pfmod", "cfp_dat", "list"),
                  zero_flux = zero_flux,
                  zero_limits = zero_limits,
                  DSD0_optim = DSD0_optim,

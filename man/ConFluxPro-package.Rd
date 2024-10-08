@@ -8,6 +8,13 @@
 \description{
 A collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation based on the gradient-flux method and includes an inverse model for production-based flux estimation.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://valentingar.github.io/ConFluxPro/}
+}
+
+}
 \author{
 \strong{Maintainer}: Valentin Gartiser \email{code@valentingartiser.de} (\href{https://orcid.org/0000-0001-5320-374X}{ORCID})
 

@@ -4,11 +4,26 @@
 \alias{error_concentration}
 \alias{error_efflux}
 \alias{error_funs}
+\alias{error_concentration.cfp_pfres}
+\alias{error_concentration.cfp_fgres}
+\alias{error_concentration.cfp_altres}
+\alias{error_efflux.cfp_pfres}
+\alias{error_efflux.cfp_altres}
 \title{error_funs}
 \usage{
-error_concentration(x, param_cols = NULL, normer)
+error_concentration(x, param_cols = NULL, normer = "sd")
 
-error_efflux(x, param_cols, EFFLUX, normer, ...)
+\method{error_concentration}{cfp_pfres}(x, param_cols = NULL, normer = "sd")
+
+\method{error_concentration}{cfp_fgres}(x, param_cols = NULL, normer = "sd")
+
+\method{error_concentration}{cfp_altres}(x, param_cols = NULL, normer = "sd")
+
+error_efflux(x, param_cols, EFFLUX, normer = "sd", ...)
+
+\method{error_efflux}{cfp_pfres}(x, param_cols, EFFLUX, normer = "sd", ...)
+
+\method{error_efflux}{cfp_altres}(x, param_cols, EFFLUX, normer = "sd", ...)
 }
 \arguments{
 \item{x}{A cfp_pfres object, that is returned by a call
@@ -22,7 +37,7 @@ the id_cols of layers_map. If no such destinction is wished, set to \code{charac
 normalization to be applied. Can be one of
 \describe{
 \item{mean}{the arithmetic mean of a}
-\item{sd}{the standard deviation of a}
+\item{sd}{the standard deviation of a (default).}
 \item{range}{the difference between the range of a}
 \item{IQR}{the difference between the interquantile range of a}
 }}
