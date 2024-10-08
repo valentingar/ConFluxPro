@@ -51,7 +51,7 @@ evaluate_models.cfp_altres <-
   function(x,
            eval_funs = NULL,
            eval_weights = 1,
-           param_cols = cfp_id_cols(cfp_layers_map(cfp_og_model(PF_alt))),
+           param_cols = cfp_id_cols(cfp_layers_map(cfp_og_model(x))),
            eval_cols = NULL,
            n_best = NULL,
            f_best = 0.01,
@@ -107,26 +107,26 @@ evaluate_models.cfp_altres <-
            additional_args = additional_args) %>%
     dplyr::bind_rows(.id = "error_parameter") %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(c("error_parameter", param_cols)))) %>%
-    dplyr::mutate(sNRMSE = scaling_fun(NRMSE)) %>%
-    dplyr::left_join(weights_df, by = whats_in_both(list(names(.), names(weights_df))))
+    dplyr::mutate(sNRMSE = scaling_fun(.data$NRMSE)) %>%
+    dplyr::left_join(weights_df, by = whats_in_both(list(names(.data), names(weights_df))))
 
   x_model_error <-
     x_eval_funs_applied %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(c("run_id", eval_cols)))) %>%
-    dplyr::summarise(ME = sum(sNRMSE*parameter_weight)) %>%
-    dplyr::arrange(ME)
+    dplyr::summarise(ME = sum(.data$sNRMSE * .data$parameter_weight)) %>%
+    dplyr::arrange(.data$ME)
 
 
   best_runs <- x_model_error %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(c(eval_cols)))) %>%
-    dplyr::slice_min(ME, n = n_best)
+    dplyr::slice_min(.data$ME, n = n_best)
 
   best_runs_runmap <- best_runs %>%
     dplyr::select(!"ME") %>%
     dplyr::left_join(cfp_run_map(x), by = c("run_id", eval_cols)) %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(eval_cols))) %>%
-    dplyr::arrange(run_id) %>%
-    dplyr::mutate(run_id = tapply(run_id, run_id)) %>%
+    dplyr::arrange(.data$run_id) %>%
+    dplyr::mutate(run_id = tapply(.data$run_id, .data$run_id)) %>%
     dplyr::ungroup() %>%
     data.frame()
 
@@ -170,7 +170,7 @@ apply_eval_fun <- function(x,
 
 scale_min_median <- function(x){
   x_min <- min(x, na.rm = TRUE)
-  x_median <- median(x, na.rm = TRUE)
+  x_median <- stats::median(x, na.rm = TRUE)
 
   (x - x_min) / (x_median - x_min)
 }

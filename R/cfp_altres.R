@@ -80,7 +80,7 @@ validate_cfp_altres <- function(x){
 
 ###### EXTRACTION ######
 
-
+#' @rdname extractors
 #' @export
 cfp_og_model <- function(x){
   UseMethod("cfp_og_model")

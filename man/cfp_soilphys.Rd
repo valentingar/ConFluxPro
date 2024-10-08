@@ -24,6 +24,12 @@ cfp_soilphys(x, ...)
 
 }}
 
+\item{...}{
+  Arguments passed on to \code{\link[=cfp_profile]{cfp_profile}}
+  \describe{
+    \item{\code{}}{}
+  }}
+
 \item{id_cols}{Column names in data.frame that uniquely identify each profile.}
 }
 \value{

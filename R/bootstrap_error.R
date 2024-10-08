@@ -62,7 +62,7 @@
 #' sampling error in the field and not the measurement error of the measurement
 #' device, which is much lower.
 
-#' @examples
+#' @examplesIf interactive()
 #' PROFLUX <- pro_flux(ConFluxPro::base_dat)
 #' PROFLUX_BSE <- bootstrap_error(PROFLUX)
 #' efflux(PROFLUX_BSE)
@@ -249,14 +249,14 @@ calculate_bootstrap_error.cfp_pfmod <- function(x, y){
                                                   "upper",
                                                   "lower",
                                                   "step_id")))) %>%
-    dplyr::summarise(DELTA_flux = sd(flux, na.rm = TRUE),
-                     DELTA_F0 = sd(F0, na.rm = TRUE),
-                     DELTA_prod = sd(prod, na.rm = TRUE),
+    dplyr::summarise(DELTA_flux = stats::sd(flux, na.rm = TRUE),
+                     DELTA_F0 = stats::sd(F0, na.rm = TRUE),
+                     DELTA_prod = stats::sd(prod, na.rm = TRUE),
                      flux = mean(flux, na.rm = TRUE),
                      F0 = mean(F0, na.rm = TRUE),
                      prod = mean(prod, na.rm = TRUE),
                      conc = mean(conc, na.rm = TRUE),
-                     RMSE = mean(RMSE, na.rm = TRUE),
+                     RMSE = mean(.data$RMSE, na.rm = TRUE),
                      )
 
   if(cfp_zero_flux(x)){

@@ -155,10 +155,12 @@ device, which is much lower.
 }
 
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 PROFLUX <- pro_flux(ConFluxPro::base_dat)
 PROFLUX_BSE <- bootstrap_error(PROFLUX)
 efflux(PROFLUX_BSE)
 
 PROFLUX_BSE <- bootstrap_error(PROFLUX, n_replicates = 5, sd_x_ppm = 25)
 efflux(PROFLUX_BSE)
+\dontshow{\}) # examplesIf}
 }

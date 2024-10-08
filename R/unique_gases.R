@@ -24,7 +24,7 @@ unique_gases.cfp_profile <- function(x){
   if (!("gas" %in% x_id_cols)){
     stop("'gas' is not an id_col of this object.")
   } else {
-    x <- unqiue(x$gas)
+    x <- unique(x$gas)
   }
   x
 }

@@ -5,7 +5,6 @@
 #' from the air-filled pore space.
 #'
 #' @param AFPS The air-filled porosity.
-#' @param method The method
 #'
 #' @examples
 #' DSD0_millington_quirk(0.5,0.6)

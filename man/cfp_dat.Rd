@@ -4,7 +4,6 @@
 \alias{cfp_dat}
 \alias{as_cfp_dat}
 \alias{as_cfp_dat.cfp_dat}
-\alias{filter.cfp_dat}
 \alias{split_by_group}
 \alias{split_by_group.cfp_dat}
 \title{cfp_dat}
@@ -14,8 +13,6 @@ cfp_dat(gasdata, soilphys, layers_map)
 as_cfp_dat(x)
 
 \method{as_cfp_dat}{cfp_dat}(x)
-
-\method{filter}{cfp_dat}(.data, ..., .preserve = FALSE)
 
 split_by_group(x)
 

@@ -36,9 +36,23 @@ globals_cfp_dat <-
 
 globals_pro_flux <-
   c("step_id",
-    "prod_abs"
+    "prod",
+    "DELTA_prod",
+    "F0",
+    "DELTA_F0"
     )
 
+globals_efflux <-
+  c(
+  "efflux",
+  "DELTA_efflux")
+
+globals_production <-
+  c("prod_abs",
+    "DELTA_prod_abs",
+    "prod_rel",
+    "DELTA_prod_rel"
+  )
 
 globals_alternate <-
   c("run_id",
@@ -56,4 +70,6 @@ utils::globalVariables(
     globals_layers_map,
     globals_cfp_dat,
     globals_pro_flux,
+    globals_efflux,
+    globals_production,
     globals_alternate))

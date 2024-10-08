@@ -552,8 +552,9 @@ as_cfp_dat.cfp_dat <- function(x){
 }
 
 ##### FILTER ######
-#' @rdname cfp_dat
-#' @exportS3Method
+#' @rdname filter
+#' @inheritParams dplyr::filter
+#' @exportS3Method dplyr::filter
 filter.cfp_dat <- function(.data,
                            ...,
                            .preserve = FALSE){

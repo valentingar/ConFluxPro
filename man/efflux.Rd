@@ -18,6 +18,8 @@ efflux(x, ...)
 \arguments{
 \item{x}{A \link{cfp_pfres} or \link{cfp_fgres} model result, or a \link{cfp_altres}.}
 
+\item{...}{Arguments passed to methods.}
+
 \item{method}{Method(s) used to interpolate the efflux at the top of the soil
 from partial fluxes within the soil. One of
 \describe{

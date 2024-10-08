@@ -38,6 +38,8 @@ combine_models.list <- function(x){
 
 
 ### helpers ------
+#' @rdname combine_models
+#' @param x_ref Reference element of x that controls the return class and attributes.
 #' @export
 combine_models_by_reference <- function(x_ref, x){
   UseMethod("combine_models_by_reference")

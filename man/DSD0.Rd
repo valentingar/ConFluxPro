@@ -30,8 +30,6 @@ DSD0_linear(AFPS, a_lin, b_lin)
 \item{a_currie, b_currie}{fit parameter of Currie-style models}
 
 \item{a_lin, b_lin}{linear model coefficients}
-
-\item{method}{The method}
 }
 \description{
 Different functions to estimate soil diffusivity

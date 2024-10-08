@@ -20,6 +20,7 @@
 #' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 #'
 #' }
+#' @inheritDotParams cfp_profile id_cols
 #' @returns A \code{cfp_soilphys} object.
 #'
 #' @examples
