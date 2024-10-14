@@ -16,21 +16,21 @@
 #' @param zero_limits (numeric vector) a vector of length 2 defining the lower
 #'   and upper limit of the lowest flux if zero_flux = F.
 #'
-#' @param known_flux_factor RESERVED FOR FUTURE EXPANSION
+#' @param known_flux_factor `r lifecycle::badge("deprecated")`
 # (numeric) a numeric value > 0 that represents a
 #   weight for the error calculation with the known flux. A higher value means
 #   that the optimisation will weigh the error to the efflux more than in
 #   regard to the concentration measurements. Must be determined manually by
 #   trying out!
 #'
-#' @param DSD0_optim RESERVED FOR FUTURE EXPANSION
+#' @param DSD0_optim `r lifecycle::badge("deprecated")`
 # (logical) If TRUE, the diffusion coefficient (DSD0) values are
 #   also object to optimisation together with the production. DSD0 is varied between
 #   values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
 #   are given as DSD0_fit in the return table. Only makes sense to use in
 #   combination with known_flux.
 #'
-#' @param evenness_factor (numeric) A user defined factor used to penalise strong
+#' @param evenness_factor `r lifecycle::badge("experimental")`(numeric) A user defined factor used to penalise strong
 #' differences between the optimised production rates. This must be identified by
 #' trial-and-error and can help prevent that production rates are simply set to zero
 #' basically the lower a production is relative to the the maximum of the absolute of

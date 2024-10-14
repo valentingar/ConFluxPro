@@ -48,7 +48,7 @@ lower limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}
 \item{highlim}{(numeric vector)  the same length as gas with the
 upper limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}} models.}
 
-\item{layer_couple}{(numeric_vector) A vector the same length as gas that
+\item{layer_couple}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (numeric_vector) A vector the same length as gas that
 indicates how strongly the layer should be linked to the one below it
 (0 for no coupling, the default).}
 }

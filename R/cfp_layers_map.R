@@ -23,7 +23,7 @@
 #' lower limit of possible production allowed in [pro_flux()] models.
 #' @param highlim (numeric vector)  the same length as gas with the
 #' upper limit of possible production allowed in [pro_flux()] models.
-#' @param layer_couple (numeric_vector) A vector the same length as gas that
+#' @param layer_couple `r lifecycle::badge("experimental")` (numeric_vector) A vector the same length as gas that
 #' indicates how strongly the layer should be linked to the one below it
 #' (0 for no coupling, the default).
 #' @param ... not used
