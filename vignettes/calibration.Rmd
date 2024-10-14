@@ -1,0 +1,205 @@
+---
+title: "Calibration"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{calibration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette introduces a post-hoc calibration approach mainly aimed at `pro_flux()` models. 
+We will introduce the two steps required, (I) a parameter variation with `alternate()` and (II) the evaluation of the results with `evaluate_models()`.
+
+```{r setup}
+library(ConFluxPro)
+```
+
+# Background and idea
+Different input parameters of the flux-gradient method (FGM) affect the modeled effluxes to a different extent. 
+Most importantly, the soil physics that we defined in `soilphys` can have significant measurement and sampling uncertainties.
+The derived `DS` values often require many input parameters and therefore have a high uncertainty. At the same time,`DS` has a large effect on the modeled efflux, leading to potential offsets and biases.
+
+The following approach aims to quantify these effects and calibrate ConFluxPro models.
+It is mostly intended to be used with inverse models from the `pro_flux()` method. 
+The basic idea is to modify the values of the input parameters within a given range and re-run the models to quantify the effect on the efflux.
+In a second step, different parameters of model quality can be calculated to select the model runs with the lowest model error. 
+
+Programatically, you will mainly interact with three functions: `cfp_run_map()` to generate a plan on how to modify each model for each run, 
+`alterante()` to actually run all models and `evaluate_models()` to calculate a model error for each run and select the best results.
+
+Let's load in the basic model we generated in the last article.
+```{r }
+data("base_dat", package = "ConFluxPro")
+mod_pf <- pro_flux(base_dat)
+```
+
+# cfp_run_map(): Plan model modifications
+From a given model, we can generate a `run_map`, a plan on how to modify each model for each run with the function `cfp_run_map()`.
+We will now only consider the `method = "random"` variant, where the parameter values in each run are randomly sampled.
+This requires some input parameters.
+First, we need to select the parameters we want to modify.
+These parameters must come from the `soilphys` dataset.
+Keep the number of parameters low, because too many degrees of freedom may prevent the approach to converge on a specific parameter set. 
+Furthermore, different uncertainties can be balanced out by modifying a single parameter. 
+For example, a too high SWC can be compensated with a lower TPS or vice versa.
+
+Here will select to only adapt the `TPS` within each layer.
+We also need to tell the function, in what range we want to modify the parameter and how to modify it.
+Here, we have different options.
+We can either give a specified range in absolute values, for `type = "abs"`, subtract or add a certain amount from the original value with `type = "addition"` or multiply it with a given factor in `type = "factor"`.
+For now, let's select `type = "factor"`, and let the TPS modify for 90-110 % its original value.
+We provide this information as a named list to the `param` argument.
+The names of that list represent the columns in `soilphys` and the limits are given as a vector of length 2.
+The type of modification is given as `type`, a vector of the same length as `params`.
+The last thing we now have to provide is the number of model runs to generate by providing an integer number to `n_runs`.
+```{r cfp_run_map}
+tps_run_map <- 
+  cfp_run_map(mod_pf,
+              params = list("TPS" = c(0.9, 1.1)),
+              type = "factor",
+              method = "random",
+              n_runs = 100)
+```
+
+With this we have a valid object of class `cfp_run_map`.
+This object is a `data.frame` where each new run is identified by the column `run_id`.
+```{r rmap-df}
+head(tps_run_map)
+```
+We can see that there is a new row for each run, and the value that `TPS` will be multiplied with.
+In this case, the TPS of the entire profile will be modified with the same factor for each run.
+We can also select, that parameters within each layer should be modified independent from another.
+```{r rmap-layers}
+tps_run_map <- 
+  cfp_run_map(mod_pf,
+              params = list("TPS" = c(0.9, 1.1)),
+              type = "factor",
+              method = "random",
+              n_runs = 100,
+              layers_different = TRUE)
+```
+This generates a new TPS factor for each layer in `layers_map`.
+If we take a look in the `run_map` again, we now see that there are multiple rows for each `run_id` with a different `value` for each layer.
+```{r rmap-layers-head}
+head(tps_run_map)
+```
+We can extract the different parameters that are modified within the `run_map` with `cfp_params_df()`. 
+This shows the mapping between each parameter and its identifier (`param_id`).
+If `layers_different = TRUE`, then each parameter of a new layer has its own `param_id`.
+```{r rmap-params_df}
+cfp_params_df(tps_run_map)
+```
+We can also define these layers from a different source, either from `soilphys` or by providing a custom `data.frame`.
+For example, in the example dataset, TPS changes in four layers within the soilphys.
+Assuming these are measurements of TPS, it makes sense to vary the TPS within these boundaries as well.
+To do so, we first set `layers_from = "layers_altmap"` and provide the new `cfp_layers_map()`, that defines the layers for the parameter variation.
+```{r}
+library(dplyr)
+unique_tps <- 
+  cfp_soilphys(mod_pf) %>%
+  group_by(site, TPS) %>%
+  summarise(upper = max(upper),
+         lower = min(lower)) %>%
+  cfp_layers_map(id_cols = "site",
+                 gas = "CO2",
+                 lowlim = 0, highlim = 1000)
+
+tps_run_map <- 
+  cfp_run_map(mod_pf,
+              params = list("TPS" = c(0.9, 1.1)),
+              type = "factor",
+              method = "random",
+              n_runs = 100,
+              layers_different = TRUE,
+              layers_from = "layers_altmap",
+              layers_altmap = unique_tps)
+```
+
+If we look into the result of `cfp_params_df()` again, we can see that we now have one parameter for each layer and each site.
+So in total we vary eight parameters.
+```{r}
+cfp_params_df(tps_run_map)
+```
+By providing a `layers_altmap`, we can also specify distinct limits for each layer individually. 
+Let's say the measurement of TPS in the lower soil had a lower variation that in the topsoil.
+We can generate different limits within each layer:
+```{r}
+unique_tps_with_limits <- 
+  unique_tps %>%
+  mutate(TPS_delta = ifelse(lower <= -20, 0.02, 0.04)) %>%
+  mutate(TPS_min = TPS - TPS_delta,
+         TPS_max = TPS + TPS_delta)
+```
+All we have to do now is tell `cfp_run_map` to use these columns in `layers_altmap` as the new limits.
+We change the numeric limits (`c(0.9, 1.1`) into a character vector specifing the columns where these values are stored `c("TPS_min", "TPS_max")`.
+Depending on our setting in `layers_from`, the function will search for these columns in the respective dataset.
+Because the new values we provided are actual TPS values, and not factors, we also have to adjust the `type` to `"abs"`.
+```{r}
+tps_run_map <- 
+  cfp_run_map(mod_pf,
+              params = list("TPS" = c("TPS_min", "TPS_max")),
+              type = "abs",
+              method = "random",
+              n_runs = 100,
+              layers_different = TRUE,
+              layers_from = "layers_altmap",
+              layers_altmap = unique_tps_with_limits)
+```
+
+Whichever `run_map` you generated, the next step is to apply it to modify a model. 
+This happens within the function `alternate()`, which will be discussed now.
+
+# alternate(): Run modified models
+To apply a `cfp_run_map()` to a model, we use the function `alternate()`. 
+We provide both the original model, and the `run_map` we created above. 
+The last thing we need is a function that re-calculates the `soilphys` dataset.
+Because within each run, the TPS value will be adjusted, we have to re-calculate the AFPS and the diffusion coefficient that was calculated from it.
+In our case, we can use the `complete_soilphys()` function. 
+Depending on how your parameters are named and how they relate to another, you may have to write your own function for that.
+```{r call-alternate, cache = TRUE}
+mod_pf_alt <- alternate(
+  mod_pf,
+  f = function(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),
+  run_map = tps_run_map
+)
+```
+`alternate()` returns an object of class `cfp_altres`.
+This is simply a list of model results, with which you can interact as usual.
+For example, you can access the efflux of the third run like so:
+```{r}
+efflux(mod_pf_alt[[3]]) |>
+  head()
+```
+We can also do so for all runs at the same time.
+This binds the result together and adds the function `run_id`.
+```{r}
+EFFLUX_alt <-
+  efflux(mod_pf_alt) 
+EFFLUX_alt |>
+  head()
+```
+Let's visualize this to see how much the efflux changed only by slightly changing the TPS of the model layers:
+```{r}
+library(ggplot2)
+EFFLUX_alt %>%
+  ggplot(aes(x = Date, 
+             y = efflux, 
+             group = run_id,
+             col = "modified models"))+
+  geom_line(alpha = 0.2)+
+  geom_line(data = efflux(mod_pf),
+            aes(group = NA, col = "original model"))+
+  facet_wrap(~site, ncol = 1)+
+  theme_light()+
+  theme(legend.position = "bottom")
+
+```
+
+
