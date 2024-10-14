@@ -49,6 +49,8 @@ cfp_fgmod <- function(x,
 
   stopifnot(inherits(x, "cfp_dat"))
 
+  stopifnot("Selected gases not present in dataset" = all(gases %in% unique_gases(x)))
+
 
   if (length(gases) > 1){
     if ( length(modes) == 1){

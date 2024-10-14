@@ -206,8 +206,8 @@ To create a valid `cfp_layers_map`, we still need to add some information.
 These are only needed for a `pro_flux()` inverse model and are set to `NA` if missing.
 
 - `gas`: The gas as a `character()`.
-- `lowlim`: The lower limit of production allowed in that layer in \mu mol m^-3^ s^-1^ 
-- `highlim`: The upper limit of production allowed in that layer in \mu mol m^-3^ s^-1^ 
+- `lowlim`: The lower limit of production allowed in that layer in µmol m^-3^ s^-1^ 
+- `highlim`: The upper limit of production allowed in that layer in µmol m^-3^ s^-1^ 
 - `layer_couple`: Penalty factor, defaults to 0. See `?cfp_layers_map()`
 
 We can either do so in the function call or provide distinct values ourselves.

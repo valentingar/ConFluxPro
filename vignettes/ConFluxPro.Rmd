@@ -43,7 +43,7 @@ From the returned model result, we can then extract the `efflux()` or `productio
 Each aspect of the workflow is explained in more detail in the other articles of this documentation.
 
 - Create a `cfp_dat()` data set: `vignette("data_preparation", package = "ConFluxPro")`
-- Basic modeling with `fg_flux()` and `pro_flux()` TODO
+- Basic modeling with `fg_flux()` and `pro_flux()`: `vignette("flux", package = "ConFluxPro")`
 - Parameter variation and calibration with `alternate()` TODO
 - Uncertainty estimation with `bootstrap_error()` TODO
 

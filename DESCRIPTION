@@ -34,4 +34,5 @@ VignetteBuilder:
     knitr, 
     rmarkdown
 Roxygen: list(markdown = TRUE)
-URL: https://valentingar.github.io/ConFluxPro/
+URL: https://confluxpro.valentingartiser.de/, https://github.com/valentingar/ConFluxPro, https://valentingar.github.io/ConFluxPro/
+BugReports: https://github.com/valentingar/confluxpro/issues
