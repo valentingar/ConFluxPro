@@ -1,12 +1,14 @@
 #' @title prod_optim
 #'
-#' @description This is the optimizer-function that is minimized for the inverse,
-#' production based model. It takes as input a vector of the influx, as well as the
+#' @description This is the optimizer-function that is
+#' minimized for the inverse, production based model.
+#' It takes as input a vector of the influx, as well as the
 #' values of the production to be optimized.
 #'
-#' This function is embedded in pro_flux and is not intended to be used manually.
+#' This function is embedded in [pro_flux()] and is not intended to be
+#' used manually.
 #'
-#' @param X (numeric vector) specifying the productions to be optimized
+#' @param X (numeric vector) specifying the production rates to be optimized
 #' @param height (numeric vector) giving the height of each step
 #' @param DS (numeric vector) giving the DS of each step
 #' @param D0 RESERVED FOR FUTURE EXPANSION
@@ -21,24 +23,27 @@
 #' @param C0 (numeric) The concentration at the
 #' bottom of the lowermost step.
 #' @param zero_flux (logical) Applies the zero-flux boundary
-#' condition(TRUE)? If FALSE, the first value in X
+#' condition(`TRUE`)? If `FALSE`, the first value in `X`.
 #' represents the incoming flux to the lowest layer.
 #' @param F0 (numeric) flux into lowest layer.
 #' @param known_flux RESERVED FOR FUTURE EXPANSION
 # #' (numeric) known surface flux to be matched
-#' @param known_flux_factor (numeric) a factor defining how much the known flux
-#' should weigh in the RMSE calculation
-#' @param DSD0_optim (logical) should \code{DSD0} be optimised as well?
+#' @param known_flux_factor RESRVED FOR FUTURE EXPANSION
+# (numeric) a factor defining how much the known flux
+# should weigh in the RMSE calculation
+#' @param DSD0_optim RESERVED FOR FUTURE EXPANSION
+# (logical) should \code{DSD0} be optimized as well?
 #' @param layer_couple (numeric vector) A vector defining the weights that bind
-#' the different layers together. If all is zero, no penalisation for stark differences
-#' between the optimised production rates of adjecent layers takes place
-#' @param wmap (numeric) A vector defining the weights of the different concentration
-#' measurements in the RMSE calculation
-#' @param evenness_factor (numeric) Defines strong should stark differences between
-#' the production rates and very small production rates be penalised.
+#' the different layers together. If all is zero, no penalisation for stark
+#' differences between the optimized production rates of adjacent layers takes
+#' place
+#' @param wmap (numeric) A vector defining the weights of the different
+#' concentration measurements in the RMSE calculation.
+#' @param evenness_factor (numeric) Defines strong should stark differences
+#' between the production rates and very small production rates be penalized.
 #'
-#'
-#' @return RMSE real mean square error of the modeled and measured concentration.
+#' @return A modified RMSE root mean square error of the modeled and measured
+#' concentration.
 
 #' @family proflux
 #'

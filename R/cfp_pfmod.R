@@ -10,11 +10,10 @@
 #   and is probably only representative for a high temporal resolution (hours).
 #
 #' @param zero_flux (logical) Applies the zero-flux boundary condition? If
-#'   FALSE, the first value in X represents the incoming flux to the lowest
-#'   layer.
+#'   `FALSE`, `F0` is optimized alongside the production rates.
 #'
 #' @param zero_limits (numeric vector) a vector of length 2 defining the lower
-#'   and upper limit of the lowest flux if zero_flux = F.
+#'   and upper limit of the lowest flux if `zero_flux = FALSE`.
 #'
 #' @param known_flux_factor `r lifecycle::badge("deprecated")`
 # (numeric) a numeric value > 0 that represents a

@@ -17,11 +17,10 @@ cfp_pfmod(
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
 \item{zero_flux}{(logical) Applies the zero-flux boundary condition? If
-FALSE, the first value in X represents the incoming flux to the lowest
-layer.}
+\code{FALSE}, \code{F0} is optimized alongside the production rates.}
 
 \item{zero_limits}{(numeric vector) a vector of length 2 defining the lower
-and upper limit of the lowest flux if zero_flux = F.}
+and upper limit of the lowest flux if \code{zero_flux = FALSE}.}
 
 \item{DSD0_optim}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 

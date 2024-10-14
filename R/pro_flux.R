@@ -9,7 +9,7 @@
 #'   boundary condition is not met, the flux must be optimised as well. This can
 #'   be set in \code{zero_flux}.
 #'
-#' @inheritParams cfp_pfmod
+#@inheritParams cfp_pfmod
 #'
 #' @inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor known_flux_factor
 #'

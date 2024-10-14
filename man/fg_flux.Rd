@@ -16,8 +16,6 @@ fg_flux(x, ...)
 \method{fg_flux}{cfp_fgmod}(x, ...)
 }
 \arguments{
-\item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
-
 \item{...}{
   Arguments passed on to \code{\link[=cfp_fgmod]{cfp_fgmod}}
   \describe{
