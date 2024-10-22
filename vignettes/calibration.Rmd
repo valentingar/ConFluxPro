@@ -185,7 +185,7 @@ EFFLUX_alt <-
 EFFLUX_alt |>
   head()
 ```
-Let's visualize this to see how much the efflux changed only by slightly changing the TPS of the model layers:
+Let's visualize this to see how much the efflux changed only by slightly varying the TPS of the model layers:
 ```{r}
 library(ggplot2)
 EFFLUX_alt %>%
@@ -201,5 +201,94 @@ EFFLUX_alt %>%
   theme(legend.position = "bottom")
 
 ```
+
+# evaluate_models(): Find the effective parameter set
+The results stored in `mod_pf_alt` are different model runs with different parameterizations. 
+Some may have improved the model, while some may have made it worse.
+To select the best model runs, we have to quantify the model quality of each run. 
+ConFluxPro comes with two functions that estimate a specific error of the model, `error_concentration()` and `error_efflux()`.
+The first, `error_concentration()` quantifies the difference between the measured and modeled concentration profiles and is only applicable to `pro_flux()` models. The second, `error_efflux()` compares the estimated effluxes to reference measurements (e.g. chamber method).
+We could combine both errors and select the model run with the smallest overall error.
+
+This whole process is streamlined within `evaluate_models()`.
+Here, you can provide a list of error parameters to calculate. 
+The function applies each function to all model runs, scales and combines the returned error parameter and returns a list of the 'best' model runs.
+Let's do so with the model runs `mof_pf_alt` we calculated before.
+Since we don't have actual reference measurements, let's pretend that the efflux estimate of the original, unaltered model were chamber measurements we conducted.
+This is just to demonstrate the process.
+```{r}
+EFFLUX_ref <- efflux(mod_pf)
+```
+
+With this, let's evaluate the models.
+```{r}
+mod_pf_eval <- evaluate_models(mod_pf_alt,
+                               eval_funs = list(
+                                 "error_concentration" = error_concentration,
+                                 "error_efflux" = error_efflux),
+                               eval_weights = c(1, 1),
+                               param_cols = c("site"), 
+                               eval_cols = c("site"),
+                               n_best = 5,
+                               scaling_fun = scale_min_median,
+                               EFFLUX = EFFLUX_ref)
+```
+
+We defined two types of errors in our call within the `eval_funs` argument.
+The first is the difference between the modeled and the measured concentration profile as calculated by `error_concentration()`.
+The second is the difference between modeled and measured efflux returned by `error_efflux()`.
+While we don't have a real measurement of efflux in this case, we provide the 'measured' efflux as described above as an additional argument in `EFFLUX = EFFLUX_ref`.
+These functions (and any we may write ourselves) must take the parameter `param_cols`, indicating for which parameters a distinct error will be calculated.
+We set this to be `"site"` because we want to calibrate each of our sites individually.
+The function calculates an error parameter for each combination of `error_funs` and `param_cols`. 
+You can define weights for each error parameter in `eval_weights`.
+Finally, each parameter is scaled between the runs. 
+Here we set `scaling_fun = scale_min_median`, which means that the best run for this parameter has a value of 0 and the best 50\% of runs are <1.
+For each value in `eval_cols`, all scaled parameters are multiplied with ther weighing factor and summed up to an overall estimate of the model quality.
+Finally, we select the 5 best runs with the lowest model error by providing `n_best = 5`.
+
+
+Let's have a look at the result. 
+`evalueate_models()` returns a list with different elements.
+The runs with the lowest model error are stored in `best_runs`.
+```{r}
+mod_pf_eval$best_runs
+```
+
+We can see the `run_id` of the 5 best model runs for each site and the corresponding overall model error `ME`.
+The model error of all runs is stored in `model_error`...
+```{r}
+mod_pf_eval$model_error |>
+  head()
+```
+...and the exact values of each parameter in `models_evaluated`. 
+```{r}
+mod_pf_eval$models_evaluated |>
+  head()
+```
+
+If you have a lot of profiles (e.g. a long, hourly time series), it may be necessary to run the calibration only on a subset of profiles because of memory limitations.
+In this case, you will want to run the entire model again, once a good parameterization was found.
+To facilitate this, `evaluate_models()` prepares a `cfp_run_map()` with only the best runs which you can use with the complete model in `alternate()`.
+This is stored in `best_runs_runmap`.
+```{r}
+calibrated_run_map <- mod_pf_eval$best_runs_run_map
+```
+Let's use this run map to calculate the calibrated models.
+```{r}
+mod_pf_cal_list <- alternate(
+  mod_pf,
+  f = function(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),
+  run_map = calibrated_run_map
+)
+```
+We can combine the returned list into a single model frame.
+```{r}
+mod_pf_cal <- combine_models(mod_pf_cal_list)
+mod_pf_cal
+```
+
+
+
 
 

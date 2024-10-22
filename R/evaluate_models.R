@@ -167,7 +167,12 @@ apply_eval_fun <- function(x,
   x_eval
 }
 
-
+#' @title scale_min_median
+#' @description
+#' Scale a vector between its minimum and median.
+#' @param x a numeric vector
+#'
+#' @export
 scale_min_median <- function(x){
   x_min <- min(x, na.rm = TRUE)
   x_median <- stats::median(x, na.rm = TRUE)
