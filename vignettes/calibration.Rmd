@@ -272,7 +272,7 @@ In this case, you will want to run the entire model again, once a good parameter
 To facilitate this, `evaluate_models()` prepares a `cfp_run_map()` with only the best runs which you can use with the complete model in `alternate()`.
 This is stored in `best_runs_runmap`.
 ```{r}
-calibrated_run_map <- mod_pf_eval$best_runs_run_map
+calibrated_run_map <- mod_pf_eval$best_runs_runmap
 ```
 Let's use this run map to calculate the calibrated models.
 ```{r}
@@ -282,13 +282,9 @@ mod_pf_cal_list <- alternate(
   run_map = calibrated_run_map
 )
 ```
-We can combine the returned list into a single model frame.
+Finally, we can combine the returned list into a single model frame. 
+This adds a new column `cmb_id` to the `id_cols` that identifies each model run.
 ```{r}
 mod_pf_cal <- combine_models(mod_pf_cal_list)
 mod_pf_cal
 ```
-
-
-
-
-
