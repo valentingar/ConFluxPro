@@ -4,7 +4,7 @@
 \alias{cfp_soilphys}
 \alias{cfp_soilphys.cfp_dat}
 \alias{cfp_soilphys.data.frame}
-\title{cfp_soilphys}
+\title{Soil physical parameters data}
 \usage{
 cfp_soilphys(x, ...)
 
@@ -53,3 +53,12 @@ cfp_soilphys(
 ### Also used to extract an soilphys object from cfp_dat
 cfp_soilphys(ConFluxPro::base_dat)
 }
+\seealso{
+Other data formats: 
+\code{\link{cfp_dat}()},
+\code{\link{cfp_gasdata}()},
+\code{\link{cfp_layered_profile}()},
+\code{\link{cfp_layers_map}()},
+\code{\link{cfp_profile}()}
+}
+\concept{data formats}

@@ -1,4 +1,4 @@
-#'@title cfp_soilphys
+#'@title Soil physical parameters data
 #'
 #' @description
 #' Create a [cfp_soilphys] object. This is a data.frame containing layered
@@ -21,6 +21,9 @@
 #'
 #' }
 #' @inheritDotParams cfp_profile id_cols
+#'
+#' @family data formats
+#'
 #' @returns A \code{cfp_soilphys} object.
 #'
 #' @examples

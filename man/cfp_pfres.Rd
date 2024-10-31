@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_pfres.R
 \name{cfp_pfres}
 \alias{cfp_pfres}
-\title{cfp_pfres}
+\title{Model result of pro_flux}
 \usage{
 cfp_pfres(x, y)
 }
@@ -26,6 +26,13 @@ cfp_pfres(
   cfp_pfmod(ConFluxPro::base_dat),
   PROFLUX$PROFLUX
 )
+
 \dontshow{\}) # examplesIf}
 }
-\keyword{internal}
+\seealso{
+Other model frames: 
+\code{\link{cfp_fgmod}()},
+\code{\link{cfp_fgres}()},
+\code{\link{cfp_pfmod}()}
+}
+\concept{model frames}

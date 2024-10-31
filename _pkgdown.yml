@@ -1,4 +1,54 @@
 url: https://valentingar.github.io/ConFluxPro/
 template:
   bootstrap: 5
-
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - data_preparation
+  - flux
+  - calibration
+  - uncertainty
+reference:
+- title: Data formats
+  desc: Structure your data to make it ready to run the models.
+- contents:
+  - cfp_gasdata
+  - cfp_soilphys
+  - cfp_layers_map
+  - cfp_dat
+- title: Flux models
+  desc: Run different models on your data.
+- contents:
+  - has_concept("flux models")
+  - flux
+- title: Model results
+  desc: Extract merived parameters from models.
+- contents:
+  - efflux
+  - production
+- title: Calibration
+  desc: Run a parameter variation to calibrate the models.
+- contents:
+  - alternate
+  - cfp_run_map
+  - evaluate_models
+  - error_funs
+  - combine_models
+- title: Uncertainty estimation
+  desc: >
+    Estimate the uncertainty of the model result via a bootstrapping approach.
+- contents:
+  - bootstrap_error
+- title: Model frames
+  desc: >
+    Objects that define and hold the results of the models.
+    These functions are mostly internal.
+- contents:
+  - has_concept("model frames")
+- title: Example data
+- contents:
+  - has_keyword("datasets")
+- title: All functions
+- contents:
+  - matches("*")

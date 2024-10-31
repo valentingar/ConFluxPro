@@ -84,7 +84,6 @@ used manually.
 }
 \seealso{
 Other proflux: 
-\code{\link{pro_flux}()},
 \code{\link{prod_mod_conc}()}
 }
 \concept{proflux}

@@ -4,7 +4,7 @@
 \alias{cfp_layers_map}
 \alias{cfp_layers_map.cfp_dat}
 \alias{cfp_layers_map.data.frame}
-\title{cfp_layers_map}
+\title{Model layers}
 \usage{
 cfp_layers_map(x, ...)
 
@@ -94,3 +94,12 @@ cfp_layers_map(
 ### Extract from an existing cfp_dat
 cfp_layers_map(ConFluxPro::base_dat)
 }
+\seealso{
+Other data formats: 
+\code{\link{cfp_dat}()},
+\code{\link{cfp_gasdata}()},
+\code{\link{cfp_layered_profile}()},
+\code{\link{cfp_profile}()},
+\code{\link{cfp_soilphys}()}
+}
+\concept{data formats}

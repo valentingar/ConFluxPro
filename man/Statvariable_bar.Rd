@@ -13,4 +13,4 @@ Statvariable_bar
 \description{
 A custom ggplot2 stat that implements a variable-width bar plot.
 }
-\keyword{datasets}
+\keyword{internal}

@@ -5,7 +5,7 @@
 \alias{pro_flux.cfp_dat}
 \alias{pro_flux.cfp_pfres}
 \alias{pro_flux.cfp_pfmod}
-\title{pro_flux}
+\title{Inverse model of production profiles}
 \usage{
 pro_flux(x, ...)
 
@@ -85,8 +85,7 @@ PROFLUX <-
 
 }
 \seealso{
-Other proflux: 
-\code{\link{prod_mod_conc}()},
-\code{\link{prod_optim}()}
+Other flux models: 
+\code{\link{fg_flux}()}
 }
-\concept{proflux}
+\concept{flux models}

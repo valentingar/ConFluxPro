@@ -1,4 +1,4 @@
-#' @title cfp_layers_map
+#' @title Model layers
 #'
 #' @description A function to create a cfp_layers_map object that defines the
 #' layers of both [fg_flux()] and [pro_flux()] models.
@@ -27,6 +27,8 @@
 #' indicates how strongly the layer should be linked to the one below it
 #' (0 for no coupling, the default).
 #' @param ... not used
+#'
+#' @family data formats
 #'
 #' @details
 #' # Add lowlim and highlim for multiple gases

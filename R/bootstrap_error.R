@@ -1,4 +1,4 @@
-#' @title Bootstrap-estimate of Flux-error
+#' @title Estimate model uncertainty
 #'
 #' @param x A \code{cfp_pfres} model result from a call to [pro_flux()].
 #' @param n_samples The number of samples to take in the bootstrapping.

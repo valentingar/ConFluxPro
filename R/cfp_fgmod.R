@@ -1,4 +1,4 @@
-#' @title cfp_fgmod
+#' @title Model frame for fg_flux
 #'
 #' @description An S3 class for \code{fg_flux()} models. The class inherits from
 #' cfp_dat and adds any model specific parameters.
@@ -28,6 +28,8 @@
 #' @param funs (character) A vector defining the type of mean to be used for
 #' each parameter in \code{param}. One of "arith" or "harm".
 #'
+#' @family model frames
+#'
 #' @returns A \code{cfp_fgmod} object. This inherits from [cfp_dat()] and
 #' adds model specific parameters.
 #'
@@ -37,7 +39,6 @@
 #' @examples
 #' cfp_fgmod(ConFluxPro::base_dat)
 
-#' @keywords internal
 #' @export
 
 

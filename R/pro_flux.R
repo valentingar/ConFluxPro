@@ -1,4 +1,4 @@
-#' @title pro_flux
+#' @title Inverse model of production profiles
 #'
 #' @description This implements an inverse modeling approach which optimizes
 #'   vertically resolved production (or consumption) of the gases in question to
@@ -45,7 +45,7 @@
 #'  pro_flux()
 #' }
 #'
-#' @family proflux
+#' @family flux models
 #'
 #'
 #' @export

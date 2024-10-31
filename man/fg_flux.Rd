@@ -5,7 +5,7 @@
 \alias{fg_flux.cfp_dat}
 \alias{fg_flux.cfp_fgres}
 \alias{fg_flux.cfp_fgmod}
-\title{Flux gradient method}
+\title{Flux-gradient method}
 \usage{
 fg_flux(x, ...)
 
@@ -44,10 +44,15 @@ each parameter in \code{param}. One of "arith" or "harm".}
   }}
 }
 \description{
-This function takes a valid input dataset in cfp_dat
-and calculates fluxes accordingly. Fluxes are calculated for each layer defined
-in layers map and are given in mumol/m^2/s.
+\code{fg_flux()} implements different approaches to the flux-gradient
+method (FGM). It takes a valid input dataset from \code{cfp_dat()} and calculates
+for each layer defined in \code{cfp_layers_map()}.
 }
 \references{
 DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
 }
+\seealso{
+Other flux models: 
+\code{\link{pro_flux}()}
+}
+\concept{flux models}

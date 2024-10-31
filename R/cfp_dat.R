@@ -1,6 +1,6 @@
-#' @title cfp_dat
+#' @title Model input data
 #'
-#' @description This is the essential object class that binds all necessary
+#' @description `cfp_dat` is the essential object class that binds all necessary
 #' input data to run a ConFluxPro model. It automatically combines the different
 #' datasets and checks them for validity. It may split soilphys layers to correspond
 #' with layers_map and gasdata depths.
@@ -16,6 +16,7 @@
 #   optimised to meet this flux as well as the concentration measurements
 #   provided.
 #'
+#' @family data formats
 #'
 #' @return A cfp_dat object with the following parameters:
 #' \describe{
@@ -596,13 +597,11 @@ filter.cfp_dat <- function(.data,
 
 
 ##### SPLITTING #####
-#' @rdname cfp_dat
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
 }
 
-#' @rdname cfp_dat
 #' @exportS3Method
 split_by_group.cfp_dat <- function(x){
 

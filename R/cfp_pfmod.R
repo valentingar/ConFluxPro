@@ -1,4 +1,4 @@
-#' @title cfp_pfmod
+#' @title Model frame for pro_flux
 #'
 #' @description An S3 class for \code{pro_flux()} models. The class inherits from
 #' cfp_dat and adds any model specific parameters.
@@ -36,12 +36,12 @@
 #' all productions, the higher it is penalised. The \code{evenness_factor} then
 #' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
 #'
+#' @family model frames
+#'
 #' @returns A \code{cfp_pfmod} object that inherits from [cfp_dat()]
 #'
 #' @examples
 #' cfp_pfmod(ConFluxPro::base_dat)
-
-#' @keywords internal
 #' @export
 
 cfp_pfmod <- function(x,
