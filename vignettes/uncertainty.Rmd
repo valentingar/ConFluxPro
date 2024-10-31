@@ -1,0 +1,76 @@
+---
+title: "Uncertainty estimation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Uncertainty estimation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette shows how to estimate the uncertainty of the efflux and production estimates using `bootstrap_error()`.
+We will first generate a dataset of 'measurment uncertainty' in the input parameters and then use `bootstrap_error()` to estimate the resulting uncertainty in the models.
+
+```{r setup}
+library(ConFluxPro)
+```
+
+# Uncertainty of input variables
+
+The most relevant source of uncertainty in FGM-based models is that of the input parameters.
+Especially parameters related to the estimation of the calculation of the diffusion coefficient `DS` are hard to measure and soil heterogeneity introduces more uncertainty.
+We'll use the example dataset to demonstrate this effect. 
+```{r load base_dat}
+data("base_dat", package = "ConFluxPro")
+mod_pf <- pro_flux(base_dat)
+```
+
+In this dataset, the molar fraction of CO~2~ is measured in three replicates at each depth within the soil. 
+In a normal model, we use all replicates to fit a single profile. 
+By randomly sampling from these replicates, we can estimate the uncertainty the concentration profiles measurement introduces into the model. 
+This can be done in `bootstrap_error()`
+```{r bootstrap-gasdata}
+set.seed(42) # to get exactly same result every time 
+mod_pf_bs_gasdata <- 
+  bootstrap_error(mod_pf, 
+                  n_samples = 25, 
+                  sample_from = "gasdata")
+```
+With `n_samples = 25` we created 25 new models.
+In each of these, a random selection of all measured `x_ppm` values was created per profile. 
+This is done by resampling the same number of observations at each depth while allowing replacing (meaning that a single measurement may be sampled multiple times!). 
+If we extract the efflux, we now get a second column `DELTA_efflux` that gives the uncertainty.
+Notice, that the value of `efflux` has changed slightly from the original model.
+This is beacuse it is now estimated as the mean value of all 25 models, while the standard deviation is the estimate of `DELTA_efflux`.
+
+```{r}
+## after bootstrapping
+mod_pf_bs_gasdata %>%
+  filter(prof_id == 1) %>%
+  efflux()
+
+## originial model
+mod_pf %>%
+  filter(prof_id == 1) %>%
+  efflux()
+```
+
+
+In this dataset we have a single observation of all input parameters without any information of uncertainty. 
+Let's pretend we measured CO~2~ (`x_ppm`), `TPS` and `SWC` in three replicates (`replicate_id``) that introduce some variability around the mean value.
+```{r}
+library(dplyr)
+gasdata <- cfp_gasdata(base_dat)
+soilphys <- cfp_soilphys(base_dat)
+
+gasdata %>%
+  cross_join(data.frame(replicate_id = 1:3))
+```
+
+

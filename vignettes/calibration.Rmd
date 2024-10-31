@@ -2,7 +2,7 @@
 title: "Calibration"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{calibration}
+  %\VignetteIndexEntry{Calibration}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
