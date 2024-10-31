@@ -45,7 +45,7 @@ Each aspect of the workflow is explained in more detail in the other articles of
 - Create a `cfp_dat()` data set: `vignette("data_preparation", package = "ConFluxPro")`
 - Basic modeling with `fg_flux()` and `pro_flux()`: `vignette("flux", package = "ConFluxPro")`
 - Parameter variation and calibration with `alternate()`: `vignette("calibration", package = "ConFluxPro")`
-- Uncertainty estimation with `bootstrap_error()` TODO
+- Uncertainty estimation with `bootstrap_error()`: `vignette("uncertainty", package = "ConFluxPro")`
 
 
 ```{r, echo = FALSE}

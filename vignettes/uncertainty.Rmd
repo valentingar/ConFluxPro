@@ -23,6 +23,8 @@ library(ConFluxPro)
 
 # Uncertainty of input variables
 
+## General workflow and uncertainty from `gasdata`
+
 The most relevant source of uncertainty in FGM-based models is that of the input parameters.
 Especially parameters related to the estimation of the calculation of the diffusion coefficient `DS` are hard to measure and soil heterogeneity introduces more uncertainty.
 We'll use the example dataset to demonstrate this effect. 
@@ -47,7 +49,7 @@ In each of these, a random selection of all measured `x_ppm` values was created 
 This is done by resampling the same number of observations at each depth while allowing replacing (meaning that a single measurement may be sampled multiple times!). 
 If we extract the efflux, we now get a second column `DELTA_efflux` that gives the uncertainty.
 Notice, that the value of `efflux` has changed slightly from the original model.
-This is beacuse it is now estimated as the mean value of all 25 models, while the standard deviation is the estimate of `DELTA_efflux`.
+This is because it is now estimated as the mean value of all 25 models, while the standard deviation is the estimate of `DELTA_efflux`.
 
 ```{r}
 ## after bootstrapping
@@ -61,16 +63,99 @@ mod_pf %>%
   efflux()
 ```
 
+Similarly, we can extract the `production()`, where respective columns have also been added.
 
-In this dataset we have a single observation of all input parameters without any information of uncertainty. 
-Let's pretend we measured CO~2~ (`x_ppm`), `TPS` and `SWC` in three replicates (`replicate_id``) that introduce some variability around the mean value.
 ```{r}
-library(dplyr)
-gasdata <- cfp_gasdata(base_dat)
-soilphys <- cfp_soilphys(base_dat)
-
-gasdata %>%
-  cross_join(data.frame(replicate_id = 1:3))
+mod_pf_bs_gasdata %>%
+  filter(prof_id == 1) %>%
+  production()
 ```
 
+## Uncertainty from `soilphys`
+
+However, not only the gas concentration data carries uncertainty.
+Indeed, many parameters contained within the `soilphys` dataset are subject to significant uncertainty due to sampling error and soil heterogeneity.
+In the present dataset this is not represented at all.
+So, let's pretend that we measured `TPS` in three replicates identified by `replicate_id` that have some spread around the mean.
+We will do this by randomly sampling from a normal distribution with a standard deviation of 0.01.
+```{r}
+library(dplyr)
+soilphys <- cfp_soilphys(base_dat)
+
+set.seed(42)
+soilphys_replicate_TPS <-
+soilphys %>%
+  # get base TPS info
+  select(site, upper, lower, TPS) %>%
+  distinct() %>%
+  rename(TPS_mean = TPS) %>%
+  # repeat each row 3 times 
+  cross_join(data.frame(replicate_id = 1:3)) %>%
+  # generate new, random TPS values
+  mutate(TPS = rnorm(n(), TPS_mean, 0.01)) %>%
+  # join with rest of dataset
+  left_join(soilphys %>% select(!TPS),
+            by = c("site", "upper", "lower"),
+            relationship = "many-to-many") %>%
+  # recaluclate DS and c_air
+  complete_soilphys(DSD0_formula = "a*AFPS^b", quiet = TRUE) %>%
+  cfp_soilphys(id_cols = c("site", "Date", "replicate_id"))
+
+```
+Now we can create a new dataset that includes these new values of TPS and create a `cfp_pfmod` model.
+Of course you could use real measurements instead and include the variability of other parameters (`SWC`, `t`, ...) as well.
+We don't call `pro_flux()`, because we don't want to calulcate the result from each replication individual.
+```{r}
+replicate_dat <- 
+  cfp_dat(cfp_gasdata(base_dat),
+          soilphys_replicate_TPS,
+          cfp_layers_map(base_dat))
+
+mod_pf_replicate <-
+  cfp_pfmod(replicate_dat)
+
+```
+Now we can run `bootstrap_error()` again.
+This time, we will tell the function to resample from the `soilphys` dataset when creating the bootstrapping runs. 
+To do this, we need to tell it which `id_cols` define(s) the replications of the dataset.
+In our case, this is `replicate_id`.
+Here, only a single value for each profile and depth is sampled for each run.
+The new call looks like this:
+```{r}
+set.seed(42)
+mod_pf_bs_soilphys <- 
+  bootstrap_error(mod_pf_replicate, 
+                  n_samples = 25, 
+                  sample_from = "soilphys",
+                  rep_cols = "replicate_id")
+```
+If we take a look into the result of `efflux()` again, we can see that the uncertainty of the efflux estimate has increased compared to using the variability in `gasdata`.
+This is both because `TPS`, from which `DS` is derived, has a strong impact on the flux calculation and because the variability within the `gasdata` dataset is probably unrealisticly low and more representative of an instrument than of a measurement error.
+
+```{r}
+## boostrapping from soilphys
+mod_pf_bs_soilphys %>%
+  filter(prof_id < 10) %>%
+  efflux()
+
+## boostrapping from gasdata
+mod_pf_bs_gasdata %>%
+  filter(prof_id < 10) %>%
+  efflux()
+```
+
+Finally, we can also use the variability from both datasets at the same time.
+This runs both sampling strategies independent from another.
+
+```{r}
+set.seed(42)
+mod_pf_bs_both <- 
+  bootstrap_error(mod_pf_replicate, 
+                  n_samples = 25, 
+                  sample_from = "both",
+                  rep_cols = "replicate_id")
+mod_pf_bs_both %>%
+  filter(prof_id < 10) %>%
+  efflux()
+```
 
