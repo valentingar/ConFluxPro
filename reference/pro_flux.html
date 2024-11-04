@@ -19,7 +19,7 @@ be set in zero_flux."><meta property="og:image" content="https://valentingar.git
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,15 +66,7 @@ be set in <code>zero_flux</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pro_flux</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'cfp_dat'</span></span>
-<span><span class="fu">pro_flux</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  zero_flux <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  zero_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
-<span>  DSD0_optim <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  evenness_factor <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  known_flux_factor <span class="op">=</span> <span class="fl">0</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu">pro_flux</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'cfp_pfres'</span></span>
 <span><span class="fu">pro_flux</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -87,7 +79,11 @@ be set in <code>zero_flux</code>.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>A <code>cfp_dat</code> object with all the necessary input datasets.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Arguments passed on to <code><a href="cfp_pfmod.html">cfp_pfmod</a></code></p><dl><dt><code>zero_flux</code></dt>
 <dd><p>(logical) Applies the zero-flux boundary condition? If
 <code>FALSE</code>, <code>F0</code> is optimized alongside the production rates.</p></dd>
