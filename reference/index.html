@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,13 +15,18 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/ConFluxPro.html">Get started</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/overview.html">overview</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_preparation.html">Data preparation</a></li>
+    <li><a class="dropdown-item" href="../articles/flux.html">Flux calculation</a></li>
+    <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
+    <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -33,7 +38,42 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="data-formats">Data formats<a class="anchor" aria-label="anchor" href="#data-formats"></a></h2>
+
+      <div class="section-desc"><p>Structure your data to make it ready to run the models.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cfp_gasdata.html">cfp_gasdata()</a></code>
+
+        </dt>
+        <dd>Soil gas concentration data</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_soilphys.html">cfp_soilphys()</a></code>
+
+        </dt>
+        <dd>Soil physical parameters data</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_layers_map.html">cfp_layers_map()</a></code>
+
+        </dt>
+        <dd>Model layers</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_dat.html">cfp_dat()</a></code> <code><a href="cfp_dat.html">as_cfp_dat()</a></code>
+
+        </dt>
+        <dd>Model input data</dd>
+      </dl></div><div class="section level2">
+      <h2 id="filter-and-combine-models">Filter and combine models<a class="anchor" aria-label="anchor" href="#filter-and-combine-models"></a></h2>
 
 
 
@@ -45,11 +85,237 @@
 
       <dl><dt>
 
-          <code><a href="D0_massman.html">D0_massman()</a></code>
+          <code><a href="filter.html">filter()</a></code>
 
         </dt>
-        <dd>D0_Massman</dd>
+        <dd>Filter profiles</dd>
       </dl><dl><dt>
+
+          <code><a href="combine_models.html">combine_models()</a></code> <code><a href="combine_models.html">combine_models_by_reference()</a></code>
+
+        </dt>
+        <dd>Combine models</dd>
+      </dl></div><div class="section level2">
+      <h2 id="flux-models">Flux models<a class="anchor" aria-label="anchor" href="#flux-models"></a></h2>
+
+      <div class="section-desc"><p>Run different models on your data.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="fg_flux.html">fg_flux()</a></code>
+
+        </dt>
+        <dd>Flux-gradient method</dd>
+      </dl><dl><dt>
+
+          <code><a href="pro_flux.html">pro_flux()</a></code>
+
+        </dt>
+        <dd>Inverse model of production profiles</dd>
+      </dl><dl><dt>
+
+          <code><a href="flux.html">flux()</a></code>
+
+        </dt>
+        <dd>Re-run model</dd>
+      </dl></div><div class="section level2">
+      <h2 id="model-results">Model results<a class="anchor" aria-label="anchor" href="#model-results"></a></h2>
+
+      <div class="section-desc"><p>Extract derived parameters from models.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="efflux.html">efflux()</a></code>
+
+        </dt>
+        <dd>Extract efflux rates</dd>
+      </dl><dl><dt>
+
+          <code><a href="production.html">production()</a></code>
+
+        </dt>
+        <dd>Extract production rates</dd>
+      </dl><dl><dt>
+
+          <code><a href="deepflux.html">deepflux()</a></code>
+
+        </dt>
+        <dd>Extract flux rates from deep soil</dd>
+      </dl></div><div class="section level2">
+      <h2 id="calibration">Calibration<a class="anchor" aria-label="anchor" href="#calibration"></a></h2>
+
+      <div class="section-desc"><p>Run a parameter variation to calibrate the models.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="alternate.html">alternate()</a></code> <code><a href="alternate.html">alternate_model()</a></code>
+
+        </dt>
+        <dd>Run parameter variation</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_run_map.html">cfp_run_map()</a></code>
+
+        </dt>
+        <dd>Create a run plan for parameter variation</dd>
+      </dl><dl><dt>
+
+          <code><a href="evaluate_models.html">evaluate_models()</a></code>
+
+        </dt>
+        <dd>Evaluate model runs for calibration</dd>
+      </dl><dl><dt>
+
+          <code><a href="error_funs.html">error_concentration()</a></code> <code><a href="error_funs.html">error_efflux()</a></code>
+
+        </dt>
+        <dd>Estimate model error</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_altapply.html">cfp_altapply()</a></code>
+
+        </dt>
+        <dd>Apply a function over a list of models</dd>
+      </dl></div><div class="section level2">
+      <h2 id="uncertainty-estimation">Uncertainty estimation<a class="anchor" aria-label="anchor" href="#uncertainty-estimation"></a></h2>
+
+      <div class="section-desc"><p>Estimate the uncertainty of the model result via a bootstrapping approach.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="bootstrap_error.html">bootstrap_error()</a></code> <code><a href="bootstrap_error.html">make_bootstrap_model()</a></code> <code><a href="bootstrap_error.html">calculate_bootstrap_error()</a></code>
+
+        </dt>
+        <dd>Estimate model uncertainty</dd>
+      </dl></div><div class="section level2">
+      <h2 id="model-frames">Model frames<a class="anchor" aria-label="anchor" href="#model-frames"></a></h2>
+
+      <div class="section-desc"><p>Objects that define and hold the results of the models. These functions are mostly internal.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cfp_altres.html">cfp_altres()</a></code>
+
+        </dt>
+        <dd>Model runs as result of parameter variation</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_fgmod.html">cfp_fgmod()</a></code>
+
+        </dt>
+        <dd>Model frame for fg_flux</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_fgres.html">cfp_fgres()</a></code>
+
+        </dt>
+        <dd>Model result of fg_flux</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_pfmod.html">cfp_pfmod()</a></code>
+
+        </dt>
+        <dd>Model frame for pro_flux</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_pfres.html">cfp_pfres()</a></code>
+
+        </dt>
+        <dd>Model result of pro_flux</dd>
+      </dl></div><div class="section level2">
+      <h2 id="profiles">Profiles<a class="anchor" aria-label="anchor" href="#profiles"></a></h2>
+
+      <div class="section-desc"><p>Object types for soil profiles</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cfp_profile.html">cfp_profile()</a></code>
+
+        </dt>
+        <dd>Object for soil profiles</dd>
+      </dl><dl><dt>
+
+          <code><a href="cfp_layered_profile.html">cfp_layered_profile()</a></code>
+
+        </dt>
+        <dd>Object for layered soil profiles</dd>
+      </dl></div><div class="section level2">
+      <h2 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="discretize_depth.html">discretize_depth()</a></code>
+
+        </dt>
+        <dd>Interpolate over depth to layered profile</dd>
+      </dl><dl><dt>
+
+          <code><a href="complete_soilphys.html">complete_soilphys()</a></code>
+
+        </dt>
+        <dd>(Re-)calculate soil physical parameters</dd>
+      </dl><dl><dt>
+
+          <code><a href="check_soilphys.html">check_soilphys()</a></code>
+
+        </dt>
+        <dd>Check for complete and correct soil physical parameters</dd>
+      </dl></div><div class="section level2">
+      <h2 id="diffusion-parameter">Diffusion parameter<a class="anchor" aria-label="anchor" href="#diffusion-parameter"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="DSD0.html">DSD0_millington_quirk()</a></code> <code><a href="DSD0.html">DSD0_moldrup()</a></code> <code><a href="DSD0.html">DSD0_currie()</a></code> <code><a href="DSD0.html">DSD0_linear()</a></code>
 
@@ -57,136 +323,85 @@
         <dd>Calculate DSD0</dd>
       </dl><dl><dt>
 
-          <code><a href="Statvariable_bar.html">Statvariable_bar</a></code>
+          <code><a href="D0_massman.html">D0_massman()</a></code>
 
         </dt>
-        <dd>variable bar</dd>
-      </dl><dl><dt>
+        <dd>Calculate D0</dd>
+      </dl></div><div class="section level2">
+      <h2 id="extractors">Extractors<a class="anchor" aria-label="anchor" href="#extractors"></a></h2>
 
-          <code><a href="alternate.html">alternate()</a></code> <code><a href="alternate.html">alternate_model()</a></code>
 
-        </dt>
-        <dd>alternate</dd>
-      </dl><dl><dt>
 
-          <code><a href="balance_correction.html">balance_correction()</a></code>
 
-        </dt>
-        <dd>balance_correction</dd>
-      </dl><dl><dt>
+    </div><div class="section level2">
 
-          <code><a href="base_dat.html">base_dat</a></code>
 
-        </dt>
-        <dd>base_dat</dd>
-      </dl><dl><dt>
 
-          <code><a href="bootstrap_error.html">bootstrap_error()</a></code> <code><a href="bootstrap_error.html">make_bootstrap_model()</a></code> <code><a href="bootstrap_error.html">calculate_bootstrap_error()</a></code>
+
+      <dl><dt>
+
+          <code><a href="extractors.html">cfp_og_model()</a></code> <code><a href="extractors.html">cfp_id_cols()</a></code> <code><a href="extractors.html">cfp_gases()</a></code> <code><a href="extractors.html">cfp_modes()</a></code> <code><a href="extractors.html">cfp_param()</a></code> <code><a href="extractors.html">cfp_funs()</a></code> <code><a href="extractors.html">cfp_zero_flux()</a></code> <code><a href="extractors.html">cfp_zero_limits()</a></code> <code><a href="extractors.html">cfp_DSD0_optim()</a></code> <code><a href="extractors.html">cfp_evenness_factor()</a></code> <code><a href="extractors.html">cfp_known_flux_factor()</a></code> <code><a href="extractors.html">cfp_runmap_type()</a></code> <code><a href="extractors.html">cfp_params_df()</a></code> <code><a href="extractors.html">cfp_n_runs()</a></code> <code><a href="extractors.html">cfp_layers_different()</a></code> <code><a href="extractors.html">cfp_layers_from()</a></code> <code><a href="extractors.html">cfp_layers_altmap()</a></code>
 
         </dt>
-        <dd>Bootstrap-estimate of Flux-error</dd>
-      </dl><dl><dt>
+        <dd>Extract elements from an object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="mathematical-formulas">Mathematical formulas<a class="anchor" aria-label="anchor" href="#mathematical-formulas"></a></h2>
 
-          <code><a href="cfp_altapply.html">cfp_altapply()</a></code>
 
-        </dt>
-        <dd>cfp_altapply</dd>
-      </dl><dl><dt>
 
-          <code><a href="cfp_altres.html">cfp_altres()</a></code> <code><a href="cfp_altres.html">cfp_og_model(<i>&lt;cfp_altres&gt;</i>)</a></code>
 
-        </dt>
-        <dd>cfp_altres</dd>
-      </dl><dl><dt>
+    </div><div class="section level2">
 
-          <code><a href="cfp_dat.html">cfp_dat()</a></code> <code><a href="cfp_dat.html">as_cfp_dat()</a></code> <code><a href="cfp_dat.html">split_by_group()</a></code>
 
-        </dt>
-        <dd>cfp_dat</dd>
-      </dl><dl><dt>
 
-          <code><a href="cfp_gasdata.html">cfp_gasdata()</a></code>
+
+      <dl><dt>
+
+          <code><a href="rmse.html">rmse()</a></code> <code><a href="rmse.html">nrmse()</a></code>
 
         </dt>
-        <dd>cfp_gasdata</dd>
+        <dd>(Normalized) root mean square error</dd>
       </dl><dl><dt>
 
-          <code><a href="cfp_layered_profile.html">cfp_layered_profile()</a></code>
+          <code><a href="harm.html">harm()</a></code>
 
         </dt>
-        <dd>cfp_layered_profile</dd>
+        <dd>Harmonic mean</dd>
       </dl><dl><dt>
 
-          <code><a href="cfp_layers_map.html">cfp_layers_map()</a></code>
+          <code><a href="scale_min_median.html">scale_min_median()</a></code>
 
         </dt>
-        <dd>cfp_layers_map</dd>
-      </dl><dl><dt>
+        <dd>Scale a vector by its min and median</dd>
+      </dl></div><div class="section level2">
+      <h2 id="utility">Utility<a class="anchor" aria-label="anchor" href="#utility"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="cfp_parameter.html">cfp_parameter()</a></code>
 
         </dt>
-        <dd>cfp_parameter</dd>
+        <dd>Get parameter descriptions and units</dd>
       </dl><dl><dt>
 
-          <code><a href="cfp_profile.html">cfp_profile()</a></code>
+          <code><a href="plot_profile.html">plot_profile()</a></code>
 
         </dt>
-        <dd>cfp_profile</dd>
+        <dd>Plot profiles</dd>
       </dl><dl><dt>
 
-          <code><a href="cfp_run_map.html">cfp_run_map()</a></code>
+          <code><a href="season.html">season()</a></code>
 
         </dt>
-        <dd>cfp_run_map</dd>
-      </dl><dl><dt>
-
-          <code><a href="cfp_soilphys.html">cfp_soilphys()</a></code>
-
-        </dt>
-        <dd>cfp_soilphys</dd>
-      </dl><dl><dt>
-
-          <code><a href="check_matching_repetitions.html">check_matching_repetitions()</a></code>
-
-        </dt>
-        <dd>Repetitions in layered profiles</dd>
-      </dl><dl><dt>
-
-          <code><a href="check_soilphys.html">check_soilphys()</a></code>
-
-        </dt>
-        <dd>check_soilphys</dd>
-      </dl><dl><dt>
-
-          <code><a href="coercion.html">as_cfp_fgmod()</a></code> <code><a href="coercion.html">as_cfp_pfmod()</a></code>
-
-        </dt>
-        <dd>coercion</dd>
-      </dl><dl><dt>
-
-          <code><a href="combine_models.html">combine_models()</a></code> <code><a href="combine_models.html">combine_models_by_reference()</a></code>
-
-        </dt>
-        <dd>Combine Models</dd>
-      </dl><dl><dt>
-
-          <code><a href="complete_soilphys.html">complete_soilphys()</a></code>
-
-        </dt>
-        <dd>complete_soilphys</dd>
-      </dl><dl><dt>
-
-          <code><a href="dcdz_layered.html">dcdz_layered()</a></code>
-
-        </dt>
-        <dd>dcdz_layered</dd>
-      </dl><dl><dt>
-
-          <code><a href="deepflux.html">deepflux()</a></code>
-
-        </dt>
-        <dd>deepflux</dd>
+        <dd>Get season of a date-time</dd>
       </dl><dl><dt>
 
           <code><a href="depth_structure.html">depth_structure()</a></code>
@@ -195,180 +410,130 @@
         <dd>Unique layers depths</dd>
       </dl><dl><dt>
 
-          <code><a href="discretize_depth.html">discretize_depth()</a></code>
+          <code><a href="unique_gases.html">unique_gases()</a></code>
 
         </dt>
-        <dd>discretize_depth</dd>
+        <dd>Get the unique gases of an object</dd>
       </dl><dl><dt>
 
-          <code><a href="efflux.html">efflux()</a></code>
+          <code><a href="utility.html">n_groups()</a></code> <code><a href="utility.html">n_profiles()</a></code>
 
         </dt>
-        <dd>efflux</dd>
+        <dd>Get number of groups/profiles</dd>
+      </dl></div><div class="section level2">
+      <h2 id="sensitivity-analysis">Sensitivity analysis<a class="anchor" aria-label="anchor" href="#sensitivity-analysis"></a></h2>
+
+      <div class="section-desc"><p>Sensitivity analysis for model input parameter. Experimental.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="sobol_run_map.html">sobol_run_map()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Create a run plan for sobol indice calculation</dd>
       </dl><dl><dt>
 
-          <code><a href="error_funs.html">error_concentration()</a></code> <code><a href="error_funs.html">error_efflux()</a></code>
+          <code><a href="sobol_calc_indices.html">sobol_calc_indices()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Calculate sobol indices</dd>
+      </dl></div><div class="section level2">
+      <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="base_dat.html">base_dat</a></code>
 
         </dt>
-        <dd>error_funs</dd>
-      </dl><dl><dt>
-
-          <code><a href="evaluate_models.html">evaluate_models()</a></code>
-
-        </dt>
-        <dd>evaluate_models</dd>
-      </dl><dl><dt>
-
-          <code><a href="extractors.html">cfp_og_model()</a></code> <code><a href="extractors.html">cfp_id_cols()</a></code> <code><a href="extractors.html">n_groups()</a></code> <code><a href="extractors.html">get_soilphys()</a></code> <code><a href="extractors.html">get_gasdata()</a></code> <code><a href="extractors.html">get_layers_map()</a></code> <code><a href="extractors.html">cfp_gases()</a></code> <code><a href="extractors.html">cfp_modes()</a></code> <code><a href="extractors.html">cfp_param()</a></code> <code><a href="extractors.html">cfp_funs()</a></code> <code><a href="extractors.html">cfp_zero_flux()</a></code> <code><a href="extractors.html">cfp_zero_limits()</a></code> <code><a href="extractors.html">cfp_DSD0_optim()</a></code> <code><a href="extractors.html">cfp_evenness_factor()</a></code> <code><a href="extractors.html">cfp_known_flux_factor()</a></code> <code><a href="extractors.html">get_PROFLUX()</a></code> <code><a href="extractors.html">cfp_runmap_type()</a></code> <code><a href="extractors.html">cfp_params_df()</a></code> <code><a href="extractors.html">cfp_n_runs()</a></code> <code><a href="extractors.html">cfp_layers_different()</a></code> <code><a href="extractors.html">cfp_layers_from()</a></code> <code><a href="extractors.html">cfp_layers_altmap()</a></code> <code><a href="extractors.html">n_profiles()</a></code>
-
-        </dt>
-        <dd>extractors</dd>
-      </dl><dl><dt>
-
-          <code><a href="fg_flux.html">fg_flux()</a></code>
-
-        </dt>
-        <dd>Flux gradient method</dd>
-      </dl><dl><dt>
-
-          <code><a href="flux.html">flux()</a></code>
-
-        </dt>
-        <dd>flux</dd>
+        <dd>Example cfp_dat object</dd>
       </dl><dl><dt>
 
           <code><a href="gasdata.html">gasdata</a></code>
 
         </dt>
-        <dd>Soil CO2 concentrations</dd>
-      </dl><dl><dt>
-
-          <code><a href="harm.html">harm()</a></code>
-
-        </dt>
-        <dd>harm</dd>
+        <dd>Example soil CO2 concentrations</dd>
       </dl><dl><dt>
 
           <code><a href="layers_map.html">layers_map</a></code>
 
         </dt>
-        <dd>layers_map</dd>
+        <dd>Example cfp_layers_map object</dd>
+      </dl><dl><dt>
+
+          <code><a href="soildiff.html">soildiff</a></code>
+
+        </dt>
+        <dd>Example soil diffusion models</dd>
+      </dl><dl><dt>
+
+          <code><a href="soilphys.html">soilphys</a></code>
+
+        </dt>
+        <dd>Example cfp_soilphys object</dd>
+      </dl><dl><dt>
+
+          <code><a href="soiltemp.html">soiltemp</a></code>
+
+        </dt>
+        <dd>Example soil temperature</dd>
+      </dl><dl><dt>
+
+          <code><a href="soilwater.html">soilwater</a></code>
+
+        </dt>
+        <dd>Example soil water content</dd>
+      </dl></div><div class="section level2">
+      <h2 id="deprecated-functions">Deprecated functions<a class="anchor" aria-label="anchor" href="#deprecated-functions"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="balance_correction.html">balance_correction()</a></code>
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
+        </dt>
+        <dd>balance_correction</dd>
       </dl><dl><dt>
 
           <code><a href="offset_correction.html">offset_correction()</a></code>
-
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>offset_correction</dd>
       </dl><dl><dt>
 
           <code><a href="offset_subsetting.html">offset_subsetting()</a></code>
-
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>offset_subsetting</dd>
-      </dl><dl><dt>
-
-          <code><a href="plot_profile.html">plot_profile()</a></code>
-
-        </dt>
-        <dd>plot_profile</dd>
-      </dl><dl><dt>
-
-          <code><a href="pro_flux.html">pro_flux()</a></code>
-
-        </dt>
-        <dd>pro_flux</dd>
-      </dl><dl><dt>
-
-          <code><a href="prod_mod_conc.html">prod_mod_conc()</a></code> <code><a href="prod_mod_conc.html">prod_mod_flux()</a></code>
-
-        </dt>
-        <dd>prod_mod</dd>
-      </dl><dl><dt>
-
-          <code><a href="prod_optim.html">prod_optim()</a></code>
-
-        </dt>
-        <dd>prod_optim</dd>
-      </dl><dl><dt>
-
-          <code><a href="production.html">production()</a></code>
-
-        </dt>
-        <dd>production</dd>
-      </dl><dl><dt>
-
-          <code><a href="rmse.html">rmse()</a></code> <code><a href="rmse.html">nrmse()</a></code>
-
-        </dt>
-        <dd>(N)RMSE</dd>
       </dl><dl><dt>
 
           <code><a href="run_map.html">run_map()</a></code>
           <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>run_map</dd>
-      </dl><dl><dt>
-
-          <code><a href="season.html">season()</a></code>
-
-        </dt>
-        <dd>season</dd>
-      </dl><dl><dt>
-
-          <code><a href="sobol_calc_indices.html">sobol_calc_indices()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>sobol_calc_indices</dd>
-      </dl><dl><dt>
-
-          <code><a href="sobol_run_map.html">sobol_run_map()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>sobol_run_map</dd>
-      </dl><dl><dt>
-
-          <code><a href="soildiff.html">soildiff</a></code>
-
-        </dt>
-        <dd>Soil diffusion models</dd>
-      </dl><dl><dt>
-
-          <code><a href="soilphys.html">soilphys</a></code>
-
-        </dt>
-        <dd>soilphys</dd>
-      </dl><dl><dt>
-
-          <code><a href="soilphys_layered.html">soilphys_layered()</a></code>
-
-        </dt>
-        <dd>soilphys_layered</dd>
-      </dl><dl><dt>
-
-          <code><a href="soiltemp.html">soiltemp</a></code>
-
-        </dt>
-        <dd>Soil temperature</dd>
-      </dl><dl><dt>
-
-          <code><a href="soilwater.html">soilwater</a></code>
-
-        </dt>
-        <dd>Soil water content</dd>
-      </dl><dl><dt>
-
-          <code><a href="split_by_prof.html">split_by_prof()</a></code>
-
-        </dt>
-        <dd>Split by profile</dd>
-      </dl><dl><dt>
-
-          <code><a href="unique_gases.html">unique_gases()</a></code>
-
-        </dt>
-        <dd>unique_gases</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

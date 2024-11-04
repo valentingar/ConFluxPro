@@ -1,8 +1,12 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://valentingar.github.io/ConFluxPro/404.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/LICENSE.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/articles/ConFluxPro.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/articles/calibration.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/articles/data_preparation.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/articles/flux.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/articles/index.html</loc></url>
-<url><loc>https://valentingar.github.io/ConFluxPro/articles/overview.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/articles/uncertainty.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/authors.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/index.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/ConFluxPro-package.html</loc></url>
@@ -41,6 +45,7 @@
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/evaluate_models.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/extractors.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/fg_flux.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/reference/filter.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/flux.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/gasdata.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/harm.html</loc></url>
@@ -53,9 +58,9 @@
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/prod_mod_conc.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/prod_optim.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/production.html</loc></url>
-<url><loc>https://valentingar.github.io/ConFluxPro/reference/reexports.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/rmse.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/run_map.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/reference/scale_min_median.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/season.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/sobol_calc_indices.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/sobol_run_map.html</loc></url>
@@ -66,5 +71,6 @@
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/soilwater.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/split_by_prof.html</loc></url>
 <url><loc>https://valentingar.github.io/ConFluxPro/reference/unique_gases.html</loc></url>
+<url><loc>https://valentingar.github.io/ConFluxPro/reference/utility.html</loc></url>
 </urlset>
 
