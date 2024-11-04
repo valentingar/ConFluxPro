@@ -22,6 +22,7 @@
 
 
 #' @name split_by_prof
+#' @keywords internal
 #' @export
 split_by_prof <- function(x){
   UseMethod("split_by_prof")

@@ -40,6 +40,9 @@
 #'
 #' @family FLUX
 #' @import splines
+#'
+#' @keywords internal
+#'
 #' @importFrom rlang .data
 #'
 #' @export

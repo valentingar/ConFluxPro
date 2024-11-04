@@ -4,7 +4,7 @@
 \alias{cfp_gasdata}
 \alias{cfp_gasdata.data.frame}
 \alias{cfp_gasdata.cfp_dat}
-\title{cfp_gasdata}
+\title{Soil gas concentration data}
 \usage{
 cfp_gasdata(x, ...)
 
@@ -41,3 +41,12 @@ cfp_gasdata(
 ### Also used to extract the gasdata object from cfp_dat
 cfp_gasdata(ConFluxPro::base_dat)
 }
+\seealso{
+Other data formats: 
+\code{\link{cfp_dat}()},
+\code{\link{cfp_layered_profile}()},
+\code{\link{cfp_layers_map}()},
+\code{\link{cfp_profile}()},
+\code{\link{cfp_soilphys}()}
+}
+\concept{data formats}

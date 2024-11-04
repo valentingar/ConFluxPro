@@ -1,4 +1,4 @@
-#' @title flux
+#' @title Re-run model
 #'
 #' @description A function to either run \code{fg_flux()} or \code{pro_flux()} models from
 #' valid \code{cfp_fgmod} or \code{cfp_pfmod} objects.

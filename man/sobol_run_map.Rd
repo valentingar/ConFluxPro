@@ -4,7 +4,7 @@
 \alias{sobol_run_map}
 \alias{sobol_run_map.cfp_dat}
 \alias{sobol_run_map.cfp_run_map}
-\title{sobol_run_map}
+\title{Create a run plan for sobol indice calculation}
 \usage{
 sobol_run_map(x, ...)
 

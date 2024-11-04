@@ -1,4 +1,4 @@
-#' unique_gases
+#' Get the unique gases of an object
 #' @description
 #' Get the gases from a CFP object.
 #'

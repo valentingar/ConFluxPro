@@ -2,7 +2,7 @@
 % Please edit documentation in R/complete_soilphys.R
 \name{complete_soilphys}
 \alias{complete_soilphys}
-\title{complete_soilphys}
+\title{(Re-)calculate soil physical parameters}
 \usage{
 complete_soilphys(
   soilphys,

@@ -2,8 +2,7 @@
 % Please edit documentation in R/cfp_altres.R
 \name{cfp_altres}
 \alias{cfp_altres}
-\alias{cfp_og_model.cfp_altres}
-\title{cfp_altres}
+\title{Model runs as result of parameter variation}
 \usage{
 cfp_altres(
   x,
@@ -14,8 +13,6 @@ cfp_altres(
   error_funs = NULL,
   error_args = NULL
 )
-
-\method{cfp_og_model}{cfp_altres}(x)
 }
 \arguments{
 \item{x}{A named list of cfp_pfres or cfp_fgres models.}
@@ -42,3 +39,11 @@ of the \code{error_funs}. Must match the length of \code{error_funs}}
 S3 class for the result of a call to alternate(). Essentially a list with
 added run_map and further attributes.
 }
+\seealso{
+Other model frames: 
+\code{\link{cfp_fgmod}()},
+\code{\link{cfp_fgres}()},
+\code{\link{cfp_pfmod}()},
+\code{\link{cfp_pfres}()}
+}
+\concept{model frames}

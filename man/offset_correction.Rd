@@ -32,6 +32,8 @@ correction factor. Should be the depth_cat of the air concentration.}
 df (dataframe)
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 A function for the correction of offsets in the whole
 gas-dataset. The basic assumption is that atmospheric values of these gases
 are fairly constant over long periods of time. If there are offsets in the

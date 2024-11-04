@@ -1,4 +1,4 @@
-#' @title season
+#' @title Get season of a date-time
 #'
 #' @description A simple function to return a character (-vector)
 #' of the season from a Date (-vector).

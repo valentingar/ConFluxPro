@@ -1,7 +1,9 @@
-#'plot_profile
+#' @title Plot profiles
 #'
-#'Plot vertical soil-profiles of ConFluxPro objects using ggplot. This is mainly
-#' intended for diagnostic purposes and better understand the underlying data.
+#' @description Plot vertical soil profiles of ConFluxPro objects using ggplot.
+#' This is mainly intended for diagnostic purposes and better understand the
+#' underlying data.
+#'
 #' Supported objects:
 #' \describe{
 #' \item{cfp_pfres}{Displays TPS, SWC and AFPS, as well as production and

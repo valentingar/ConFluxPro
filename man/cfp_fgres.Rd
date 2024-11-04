@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_fgres.R
 \name{cfp_fgres}
 \alias{cfp_fgres}
-\title{cfp_fgres}
+\title{Model result of fg_flux}
 \usage{
 cfp_fgres(x, y)
 }
@@ -26,6 +26,14 @@ cfp_fgres(
   cfp_fgmod(ConFluxPro::base_dat),
   FLUX$FLUX
 )
+
 \dontshow{\}) # examplesIf}
 }
-\keyword{internal}
+\seealso{
+Other model frames: 
+\code{\link{cfp_altres}()},
+\code{\link{cfp_fgmod}()},
+\code{\link{cfp_pfmod}()},
+\code{\link{cfp_pfres}()}
+}
+\concept{model frames}

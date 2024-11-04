@@ -1,6 +1,6 @@
-#' @title cfp_dat
+#' @title Model input data
 #'
-#' @description This is the essential object class that binds all necessary
+#' @description `cfp_dat` is the essential object class that binds all necessary
 #' input data to run a ConFluxPro model. It automatically combines the different
 #' datasets and checks them for validity. It may split soilphys layers to correspond
 #' with layers_map and gasdata depths.
@@ -16,6 +16,7 @@
 #   optimised to meet this flux as well as the concentration measurements
 #   provided.
 #'
+#' @family data formats
 #'
 #' @return A cfp_dat object with the following parameters:
 #' \describe{
@@ -433,12 +434,12 @@ cfp_id_cols.default <- function(x){
   attr(x,"id_cols")
 }
 
-#' n_groups
+#' Get number of groups/profiles
 #'
 #'
 #'
 
-#' @rdname extractors
+#' @rdname utility
 #' @export
 n_groups <- function(x) {
   UseMethod("n_groups")
@@ -471,7 +472,7 @@ join_with_profiles <- function(target_data,
   list(x, id_cols)
 }
 
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_soilphys <- function(x){
   UseMethod("get_soilphys")
@@ -493,7 +494,7 @@ get_soilphys.cfp_dat <- function(x){
   x
 }
 
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_gasdata <- function(x){
   UseMethod("get_gasdata")
@@ -514,7 +515,7 @@ get_gasdata.cfp_dat <- function(x){
 }
 
 
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_layers_map <- function(x){
   UseMethod("get_layers_map")
@@ -551,58 +552,14 @@ as_cfp_dat.cfp_dat <- function(x){
   x
 }
 
-##### FILTER ######
-#' @rdname filter
-#' @inheritParams dplyr::filter
-#' @exportS3Method dplyr::filter
-filter.cfp_dat <- function(.data,
-                           ...,
-                           .preserve = FALSE){
-  tables <- names(.data)
-  tables <- tables[tables == "profiles"]
-
-  .data$profiles <- .data$profiles %>%
-    dplyr::filter(...)
-
-  possible_cols <- names(.data$profiles)
-
-  out <-
-    lapply(.data, function(t){
-
-      col_names <- names(t)
-      merger <- col_names[col_names %in% possible_cols]
-      deselector <- possible_cols[!possible_cols %in% merger]
-
-      t_new <-
-      t %>%
-        dplyr::right_join(.data$profiles %>%
-                            dplyr::select({merger}) %>%
-                            dplyr::distinct(),
-                          by = merger) %>%
-        dplyr::select(!dplyr::any_of(deselector))
-
-      old_atr <- attributes(t)
-      new_atr <- old_atr[!names(old_atr) %in% names(attributes(data.frame()))]
-      attributes(t_new) <- c(attributes(t_new), new_atr)
-      class(t_new) <- class(t)
-      t_new
-    })
-
-  attributes(out) <- attributes(.data)
-
-  out
-}
-
 
 
 ##### SPLITTING #####
-#' @rdname cfp_dat
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
 }
 
-#' @rdname cfp_dat
 #' @exportS3Method
 split_by_group.cfp_dat <- function(x){
 

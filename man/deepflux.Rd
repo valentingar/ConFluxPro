@@ -2,7 +2,7 @@
 % Please edit documentation in R/deepflux.R
 \name{deepflux}
 \alias{deepflux}
-\title{deepflux}
+\title{Extract flux rates from deep soil}
 \usage{
 deepflux(x, ...)
 }
@@ -17,6 +17,7 @@ data.frame with F0 (\eqn{µmol / m^2 / s})
 \description{
 Extract the incoming and outgoing flux from below the deepest layer
 of a \code{pro_flux()} model.
+This returns zero, if \code{zero_flux=TRUE}.
 }
 \details{
 F0 represents the flux below the lowest layer defined in the \code{cfp_pfres()} model

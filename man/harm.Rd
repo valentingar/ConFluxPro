@@ -2,7 +2,7 @@
 % Please edit documentation in R/harm.R
 \name{harm}
 \alias{harm}
-\title{harm}
+\title{Harmonic mean}
 \usage{
 harm(x, w = 1, na.rm = FALSE)
 }

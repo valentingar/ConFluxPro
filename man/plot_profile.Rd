@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_profile.R
 \name{plot_profile}
 \alias{plot_profile}
-\title{plot_profile}
+\title{Plot profiles}
 \usage{
 plot_profile(x)
 }
@@ -15,8 +15,10 @@ A ggplot2 plot with facets for each distinct profile. If more than 20
 profiles are plotted a message is sent because this can take a long time.
 }
 \description{
-Plot vertical soil-profiles of ConFluxPro objects using ggplot. This is mainly
-intended for diagnostic purposes and better understand the underlying data.
+Plot vertical soil profiles of ConFluxPro objects using ggplot.
+This is mainly intended for diagnostic purposes and better understand the
+underlying data.
+
 Supported objects:
 \describe{
 \item{cfp_pfres}{Displays TPS, SWC and AFPS, as well as production and

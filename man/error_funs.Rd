@@ -9,7 +9,7 @@
 \alias{error_concentration.cfp_altres}
 \alias{error_efflux.cfp_pfres}
 \alias{error_efflux.cfp_altres}
-\title{error_funs}
+\title{Estimate model error}
 \usage{
 error_concentration(x, param_cols = NULL, normer = "sd")
 

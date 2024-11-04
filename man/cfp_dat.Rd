@@ -4,19 +4,13 @@
 \alias{cfp_dat}
 \alias{as_cfp_dat}
 \alias{as_cfp_dat.cfp_dat}
-\alias{split_by_group}
-\alias{split_by_group.cfp_dat}
-\title{cfp_dat}
+\title{Model input data}
 \usage{
 cfp_dat(gasdata, soilphys, layers_map)
 
 as_cfp_dat(x)
 
 \method{as_cfp_dat}{cfp_dat}(x)
-
-split_by_group(x)
-
-\method{split_by_group}{cfp_dat}(x)
 }
 \arguments{
 \item{gasdata}{A cfp_gasdata object created by running \code{cfp_gasdata()}.}
@@ -44,7 +38,7 @@ is characterised by all \code{id_cols} present in the original input as well as 
 }
 }
 \description{
-This is the essential object class that binds all necessary
+\code{cfp_dat} is the essential object class that binds all necessary
 input data to run a ConFluxPro model. It automatically combines the different
 datasets and checks them for validity. It may split soilphys layers to correspond
 with layers_map and gasdata depths.
@@ -69,3 +63,12 @@ base_dat <- cfp_dat(gasdata, soilphys, layers_map)
 filter(base_dat, site == "site_a")
 filter(base_dat, prof_id \%in\%  1:5)
 }
+\seealso{
+Other data formats: 
+\code{\link{cfp_gasdata}()},
+\code{\link{cfp_layered_profile}()},
+\code{\link{cfp_layers_map}()},
+\code{\link{cfp_profile}()},
+\code{\link{cfp_soilphys}()}
+}
+\concept{data formats}

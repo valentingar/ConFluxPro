@@ -1,4 +1,4 @@
-#' @title cfp_run_map
+#' @title Create a run plan for parameter variation
 #'
 #' @description An S3 class cfp_run_map to be used in alternate().
 #' Either create a new run map from a cfp_pfres or

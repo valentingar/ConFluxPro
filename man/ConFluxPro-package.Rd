@@ -11,7 +11,10 @@ A collection of different functions that help analysing soil gas profiles. It im
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://confluxpro.valentingartiser.de/}
+  \item \url{https://github.com/valentingar/ConFluxPro}
   \item \url{https://valentingar.github.io/ConFluxPro/}
+  \item Report bugs at \url{https://github.com/valentingar/confluxpro/issues}
 }
 
 }

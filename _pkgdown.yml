@@ -1,4 +1,100 @@
 url: https://valentingar.github.io/ConFluxPro/
 template:
   bootstrap: 5
-
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - data_preparation
+  - flux
+  - calibration
+  - uncertainty
+reference:
+- title: Data formats
+  desc: Structure your data to make it ready to run the models.
+- contents:
+  - cfp_gasdata
+  - cfp_soilphys
+  - cfp_layers_map
+  - cfp_dat
+- title: Filter and combine models
+- contents:
+  - filter
+  - combine_models
+- title: Flux models
+  desc: Run different models on your data.
+- contents:
+  - has_concept("flux models")
+  - flux
+- title: Model results
+  desc: Extract derived parameters from models.
+- contents:
+  - efflux
+  - production
+  - deepflux
+- title: Calibration
+  desc: Run a parameter variation to calibrate the models.
+- contents:
+  - alternate
+  - cfp_run_map
+  - evaluate_models
+  - error_funs
+  - cfp_altapply
+- title: Uncertainty estimation
+  desc: >
+    Estimate the uncertainty of the model result via a bootstrapping approach.
+- contents:
+  - bootstrap_error
+- title: Model frames
+  desc: >
+    Objects that define and hold the results of the models.
+    These functions are mostly internal.
+- contents:
+  - has_concept("model frames")
+- title: Profiles
+  desc: >
+    Object types for soil profiles
+- contents:
+  - cfp_profile
+  - cfp_layered_profile
+- title: Data preparation
+- contents:
+  - discretize_depth
+  - complete_soilphys
+  - check_soilphys
+- title: Diffusion parameter
+- contents:
+  - DSD0
+  - D0_massman
+- title: Extractors
+- contents:
+  - extractors
+- title: Mathematical formulas
+- contents:
+  - rmse
+  - harm
+  - scale_min_median
+- title: Utility
+- contents:
+  - cfp_parameter
+  - plot_profile
+  - season
+  - depth_structure
+  - unique_gases
+  - n_profiles
+  - n_groups
+- title: Sensitivity analysis
+  desc: >
+    Sensitivity analysis for model input parameter. Experimental.
+- contents:
+  - sobol_run_map
+  - sobol_calc_indices
+- title: Example data
+- contents:
+  - has_keyword("datasets")
+- title: Deprecated functions
+- contents:
+  - has_lifecycle("deprecated")
+# - title: All functions
+# - contents:
+#   - matches("*")

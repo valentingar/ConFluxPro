@@ -4,7 +4,7 @@
 \alias{discretize_depth}
 \alias{discretize_depth.cfp_profile}
 \alias{discretize_depth.data.frame}
-\title{discretize_depth}
+\title{Interpolate over depth to layered profile}
 \usage{
 discretize_depth(
   df,

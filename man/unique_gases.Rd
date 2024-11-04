@@ -2,7 +2,7 @@
 % Please edit documentation in R/unique_gases.R
 \name{unique_gases}
 \alias{unique_gases}
-\title{unique_gases}
+\title{Get the unique gases of an object}
 \usage{
 unique_gases(x)
 }

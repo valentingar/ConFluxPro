@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_pfmod.R
 \name{cfp_pfmod}
 \alias{cfp_pfmod}
-\title{cfp_pfmod}
+\title{Model frame for pro_flux}
 \usage{
 cfp_pfmod(
   x,
@@ -17,22 +17,21 @@ cfp_pfmod(
 \item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
 
 \item{zero_flux}{(logical) Applies the zero-flux boundary condition? If
-FALSE, the first value in X represents the incoming flux to the lowest
-layer.}
+\code{FALSE}, \code{F0} is optimized alongside the production rates.}
 
 \item{zero_limits}{(numeric vector) a vector of length 2 defining the lower
-and upper limit of the lowest flux if zero_flux = F.}
+and upper limit of the lowest flux if \code{zero_flux = FALSE}.}
 
-\item{DSD0_optim}{RESERVED FOR FUTURE EXPANSION}
+\item{DSD0_optim}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 
-\item{evenness_factor}{(numeric) A user defined factor used to penalise strong
+\item{evenness_factor}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}(numeric) A user defined factor used to penalise strong
 differences between the optimised production rates. This must be identified by
 trial-and-error and can help prevent that production rates are simply set to zero
 basically the lower a production is relative to the the maximum of the absolute of
 all productions, the higher it is penalised. The \code{evenness_factor} then
 defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.}
 
-\item{known_flux_factor}{RESERVED FOR FUTURE EXPANSION}
+\item{known_flux_factor}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
 }
 \value{
 A \code{cfp_pfmod} object that inherits from \code{\link[=cfp_dat]{cfp_dat()}}
@@ -44,4 +43,11 @@ cfp_dat and adds any model specific parameters.
 \examples{
 cfp_pfmod(ConFluxPro::base_dat)
 }
-\keyword{internal}
+\seealso{
+Other model frames: 
+\code{\link{cfp_altres}()},
+\code{\link{cfp_fgmod}()},
+\code{\link{cfp_fgres}()},
+\code{\link{cfp_pfres}()}
+}
+\concept{model frames}

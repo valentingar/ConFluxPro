@@ -1,4 +1,4 @@
-#' @title cfp_pfmod
+#' @title Model frame for pro_flux
 #'
 #' @description An S3 class for \code{pro_flux()} models. The class inherits from
 #' cfp_dat and adds any model specific parameters.
@@ -10,39 +10,38 @@
 #   and is probably only representative for a high temporal resolution (hours).
 #
 #' @param zero_flux (logical) Applies the zero-flux boundary condition? If
-#'   FALSE, the first value in X represents the incoming flux to the lowest
-#'   layer.
+#'   `FALSE`, `F0` is optimized alongside the production rates.
 #'
 #' @param zero_limits (numeric vector) a vector of length 2 defining the lower
-#'   and upper limit of the lowest flux if zero_flux = F.
+#'   and upper limit of the lowest flux if `zero_flux = FALSE`.
 #'
-#' @param known_flux_factor RESERVED FOR FUTURE EXPANSION
+#' @param known_flux_factor `r lifecycle::badge("deprecated")`
 # (numeric) a numeric value > 0 that represents a
 #   weight for the error calculation with the known flux. A higher value means
 #   that the optimisation will weigh the error to the efflux more than in
 #   regard to the concentration measurements. Must be determined manually by
 #   trying out!
 #'
-#' @param DSD0_optim RESERVED FOR FUTURE EXPANSION
+#' @param DSD0_optim `r lifecycle::badge("deprecated")`
 # (logical) If TRUE, the diffusion coefficient (DSD0) values are
 #   also object to optimisation together with the production. DSD0 is varied between
 #   values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
 #   are given as DSD0_fit in the return table. Only makes sense to use in
 #   combination with known_flux.
 #'
-#' @param evenness_factor (numeric) A user defined factor used to penalise strong
+#' @param evenness_factor `r lifecycle::badge("experimental")`(numeric) A user defined factor used to penalise strong
 #' differences between the optimised production rates. This must be identified by
 #' trial-and-error and can help prevent that production rates are simply set to zero
 #' basically the lower a production is relative to the the maximum of the absolute of
 #' all productions, the higher it is penalised. The \code{evenness_factor} then
 #' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
 #'
+#' @family model frames
+#'
 #' @returns A \code{cfp_pfmod} object that inherits from [cfp_dat()]
 #'
 #' @examples
 #' cfp_pfmod(ConFluxPro::base_dat)
-
-#' @keywords internal
 #' @export
 
 cfp_pfmod <- function(x,
@@ -175,6 +174,7 @@ cfp_known_flux_factor.default <- function(x){
 
 ###### COERCING #######
 #' @describeIn coercion to cfp_pfmod
+#' @keywords internal
 #' @export
 as_cfp_pfmod <- function(x){
   UseMethod("as_cfp_pfmod")

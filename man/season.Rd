@@ -2,7 +2,7 @@
 % Please edit documentation in R/season.R
 \name{season}
 \alias{season}
-\title{season}
+\title{Get season of a date-time}
 \usage{
 season(d)
 }

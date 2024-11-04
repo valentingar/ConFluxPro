@@ -21,6 +21,7 @@
 #' @return \code{flux} at top of each step in \eqn{\mu mol/m^2/s}
 #'
 #' @family proflux
+#' @keywords internal
 #' @aliases prod_mod prod_mod_flux prod_mod_conc
 #'
 #' @examples{

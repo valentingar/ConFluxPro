@@ -1,4 +1,4 @@
-#' @title alternate
+#' @title Run parameter variation
 #'
 #' @description Alternate cfp_pfres / cfp_fgres models for sensitivity analysis and
 #' more.

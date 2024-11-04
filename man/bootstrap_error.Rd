@@ -10,7 +10,7 @@
 \alias{make_bootstrap_model.cfp_pfmod}
 \alias{calculate_bootstrap_error}
 \alias{calculate_bootstrap_error.cfp_pfmod}
-\title{Bootstrap-estimate of Flux-error}
+\title{Estimate model uncertainty}
 \usage{
 bootstrap_error(
   x,
@@ -111,7 +111,7 @@ x with added columns DELTA_flux and DELTA_prod as an estimate
 of the error of of the corresponding columns in the same units.
 }
 \description{
-Bootstrap-estimate of Flux-error
+Estimate model uncertainty
 }
 \section{General procedure}{
 \code{\link[=bootstrap_error]{bootstrap_error()}} is mostly a wrapper around two functions that can also be

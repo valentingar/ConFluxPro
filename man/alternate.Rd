@@ -3,7 +3,7 @@
 \name{alternate}
 \alias{alternate}
 \alias{alternate_model}
-\title{alternate}
+\title{Run parameter variation}
 \usage{
 alternate(
   x,

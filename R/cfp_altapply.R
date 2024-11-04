@@ -1,4 +1,4 @@
-#' @title cfp_altapply
+#' @title Apply a function over a list of models
 #'
 #' @description Apply a function to a list of cfp_pfres pr cfp_fgres objects
 #' stored in an cfp_altres object. This can be used to summarise

@@ -1,7 +1,8 @@
-#' @title deepflux
+#' @title Extract flux rates from deep soil
 #'
 #' @description Extract the incoming and outgoing flux from below the deepest layer
 #' of a \code{pro_flux()} model.
+#' This returns zero, if `zero_flux=TRUE`.
 #'
 #' @param x A valid \code{cfp_pfres()} object.
 #'

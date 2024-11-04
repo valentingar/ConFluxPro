@@ -1,4 +1,4 @@
-#' @title cfp_fgmod
+#' @title Model frame for fg_flux
 #'
 #' @description An S3 class for \code{fg_flux()} models. The class inherits from
 #' cfp_dat and adds any model specific parameters.
@@ -28,6 +28,8 @@
 #' @param funs (character) A vector defining the type of mean to be used for
 #' each parameter in \code{param}. One of "arith" or "harm".
 #'
+#' @family model frames
+#'
 #' @returns A \code{cfp_fgmod} object. This inherits from [cfp_dat()] and
 #' adds model specific parameters.
 #'
@@ -37,7 +39,6 @@
 #' @examples
 #' cfp_fgmod(ConFluxPro::base_dat)
 
-#' @keywords internal
 #' @export
 
 
@@ -48,6 +49,8 @@ cfp_fgmod <- function(x,
                       funs = c("arith", "harm")){
 
   stopifnot(inherits(x, "cfp_dat"))
+
+  stopifnot("Selected gases not present in dataset" = all(gases %in% unique_gases(x)))
 
 
   if (length(gases) > 1){
@@ -158,6 +161,7 @@ cfp_funs.cfp_fgmod <- function(x){
 
 ###### COERCION #######
 #' @describeIn coercion to cfp_fgmod
+#' @keywords internal
 #' @export
 as_cfp_fgmod <- function(x){
   UseMethod("as_cfp_fgmod")

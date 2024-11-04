@@ -23,3 +23,4 @@ These functions help coerce different object types in ConFluxPro.
 \item \code{as_cfp_pfmod()}: to cfp_pfmod
 
 }}
+\keyword{internal}

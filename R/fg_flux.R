@@ -1,13 +1,14 @@
-#' @title Flux gradient method
+#' @title Flux-gradient method
 #'
-#' @description This function takes a valid input dataset in cfp_dat
-#' and calculates fluxes accordingly. Fluxes are calculated for each layer defined
-#' in layers map and are given in mumol/m^2/s.
-#'
+#' @description `fg_flux()` implements different approaches to the flux-gradient
+#' method (FGM). It takes a valid input dataset from `cfp_dat()` and calculates
+#' for each layer defined in `cfp_layers_map()`.
 #'
 #' @inheritParams pro_flux
 #'
 #' @inheritDotParams cfp_fgmod gases modes param funs
+#'
+#' @family flux models
 #'
 #' @references
 #' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
@@ -119,11 +120,11 @@ calculate_flux <- function(x, p){
     dplyr::arrange(dplyr::desc(upper))
 
   #turns Inf-values to NA
-  gasdata$x_ppm[is.infinite(gasdata$x_ppm)==T] <- NA
+  gasdata$x_ppm[is.infinite(gasdata$x_ppm)] <- NA
 
   #removes all NAs from gasdata
   gasdata <- gasdata %>%
-    dplyr::filter(is.na(.data$x_ppm) == F, is.na(.data$depth) == F)
+    dplyr::filter(!is.na(.data$x_ppm), !is.na(.data$depth))
 
   id_cols <- c(id_cols, "mode")
   id_lmap <- id_cols[id_cols %in% names(layers_map)]

@@ -1,4 +1,4 @@
-#' @title cfp_profile
+#' @title Object for soil profiles
 #'
 #' @description
 #' A central S3 class that defines a \code{data.frame} where columns given in
@@ -7,6 +7,8 @@
 #' @param x A \code{data.frame}
 #'
 #' @param id_cols Column names in data.frame that uniquely identify each profile.
+#'
+#' @family data formats
 #'
 #' @returns A \code{cfp_profile} object. This is a \code{data.frame}
 #' with the \code{id_cols} attribute.

@@ -3,7 +3,7 @@
 \docType{data}
 \name{soilphys}
 \alias{soilphys}
-\title{soilphys}
+\title{Example cfp_soilphys object}
 \format{
 A tibble with 120 rows and 4 variables:
 \describe{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_run_map.R
 \name{cfp_run_map}
 \alias{cfp_run_map}
-\title{cfp_run_map}
+\title{Create a run plan for parameter variation}
 \usage{
 cfp_run_map(
   x,

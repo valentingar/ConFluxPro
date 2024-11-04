@@ -58,7 +58,7 @@ prod_mod_conc(prod = c(0.01,0.02,0.65,0.5,0.4),
 }
 \seealso{
 Other proflux: 
-\code{\link{pro_flux}()},
 \code{\link{prod_optim}()}
 }
 \concept{proflux}
+\keyword{internal}

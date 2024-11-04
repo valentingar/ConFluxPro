@@ -1,4 +1,4 @@
-#' Soil CO2 concentrations
+#' Example soil CO2 concentrations
 #'
 #' A synthetic dataset of soil CO2 concentrations at
 #' two sites over a one-year period.
@@ -15,7 +15,7 @@
 "gasdata"
 
 
-#' Soil diffusion models
+#' Example soil diffusion models
 #'
 #' A synthetic dataset of soil total pore space and
 #' diffusion models after the general formula a*AFPS^b.
@@ -32,7 +32,7 @@
 "soildiff"
 
 
-#' Soil water content
+#' Example soil water content
 #'
 #' A synthetic dataset of soil water content in a
 #' layered structure. The dates correspond to \code{gasdata}.
@@ -48,7 +48,7 @@
 "soilwater"
 
 
-#' Soil temperature
+#' Example soil temperature
 #'
 #' A synthetic dataset of soil temperature at
 #' discrete depths. The dates correspond to \code{gasdata}.
@@ -62,7 +62,7 @@
 #' }
 "soiltemp"
 
-#' soilphys
+#' Example cfp_soilphys object
 #'
 #' An example dataset for \code{soilphys} based on the sets
 #' \code{soiltemp}, \code{soilwater} and \code{soildiff}
@@ -76,7 +76,7 @@
 #' }
 "soilphys"
 
-#' layers_map
+#' Example cfp_layers_map object
 #'
 #' An example dataset for \code{layers_map} that devides each \code{site} into
 #' two layers.
@@ -90,7 +90,7 @@
 "layers_map"
 
 
-#' base_dat
+#' Example cfp_dat object
 #'
 #' An example [cfp_dat()] object that combines all other example data.
 #'

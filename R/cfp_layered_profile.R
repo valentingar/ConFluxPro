@@ -1,4 +1,4 @@
-#' @title cfp_layered_profile
+#' @title Object for layered soil profiles
 #'
 #' @description
 #' A subclass of \code{\link{cfp_profile}()} where each profile consists of
@@ -8,6 +8,8 @@
 #' @param x A \code{data.frame} with columns \code{upper} and \code{lower}.
 #'
 #' @inheritParams cfp_profile
+#'
+#' @family data formats
 #'
 #' @returns A \code{cfp_layered_profile} object. This is a
 #' \[cfp_profile()] that is further subdivided into layers by the
