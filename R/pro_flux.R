@@ -9,7 +9,7 @@
 #'   boundary condition is not met, the flux must be optimised as well. This can
 #'   be set in \code{zero_flux}.
 #'
-#@inheritParams cfp_pfmod
+#' @param x A `cfp_dat` object with all the necessary input datasets.
 #'
 #' @inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor known_flux_factor
 #'
@@ -63,20 +63,10 @@ UseMethod("pro_flux")
 #' @rdname pro_flux
 #'@exportS3Method
 pro_flux.cfp_dat <- function(x,
-                             ...,
-                             zero_flux = TRUE,
-                             zero_limits = c(-Inf,Inf),
-                             DSD0_optim = FALSE,
-                             evenness_factor = 0,
-                             known_flux_factor = 0){
-  rlang::check_dots_empty()
+                             ...){
+  #rlang::check_dots_empty()
 
-  x <- cfp_pfmod(x,
-                 zero_flux = zero_flux,
-                 zero_limits = zero_limits,
-                 DSD0_optim = DSD0_optim,
-                 evenness_factor = evenness_factor,
-                 known_flux_factor = known_flux_factor)
+  x <- cfp_pfmod(x,...)
   .Class <- "cfp_pfmod"
   NextMethod()
 }

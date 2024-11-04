@@ -9,21 +9,15 @@
 \usage{
 pro_flux(x, ...)
 
-\method{pro_flux}{cfp_dat}(
-  x,
-  ...,
-  zero_flux = TRUE,
-  zero_limits = c(-Inf, Inf),
-  DSD0_optim = FALSE,
-  evenness_factor = 0,
-  known_flux_factor = 0
-)
+\method{pro_flux}{cfp_dat}(x, ...)
 
 \method{pro_flux}{cfp_pfres}(x, ...)
 
 \method{pro_flux}{cfp_pfmod}(x, ...)
 }
 \arguments{
+\item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
+
 \item{...}{
   Arguments passed on to \code{\link[=cfp_pfmod]{cfp_pfmod}}
   \describe{

@@ -9,6 +9,9 @@ n_groups(x)
 
 n_profiles(x)
 }
+\arguments{
+\item{x}{A \code{cfp_dat} object.}
+}
 \description{
 Get number of groups/profiles
 }

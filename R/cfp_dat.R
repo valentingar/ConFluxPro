@@ -440,6 +440,7 @@ cfp_id_cols.default <- function(x){
 #'
 
 #' @rdname utility
+#' @param x A `cfp_dat` object.
 #' @export
 n_groups <- function(x) {
   UseMethod("n_groups")
@@ -472,12 +473,13 @@ join_with_profiles <- function(target_data,
   list(x, id_cols)
 }
 
-#' @keywords internal
-#' @export
+# @rdname get_soilphys
+# @keywords internal
+# @export
 get_soilphys <- function(x){
   UseMethod("get_soilphys")
 }
-#' @export
+#' @exportS3Method
 get_soilphys.cfp_dat <- function(x){
   soilphys <- x$soilphys
   profiles <- x$profiles
@@ -494,12 +496,13 @@ get_soilphys.cfp_dat <- function(x){
   x
 }
 
-#' @keywords internal
-#' @export
+# @rdname get_gasdata
+# @keywords internal
+# @export
 get_gasdata <- function(x){
   UseMethod("get_gasdata")
 }
-#' @export
+#' @exportS3Method
 get_gasdata.cfp_dat <- function(x){
   gasdata <- x$gasdata
   profiles <- x$profiles
@@ -515,12 +518,13 @@ get_gasdata.cfp_dat <- function(x){
 }
 
 
-#' @keywords internal
-#' @export
+# @rdname get_layers_map
+# @keywords internal
+# @export
 get_layers_map <- function(x){
   UseMethod("get_layers_map")
 }
-#' @export
+#' @exportS3Method
 get_layers_map.cfp_dat <- function(x){
   layers_map <- x$layers_map
 
@@ -555,6 +559,7 @@ as_cfp_dat.cfp_dat <- function(x){
 
 
 ##### SPLITTING #####
+#' @rdname split_by_prof
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
