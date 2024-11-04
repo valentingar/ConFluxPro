@@ -1,4 +1,4 @@
-#' @title sobol_calc_indices
+#' @title Calculate sobol indices
 #'
 #' @description
 #' `r lifecycle::badge('experimental')`

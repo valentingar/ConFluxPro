@@ -1,4 +1,4 @@
-#' @rdname extractors
+#' @rdname utility
 #' @export
 n_profiles <- function(x) {
   UseMethod("n_profiles")
@@ -11,16 +11,21 @@ n_profiles.cfp_dat <- function(x) {
 
 #' @exportS3Method
 n_profiles.cfp_soilphys <- function(x) {
-  id_cols_to_n_profiles(x)
+  NextMethod()
 }
 
 #' @exportS3Method
 n_profiles.cfp_gasdata <- function(x) {
-  id_cols_to_n_profiles(x)
+  NextMethod()
 }
 
 #' @exportS3Method
 n_profiles.cfp_layers_map <- function(x) {
+  NextMethod()
+}
+
+#' @exportS3Method
+n_profiles.cfp_profile <- function(x){
   id_cols_to_n_profiles(x)
 }
 

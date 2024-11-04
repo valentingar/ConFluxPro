@@ -1,4 +1,4 @@
-#' @title complete_soilphys
+#' @title (Re-)calculate soil physical parameters
 #'
 #' @description This function completes the soilphys dataset by calculating
 #'   different parameters if necessary, as long as all required parameters are

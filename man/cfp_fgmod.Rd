@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_fgmod.R
 \name{cfp_fgmod}
 \alias{cfp_fgmod}
-\title{cfp_fgmod}
+\title{Model frame for fg_flux}
 \usage{
 cfp_fgmod(
   x,
@@ -55,4 +55,11 @@ cfp_fgmod(ConFluxPro::base_dat)
 \references{
 DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
 }
-\keyword{internal}
+\seealso{
+Other model frames: 
+\code{\link{cfp_altres}()},
+\code{\link{cfp_fgres}()},
+\code{\link{cfp_pfmod}()},
+\code{\link{cfp_pfres}()}
+}
+\concept{model frames}

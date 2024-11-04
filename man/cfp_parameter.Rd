@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_parameter.R
 \name{cfp_parameter}
 \alias{cfp_parameter}
-\title{cfp_parameter}
+\title{Get parameter descriptions and units}
 \usage{
 cfp_parameter(x = NULL)
 }

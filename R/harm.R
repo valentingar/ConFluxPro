@@ -1,4 +1,4 @@
-#'@title harm
+#'@title Harmonic mean
 #'
 #'@description This function calculates harmonic mean of a vector and can be
 #'  used analogous to the base functions mean() or median()

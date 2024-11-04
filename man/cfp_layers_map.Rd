@@ -4,7 +4,7 @@
 \alias{cfp_layers_map}
 \alias{cfp_layers_map.cfp_dat}
 \alias{cfp_layers_map.data.frame}
-\title{cfp_layers_map}
+\title{Model layers}
 \usage{
 cfp_layers_map(x, ...)
 
@@ -48,7 +48,7 @@ lower limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}
 \item{highlim}{(numeric vector)  the same length as gas with the
 upper limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}} models.}
 
-\item{layer_couple}{(numeric_vector) A vector the same length as gas that
+\item{layer_couple}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (numeric_vector) A vector the same length as gas that
 indicates how strongly the layer should be linked to the one below it
 (0 for no coupling, the default).}
 }
@@ -94,3 +94,12 @@ cfp_layers_map(
 ### Extract from an existing cfp_dat
 cfp_layers_map(ConFluxPro::base_dat)
 }
+\seealso{
+Other data formats: 
+\code{\link{cfp_dat}()},
+\code{\link{cfp_gasdata}()},
+\code{\link{cfp_layered_profile}()},
+\code{\link{cfp_profile}()},
+\code{\link{cfp_soilphys}()}
+}
+\concept{data formats}

@@ -1,6 +1,10 @@
 #' @title offset_subsetting
 #'
-#' @description This function helps to create the corr_map dataframe for the offset correction.
+#' @description
+#'
+#' `r lifecycle::badge('deprecated')`
+#'
+#' This function helps to create the corr_map dataframe for the offset correction.
 #' Based on the Date input, it creates a new section variable and maps it to all SAMPLE_NO.
 #'
 #'

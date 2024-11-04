@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_altapply.R
 \name{cfp_altapply}
 \alias{cfp_altapply}
-\title{cfp_altapply}
+\title{Apply a function over a list of models}
 \usage{
 cfp_altapply(X, FUN, ...)
 }

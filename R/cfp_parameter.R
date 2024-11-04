@@ -1,4 +1,4 @@
-#' @title cfp_parameter
+#' @title Get parameter descriptions and units
 #'
 #' @description Function to access parameter descriptions and units
 #' used in \code{ConFluxPro}

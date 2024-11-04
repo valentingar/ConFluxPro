@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_layered_profile.R
 \name{cfp_layered_profile}
 \alias{cfp_layered_profile}
-\title{cfp_layered_profile}
+\title{Object for layered soil profiles}
 \usage{
 cfp_layered_profile(x, id_cols = NULL)
 }
@@ -34,3 +34,12 @@ df <- data.frame(
 
 cfp_layered_profile(df, id_cols = "site")
 }
+\seealso{
+Other data formats: 
+\code{\link{cfp_dat}()},
+\code{\link{cfp_gasdata}()},
+\code{\link{cfp_layers_map}()},
+\code{\link{cfp_profile}()},
+\code{\link{cfp_soilphys}()}
+}
+\concept{data formats}

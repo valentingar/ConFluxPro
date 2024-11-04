@@ -2,7 +2,7 @@
 % Please edit documentation in R/D0_massman.R
 \name{D0_massman}
 \alias{D0_massman}
-\title{D0_Massman}
+\title{Calculate D0}
 \usage{
 D0_massman(gas, t, p)
 }
@@ -17,8 +17,8 @@ D0_massman(gas, t, p)
 D0 in m^2/s
 }
 \description{
-This function calculates the Diffusion coefficients of different
-gases in air at set temperature and pressure.
+This function calculates the free-air diffusion coefficients
+of different gases for a given temperature and pressure.
 }
 \references{
 Massman, W. J. A review of the molecular diffusivities of H2O,

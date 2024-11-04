@@ -3,7 +3,7 @@
 \docType{data}
 \name{base_dat}
 \alias{base_dat}
-\title{base_dat}
+\title{Example cfp_dat object}
 \format{
 A \code{\link[=cfp_dat]{cfp_dat()}} object as a list with
 \describe{

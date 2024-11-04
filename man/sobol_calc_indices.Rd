@@ -2,7 +2,7 @@
 % Please edit documentation in R/sobol_calc_indices.R
 \name{sobol_calc_indices}
 \alias{sobol_calc_indices}
-\title{sobol_calc_indices}
+\title{Calculate sobol indices}
 \usage{
 sobol_calc_indices(Y, effect_cols, id_cols = character(), run_map)
 }

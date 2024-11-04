@@ -1,0 +1,126 @@
+---
+title: "ConFluxPro"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ConFluxPro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  dev = "svg"
+)
+
+ggplot2::theme_set(ggplot2::theme_bw())
+
+```
+
+# Introduction
+
+Hello and welcome to ConFluxPro - a toolkit for soil gas analysis.
+
+This package implements the **Flux-Gradient Method (FGM)** to model soil gas fluxes from concentration profiles. 
+It provides a range of functions that cover the complete process from raw data to modeling fluxes and beyond. 
+"ConFluxPro" stands for **Con**centration, **Flux** and **Pro**duction - the three levels of integration of gases in the soil.
+This vignette provides an overview over the package structure, including the most important functions and general workflow.
+
+# Workflow
+
+Modeling gas fluxes in *ConFluxPro* is modular and straightforward. Starting with data preparation, we collect all necessary data in a compatible way and combine them into a single model frame `cfp_dat()`. 
+From this, calculating flux rates is as simple as calling a single function. `fg_flux()` implements different 'forward' methods to derive flux rates, while `pro_flux()` calls an inverse model. 
+From the returned model result, we can then extract the `efflux()` or `production()` rates within the soil or perform different post-hoc analyses such as calibrating the model with `alternate()` or deriving an estimate of model uncertainty with `bootstrap_error()`.
+
+Each aspect of the workflow is explained in more detail in the other articles of this documentation.
+
+- Create a `cfp_dat()` data set: `vignette("data_preparation", package = "ConFluxPro")`
+- Basic modeling with `fg_flux()` and `pro_flux()`: `vignette("flux", package = "ConFluxPro")`
+- Parameter variation and calibration with `alternate()`: `vignette("calibration", package = "ConFluxPro")`
+- Uncertainty estimation with `bootstrap_error()`: `vignette("uncertainty", package = "ConFluxPro")`
+
+
+```{r, echo = FALSE}
+DiagrammeR::grViz(diagram = "digraph flowchart {
+graph [layout = dot, rankdir = LR,fontname = 'helvetica'];
+node [fontname = 'helvetica'];
+edge [fontname = 'helvetica',
+arrowname = 'vee',
+color = 'grey'];
+
+  node [style = filled color = white shape = rectangle]
+  node [fillcolor = '#48007B' fontcolor = white]
+  a [label = 'gasdata']
+  b [label = 'soilphys']
+  c [label = 'layers_map']
+  h [label = 'cfp_dat']
+  m [label = 'cfp_fgres']
+  n [label = 'cfp_pfres']
+  o [label = 'EFFLUX']
+  p [label = 'PRODUCTION']
+  s [label = 'cfp_altres']
+  
+  
+  node [fillcolor = '#D58F38' shape = ellipse fontcolor = black]
+  d [label = 'cfp_dat()']
+  e [label = 'cfp_gasdata()']
+  f [label = 'cfp_soilphys()']
+  g [label = 'cfp_layers_map()']
+  i [label = 'fg_flux()']
+  j [label = 'pro_flux()']
+  k [label = 'efflux()']
+  l [label = 'production()']
+  q [label = 'cfp_run_map()']
+  r [label = 'alternate()']
+  t [label = 'bootstrap_error()']
+  
+  a -> {e}
+  b -> {f}
+  c -> {g}
+  {e f g} -> d
+  d -> h
+  h -> {i j}
+  i -> m
+  j -> n
+  {m n} -> {k l r}
+  k -> o
+  l -> p
+  q -> r
+  r -> s
+  s -> t
+   
+   subgraph clusterMain {
+   graph [rankdir = TB]
+   node [style = filled color = white shape = rectangle]
+  node [fillcolor = '#48007B' fontcolor = white]
+  aaa [label = 'objects']
+
+
+  node [fillcolor = '#D58F38' shape = oval fontcolor = black]
+  bbb [label = 'functions()']
+   
+}
+  
+}
+ 
+  ")
+```
+
+
+# Package structure and classes
+A focus of this package is to promote reproducibility and ease of use. We implemented a class and method system to enable easy and consistent data handling. The basic philosophy behind that was that at any point in the process, every aspect of a model should be contained in a single object, including the original data.
+
+To this end, we implemented a central S3-class `cfp_dat()`. If you are new to R or not familiar with S3, that's no problem. Basically, S3-classes just enforces a certain data structure and tells the functions in this package how to interact with it, so you don't have to. A `cfp_dat()` object contains all data you need to model soil gas fluxes. All other classes are either components of a `cfp_dat()` object or build on it to add specific settings for the models used.
+
+Learn more about the classes in ConFluxPro in TODO
+
+# Conveniance functions 
+Much of data analysis and modeling is trial-and-error. To enable a hands-on approach in modeling soil gas fluxes, we added some functionality to facilitate easy data handling and exploration. Most importantly, we implemented methods for the `dplyr::filter()` function for most classes in this package. This makes it easy to subset a model result for only one site or to look into one date in more detail. This especially handy in combination with a simple plotting function `plot_profile()` that shows many information of measured and derived parameters within the soil per distinct profile. This helps to better understand the data and the modeled results. Finally, the reverse is also possible with `combine_models()` that automatically joins different datasets if they are compatible.  

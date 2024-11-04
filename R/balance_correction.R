@@ -1,6 +1,9 @@
 #' @title balance_correction
 #'
-#' @description A function to correct the measured values for non-complete gas
+#' @description
+#' `r lifecycle::badge('deprecated')`
+#'
+#' A function to correct the measured values for non-complete gas
 #'   exchange. Per sample, a total balance (b_tot) is obtained by adding the
 #'   measurements of all gases and, if necessary, corrected for missing gases.
 #'   \cr Theoretically, bal is between (0;1), however values over 1 can result

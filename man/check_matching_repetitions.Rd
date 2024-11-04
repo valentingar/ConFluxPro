@@ -17,3 +17,4 @@ profiles within \code{x}. Must be a subset of the \code{id_cols} of x.}
 object is split along parameter(s) defined in \code{rep_cols}. Returns TRUE
 if all profiles match in their structure.
 }
+\keyword{internal}

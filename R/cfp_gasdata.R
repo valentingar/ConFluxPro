@@ -1,4 +1,5 @@
-#' @title cfp_gasdata
+#' @title Soil gas concentration data
+#'
 #' @description
 #' Create a [cfp_gasdata] object. This is a data.frame containing gas
 #' concentration data for one or multiple soil profiles.
@@ -13,6 +14,8 @@
 #' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
 #'}
 #' @param ... not used
+#'
+#' @family data formats
 #'
 #' @returns A \code{cfp_gasdata} object.
 #'

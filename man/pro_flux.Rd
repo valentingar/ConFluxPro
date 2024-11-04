@@ -5,7 +5,7 @@
 \alias{pro_flux.cfp_dat}
 \alias{pro_flux.cfp_pfres}
 \alias{pro_flux.cfp_pfmod}
-\title{pro_flux}
+\title{Inverse model of production profiles}
 \usage{
 pro_flux(x, ...)
 
@@ -24,31 +24,22 @@ pro_flux(x, ...)
 \method{pro_flux}{cfp_pfmod}(x, ...)
 }
 \arguments{
-\item{x}{A \code{cfp_dat} object with all the necessary input datasets.}
-
 \item{...}{
   Arguments passed on to \code{\link[=cfp_pfmod]{cfp_pfmod}}
   \describe{
-    \item{\code{}}{}
-  }}
-
-\item{zero_flux}{(logical) Applies the zero-flux boundary condition? If
-FALSE, the first value in X represents the incoming flux to the lowest
-layer.}
-
-\item{zero_limits}{(numeric vector) a vector of length 2 defining the lower
-and upper limit of the lowest flux if zero_flux = F.}
-
-\item{DSD0_optim}{RESERVED FOR FUTURE EXPANSION}
-
-\item{evenness_factor}{(numeric) A user defined factor used to penalise strong
+    \item{\code{zero_flux}}{(logical) Applies the zero-flux boundary condition? If
+\code{FALSE}, \code{F0} is optimized alongside the production rates.}
+    \item{\code{zero_limits}}{(numeric vector) a vector of length 2 defining the lower
+and upper limit of the lowest flux if \code{zero_flux = FALSE}.}
+    \item{\code{known_flux_factor}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+    \item{\code{DSD0_optim}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+    \item{\code{evenness_factor}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}(numeric) A user defined factor used to penalise strong
 differences between the optimised production rates. This must be identified by
 trial-and-error and can help prevent that production rates are simply set to zero
 basically the lower a production is relative to the the maximum of the absolute of
 all productions, the higher it is penalised. The \code{evenness_factor} then
 defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.}
-
-\item{known_flux_factor}{RESERVED FOR FUTURE EXPANSION}
+  }}
 }
 \description{
 This implements an inverse modeling approach which optimizes
@@ -94,8 +85,7 @@ PROFLUX <-
 
 }
 \seealso{
-Other proflux: 
-\code{\link{prod_mod_conc}()},
-\code{\link{prod_optim}()}
+Other flux models: 
+\code{\link{fg_flux}()}
 }
-\concept{proflux}
+\concept{flux models}

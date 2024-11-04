@@ -1,4 +1,4 @@
-#' @title discretize_depth
+#' @title Interpolate over depth to layered profile
 #'
 #' @description Interpolate and discretize data into a layered structure.
 #' The output is a data.frame where each profile is separated into layers

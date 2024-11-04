@@ -3,7 +3,7 @@
 \name{rmse}
 \alias{rmse}
 \alias{nrmse}
-\title{(N)RMSE}
+\title{(Normalized) root mean square error}
 \usage{
 rmse(a, b)
 
@@ -22,7 +22,7 @@ normalization to be applied. Can be one of
 }}
 }
 \description{
-(N)RMSE
+(Normalized) root mean square error
 
 Calculate the (normalized) root-mean-square-error of
 two vectors.

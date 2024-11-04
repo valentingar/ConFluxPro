@@ -1,4 +1,4 @@
-#' @title efflux
+#' @title Extract efflux rates
 #'
 #' @description Calculate or extract the soil/atmosphere efflux
 #' from \code{cfp_pfres} or \code{cfp_fgres} model results.

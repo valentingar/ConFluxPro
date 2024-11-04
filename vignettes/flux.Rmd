@@ -1,0 +1,198 @@
+---
+title: "Flux calculation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{flux}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette shows how to model flux rates with two functions `fg_flux()` and `pro_flux()`. 
+It builds on the article on `vignette("data_preparation", package = "ConFluxPro")`, so you are encouraged to first read that one.
+
+```{r setup}
+library(ConFluxPro)
+```
+
+# General workflow
+We will start by importing the `cfp_dat()` object, that we created at the end of the last article `vignette("data_preparation", package = "ConFluxPro")`.
+This is included in ConFluxPro as the dataset `base_dat`.
+```{r base_dat}
+data("base_dat", package = "ConFluxPro")
+```
+
+Note, that one of the most important settings of both models is already made at this point: the definition of the flux layers in the `layers_map` of the data.
+You need to carefully decide how many layers and which boundaries to set.
+This may depend on your research question and on your input data. 
+You can always try out different `layers_map` by changing them in the creation of your `cfp_dat()` object.
+
+Modeling flux rates with both functions is as easy as passing `base_dat` as the single argument:
+```{r base_flux, warning=FALSE}
+mod_pf <- pro_flux(base_dat)
+mod_fg <- fg_flux(base_dat)
+```
+This will use the default settings for both functions. We will look into the fine-tuning of both in more detail later. 
+For now we are only interested in the objects returned. 
+`pro_flux()` returns an object of class `cfp_pfres`, while `fg_flux()` returns a `cfp_fgres` object. 
+Both have the same structure. 
+At their core is the input dataset `base_dat` with the model settings as additional attributes. 
+The model result is stored as another `data.frame` in the list.
+```{r base_list}
+names(mod_pf)
+names(mod_fg)
+```
+These `data.frame`s hold the flux rates in the different layers, and the optimized production rates of the inverse model (`pro_flux()`). 
+To derive efflux rates, we don't have to interact with these internal datasets directly. Instead, we can simply call `efflux()` on the entire model result.
+This will return a `data.frame` with the efflux rates (in µmol m^-2^ s^-1^) of each profile of the model.
+```{r base_efflux}
+efflux_pf <- efflux(mod_pf)
+efflux_fg <- efflux(mod_fg)
+
+head(efflux_pf)
+```
+Similarly, we can extract the total production rates for each layer within the soil.
+```{r}
+production_pf <- production(mod_pf)
+production_fg <- production(mod_fg)
+
+head(production_pf)
+```
+Here, `prod_abs` is the total production rate in the layer (in in µmol m^-2^ s^-1^), whereas `prod_rel` is the relative contribution of that layer to the total efflux.
+
+Now that we've discussed the syntax, let's discuss the specific considerations and settings of each method. 
+
+# `fg_flux()`: the 'classic' FGM
+## Model settings
+The function `fg_flux()` implements different versions of the 'classic' FGM.
+With this we mean a typical 'forward' calculation of the concentration gradient and diffusion coefficient, in contrast to the inverse model discussed below. 
+In truth, `fg_flux()` is a collection of models, because there exist different philosophies on how to calculate the concentration gradient and how to extrapolate the flux rates to the surface. 
+The default mode `"LL"` is to fit a local linear model of `x_ppm~depth` within each layer independently. 
+Other modes fit a single model to the complete concentration profile, either a linear spline (`"LS"`), or an exponential model (`"EF"` and `"DA"`). 
+We can use one or more of thse methods by using the `modes` argument. 
+If we choose multiple modes, we must also specify the `gases` argument. 
+This allows to choose a different mode for each gas that is most applicable.
+```{r flux-modes, warning=FALSE}
+mod_fg_ef <- fg_flux(base_dat, modes = "EF")
+mod_fg_multiple_modes <- fg_flux(base_dat, 
+                                 modes = c("LL", "LS", "EF"),
+                                 gases = rep("CO2", 3))
+```
+
+In addition, we also have to specify how parameters within the `soilphys` dataset are aggregated. 
+If the layers specified in `layers_map` contain multiple layers in `soilphys`, the parameters have to be averaged. 
+Relevant for the flux calculation are only the parameters `c_air`, the number density of the soil air and `DS`, the apparent diffusion coefficient. 
+By default, `DS` is averaged as a weighted harmonic mean, while `c_air` is averaged as a weighted arithmetic mean. 
+The weights in both cases are the respective layer heights. 
+You can change this, or add more parameters that are averaged by setting the arguments `param` and `funs`. 
+These are vectors that must match in length. Each `param` must be present as a column in `soilphys`.
+
+```{r flux-param}
+mod_fg_more_params <- 
+  fg_flux(base_dat, 
+          modes = "LL",
+          gases = "CO2",
+          param = c("c_air", "DS", "SWC", "t"),
+          funs = c("arith", "harm", "arith", "harm"))
+```
+
+## Extrapolating efflux
+How to derive efflux rates from the flux rates of each soil layer requires some consideration. 
+Here, we implement three different methods that can be set in the call of `efflux()`. 
+The simplest is simply to assume that the flux rate in the top layer is equivalent to the efflux:
+```{r efflux-top}
+efflux_fg_top <- efflux(mod_fg, method = "top")
+```
+
+The other two methods extrapolate to the surface. 
+Both assume that the modeled flux rate is centered in the layer, so that the flux of a layer between 0 and 10 cm depth is located at 5 cm depth.
+The `"lm"` model fits a linear model `flux~depth` of all layers and extrapolates it to the surface.
+The `"lex"` model uses two layers to linearly extrapolate the flux rate.
+These have to be selected using the `layers` argument. 
+Here we set `layers = c(1, 2)` to select the top two layers for the extrapolation.
+Since we only have two layers to begin with, the results of `"lm"` and `"lex"` are the same in our case.
+```{r fg_ef}
+efflux_fg_lm <- efflux(mod_fg, method = "lm")
+efflux_mod_lex <- efflux(mod_fg, method = "lex", layers = c(1, 2))
+```
+
+## Deriving production rates
+The user input needed to derive production rates from a model returned by `fg_flux()` is simple. 
+Because the efflux rate is needed, we potentially have to specify how we want to calculate the efflux rate.
+For this simply pass the same arguments as with `efflux()`.
+If nothing is specified, the default efflux method is used (`"lm"`).
+
+```{r fg_prod}
+production_fg <- production(mod_fg)
+```
+
+The production rates of each layer are calculated as the difference of the flux in the layer below and the flux in the layer above it.
+For the lowest layer, the flux below is assumed to be zero, for the highest layer the efflux is used as the upper flux.
+This process is prone to artefacts stemming from the methods used in the calculation of the concentration gradient.
+Production rates derived from `fg_flux()` should therefore be carefully checked for plausibility. 
+
+# `pro_flux()`: inverse model of production profiles
+## Theory and implementation
+The function `pro_flux()` implements an inverse model of soil gas production profiles.
+For each layer in `soilphys`, a theoretical concentration profile is modeled.
+In this way, the complete concentration profile can be modeled.
+$$
+c(z) = - \frac{P}{2D_S} \cdot z^2 - \frac{F_0}{D_S} \cdot z + c_0
+$$
+The model is evaluated at each layer boundary and "from-bottom-to-top", meaning that the lowest layer is modeled first.
+For each layer in `layers_map`, a production rate $P$ (µmol m^-3^ s^-1^) is algorithmicly optimized to achieve the best fit with the measured concentration profile. 
+This is achieved with the `stats::optim()` function and a custom objective function.
+At the lowest layer, two boundary conditions need to be met: the concentration $c_0$ and the incoming flux $F_0$ from the deep soil. 
+While $c_0$ is set to the median of the measured value at that depth, $F_0$ can be either set to zero, or optimized together with the production rates $P$.
+In this model, the efflux is the sum of the production (or consumption) in the entire profile.
+## Model settings
+As with the 'forward' model, the most important setting is to determine for which layers a production rate is calculated, which is defined in `layers_map`.
+In addition, there are now more settings that can be applied within the call to `cfp_layers_map()`.
+Namely, we can set a upper `highlim` and lower limit `lowlim` of the allowed production rate within each layer.
+Be limiting the range in which the production rates are optimized to positive values, we can exclude consumption of the gas within the model.
+This can be relevant especially for CO~2~, where negative concentration gradients are often the result of measurement uncertainty and not of significant consumption of the gas. 
+For other gases, such as CH~4~ both consumption and production may be relevant processes that can also occur at different points within the same profile.
+
+The other important setting is `zero_flux` within the call to `pro_flux()`. 
+If `TRUE` (the default), the flux from below the model boundary into the lowest layer ($F_0$) is assumed to be zero.
+If `FALSE`, $F_0$ is optimized alongside the production rates within the soil.
+Typically, there is no advantage in the modelling of setting `zero_flux` to `FALSE`, even if the assumption that the flux is negligible is not met.
+But be aware, that in this way, more production may be allocated into the lowest layer than that layer actually produced.
+If you do decide to use `zero_flux = FALSE`, you can  also set `zero_limits` that sets limits for the allowed flux rates, analogous to `lowlim` and `highlim` in `cfp_layers_map()`.
+
+```{r pf_zf}
+mod_pf_with_flux <- pro_flux(base_dat, 
+                             zero_flux = FALSE,
+                             zero_limits = c(-1000, 1000))
+```
+
+You can access the optimized $F_0$-flux rates within the function `deepflux()`. 
+
+```{r pf_df}
+deepflux(mod_pf_with_flux) |>
+  head()
+```
+
+Other settings are more experimental, like `layer_couple` within `cfp_layers_map()` which aims to penalize stark changes of production within a profile, similar to `evenness_factor` in `pro_flux()`.
+We do not encourage the use of these setting, as contrasting production rates may be a sign that you defined too many production layers.
+
+## Extracting efflux and production rates
+Getting the efflux from any `pro_flux()` model is very simple by calling `efflux()` on any model result.
+No additional settings are necessary.
+```{r pf_ef}
+EFFLUX_pf <- efflux(mod_pf)
+head(EFFLUX_pf)
+```
+
+Similarly, you can call `production()` to get the optimzed production rates for each layer in `layers_map`.
+```{r pf_prod}
+PRODUCTION_pf <- production(mod_pf)
+head(PRODUCTION_pf)
+```
+

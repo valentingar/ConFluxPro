@@ -52,6 +52,8 @@ bal_flag  TRUE if value was not corrected (or set NA).
 x_ppm, corrected for balance
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 A function to correct the measured values for non-complete gas
 exchange. Per sample, a total balance (b_tot) is obtained by adding the
 measurements of all gases and, if necessary, corrected for missing gases.

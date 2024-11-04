@@ -5,7 +5,7 @@
 \alias{combine_models.cfp_altres}
 \alias{combine_models.list}
 \alias{combine_models_by_reference}
-\title{Combine Models}
+\title{Combine models}
 \usage{
 combine_models(x)
 

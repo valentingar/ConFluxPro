@@ -1,4 +1,4 @@
-#' @title (N)RMSE
+#' @title (Normalized) root mean square error
 #'
 #' @title Calculate the (normalized) root-mean-square-error of
 #' two vectors.

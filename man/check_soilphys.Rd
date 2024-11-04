@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_soilphys.R
 \name{check_soilphys}
 \alias{check_soilphys}
-\title{check_soilphys}
+\title{Check for complete and correct soil physical parameters}
 \usage{
 check_soilphys(df, extra_vars = c(), id_cols)
 }

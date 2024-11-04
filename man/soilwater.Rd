@@ -3,7 +3,7 @@
 \docType{data}
 \name{soilwater}
 \alias{soilwater}
-\title{Soil water content}
+\title{Example soil water content}
 \format{
 A tibble with 180 rows and 5 variables:
 \describe{

@@ -1,4 +1,4 @@
-#' @title error_funs
+#' @title Estimate model error
 #'
 #' @description A set of functions that can be called on an
 #' cfp_pfres object (the result of a call to pro_flux) to assess

@@ -3,7 +3,7 @@
 #' @description A custom ggplot2 stat that implements a variable-width bar plot.
 #'
 #'
-#'
+#' @keywords internal
 
 
 Statvariable_bar <- ggplot2::ggproto("variable_bar", ggplot2::Stat,

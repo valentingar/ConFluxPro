@@ -1,0 +1,263 @@
+---
+title: "Data preparation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data preparation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette introduces the central data classes in *ConFluxPro* and shows how to combine all necessary data into a single `cfp_dat()` object. We start by explaining the concept of a 'profile' and how soil data is structured in the package. We then introduce three essential classes `cfp_gasdata()`, `cfp_soilphys()` and `cfp_layers_map()` that frame different data types within *ConFluxPro*. Finally, we combine these objects into a single `cfp_dat()` object that holds all information needed to start modeling soil gas fluxes.
+
+```{r setup, message=FALSE}
+library(ConFluxPro)
+```
+
+# Soil data and profiles
+## What is a soil profile?
+A profile in *ConFluxPro* is a distinct observation of the vertical profile of a soil. For example, this can mean the concentration profile of CO~2~ at a specific time point, or the vertical distribution of soil moisture. Profiles are identified by their `id_cols`, column names that together uniquely identify each profile. This can be whatever combination of columns happened to be in your data, but will typically include a datetime column to identify the time point or a column that identifies the site if you measured at multiple locations. Consider the `soilphys` dataset included in the package.
+
+```{r profiles_start, message = FALSE}
+library(dplyr)
+data("soilphys", package = "ConFluxPro")
+soilphys %>%
+  relocate(site, Date, gas) %>%
+  head()
+```
+
+This dataset contains information on different soil physical parameters. We will come back to that later. For now, notice that there are the `site` and `Date` column. All combinations identify a unique profile, namely twelve dates for two sites `"site_a"` and `"site_b"` for a total of 24 profiles. We can create a `cfp_profile()` object from this dataset. The only thing this does is to add the information which columns identify the profiles to the dataset with the `id_cols` argument. Internally, the number of distinct profiles is calculated as the unique combinations of the `id_cols` and can be accessed by `n_profiles()`.
+```{r profiles_class}
+soilphys <- 
+  cfp_profile(soilphys, id_cols = c("site", "Date"))
+n_profiles(soilphys)
+```
+
+The concept of profiles and `id_cols` applies to almost all objects created in ConFluxPro. You can always see what `id_cols` an object has by calling the function `cfp_id_cols()`.
+```{r profiles_id_cols}
+cfp_id_cols(soilphys)
+```
+
+## Soil data structure
+Within a soil profile, parameters change with depth. In ConFluxPro we differentiate between two types of data. _Point data_ have distinct values at a precise `depth` in the soil, such as the soil gas concentration. For _layered data_ , the soil is subdivided into layers that are delimited by their `upper` and `lower` boundary. Layered data must be without gaps or overlaps, so that the entire profile can be described by distinct values. `depth`, `upper` and `lower` are in centimeters and a higher value indicates the upward direction. Both positive and negative values are allowed. This means you could set the mineral/organic soil boundary to have `depth = 0`, describe the mineral soil with increasingly negative values of `depth` and have the organic layer on top have positive values.
+
+We will now present the three main data types that are needed to model gas fluxes.
+
+# `cfp_gasdata()`: Gas concentration data
+Soil gas concentration data is stored in a `data.frame`. The data needs to have at least the columns `gas`, `depth` and `x_ppm`, as well as any `id_cols` that identify the soil profiles. The `gas` is a `character()` that identifies which gas was measured, so for example `"CO2"`. `depth` is as explained above and `x_ppm` is the mixing ratio in ppm. Consider the example data that ships with the package:
+```{r gasdata-example}
+data("gasdata", package = "ConFluxPro")
+head(gasdata)
+```
+
+Because this `data.frame` already follows the requirements defined above, we can create a `cfp_gasdata()` object right away by providing the necessary `id_cols`. The function checks, whether the `data.frame` meets the criteria and returns an object of class `cfp_gasdata`.
+```{r cfp_gasdata, error=TRUE}
+# create working cfp_gasdata object
+my_gasdata <- cfp_gasdata(gasdata, id_cols = c("site", "Date"))
+
+head(my_gasdata)
+
+# won't work, because depth is missing
+gasdata_broken <- gasdata %>% select(!depth)
+cfp_gasdata(gasdata_broken, id_cols = c("site", "Date"))
+```
+
+The data is in a long format, following the [tidy data principles](https://tidyr.tidyverse.org/articles/tidy-data.html), where each observation is in a new row. If your data is not in this format, you can use the `tidyr::pivot_longer()` and other functions in the `tidyr` package. 
+Notice that `cfp_gasdata()` automatically added the `gas` column to the `id_cols`. 
+`gas` is always a required column in ConFluxPro, so that many functions will automatically add it to the `id_cols` if its present and will fail if its missing. 
+
+# `cfp_soilphys()`: Soil physical data
+## Create a `cfp_soilphys()` object
+Soil physical data includes everything else needed to describe the gas transport characteristics of the soil. 
+This data is split into homogeneous layers with constant values for each layer and profile.
+At the minimum, `cfp_soilphys()` requires two parameters: `DS` is the gas-specific apparent diffusion coefficient of the soil in m^2^ s^-1^ and `c_air` is the number density of the soil air in mol m^-3^. 
+If these parameters are provided, a valid `cfp_soilphys` object can be created. 
+This function ensures that each profile is correctly layered without overlaps or gaps and that the required columns are present.
+
+```{r soilphys-example}
+data("soilphys", package = "ConFluxPro")
+
+my_soilphys <- cfp_soilphys(soilphys, id_cols = c("site", "Date"))
+```
+
+## Derive parameters with `complete_soilphys()`
+Often `DS` and `c_air` are derived from other parameters that are easier to measure. 
+This then requires a bit more work to get a working `cfp_soilphys()` object.
+Typically, you will need the following information: 
+
+**Measured parameters:**
+
+- `TPS`: total porosity as a volume fraction.
+- `SWC`: soil water content as a volume fraction.
+- `t`: air temperature in °C.
+- `p`: air pressure in hPa.
+
+**Derived parameters:**
+
+- **`c_air`: air number density, derived from `t` and `p` with ideal gas law.**
+- `AFPS`: air-filled pore space, defined as `AFPS = TPS - SWC`.
+- `DSD0`: relative diffusivity of the soil, unitless. Derived from `AFPS` with transfer function.
+- `D0`: gas-specific free-air diffusion coefficient in m^2^ s^-1^. Derived from `t` and `p` with empiric function.
+- **`DS`: gas-specific apparent diffusion coefficient in m^2^ s^-1^, derived as `DS = D0 * DSD0`.**
+
+These relationships are invoked within the `complete_soilphys()` function. Consider the provided example data: 
+It already has every parameter we need. 
+Now let's remove the derived parameters and run `complete_soilphys()` again. 
+We have to provide a formula for the calculation of the relative diffusivity `DSD0`. 
+In our case, we have fitting parameters `a` and `b` from a Currie-style model that calculates as `DSD0 = a * AFPS ^ b`. 
+We provide this formula as a `character()` to the function:
+```{r soilphys-complete-sp}
+soilphys_measured_only <- soilphys %>% select(!all_of(c("AFPS", "DSD0", "D0", "DS", "c_air")))
+
+head(soilphys_measured_only)
+
+my_soilphys_completed <- complete_soilphys(soilphys_measured_only, DSD0_formula = "a*AFPS^b")
+head(my_soilphys_completed)
+```
+
+Notice the `gas` column. This is essential because different gases have specific diffusion coefficients. 
+We can also remove the `gas` column and provide a list of gases to `complete_soilphys()`:
+```{r soilphys-complete-gases}
+soilphys_measured_only %>%
+  select(!gas) %>%
+  complete_soilphys(DSD0_formula = "a*AFPS^b", gases = c("CO2", "CH4")) %>%
+  head()
+```
+
+This replicates each row of the `data.frame` and calculates distinct values for each gas.
+
+## From measurements to layered data: `discretize_depth()`
+As seen above, a `cfp_soilphys` object often requires the combination of many different parameters.
+These parameters are typically measured in very different ways and may be present in different data formats. 
+This presents a hurdle, as `cfp_soilphys()` requires these datasets to all be present in the same layered format. 
+The function `discretize_depth()` helps with this by providing a unified way to interpolate different observations to the same layered structure. 
+The basic idea is that you provide a vector of depths that represent the layer boundaries. 
+For $n$ layers, you would need $n+1$ depths. 
+Let's say we measured a temperature profile at three depths: 0, -30 and -100 cm:
+```{r temperature-example}
+temperature_profile <- 
+  data.frame(depth = c(0, -30, -100),
+             t = c(25, 20, 16))
+```
+If we want to map this to 10 cm-thick layers, we can simply define the layer boundaries and use `discretize_depth()` to linearly interpolate the observations:
+```{r temperature-interp}
+boundaries <- seq(0, -100, by = -10)
+
+discretize_depth(temperature_profile,
+                 param = "t", 
+                 method = "linear",
+                 depth_target = boundaries)
+```
+
+The function can handle proile data and treats every profile distinctly.
+So if we adapt our example data to two profiles identified by a `date` column, the interpolation works in the same way, if we provide the necessary `id_cols`.
+```{r}
+temperature_profile_dates <-
+  data.frame(date_id = rep(c("date_1", "date_2"), each = 3),
+             depth = rep(c(0, -30, -100), times = 2),
+             t = c(25, 20, 16, 15, 10, 8)) %>%
+  cfp_profile(id_cols = c("date_id"))
+
+discretize_depth(temperature_profile_dates,
+                 param = "t", 
+                 method = "linear",
+                 depth_target = boundaries)
+```
+
+We can use different interpolation methods that may be more applicable to other parameters.
+See the function documentation `?discretize_depth` for details.
+
+# `cfp_layers_map()`: Create the model layers
+The final aspect of a ConFluxPro model is the "layers_map".
+This is a layered `data.frame` that defines for which layers we want to calculate flux rates.
+We provide a dataset that matches the other example datasets:
+```{r layers_map-load}
+data("layers_map", package = "ConFluxPro")
+
+layers_map
+```
+As you can see, we divide each of the site into two layers, one for the organic layer with `depth > 0` and one for the mineral soil below. 
+Notice, that the upper boundary is different between the sites. 
+This is because they have a different organic layer, that is also reflected in the other datasets:
+```{r may_upper}
+my_gasdata %>%
+  group_by(site) %>%
+  summarise(max_depth = max(depth))
+
+my_soilphys %>%
+  group_by(site) %>%
+  summarise(max_upper = max(upper))
+```
+
+Notice, that the extends of the layers_map should match your measured data if you want to include it in the models. 
+You cannot extend the layers_map beyond your measurements.
+
+How many layers to define in the `cfp_layers_map()` is up to the user and depends on the research question and the resolution of the recorded data.
+While it may be tempting to define a layer between every observation depth in `cfp_gasdata()`, this may result in artefacts in the modeled fluxes.
+Combining these layers may therefore yield more robust results.
+
+To create a valid `cfp_layers_map`, we still need to add some information.
+These are only needed for a `pro_flux()` inverse model and are set to `NA` if missing.
+
+- `gas`: The gas as a `character()`.
+- `lowlim`: The lower limit of production allowed in that layer in µmol m^-3^ s^-1^ 
+- `highlim`: The upper limit of production allowed in that layer in µmol m^-3^ s^-1^ 
+- `layer_couple`: Penalty factor, defaults to 0. See `?cfp_layers_map()`
+
+We can either do so in the function call or provide distinct values ourselves.
+The `highlim` and `lowlim` values can help to explicitly exclude unrealisitc processes in the optimization in `pro_flux()`.
+For example, we can set `lowlim` to 0, if we want to prevent consumption of CO~2~.
+Again, these values are only relevant in the `pro_flux()` model. 
+In our case, we want to add the limits for the gas `"CO2"`:
+```{r}
+my_layers_map <- 
+  cfp_layers_map(
+    layers_map,
+    id_cols = "site",
+    gas = "CO2",
+    lowlim = 0,
+    highlim = 1000
+  )
+
+my_layers_map
+```
+
+Note that we only added `"site"` as `id_cols`, because we don't need the model frame to change over time and therefore use the same mapping for every `Date`.
+You can always use a subset of the `id_cols` in `cfp_soilphys()` in your `cfp_layers_map()`.
+At the minimum, you need to provide `gas` within your `id_cols`. 
+
+With this complete, we now have everything to create a unified dataset for a ConFluxPro model.
+
+# `cfp_dat()`: Combining the datasets
+As a last step, we combine the three datasets into one unified frame with `cfp_dat()`.
+
+```{r}
+my_dat <- cfp_dat(my_gasdata, my_soilphys, my_layers_map)
+
+my_dat
+```
+This function does multiple things. 
+(I) It ensures that the upper and lower boundaries between the datasets match. 
+The highest `upper` of `soilphys` and `gasdata` should match the highest `depth` in `gasdata`, with the `lower` boundary correspondingly.
+(II) It matches each profile to another and makes a list of all profiles and the corresponding datasets.
+ConFluxPro does not require the `id_cols` between the different datasets to match exactly, as long as the different profiles can be mapped to another.
+This makes it possible, for example, to map the same `soilphys` profiles to multiple distinct `gasdata` profiles, without having to replicate the `soilphys` dataset manually.
+We already make use of this by providing only one `layers_map` per `site` in our example that is not replicated for the different `Date` of the the other datasets.
+(III) For each profile, it separates the layers of `soilphys`, at each depth where there is an observation in `gasdata`. This does not change the calculation but is needed internally for the `pro_flux()` model. 
+(IV) It adds the column `pmap` to the `soilphys` dataset that indicates which layer, as defined in `cfp_layers_map()` corresponds to that layer in `soilphys`.
+
+At its core, a `cfp_dat` object is simply a list. 
+We can access the different elements, including the generated `profiles` `data.frame` like any element in a list with the `$` operator. 
+```{r}
+my_dat$profiles %>% head()
+```
+
+Within this `data.frame` we have identifiers for each profile of the different datasets (`gd_id`, `sp_id`, `group_id`) and an identifier of each profile of the combined dataset `prof_id`.
+
+We now are ready model. 

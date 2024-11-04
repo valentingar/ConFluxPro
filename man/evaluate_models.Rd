@@ -3,7 +3,7 @@
 \name{evaluate_models}
 \alias{evaluate_models}
 \alias{evaluate_models.cfp_altres}
-\title{evaluate_models}
+\title{Evaluate model runs for calibration}
 \usage{
 evaluate_models(
   x,
