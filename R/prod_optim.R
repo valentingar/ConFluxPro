@@ -47,6 +47,8 @@
 
 #' @family proflux
 #'
+#' @keywords internal
+#'
 #' @export
 #'
 

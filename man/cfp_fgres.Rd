@@ -31,6 +31,7 @@ cfp_fgres(
 }
 \seealso{
 Other model frames: 
+\code{\link{cfp_altres}()},
 \code{\link{cfp_fgmod}()},
 \code{\link{cfp_pfmod}()},
 \code{\link{cfp_pfres}()}

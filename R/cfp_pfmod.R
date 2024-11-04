@@ -174,6 +174,7 @@ cfp_known_flux_factor.default <- function(x){
 
 ###### COERCING #######
 #' @describeIn coercion to cfp_pfmod
+#' @keywords internal
 #' @export
 as_cfp_pfmod <- function(x){
   UseMethod("as_cfp_pfmod")

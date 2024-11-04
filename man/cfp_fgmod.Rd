@@ -57,6 +57,7 @@ DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical p
 }
 \seealso{
 Other model frames: 
+\code{\link{cfp_altres}()},
 \code{\link{cfp_fgres}()},
 \code{\link{cfp_pfmod}()},
 \code{\link{cfp_pfres}()}

@@ -9,7 +9,7 @@
 #' @param rep_cols A character vector of columns that define repetitions of
 #' profiles within \code{x}. Must be a subset of the \code{id_cols} of x.
 #'
-#'
+#' @keywords internal
 check_matching_repetitions <- function(x, rep_cols){
 
   x_id_cols <- cfp_id_cols(x)

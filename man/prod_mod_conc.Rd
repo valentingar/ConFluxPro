@@ -61,3 +61,4 @@ Other proflux:
 \code{\link{prod_optim}()}
 }
 \concept{proflux}
+\keyword{internal}

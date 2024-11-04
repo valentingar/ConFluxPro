@@ -45,6 +45,7 @@ cfp_pfmod(ConFluxPro::base_dat)
 }
 \seealso{
 Other model frames: 
+\code{\link{cfp_altres}()},
 \code{\link{cfp_fgmod}()},
 \code{\link{cfp_fgres}()},
 \code{\link{cfp_pfres}()}

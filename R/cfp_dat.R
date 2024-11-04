@@ -439,7 +439,7 @@ cfp_id_cols.default <- function(x){
 #'
 #'
 
-#' @rdname extractors
+#' @rdname utility
 #' @export
 n_groups <- function(x) {
   UseMethod("n_groups")
@@ -472,7 +472,7 @@ join_with_profiles <- function(target_data,
   list(x, id_cols)
 }
 
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_soilphys <- function(x){
   UseMethod("get_soilphys")
@@ -494,7 +494,7 @@ get_soilphys.cfp_dat <- function(x){
   x
 }
 
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_gasdata <- function(x){
   UseMethod("get_gasdata")
@@ -515,7 +515,7 @@ get_gasdata.cfp_dat <- function(x){
 }
 
 
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_layers_map <- function(x){
   UseMethod("get_layers_map")

@@ -23,10 +23,11 @@ reference:
   - has_concept("flux models")
   - flux
 - title: Model results
-  desc: Extract merived parameters from models.
+  desc: Extract derived parameters from models.
 - contents:
   - efflux
   - production
+  - deepflux
 - title: Calibration
   desc: Run a parameter variation to calibrate the models.
 - contents:
@@ -34,6 +35,7 @@ reference:
   - cfp_run_map
   - evaluate_models
   - error_funs
+  - cfp_altapply
   - combine_models
 - title: Uncertainty estimation
   desc: >
@@ -46,9 +48,48 @@ reference:
     These functions are mostly internal.
 - contents:
   - has_concept("model frames")
+- title: Profiles
+  desc: >
+    Object types for soil profiles
+- contents:
+  - cfp_profile
+  - cfp_layered_profile
+- title: Data preparation
+- contents:
+  - discretize_depth
+  - complete_soilphys
+  - check_soilphys
+- title: Diffusion parameter
+- contents:
+  - DSD0
+  - D0_massman
+- title: Extractors
+- contents:
+  - extractors
+- title: Mathematical formulas
+- contents:
+  - rmse
+  - harm
+  - scale_min_median
+- title: Utility
+- contents:
+  - cfp_parameter
+  - plot_profile
+  - season
+  - depth_structure
+  - unique_gases
+  - n_profiles
+  - n_groups
+- title: Sensitivity analysis
+- contents:
+  - sobol_run_map
+  - sobol_calc_indices
 - title: Example data
 - contents:
   - has_keyword("datasets")
-- title: All functions
+- title: Deprecated functions
 - contents:
-  - matches("*")
+  - has_lifecycle("deprecated")
+# - title: All functions
+# - contents:
+#   - matches("*")

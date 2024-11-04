@@ -64,7 +64,7 @@ is_cfp_pfres <- function(x){
 
 
 ##### EXTRACTION ######
-#' @rdname extractors
+#' @keywords internal
 #' @export
 get_PROFLUX <- function(x){
   UseMethod("get_PROFLUX")

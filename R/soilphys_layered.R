@@ -38,6 +38,9 @@
 
 #' }
 #' @family soilphys
+#'
+#' @keywords internal
+#'
 #' @importFrom magrittr %>%
 #'
 #' @export

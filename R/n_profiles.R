@@ -1,4 +1,4 @@
-#' @rdname extractors
+#' @rdname utility
 #' @export
 n_profiles <- function(x) {
   UseMethod("n_profiles")

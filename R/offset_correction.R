@@ -1,6 +1,9 @@
 #' @title offset_correction
 #'
-#' @description A function for the correction of offsets in the whole
+#' @description
+#' `r lifecycle::badge('deprecated')`
+#'
+#' A function for the correction of offsets in the whole
 #'   gas-dataset. The basic assumption is that atmospheric values of these gases
 #'   are fairly constant over long periods of time. If there are offsets in the
 #'   atmospheric concentrations, then these are probably introduced via

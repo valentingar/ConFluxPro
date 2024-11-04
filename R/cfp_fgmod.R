@@ -161,6 +161,7 @@ cfp_funs.cfp_fgmod <- function(x){
 
 ###### COERCION #######
 #' @describeIn coercion to cfp_fgmod
+#' @keywords internal
 #' @export
 as_cfp_fgmod <- function(x){
   UseMethod("as_cfp_fgmod")
