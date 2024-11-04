@@ -3,7 +3,7 @@
 \docType{data}
 \name{soiltemp}
 \alias{soiltemp}
-\title{Soil temperature}
+\title{Example soil temperature}
 \format{
 A tibble with 120 rows and 4 variables:
 \describe{

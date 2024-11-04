@@ -1,4 +1,4 @@
-#' @title Combine Models
+#' @title Combine models
 #'
 #' @description
 #' Combinea list of multiple models or [cfp_dat()] objects into a single object.

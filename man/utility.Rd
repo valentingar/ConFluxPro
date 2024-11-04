@@ -3,12 +3,12 @@
 \name{n_groups}
 \alias{n_groups}
 \alias{n_profiles}
-\title{n_groups}
+\title{Get number of groups/profiles}
 \usage{
 n_groups(x)
 
 n_profiles(x)
 }
 \description{
-n_groups
+Get number of groups/profiles
 }

@@ -1,4 +1,4 @@
-#' @title Make layered profiles
+#' @title Object for layered soil profiles
 #'
 #' @description
 #' A subclass of \code{\link{cfp_profile}()} where each profile consists of

@@ -1,4 +1,4 @@
-#' @title check_soilphys
+#' @title Check for complete and correct soil physical parameters
 #'
 #' @description This function analyses the soilphys dataframe before the flux
 #'   calculation. It presents a warning, if there are variables missing and also

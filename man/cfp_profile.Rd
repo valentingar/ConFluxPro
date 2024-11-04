@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_profile.R
 \name{cfp_profile}
 \alias{cfp_profile}
-\title{Make profiles}
+\title{Object for soil profiles}
 \usage{
 cfp_profile(x, id_cols = NULL)
 }

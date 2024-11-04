@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_layered_profile.R
 \name{cfp_layered_profile}
 \alias{cfp_layered_profile}
-\title{Make layered profiles}
+\title{Object for layered soil profiles}
 \usage{
 cfp_layered_profile(x, id_cols = NULL)
 }

@@ -1,7 +1,7 @@
-#' @title D0_Massman
+#' @title Calculate D0
 #'
-#' @description This function calculates the Diffusion coefficients of different
-#'   gases in air at set temperature and pressure.
+#' @description This function calculates the free-air diffusion coefficients
+#' of different gases for a given temperature and pressure.
 #'
 #'
 #'

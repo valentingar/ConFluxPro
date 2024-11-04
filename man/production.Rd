@@ -2,7 +2,7 @@
 % Please edit documentation in R/production.R
 \name{production}
 \alias{production}
-\title{production}
+\title{Extract production rates}
 \usage{
 production(x, ...)
 }

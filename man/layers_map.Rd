@@ -3,7 +3,7 @@
 \docType{data}
 \name{layers_map}
 \alias{layers_map}
-\title{layers_map}
+\title{Example cfp_layers_map object}
 \format{
 A data.frame with 4 rows and 3 variables:
 \describe{

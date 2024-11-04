@@ -5,7 +5,7 @@
 \alias{efflux.cfp_pfres}
 \alias{efflux.cfp_fgres}
 \alias{efflux.cfp_altres}
-\title{efflux}
+\title{Extract efflux rates}
 \usage{
 efflux(x, ...)
 

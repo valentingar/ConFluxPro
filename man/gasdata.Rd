@@ -3,7 +3,7 @@
 \docType{data}
 \name{gasdata}
 \alias{gasdata}
-\title{Soil CO2 concentrations}
+\title{Example soil CO2 concentrations}
 \format{
 A tibble with 312 rows and 6 variables:
 \describe{

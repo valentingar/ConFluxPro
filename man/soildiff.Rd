@@ -3,7 +3,7 @@
 \docType{data}
 \name{soildiff}
 \alias{soildiff}
-\title{Soil diffusion models}
+\title{Example soil diffusion models}
 \format{
 A tibble with 8 rows and 6 variables:
 \describe{

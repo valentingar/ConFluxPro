@@ -1,4 +1,4 @@
-#' @title cfp_altres
+#' @title Model runs as result of parameter variation
 #'
 #' @description S3 class for the result of a call to alternate(). Essentially a list with
 #' added run_map and further attributes.

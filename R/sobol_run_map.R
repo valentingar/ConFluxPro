@@ -1,4 +1,4 @@
-#' @title sobol_run_map
+#' @title Create a run plan for sobol indice calculation
 #'
 #' @description
 #' `r lifecycle::badge('experimental')`

@@ -2,7 +2,7 @@
 % Please edit documentation in R/flux.R
 \name{flux}
 \alias{flux}
-\title{flux}
+\title{Re-run model}
 \usage{
 flux(x)
 }

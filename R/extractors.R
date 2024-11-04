@@ -1,4 +1,4 @@
-#' @title extractors
+#' @title Extract elements from an object
 #'
 #' @description These functions extract components from
 #' different objects that can be created in ConFluxPro.

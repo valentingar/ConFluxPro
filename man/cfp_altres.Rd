@@ -2,7 +2,7 @@
 % Please edit documentation in R/cfp_altres.R
 \name{cfp_altres}
 \alias{cfp_altres}
-\title{cfp_altres}
+\title{Model runs as result of parameter variation}
 \usage{
 cfp_altres(
   x,

@@ -9,6 +9,7 @@ NULL
 
 
 #### re-exports from other packages
+#' @name filter
 #' @importFrom dplyr filter
 #' @export
 dplyr::filter

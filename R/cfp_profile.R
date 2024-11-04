@@ -1,4 +1,4 @@
-#' @title Make profiles
+#' @title Object for soil profiles
 #'
 #' @description
 #' A central S3 class that defines a \code{data.frame} where columns given in

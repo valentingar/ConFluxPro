@@ -1,4 +1,4 @@
-#' @title production
+#' @title Extract production rates
 #'
 #' @description Easily extract the production of \code{cfp_pfres()} and
 #' \code{cfp_fgres()} models per layer defined in \code{layers_map()} and calculate

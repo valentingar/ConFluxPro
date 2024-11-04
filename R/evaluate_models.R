@@ -1,4 +1,4 @@
-#' @title evaluate_models
+#' @title Evaluate model runs for calibration
 #'
 #' @description Evaluate the model runs produced by a call to [alternate()] with
 #' user-defined error functions.
@@ -167,7 +167,7 @@ apply_eval_fun <- function(x,
   x_eval
 }
 
-#' @title scale_min_median
+#' @title Scale a vector by its min and median
 #' @description
 #' Scale a vector between its minimum and median.
 #' @param x a numeric vector

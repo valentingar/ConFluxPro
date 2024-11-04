@@ -21,7 +21,7 @@
 \alias{cfp_layers_different}
 \alias{cfp_layers_from}
 \alias{cfp_layers_altmap}
-\title{extractors}
+\title{Extract elements from an object}
 \usage{
 cfp_og_model(x)
 

@@ -17,6 +17,10 @@ reference:
   - cfp_soilphys
   - cfp_layers_map
   - cfp_dat
+- title: Filter and combine models
+- contents:
+  - filter
+  - combine_models
 - title: Flux models
   desc: Run different models on your data.
 - contents:
@@ -36,7 +40,6 @@ reference:
   - evaluate_models
   - error_funs
   - cfp_altapply
-  - combine_models
 - title: Uncertainty estimation
   desc: >
     Estimate the uncertainty of the model result via a bootstrapping approach.
@@ -81,6 +84,8 @@ reference:
   - n_profiles
   - n_groups
 - title: Sensitivity analysis
+  desc: >
+    Sensitivity analysis for model input parameter. Experimental.
 - contents:
   - sobol_run_map
   - sobol_calc_indices

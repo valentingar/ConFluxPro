@@ -2,7 +2,7 @@
 % Please edit documentation in R/evaluate_models.R
 \name{scale_min_median}
 \alias{scale_min_median}
-\title{scale_min_median}
+\title{Scale a vector by its min and median}
 \usage{
 scale_min_median(x)
 }

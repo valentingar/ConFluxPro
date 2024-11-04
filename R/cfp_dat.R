@@ -434,7 +434,7 @@ cfp_id_cols.default <- function(x){
   attr(x,"id_cols")
 }
 
-#' n_groups
+#' Get number of groups/profiles
 #'
 #'
 #'
@@ -550,48 +550,6 @@ as_cfp_dat.cfp_dat <- function(x){
 
   x <- cfp_dat(gasdata, soilphys, layers_map)
   x
-}
-
-##### FILTER ######
-#' @rdname filter
-#' @inheritParams dplyr::filter
-#' @exportS3Method dplyr::filter
-filter.cfp_dat <- function(.data,
-                           ...,
-                           .preserve = FALSE){
-  tables <- names(.data)
-  tables <- tables[tables == "profiles"]
-
-  .data$profiles <- .data$profiles %>%
-    dplyr::filter(...)
-
-  possible_cols <- names(.data$profiles)
-
-  out <-
-    lapply(.data, function(t){
-
-      col_names <- names(t)
-      merger <- col_names[col_names %in% possible_cols]
-      deselector <- possible_cols[!possible_cols %in% merger]
-
-      t_new <-
-      t %>%
-        dplyr::right_join(.data$profiles %>%
-                            dplyr::select({merger}) %>%
-                            dplyr::distinct(),
-                          by = merger) %>%
-        dplyr::select(!dplyr::any_of(deselector))
-
-      old_atr <- attributes(t)
-      new_atr <- old_atr[!names(old_atr) %in% names(attributes(data.frame()))]
-      attributes(t_new) <- c(attributes(t_new), new_atr)
-      class(t_new) <- class(t)
-      t_new
-    })
-
-  attributes(out) <- attributes(.data)
-
-  out
 }
 
 
