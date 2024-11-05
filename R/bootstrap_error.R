@@ -390,9 +390,9 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
   split_id_split <- split(seq_along(split_id), split_id)
 
   new_sel <-
-  replicate(n_samples, sapply(split_id_split, function(x){
+  replicate(n_samples, flex_length_apply(split_id_split, function(x){
           sample.vec(x, length(x), replace = TRUE)
-        })%>% unlist()) %>%
+        })) %>%
     c()
 
   gasdata <- gasdata[new_sel, ]
@@ -425,9 +425,9 @@ create_bootstrap_soilphys <- function(
   split_id_split <- split(seq_along(split_id), split_id)
 
   new_sel <-
-    replicate(n_samples, sapply(split_id_split, function(x){
+    replicate(n_samples, flex_length_apply(split_id_split, function(x){
       sample.vec(x, 1, replace = TRUE)
-    })%>% unlist()) %>%
+    })) %>%
     c()
 
   soilphys <- soilphys[new_sel, ]

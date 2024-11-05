@@ -95,7 +95,7 @@ check_soilphys <-function(df,
       )
 
   #finding column names of suspects
-  class_susp <- sapply(susp, class)
+  class_susp <- vapply(susp, class, FUN.VALUE = character(1))
   is_susp <- class_susp == "logical"
   pars_susp <- names(susp)[is_susp]
 

@@ -61,7 +61,7 @@ evaluate_models.cfp_altres <-
   stopifnot("Provide at least one eval_funs" = !is.null(eval_funs))
 
   stopifnot("eval_funs must be a list of functions!" = is.list(eval_funs) &
-              (all(sapply(eval_funs,is.function))))
+              (all(vapply(eval_funs, is.function, FUN.VALUE = logical(1)))))
 
   stopifnot("all elements in eval_funs must be uniquely named!" =
               all(nchar(names(eval_funs))>0) &

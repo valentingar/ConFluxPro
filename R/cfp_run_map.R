@@ -246,7 +246,7 @@ run_map_permutation <- function(x,
   params_notop <- params[!names(params) == "topheight"]
 
   stopifnot("all limits in params be numeric for method = 'permutation' !!!" =
-              all(sapply(params, is.numeric)))
+              all(vapply(params, is.numeric, FUN.VALUE = logical(1))))
 
   if (length(params_notop) > 0){
 
@@ -397,7 +397,7 @@ run_map_random <- function(x,
 
   stopifnot("For method = 'random' give exactly two values per
             param as limits" =
-              all(sapply(params,length) == 2))
+              all(vapply(params, length, FUN.VALUE = integer(1)) == 2))
 
   params <- lapply(params, function(x) {
     if(is.numeric(x[1])){
@@ -407,7 +407,9 @@ run_map_random <- function(x,
   })
 
   # get column names in params, if given as characters
-  columns_for_limits <- unlist(params[sapply(params, is.character)],
+  columns_for_limits <- unlist(params[vapply(params,
+                                             is.character,
+                                             FUN.VALUE = logical(1))],
                                use.names = FALSE)
 
   stopifnot(  "if limits in params are privided as characters,

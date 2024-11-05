@@ -30,10 +30,12 @@ combine_models.cfp_altres <- function(x){
 combine_models.list <- function(x){
 
   stopifnot("Not a list of cfp_dat objects" =
-              all(sapply(x, inherits, what = "cfp_dat")))
+              all(vapply(x, inherits, what = "cfp_dat",
+                         FUN.VALUE = logical(1))))
 
   stopifnot("All elements must have the same class" =
-              all(sapply(lapply(x, class), identical, y = class(x[[1]]))))
+              all(vapply(lapply(x, class), identical, y = class(x[[1]]),
+                         FUN.VALUE = logical(1))))
 
   combine_models_by_reference(x[[1]], x)
 }
@@ -128,7 +130,8 @@ combine_models_by_reference.cfp_dat <- function(x_ref, x){
   gd_first <- gd_list[[1]]
 
 
-  if (all(sapply(lmap_list, identical, y = lmap_first))){
+  if (all(vapply(lmap_list, identical, y = lmap_first,
+                 FUN.VALUE = logical(1)))){
     lmap_cmb <- lmap_first
   } else {
     lmap_cmb <- dplyr::bind_rows(
@@ -136,14 +139,14 @@ combine_models_by_reference.cfp_dat <- function(x_ref, x){
       cfp_layers_map(
         id_cols = c(unique(unlist(lapply(lmap_list, cfp_id_cols))), "cmb_id"))
   }
-  if (all(sapply(sp_list, identical, y = sp_first))){
+  if (all(vapply(sp_list, identical, y = sp_first, FUN.VALUE = logical(1)))){
     soilphys_cmb <- sp_first
   } else {
     soilphys_cmb <- dplyr::bind_rows(sp_list, .id = "cmb_id") %>%
       cfp_soilphys(
         id_cols = c(unique(unlist(lapply(sp_list, cfp_id_cols))), "cmb_id"))
   }
-  if (all(sapply(gd_list, identical, y = gd_first))){
+  if (all(vapply(gd_list, identical, y = gd_first, FUN.VALUE = logical(1)))){
     gasdata_cmb <- gd_first
   } else {
     gasdata_cmb <- dplyr::bind_rows(gd_list, .id = "cmb_id")%>%

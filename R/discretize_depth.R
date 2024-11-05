@@ -490,7 +490,8 @@ nearest_intdisc <- function(param,depth_target,int_depth,depth){
   #Linear interpolation
 
   depth_target_tmp <- depth_target[-1]+diff(depth_target)*(int_depth-1)
-  sapply(depth_target_tmp,function(i) param[which.min(abs(depth-i))])
+  flex_length_apply(depth_target_tmp,
+         function(i) param[which.min(abs(depth-i))])
 }
 
 
@@ -503,7 +504,7 @@ harmonic_intdisc <-function(param,depth_target,int_depth,depth){
   upper <- depth[-1]
   lower <- depth[-length(depth)]
 
-  sapply(depth_target_tmp,function(i) {
+  vapply(depth_target_tmp,function(i) {
     # identify the correct interval
     int_id <- which(upper >= i & lower < i)
 
@@ -513,7 +514,8 @@ harmonic_intdisc <-function(param,depth_target,int_depth,depth){
     # boundary is, the higher the weight)
     p <- harm(c(param[int_id],param[int_id+1]),
               abs(i-c(upper[int_id],lower[int_id])))
-  })
+  },
+  FUN.VALUE = double(1))
 }
 
 
@@ -533,7 +535,8 @@ boundary_intdisc <- function(lower,
   lower_min <- lower[1]
 
   #looping over all new depth-steps
-  sapply(1:(length(depth_target)-1), FUN = function(i){
+  flex_length_apply(1:(length(depth_target)-1),
+         FUN = function(i){
 
     #assinging new upper/lower boundary
     upper_new <- depth_target[i+1]

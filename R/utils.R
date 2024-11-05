@@ -23,7 +23,8 @@ chunk_lapply <- function(X,
       fun_process(res)
     })
 
-  sapply(1:n_chunks,
+  flex_length_apply(
+    1:n_chunks,
          function(i) res[[i]])
 
 }
@@ -146,4 +147,10 @@ seq_nrow <- function(x){
   n_rows <- nrow(x)
   if(n_rows < 1) return(integer())
   1:n_rows
+}
+
+# vapply with variable length
+flex_length_apply <- function(X, FUN, ...){
+
+  lapply(X, FUN, ...) |> unlist(recursive = FALSE)
 }

@@ -92,7 +92,7 @@ cfp_dat <- function(
 
   if(any(unlist(normal_cols_list) %in% id_cols)){
     problem_cols <- lapply(normal_cols_list, function(x) x[x %in% id_cols])
-    problem_datasets <- sapply(problem_cols, length)
+    problem_datasets <- vapply(problem_cols, length, FUN.VALUE = integer(1))
     problem_message <-
     mapply(problem_cols[problem_datasets],
            c("gasdata", "soilphys", "layers_map")[problem_datasets],
@@ -416,7 +416,7 @@ sp_add_pmap <- function(soilphys,
       lmap <- .y %>% dplyr::left_join(layers_map,
                                       by = names(.y))
 
-      .x$pmap <- sapply(seq_nrow(.x), function(i){
+      .x$pmap <- flex_length_apply(seq_nrow(.x), function(i){
         lmap$pmap[.x$upper[i] <= lmap$upper & .x$lower[i] >= lmap$lower]
       })
       .x
