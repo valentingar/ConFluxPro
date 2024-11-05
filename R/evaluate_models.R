@@ -61,18 +61,22 @@ evaluate_models.cfp_altres <-
   stopifnot("Provide at least one eval_funs" = !is.null(eval_funs))
 
   stopifnot("eval_funs must be a list of functions!" = is.list(eval_funs) &
-              (all(sapply(eval_funs,is.function))))
+              (all(vapply(eval_funs, is.function, FUN.VALUE = logical(1)))))
 
   stopifnot("all elements in eval_funs must be uniquely named!" =
               all(nchar(names(eval_funs))>0) &
               (length(unique(names(eval_funs))) == length(eval_funs)))
 
-  stopifnot("eval_weights must be of length 1 or of the same length as eval_funs" =
-              (length(eval_funs) == length(eval_weights)) | (length(eval_weights) == 1))
+  stopifnot("eval_weights must be of length 1 or of
+            the same length as eval_funs" =
+              (length(eval_funs) == length(eval_weights)) |
+              (length(eval_weights) == 1))
 
-  stopifnot("f_best must be a fraction between 0 and 1" = 0 <= f_best & f_best <= 1 )
+  stopifnot("f_best must be a fraction between 0 and 1" =
+              0 <= f_best & f_best <= 1 )
 
-  stopifnot("eval_cols must be a subset of param_cols" = all(eval_cols %in% param_cols))
+  stopifnot("eval_cols must be a subset of param_cols" =
+              all(eval_cols %in% param_cols))
 
   additional_args <- list(...)
 
@@ -106,9 +110,11 @@ evaluate_models.cfp_altres <-
            param_cols = param_cols,
            additional_args = additional_args) %>%
     dplyr::bind_rows(.id = "error_parameter") %>%
-    dplyr::group_by(dplyr::across(dplyr::all_of(c("error_parameter", param_cols)))) %>%
+    dplyr::group_by(
+      dplyr::across(dplyr::all_of(c("error_parameter", param_cols)))) %>%
     dplyr::mutate(sNRMSE = scaling_fun(.data$NRMSE)) %>%
-    dplyr::left_join(weights_df, by = whats_in_both(list(names(.data), names(weights_df))))
+    dplyr::left_join(weights_df,
+                     by = whats_in_both(list(names(.data), names(weights_df))))
 
   x_model_error <-
     x_eval_funs_applied %>%
@@ -150,13 +156,8 @@ apply_eval_fun <- function(x,
                            cur_eval_fun,
                            additional_args){
 
-  # cur_eval_args <- c("x" = list(x),
-  #                         cur_eval_args)
-  #
-  # stopifnot("formal arguments of eval_fun must match the names of eval_args!" =
-  #             all(names((formals(cur_eval_fun))) %in% names(cur_eval_args)) &
-  #             all(names(cur_eval_args) %in% names((formals(cur_eval_fun)))))
-  additional_args <- additional_args[names(additional_args) %in% names(formals(cur_eval_fun))]
+  additional_args <- additional_args[names(additional_args) %in%
+                                       names(formals(cur_eval_fun))]
 
   x_eval <-
   do.call(cur_eval_fun,

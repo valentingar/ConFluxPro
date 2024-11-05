@@ -19,7 +19,7 @@
 #' @param conc (numeric) the observed concentrations (in the same unit as
 #' the modelled concentrations).
 #' @param dstor RESERVED FOR FUTURE EXPANSION
-# #' (numeric) storage changes per step (same unit as the productions given in X).
+# (numeric) storage changes per step (same unit as the productions given in X).
 #' @param C0 (numeric) The concentration at the
 #' bottom of the lowermost step.
 #' @param zero_flux (logical) Applies the zero-flux boundary
@@ -71,7 +71,7 @@ prod_optim<- function(X,
                       wmap,
                       evenness_factor){
 
-  #zero-flux boundary condition - if it is TRUE then there is no flux below lowest layer
+  # zero-flux boundary condition, TRUE: there is no flux below lowest layer
   if (!zero_flux){
     F0 <- X[1]
     X <- X[-1]
@@ -96,12 +96,14 @@ prod_optim<- function(X,
 
   #calculate RMSE
   k <- (conc-conc_mod)^2
-  k <- k*wmap #weigh the observations that depend on higher degrees of freedom more
+  k <- k*wmap #weigh the observations that depend on higher degrees of
+  # freedom more
   #k <- k[is.finite(k)]
   RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
 
   #penalty for too different production rates
-  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) / (abs(sum(prod*height))+0.000001) )
+  prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) /
+                   (abs(sum(prod*height))+0.000001) )
   #if (is.finite(prod_penal)){
     RMSE <- RMSE + prod_penal
   #}
@@ -114,7 +116,8 @@ prod_optim<- function(X,
 
   #penalty for not meeting known_flux
   # if (!is.na(known_flux)){
-  #   RMSE <- RMSE + sum(abs(known_flux - (sum(height*prod)+F0)))*known_flux_factor
+  #   RMSE <- RMSE + sum(abs(known_flux -
+  #             (sum(height*prod)+F0)))*known_flux_factor
   # }
 
   return(RMSE)

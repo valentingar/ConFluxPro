@@ -10,6 +10,6 @@ flux(x)
 \item{x}{A valid \code{cfp_fgmod} or \code{cfp_pfmod} object.}
 }
 \description{
-A function to either run \code{fg_flux()} or \code{pro_flux()} models from
-valid \code{cfp_fgmod} or \code{cfp_pfmod} objects.
+A function to either run \code{fg_flux()} or \code{pro_flux()}
+models from valid \code{cfp_fgmod} or \code{cfp_pfmod} objects.
 }

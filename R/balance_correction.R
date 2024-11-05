@@ -79,7 +79,7 @@ balance_correction <- function(df,
                                gases  = c("N2","O2","Ar","CO2"),
                                gases_std = c(0.78084,0.20946,0.009340,0.0407),
                                gases_ob = c("N2","O2"),
-                               set_na = F
+                               set_na = FALSE
                                ){
 
   #stop-points for wrong input
@@ -89,7 +89,7 @@ if (!length(limits) ==2){
 if(!length(gases) == length(gases_std)){
   stop("lengths of 'gases' and 'gases_std' do not match!")
 }
-if (is.logical(set_na)==F){
+if (!is.logical(set_na)){
   stop("set_na must be logical.")
 }
 if (!all(gases_ob %in% gases)){
@@ -97,17 +97,19 @@ if (!all(gases_ob %in% gases)){
 }
 gases_present <- gases %in% unique(df$gas)
 if (!all(gases_present)){
-  stop(paste0("'gases' contains entries not present in the dataframe:",paste0(gases[gases_present == F],collapse = ", "),collapse=" "))
+  stop(paste0("'gases' contains entries not present in the dataframe:",
+              paste0(gases[!gases_present],collapse = ", "),collapse=" "))
 }
 
 
 
 #Adding commas to necessary gases, to prevent finding N2 in N2O
-gases_ob <- unlist(lapply(gases_ob,function(g) paste0(c("",g,""),collapse = ",")))
+gases_ob <- unlist(lapply(gases_ob,
+                          function(g) paste0(c("",g,""),collapse = ",")))
 
 # Function to correct bal with standard values of missing gases.
 bal_corr <- function(bal,missing_gas){
-  bal_corrected <- unlist(lapply(1:length(bal),function(i){
+  bal_corrected <- unlist(lapply(seq_along(bal),function(i){
     gas_corr<-gases_std[gases %in% unlist(strsplit(missing_gas[i],split = ","))]
     if (length(gas_corr>0)){
       bal_corrected <- bal[i]/(1-sum(gas_corr))
@@ -120,30 +122,31 @@ bal_corr <- function(bal,missing_gas){
 }
 
 df <- df %>%
-  dplyr::filter(.data$gas %in% !!gases) %>% #Only gases declared in function are used
+  dplyr::filter(.data$gas %in% !!gases) %>% #Only use gases declared in function
   dplyr::group_by(.data$SAMPLE_NO) %>%
   dplyr::arrange("gas") %>%
-  dplyr::summarise(bal = sum(.data$x_ppm/10^6, na.rm = T), #bal
+  dplyr::summarise(bal = sum(.data$x_ppm/10^6, na.rm = TRUE), #bal
             n_bal = length(na.omit(.data$x_ppm)), #number of counted gases
             missing_gas = paste(
               c("",
-                !!gases[-match(.data$gas[is.na(x_ppm) == F],
+                !!gases[-match(.data$gas[!is.na(x_ppm)],
                                !!gases)],""),
-              collapse = ",")) %>% #Character string with missing gases, comma separated to discern between N2 and N2O, O2 and CO2
+              collapse = ",")) %>%
   dplyr::mutate(bal_flag = grepl(paste0(!!gases_ob,
                                         collapse = "|"),
-                                 .data$missing_gas)) %>% #TRUE if any of gases_ob are missing in "bal"
-  dplyr::mutate(bal = bal_corr(.data$bal, .data$missing_gas)) %>% # correcting bal with standard values for missing gases
-  dplyr::mutate(bal_flag = ifelse(.data$bal < min(!!limits) | .data$bal > max(!!limits),
-                                  TRUE, .data$bal_flag)) %>% #bal_flag also true if bal exceeds limits
+                                 .data$missing_gas)) %>%
+  dplyr::mutate(bal = bal_corr(.data$bal, .data$missing_gas)) %>%
+  dplyr::mutate(
+    bal_flag = ifelse(.data$bal < min(!!limits) | .data$bal > max(!!limits),
+                      TRUE, .data$bal_flag)) %>%
   dplyr::mutate(bal_flag = ifelse(.data$bal == 0, TRUE, .data$bal_flag)) %>%
   dplyr::right_join(df) %>% #joining with gasdata
-  dplyr::mutate(bal_flag = ifelse(is.na(.data$bal_flag), TRUE, .data$bal_flag)) #if after the join a sample_no was not met in gasdata, bal_flag is na and thus is set T
+  dplyr::mutate(bal_flag = ifelse(is.na(.data$bal_flag), TRUE, .data$bal_flag))
 
 
-#CORRECTION OF THE MOLE RATIOS for bal_flag = T
-if(set_na == T){
-  #if set_na == T, bal_flag == T x_ppm is set NA
+#CORRECTION OF THE MOLE RATIOS for bal_flag = TRUE
+if(set_na){
+  #if set_na == TRUE, bal_flag == TRUE x_ppm is set NA
   df <- df %>% dplyr::mutate(x_ppm = ifelse(.data$bal_flag == FALSE,
                                             .data$x_ppm / .data$bal,
                                             NA))
@@ -155,7 +158,10 @@ if(set_na == T){
 }
 
 if(any(df$bal_flag)){
-  warning(paste0("Some of the entries have been flagged (bal_flag) and ",ifelse(set_na,"been set to NA!","were not corrected (old values remain)!")," Please check these values manually",collapse = ""))
+  warning(paste0("Some of the entries have been flagged (bal_flag) and ",
+                 ifelse(set_na, "been set to NA!",
+                        "were not corrected (old values remain)!"),
+                 " Please check these values manually",collapse = ""))
 }
 
 

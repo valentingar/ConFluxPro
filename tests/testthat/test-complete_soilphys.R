@@ -6,7 +6,8 @@ test_that("complete_soilphys works", {
     complete_soilphys(overwrite = TRUE, "a*AFPS^b")
 
 
-  expect_equal(soilphys_completed[names(ConFluxPro::soilphys)], ConFluxPro::soilphys)
+  expect_equal(
+    soilphys_completed[names(ConFluxPro::soilphys)], ConFluxPro::soilphys)
   expect_message(ConFluxPro::soilphys %>%
                    mutate(a = -a) %>%
                    complete_soilphys(overwrite = TRUE, "a*AFPS^b"),

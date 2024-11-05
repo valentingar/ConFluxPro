@@ -57,7 +57,8 @@ test_that("create cfp_dat object",{
                        soilphys,
                        lmap)
 
-  expect_equal(names(cfp_input), c("profiles", "gasdata", "soilphys", "layers_map"))
+  expect_equal(names(cfp_input), c("profiles", "gasdata",
+                                   "soilphys", "layers_map"))
   expect_equal(nrow(cfp_input$soilphys),8)
   expect_error(cfp_dat(gasdata,
                        soilphys,

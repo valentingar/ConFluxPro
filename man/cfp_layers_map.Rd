@@ -37,7 +37,8 @@ strongly the layer should be linked to the one below it (0 for no coupling)
 
 \item{...}{not used}
 
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each
+profile.}
 
 \item{gas}{(character vector) of gas names to be added to
 x which is then repeated for each gas.}
@@ -48,9 +49,9 @@ lower limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}
 \item{highlim}{(numeric vector)  the same length as gas with the
 upper limit of possible production allowed in \code{\link[=pro_flux]{pro_flux()}} models.}
 
-\item{layer_couple}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (numeric_vector) A vector the same length as gas that
-indicates how strongly the layer should be linked to the one below it
-(0 for no coupling, the default).}
+\item{layer_couple}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} (numeric_vector)
+A vector the same length as gas that indicates how strongly the layer should
+be linked to the one below it (0 for no coupling, the default).}
 }
 \value{
 A \code{\link[=cfp_layered_profile]{cfp_layered_profile()}} \code{data.frame} with the columns

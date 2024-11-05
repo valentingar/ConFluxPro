@@ -11,7 +11,8 @@ prod_mod_conc(prod, height, DS, F0, C0)
 prod_mod_flux(prod, height, F0)
 }
 \arguments{
-\item{prod}{the production assinged to this step production in \eqn{\mu~mol/s/m^3}}
+\item{prod}{the production assinged to this step production in
+\eqn{\mu~mol/s/m^3}}
 
 \item{height}{the height of each step in m}
 
@@ -19,7 +20,8 @@ prod_mod_flux(prod, height, F0)
 
 \item{F0}{(numeric) Incoming flux to lowest step in \eqn{\mu mol/m^2/s}}
 
-\item{C0}{(numeric) Concentration at the lower end of the lowest step in \eqn{\mu mol/m^3}.}
+\item{C0}{(numeric) Concentration at the lower end of the lowest step in
+\eqn{\mu mol/m^3}.}
 }
 \value{
 \code{conc} at top of each step in \eqn{\mu mol/m^3}
@@ -27,14 +29,16 @@ prod_mod_flux(prod, height, F0)
 \code{flux} at top of each step in \eqn{\mu mol/m^2/s}
 }
 \description{
-These functions calculates flux or concentration profile of a gas based on
-fixed production and known diffusion coefficient Ds. The basis is a stepwise
-calculation beginning from the bottom-most layer with incoming flux F0 and
-known concentration C0 at the lower end of the step.
+These functions calculates flux or concentration profile of a
+gas based on fixed production and known diffusion coefficient Ds. The basis
+is a stepwise calculation beginning from the bottom-most layer with
+incoming flux F0 and known concentration C0 at the lower end of the step.
 
-The following input parameters must be vectors sorted from the lowest depth of the profile to the highest.
-Note that the assigned units are examples. However, units should be concise and match over all parameters.
-The functions are designed to be used in optimization and are hence as fast as possible.
+The following input parameters must be vectors sorted from the lowest depth
+of the profile to the highest. Note that the assigned units are examples.
+However, units should be concise and match over all parameters. The
+functions are designed to be used in optimization and are hence as fast as
+possible.
 }
 \section{Functions}{
 \itemize{

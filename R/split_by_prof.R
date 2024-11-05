@@ -41,7 +41,8 @@ split_by_prof.cfp_dat <- function(x){
   soilphys_list <-
     profiles %>%
     dplyr::select(sp_id, prof_id) %>%
-    dplyr::left_join(x$soilphys, by = "sp_id", relationship = "many-to-many") %>%
+    dplyr::left_join(x$soilphys, by = "sp_id",
+                     relationship = "many-to-many") %>%
     dplyr::arrange(.data$prof_id) %>%
     dplyr::group_by(.data$prof_id) %>%
     dplyr::group_split()
@@ -115,8 +116,9 @@ split_by_prof_barebones <- function(x){
   soilphys <-
     x$profiles %>%
     dplyr::select(sp_id, prof_id) %>%
-    dplyr::left_join(x$soilphys, by = "sp_id", relationship = "many-to-many") %>%
-    dplyr::select(!all_of("sp_id")) %>%
+    dplyr::left_join(x$soilphys, by = "sp_id",
+                     relationship = "many-to-many") %>%
+    dplyr::select(!dplyr::all_of("sp_id")) %>%
     dplyr::arrange(.data$prof_id)%>%
     data.frame()
 
@@ -129,7 +131,7 @@ split_by_prof_barebones <- function(x){
     x$profiles %>%
     dplyr::select(gd_id, prof_id) %>%
     dplyr::left_join(x$gasdata, by = "gd_id") %>%
-    dplyr::select(!all_of("gd_id")) %>%
+    dplyr::select(!dplyr::all_of("gd_id")) %>%
     dplyr::arrange(.data$prof_id) %>%
     data.frame()
 
@@ -147,8 +149,10 @@ split_by_prof_barebones <- function(x){
 split_by_prof_env <- function(x){
   x <- trim_cfp_dat(x)
 
-  soilphys_split <- split(data.frame(x$soilphys)[,!names(x$soilphys) == "sp_id"], x$soilphys$sp_id)
-  gasdata_split <- split(data.frame(x$gasdata)[,!names(x$gasdata) == "gd_id"], x$gasdata$gd_id)
+  soilphys_split <- split(
+    data.frame(x$soilphys)[,!names(x$soilphys) == "sp_id"], x$soilphys$sp_id)
+  gasdata_split <- split(
+    data.frame(x$gasdata)[,!names(x$gasdata) == "gd_id"], x$gasdata$gd_id)
 
   rlang::new_environment(
     data = list(gasdata =

@@ -26,12 +26,12 @@ evaluated of concentration over the depth.}
 \item{LS}{linear spline approach: A linear spline is fitted over the
 complete profile with nodes at the layer intersections.}
 \item{EF}{exponential fit approach: An exponential function of form
-y=a+b*x^c is fit of concentration against depth. Using the first derivative of
-that function the concentration gradient is evaluated for each layer.}
+y=a+b*x^c is fit of concentration against depth. Using the first derivative
+of that function the concentration gradient is evaluated for each layer.}
 \item{DA}{exponential fit approach: An exponential function of form
-\code{y=a+b*(1-exp(-a*x))} is fit of concentration against depth. Using the first derivative of
-that function the concentration gradient is evaluated for each layer. From
-Davidson (2006)}
+\code{y=a+b*(1-exp(-a*x))} is fit of concentration against depth. Using the
+first derivative of that function the concentration gradient is evaluated
+for each layer. From Davidson (2006).}
 }}
 
 \item{param}{(character) A vector containing the the parameters of soilphys,
@@ -53,7 +53,10 @@ cfp_dat and adds any model specific parameters.
 cfp_fgmod(ConFluxPro::base_dat)
 }
 \references{
-DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
+DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006).
+Vertical partitioning of CO2 production within a temperate forest soil.
+In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley.
+https://doi.org/10.1111/j.1365-2486.2005.01142.x
 }
 \seealso{
 Other model frames: 

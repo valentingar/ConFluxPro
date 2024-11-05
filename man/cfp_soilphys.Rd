@@ -18,9 +18,10 @@ cfp_soilphys(x, ...)
 \item{upper (cm) }{The upper bound of each step.}
 \item{lower (cm)}{The lower bound of each step.}
 \item{gas}{The gas of that step.}
-\item{DS (\eqn{m^2 s^-1})}{The specific diffusion coefficient of that gas in that step.}
-\item{c_air (\eqn{mol m^-3})}{The number density of air in that step.}
-\item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
+\item{DS (\eqn{m^2 s^-1})}{The specific diffusion coefficient of that gas in
+that step.} \item{c_air (\eqn{mol m^-3})}{The number density of air in that
+step.} \item{any of \code{id_cols}}{All id_cols that identify one profile
+uniquely.}
 
 }}
 
@@ -30,7 +31,8 @@ cfp_soilphys(x, ...)
     \item{\code{}}{}
   }}
 
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each
+profile.}
 }
 \value{
 A \code{cfp_soilphys} object.

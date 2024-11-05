@@ -9,7 +9,8 @@ cfp_profile(x, id_cols = NULL)
 \arguments{
 \item{x}{A \code{data.frame}}
 
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each
+profile.}
 }
 \value{
 A \code{cfp_profile} object. This is a \code{data.frame}

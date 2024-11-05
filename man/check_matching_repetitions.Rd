@@ -13,8 +13,9 @@ check_matching_repetitions(x, rep_cols)
 profiles within \code{x}. Must be a subset of the \code{id_cols} of x.}
 }
 \description{
-\code{check_matching_repetitions()} compares the structure of layered profile objects. A \code{\link[=cfp_layered_profile]{cfp_layered_profile()}}
-object is split along parameter(s) defined in \code{rep_cols}. Returns TRUE
-if all profiles match in their structure.
+\code{check_matching_repetitions()} compares the structure of
+layered profile objects. A \code{\link[=cfp_layered_profile]{cfp_layered_profile()}} object is split along
+parameter(s) defined in \code{rep_cols}. Returns TRUE if all profiles match
+in their structure.
 }
 \keyword{internal}

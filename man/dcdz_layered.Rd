@@ -38,7 +38,8 @@ dc_ppm (numeric) concentration difference in ppm.
 r2 (linearised) R^2 for the model.
 }
 \description{
-This function calculates concentration gradients using different approaches.
+This function calculates concentration gradients using different
+approaches.
 }
 \examples{
 {

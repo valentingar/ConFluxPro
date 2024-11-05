@@ -24,15 +24,16 @@ efflux.cfp_pfres <- function(x, ...){
 
 #' @rdname efflux
 #' @param method Method(s) used to interpolate the efflux at the top of the soil
-#' from partial fluxes within the soil. One of
+#'   from partial fluxes within the soil. One of
 #' \describe{
 #' \item{top}{Use the flux in the topmost model layer.}
-#' \item{lm}{A linear model where each partial flux is centered in the respective
-#' layer and the model is evaluated at the top of the soil.}
+#' \item{lm}{A linear model where each partial flux is centered in the
+#' respective layer and the model is evaluated at the top of the soil.}
 #' \item{lex}{Linearly exterpolate using fluxes of two layers in the soil.}
 #' }
 #' @param layers Vector of two integers selecting the layers for the \code{lex}
-#' method. Layers are indexed from 1 (topmost) to the number of layers used in the
+#'   method. Layers are indexed from 1 (topmost) to the number of layers used in
+#'   the
 #' flux calculation.
 #' @exportS3Method
 efflux.cfp_fgres <- function(x,
@@ -96,7 +97,8 @@ pf_efflux <- function(x) {
     dplyr::rename(efflux = flux) %>%
     dplyr::rename(dplyr::any_of(c(DELTA_efflux = "DELTA_flux",
                                   mean_efflux = "mean_flux"))) %>%
-    #dplyr::select(dplyr::any_of(c("prof_id", "efflux", "DELTA_efflux", "mean_efflux")))%>%
+    #dplyr::select(dplyr::any_of(c("prof_id", "efflux",
+    #"DELTA_efflux", "mean_efflux")))%>%
     #dplyr::left_join(profiles, by = "prof_id") %>%
     dplyr::select(dplyr::any_of({
       c(id_cols, "efflux", "prof_id", "DELTA_efflux", "mean_efflux")
@@ -117,7 +119,8 @@ fg_efflux <- function(x,
   stopifnot("Only one method can be applied" =
               length(method) == 1)
 
-  stopifnot("length of layers must be 2!" = is.null(layers) || length(layers) == 2)
+  stopifnot("length of layers must be 2!" =
+              is.null(layers) || length(layers) == 2)
 
   if(method == "top"){
     EFFLUX <- get_top_efflux(x)
@@ -160,7 +163,7 @@ get_lm_efflux <- function(x){
                   topheight = max(upper)) %>%
     dplyr::group_modify(~{
       h<-.x$topheight[1]
-      if (nrow(.x %>% dplyr::filter(is.na(depth)==F,is.na(flux)==F))<2){
+      if (nrow(.x %>% dplyr::filter(!is.na(depth),!is.na(flux)))<2){
         efflux <- NA
       } else {
         mod <- lm(flux~depth, data = .x)

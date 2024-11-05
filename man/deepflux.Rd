@@ -9,16 +9,17 @@ deepflux(x, ...)
 \arguments{
 \item{x}{A valid \code{cfp_pfres()} object.}
 
-\item{...}{Further parameters passed on to \code{efflux()} in case of \code{cfp_fgres}.}
+\item{...}{Further parameters passed on to \code{efflux()} in case of
+\code{cfp_fgres}.}
 }
 \value{
 data.frame with F0 (\eqn{µmol / m^2 / s})
 }
 \description{
-Extract the incoming and outgoing flux from below the deepest layer
-of a \code{pro_flux()} model.
-This returns zero, if \code{zero_flux=TRUE}.
+Extract the incoming and outgoing flux from below the deepest
+layer of a \code{pro_flux()} model. This returns zero, if \code{zero_flux=TRUE}.
 }
 \details{
-F0 represents the flux below the lowest layer defined in the \code{cfp_pfres()} model
+F0 represents the flux below the lowest layer defined in the
+\code{cfp_pfres()} model
 }

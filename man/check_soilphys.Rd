@@ -9,8 +9,8 @@ check_soilphys(df, extra_vars = c(), id_cols)
 \arguments{
 \item{df}{(dataframe) the soilphys dataframe}
 
-\item{extra_vars}{(character vector) column names of additional variables to be
-checked.}
+\item{extra_vars}{(character vector) column names of additional variables to
+be checked.}
 
 \item{id_cols}{(character vector) the columns that, together, identify a
 site uniquely (e.g. site, repetition)}

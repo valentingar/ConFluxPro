@@ -71,14 +71,14 @@ soilphys_layered <- function(soilphys,
 
   soilphys_arith <- soilphys %>%
     dplyr::summarise(dplyr::across(
-      .cols = any_of(!!param_arith),
-      .fns =  ~ weighted.mean(.x, w = height, na.rm = T)
+      .cols = dplyr::any_of(!!param_arith),
+      .fns =  ~ weighted.mean(.x, w = height, na.rm = TRUE)
     ))
 
   soilphys_harm <- soilphys %>%
     dplyr::summarise(dplyr::across(
-      .cols = any_of(!!param_harm),
-      .fns =  ~ harm(.x, w = height, na.rm = T)
+      .cols = dplyr::any_of(!!param_harm),
+      .fns =  ~ harm(.x, w = height, na.rm = TRUE)
     ))
 
   soilphys <-

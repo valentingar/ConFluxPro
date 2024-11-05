@@ -22,13 +22,15 @@ here the median value is being used as a constant factor, and "lin", where
 a linear model is fit against time, to account for an temporal drift.}
 }
 \value{
-df (dataframe) The corr_map dataframe used in the offset_correction() function
+df (dataframe) The corr_map dataframe used in the offset_correction()
+function
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-This function helps to create the corr_map dataframe for the offset correction.
-Based on the Date input, it creates a new section variable and maps it to all SAMPLE_NO.
+This function helps to create the corr_map dataframe for the offset
+correction. Based on the Date input, it creates a new section variable and
+maps it to all SAMPLE_NO.
 }
 \examples{
 {

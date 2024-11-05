@@ -42,7 +42,8 @@ should the layers be created? One of:
 \describe{
 \item{layers_map}{(default) Use the layers that are defined in layers_map.}
 \item{soilphys}{Use the layers as defined in soilphys}
-\item{layers_altmap}{Use the layers as defined in the provided layers_altmap object.}
+\item{layers_altmap}{Use the layers as defined in the provided layers_altmap
+object.}
 }}
     \item{\code{layers_altmap}}{An optional layers_map created using layers_map() that
 defines the layers to be used if layers_different = TRUE.}
@@ -55,8 +56,8 @@ leads to an error in that case.}
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-Modify an existing \code{cfp_run_map} for sobol indice estimation or create a new one
-from scratch.
+Modify an existing \code{cfp_run_map} for sobol indice estimation or create a
+new one from scratch.
 }
 \seealso{
 Other sobol: 

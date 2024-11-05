@@ -42,9 +42,10 @@ wished \code{error_parameter} (names of \code{eval_funs}) and \code{param_cols}
 combinations.
 Provide the weights as a numeric in the \code{parameter_weight} column.}
 
-\item{param_cols}{The columns that, together, define different parameters (e.g. different gases)
-for which NRMSEs should be calculated separately (e.g. "gas"). Defaults to
-the id_cols of layers_map. If no such destinction is wished, set to \code{character()}}
+\item{param_cols}{The columns that, together, define different parameters
+(e.g. different gases) for which NRMSEs should be calculated separately
+(e.g. "gas"). Defaults to the id_cols of layers_map. If no such destinction
+is wished, set to \code{character()}}
 
 \item{eval_cols}{A character vector of columns for which the model error
 should be returned separately. Must be a subset of \code{param_cols} and

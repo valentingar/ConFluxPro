@@ -15,33 +15,40 @@ as_cfp_dat(x)
 \arguments{
 \item{gasdata}{A cfp_gasdata object created by running \code{cfp_gasdata()}.}
 
-\item{soilphys}{A cfp_soilphys object created by running \code{cfp_soilphys()}.}
+\item{soilphys}{A cfp_soilphys object created by running
+\code{cfp_soilphys()}.}
 
-\item{layers_map}{A cfp_layers_map object created by running \code{cfp_layers_map}.}
+\item{layers_map}{A cfp_layers_map object created by running
+\code{cfp_layers_map}.}
 
 \item{x}{An object of class cfp_dat}
 }
 \value{
 A cfp_dat object with the following parameters:
 \describe{
-\item{gasdata}{The gasdata object with added column "gd_id" that is unique for each profile.}
-\item{soilphys}{The soilphys object with added columns "sp_id" that is unique for each profile,
-"step_id" indicating the position of each step from the bottom up, "height" in m of each layer,
-"pmap" indicating which layer it belongs to from the bottom up. Potentially, some original
+\item{gasdata}{The gasdata object with added column "gd_id" that is unique
+for each profile.}
+\item{soilphys}{The soilphys object with added columns "sp_id" that is unique
+for each profile, "step_id" indicating the position of each step from the
+bottom up, "height" in m of each layer, "pmap" indicating which layer it
+belongs to from the bottom up. Potentially, some original
 steps were split to account for the depths within gasdata or layers_map.}
-\item{layers_map}{The layers_map object with added column "group_id" indicating each
-unique group of the same layer parameterization set by layers_map.}
-\item{profiles}{A \code{data.frame} where each row indicates one unique profile that
-is characterised by all \code{id_cols} present in the original input as well as the correspongin
-"gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
-\item{id_cols}{A character vector of all columns that identify a profile uniquely.}
+\item{layers_map}{The layers_map object with added column "group_id"
+indicating each unique group of the same layer parameterization set
+by layers_map.}
+\item{profiles}{A \code{data.frame} where each row indicates one unique
+profile that is characterised by all \code{id_cols} present in the original
+input as well as the corresponding "gd_id", "sp_id", and "group_id". Each
+row has a unique identifier "prof_id".}
+\item{id_cols}{A character vector of all columns that identify a
+profile uniquely.}
 }
 }
 \description{
 \code{cfp_dat} is the essential object class that binds all necessary
-input data to run a ConFluxPro model. It automatically combines the different
-datasets and checks them for validity. It may split soilphys layers to correspond
-with layers_map and gasdata depths.
+input data to run a ConFluxPro model. It automatically combines the
+different datasets and checks them for validity. It may split soilphys
+layers to correspond with layers_map and gasdata depths.
 }
 \examples{
 gasdata <- cfp_gasdata(

@@ -29,9 +29,13 @@ combine_models.cfp_altres <- function(x){
 #' @exportS3Method
 combine_models.list <- function(x){
 
-  stopifnot("Not a list of cfp_dat objects" = all(sapply(x, inherits, what = "cfp_dat")))
+  stopifnot("Not a list of cfp_dat objects" =
+              all(vapply(x, inherits, what = "cfp_dat",
+                         FUN.VALUE = logical(1))))
 
-  stopifnot("All elements must have the same class" = all(sapply(lapply(x, class), identical, y = class(x[[1]]))))
+  stopifnot("All elements must have the same class" =
+              all(vapply(lapply(x, class), identical, y = class(x[[1]]),
+                         FUN.VALUE = logical(1))))
 
   combine_models_by_reference(x[[1]], x)
 }
@@ -39,7 +43,8 @@ combine_models.list <- function(x){
 
 ### helpers ------
 #' @rdname combine_models
-#' @param x_ref Reference element of x that controls the return class and attributes.
+#' @param x_ref Reference element of x that controls the return class and
+#' attributes.
 #' @export
 combine_models_by_reference <- function(x_ref, x){
   UseMethod("combine_models_by_reference")
@@ -59,12 +64,15 @@ combine_models_by_reference.cfp_pfres <- function(x_ref, x){
          dplyr::select(dplyr::any_of(c(
            cfp_id_cols(y),
            "upper", "lower",
-           "flux", "F0", "prod", "conc", "RMSE", "DELTA_flux", "DELTA_prod")))  %>%
+           "flux", "F0", "prod", "conc",
+           "RMSE", "DELTA_flux", "DELTA_prod"))) %>%
       dplyr::right_join(y$profiles, by = c(cfp_id_cols(y))) %>%
-      dplyr::right_join(y$soilphys %>%
-                          dplyr::select(dplyr::all_of(c("sp_id", "upper", "lower", "pmap", "step_id"))),
+      dplyr::right_join(
+        y$soilphys %>%
+          dplyr::select(dplyr::all_of(c("sp_id", "upper", "lower",
+                                        "pmap", "step_id"))),
                                         by = c("sp_id", "upper", "lower")) %>%
-      dplyr::select(!any_of(c(cfp_id_cols(y), "gd_id", "group_id"))) %>%
+      dplyr::select(!dplyr::any_of(c(cfp_id_cols(y), "gd_id", "group_id"))) %>%
          cfp_layered_profile(id_cols = "prof_id")
   )
   y
@@ -92,7 +100,7 @@ combine_models_by_reference.cfp_fgres <- function(x_ref, x){
     lapply(x, function(x) x$FLUX %>%
              dplyr::left_join(x$profiles, by = c("prof_id", "gas"))) %>%
       dplyr::bind_rows(.id = "cmb_id") %>%
-      dplyr::select(!any_of("prof_id")) %>%
+      dplyr::select(!dplyr::any_of("prof_id")) %>%
       dplyr::right_join(y$profiles %>%
                           dplyr::select(
                             dplyr::all_of(c(cfp_id_cols(y),
@@ -122,23 +130,28 @@ combine_models_by_reference.cfp_dat <- function(x_ref, x){
   gd_first <- gd_list[[1]]
 
 
-  if (all(sapply(lmap_list, identical, y = lmap_first))){
+  if (all(vapply(lmap_list, identical, y = lmap_first,
+                 FUN.VALUE = logical(1)))){
     lmap_cmb <- lmap_first
   } else {
-    lmap_cmb <- dplyr::bind_rows(lapply(x, cfp_layers_map), .id = "cmb_id") %>%
-      cfp_layers_map(id_cols = c(unique(unlist(lapply(lmap_list, cfp_id_cols))), "cmb_id"))
+    lmap_cmb <- dplyr::bind_rows(
+      lapply(x, cfp_layers_map), .id = "cmb_id") %>%
+      cfp_layers_map(
+        id_cols = c(unique(unlist(lapply(lmap_list, cfp_id_cols))), "cmb_id"))
   }
-  if (all(sapply(sp_list, identical, y = sp_first))){
+  if (all(vapply(sp_list, identical, y = sp_first, FUN.VALUE = logical(1)))){
     soilphys_cmb <- sp_first
   } else {
     soilphys_cmb <- dplyr::bind_rows(sp_list, .id = "cmb_id") %>%
-      cfp_soilphys(id_cols = c(unique(unlist(lapply(sp_list, cfp_id_cols))), "cmb_id"))
+      cfp_soilphys(
+        id_cols = c(unique(unlist(lapply(sp_list, cfp_id_cols))), "cmb_id"))
   }
-  if (all(sapply(gd_list, identical, y = gd_first))){
+  if (all(vapply(gd_list, identical, y = gd_first, FUN.VALUE = logical(1)))){
     gasdata_cmb <- gd_first
   } else {
     gasdata_cmb <- dplyr::bind_rows(gd_list, .id = "cmb_id")%>%
-      cfp_gasdata(id_cols = c(unique(unlist(lapply(gd_list, cfp_id_cols))), "cmb_id"))
+      cfp_gasdata(
+        id_cols = c(unique(unlist(lapply(gd_list, cfp_id_cols))), "cmb_id"))
   }
 
   y <- cfp_dat(gasdata_cmb, soilphys_cmb, lmap_cmb)

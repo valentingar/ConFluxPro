@@ -113,11 +113,15 @@ We have to provide a formula for the calculation of the relative diffusivity `DS
 In our case, we have fitting parameters `a` and `b` from a Currie-style model that calculates as `DSD0 = a * AFPS ^ b`. 
 We provide this formula as a `character()` to the function:
 ```{r soilphys-complete-sp}
-soilphys_measured_only <- soilphys %>% select(!all_of(c("AFPS", "DSD0", "D0", "DS", "c_air")))
+soilphys_measured_only <- 
+  soilphys %>% 
+  select(!all_of(c("AFPS", "DSD0", "D0", "DS", "c_air")))
 
 head(soilphys_measured_only)
 
-my_soilphys_completed <- complete_soilphys(soilphys_measured_only, DSD0_formula = "a*AFPS^b")
+my_soilphys_completed <- 
+  complete_soilphys(soilphys_measured_only, DSD0_formula = "a*AFPS^b")
+
 head(my_soilphys_completed)
 ```
 

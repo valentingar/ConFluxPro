@@ -20,7 +20,10 @@ test_that("sobol run_map works", {
 
   EFFLUX <-
     alternate(PROFLUX,
-              function(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),
+              function(x) {
+                complete_soilphys(x,
+                                  DSD0_formula = "a*AFPS^b", quiet = TRUE)
+              },
               run_map = srm) |>
     cfp_altapply(efflux)
 

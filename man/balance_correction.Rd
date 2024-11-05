@@ -10,7 +10,7 @@ balance_correction(
   gases = c("N2", "O2", "Ar", "CO2"),
   gases_std = c(0.78084, 0.20946, 0.00934, 0.0407),
   gases_ob = c("N2", "O2"),
-  set_na = F
+  set_na = FALSE
 )
 }
 \arguments{

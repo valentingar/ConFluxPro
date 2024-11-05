@@ -97,7 +97,7 @@ validate_cfp_gasdata <- function(x){
   base_cols <- c("x_ppm","gas","depth")
   id_cols <- cfp_id_cols(x)
 
-  stopifnot("data.frame lacks obligatory coluns" = base_cols %in% names(x),
+  stopifnot("data.frame lacks obligatory columns" = base_cols %in% names(x),
             "id_cols must be present in the data.frame" = id_cols %in% names(x)
   )
 

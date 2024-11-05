@@ -3,31 +3,38 @@ test_that("extend gasdata works", {
   base_dat2 <- base_dat <- ConFluxPro::base_dat
   base_dat2$gasdata$sd_x_ppm <- 25
 
-  gd_ext <- create_extended_gasdata(base_dat$gasdata,
-                                    gasdata_depths =
-                                      depth_structure(base_dat,
-                                                      structure_from = "gasdata"),
-                                    sd_x_ppm = 25, 5)
-  gd_ext2 <- create_extended_gasdata(base_dat$gasdata,
-                                     gasdata_depths =
-                                       depth_structure(base_dat,
-                                                       structure_from = "gasdata"),
-                                    sd_x_ppm = depth_structure(base_dat,
-                                                               structure_from = "gasdata") %>%
-                                      dplyr::mutate(sd_x_ppm = 0),
-                                    5)
-  gd_ext3 <- create_extended_gasdata(base_dat2$gasdata,
-                                     gasdata_depths =
-                                       depth_structure(base_dat2,
-                                                       structure_from = "gasdata"),
-                                     n_replicates = 5)
+  gd_ext <- create_extended_gasdata(
+    base_dat$gasdata,
+    gasdata_depths =
+      depth_structure(base_dat,
+                      structure_from = "gasdata"),
+    sd_x_ppm = 25, 5)
+
+  gd_ext2 <- create_extended_gasdata(
+    base_dat$gasdata,
+    gasdata_depths =
+      depth_structure(base_dat,
+                      structure_from = "gasdata"),
+    sd_x_ppm = depth_structure(base_dat,
+                               structure_from = "gasdata") %>%
+      dplyr::mutate(sd_x_ppm = 0),
+    5)
+
+  gd_ext3 <- create_extended_gasdata(
+    base_dat2$gasdata,
+    gasdata_depths =
+      depth_structure(base_dat2,
+                      structure_from = "gasdata"),
+    n_replicates = 5)
 
 
  expect_equal(nrow(gd_ext), 600)
  expect_equal(nrow(gd_ext2), 600)
  expect_equal(nrow(gd_ext3), 600)
- expect_equal(gd_ext2$x_ppm[gd_ext2$gd_id == 1 & gd_ext2$depth == 5][1],
-              base_dat$gasdata$x_ppm[base_dat$gasdata$gd_id == 1 & base_dat$gasdata$depth == 5])
+ expect_equal(
+   gd_ext2$x_ppm[gd_ext2$gd_id == 1 & gd_ext2$depth == 5][1],
+   base_dat$gasdata$x_ppm[base_dat$gasdata$gd_id == 1 &
+                            base_dat$gasdata$depth == 5])
 
 })
 

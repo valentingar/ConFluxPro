@@ -1,7 +1,7 @@
 #' @title Model frame for pro_flux
 #'
-#' @description An S3 class for \code{pro_flux()} models. The class inherits from
-#' cfp_dat and adds any model specific parameters.
+#' @description An S3 class for \code{pro_flux()} models. The class inherits
+#'   from cfp_dat and adds any model specific parameters.
 #'
 #' @param x A \code{cfp_dat} object with all the necessary input datasets.
 #'
@@ -23,18 +23,20 @@
 #   trying out!
 #'
 #' @param DSD0_optim `r lifecycle::badge("deprecated")`
-# (logical) If TRUE, the diffusion coefficient (DSD0) values are
-#   also object to optimisation together with the production. DSD0 is varied between
-#   values 0 and 1, DS is then recalculated from D0 to be used in the model. The fit values
-#   are given as DSD0_fit in the return table. Only makes sense to use in
-#   combination with known_flux.
+# (logical) If TRUE, the diffusion coefficient (DSD0) values are also object to
+# optimisation together with the production. DSD0 is varied between values 0 and
+# 1, DS is then recalculated from D0 to be used in the model. The fit values are
+# given as DSD0_fit in the return table. Only makes sense to use in combination
+# with known_flux.
 #'
-#' @param evenness_factor `r lifecycle::badge("experimental")`(numeric) A user defined factor used to penalise strong
-#' differences between the optimised production rates. This must be identified by
-#' trial-and-error and can help prevent that production rates are simply set to zero
-#' basically the lower a production is relative to the the maximum of the absolute of
-#' all productions, the higher it is penalised. The \code{evenness_factor} then
-#' defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.
+#' @param evenness_factor `r lifecycle::badge("experimental")`(numeric) A user
+#'   defined factor used to penalise strong differences between the optimised
+#'   production rates. This must be identified by trial-and-error and can help
+#'   prevent that production rates are simply set to zero basically the lower a
+#'   production is relative to the the maximum of the absolute of all
+#'   productions, the higher it is penalised. The \code{evenness_factor} then
+#'   defines the weight of this penalty in the optimisation algorithm
+#'   \code{\link{prod_optim}}.
 #'
 #' @family model frames
 #'

@@ -1,13 +1,13 @@
 #' @title Repetitions in layered profiles
 #'
-#' @description
-#' \code{check_matching_repetitions()} compares the structure of layered profile objects. A [cfp_layered_profile()]
-#' object is split along parameter(s) defined in \code{rep_cols}. Returns TRUE
-#' if all profiles match in their structure.
+#' @description \code{check_matching_repetitions()} compares the structure of
+#' layered profile objects. A [cfp_layered_profile()] object is split along
+#' parameter(s) defined in \code{rep_cols}. Returns TRUE if all profiles match
+#' in their structure.
 #'
 #' @param x A \code{cfp_layered_profile} object.
 #' @param rep_cols A character vector of columns that define repetitions of
-#' profiles within \code{x}. Must be a subset of the \code{id_cols} of x.
+#'   profiles within \code{x}. Must be a subset of the \code{id_cols} of x.
 #'
 #' @keywords internal
 check_matching_repetitions <- function(x, rep_cols){
@@ -41,7 +41,8 @@ check_matching_repetitions <- function(x, rep_cols){
 
   ret <- is_ul_consistent(new_structure, x_id_cols_new)
   if (ret == FALSE){
-    message("Cannot combine along ", x_id_cols_new, " into valid cfp_layered_profile.")
+    message("Cannot combine along ", x_id_cols_new,
+            " into valid cfp_layered_profile.")
   }
 
   ret

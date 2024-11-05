@@ -3,8 +3,8 @@
 #' @description
 #' `r lifecycle::badge('experimental')`
 #'
-#' Modify an existing \code{cfp_run_map} for sobol indice estimation or create a new one
-#' from scratch.
+#' Modify an existing \code{cfp_run_map} for sobol indice estimation or create a
+#' new one from scratch.
 #'
 #' @param x Either an object of class \code{cfp_run_map} created by a call to
 #' \code{cfp_run_map()} with \code{method = 'random'}, or a \code{cfp_pfres} or

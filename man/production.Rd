@@ -9,7 +9,8 @@ production(x, ...)
 \arguments{
 \item{x}{A valid \code{cfp_pfres()} or \code{cfp_fgres()} object.}
 
-\item{...}{Further parameters passed on to \code{efflux()} in case of \code{cfp_fgres}.}
+\item{...}{Further parameters passed on to \code{efflux()} in case of
+\code{cfp_fgres}.}
 }
 \value{
 data.frame with \code{prod_abs} (\eqn{µmol / m^2 / s}),
@@ -18,19 +19,20 @@ data.frame with \code{prod_abs} (\eqn{µmol / m^2 / s}),
 }
 \description{
 Easily extract the production of \code{cfp_pfres()} and
-\code{cfp_fgres()} models per layer defined in \code{layers_map()} and calculate
-the relative contribution per layer.
+\code{cfp_fgres()} models per layer defined in \code{layers_map()} and
+calculate the relative contribution per layer.
 }
 \details{
-For a \code{pro_flux()} model, the extraction is straightforward
-and simply the product of the optimised production rate (per volume) multiplied
+For a \code{pro_flux()} model, the extraction is straightforward and
+simply the product of the optimised production rate (per volume) multiplied
 by the height of the layer.
 
-For \code{fg_flux()}, the assumption is made that the production of the layer
-\eqn{i} is the difference of the flux in the layer above \eqn{F_{i+1}} and the layer below
-\eqn{F_{i-1}}. The flux below the lowest layer is assumed to be zero and the flux above the
-topmost layer is the efflux. This approach has some uncertainties and it should be
-evaluated if it applies to your model.
+For \code{fg_flux()}, the assumption is made that the production of the
+layer \eqn{i} is the difference of the flux in the layer above
+\eqn{F_{i+1}} and the layer below \eqn{F_{i-1}}. The flux below the lowest
+layer is assumed to be zero and the flux above the topmost layer is the
+efflux. This approach has some uncertainties and it should be evaluated if
+it applies to your model.
 
 If there are error estimates available from a call to \code{\link[=bootstrap_error]{bootstrap_error()}},
 the errors are propagated as follows:

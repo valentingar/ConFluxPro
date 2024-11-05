@@ -1,22 +1,24 @@
 #' @title Extract production rates
 #'
 #' @description Easily extract the production of \code{cfp_pfres()} and
-#' \code{cfp_fgres()} models per layer defined in \code{layers_map()} and calculate
-#' the relative contribution per layer.
+#'   \code{cfp_fgres()} models per layer defined in \code{layers_map()} and
+#'   calculate the relative contribution per layer.
 #'
 #' @param x A valid \code{cfp_pfres()} or \code{cfp_fgres()} object.
 #'
-#' @param ... Further parameters passed on to \code{efflux()} in case of \code{cfp_fgres}.
+#' @param ... Further parameters passed on to \code{efflux()} in case of
+#'   \code{cfp_fgres}.
 #'
-#' @details For a \code{pro_flux()} model, the extraction is straightforward
-#' and simply the product of the optimised production rate (per volume) multiplied
-#' by the height of the layer.
+#' @details For a \code{pro_flux()} model, the extraction is straightforward and
+#'   simply the product of the optimised production rate (per volume) multiplied
+#'   by the height of the layer.
 #'
-#' For \code{fg_flux()}, the assumption is made that the production of the layer
-#' \eqn{i} is the difference of the flux in the layer above \eqn{F_{i+1}} and the layer below
-#' \eqn{F_{i-1}}. The flux below the lowest layer is assumed to be zero and the flux above the
-#' topmost layer is the efflux. This approach has some uncertainties and it should be
-#' evaluated if it applies to your model.
+#'   For \code{fg_flux()}, the assumption is made that the production of the
+#'   layer \eqn{i} is the difference of the flux in the layer above
+#'   \eqn{F_{i+1}} and the layer below \eqn{F_{i-1}}. The flux below the lowest
+#'   layer is assumed to be zero and the flux above the topmost layer is the
+#'   efflux. This approach has some uncertainties and it should be evaluated if
+#'   it applies to your model.
 #'
 #' If there are error estimates available from a call to [bootstrap_error()],
 #' the errors are propagated as follows:
@@ -47,10 +49,13 @@ production.cfp_fgres <- function(x, ...){
     dplyr::left_join(EFFLUX, by = merger) %>%
     dplyr::arrange(.data$upper) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(c("mode",id_cols)))) %>%
-    dplyr::mutate(flux_lag = dplyr::lag(.data$flux, default = 0),
-                  flux_lead = dplyr::lead(.data$flux, default = .data$efflux[1])) %>%
-    #dplyr::mutate(flux_lag = ifelse(is.na(.data$flux_lag), 0, .data$flux_lag),
-    #              flux_lead = ifelse(is.na(.data$flux_lead), .data$efflux, .data$flux_lead)) %>%
+    dplyr::mutate(
+      flux_lag = dplyr::lag(.data$flux, default = 0),
+      flux_lead = dplyr::lead(.data$flux, default = .data$efflux[1])) %>%
+    # dplyr::mutate(
+    #   flux_lag = ifelse(is.na(.data$flux_lag), 0, .data$flux_lag),
+    #   flux_lead = ifelse(is.na(.data$flux_lead),
+    #                         .data$efflux, .data$flux_lead)) %>%
     dplyr::mutate(prod_abs = .data$flux_lead - .data$flux_lag ) %>%
     dplyr::mutate(prod_rel = .data$prod_abs / .data$efflux) %>%
     dplyr::ungroup() %>%

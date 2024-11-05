@@ -102,7 +102,8 @@ set.}
 Can either be \code{'gasdata'} or \code{'soilphys'} or \code{'both'}.}
 
 \item{rep_cols}{The id_cols that represent repetitions. If removed, the
-repetitions in soilphys of each profile must match in their structure exactly.}
+repetitions in soilphys of each profile must match in their structure
+exactly.}
 
 \item{y}{The result of the bootstrap model.}
 }

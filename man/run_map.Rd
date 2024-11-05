@@ -46,7 +46,8 @@ should the layers be created? One of:
 \describe{
 \item{layers_map}{(default) Use the layers that are defined in layers_map.}
 \item{soilphys}{Use the layers as defined in soilphys}
-\item{layers_altmap}{Use the layers as defined in the provided layers_altmap object.}
+\item{layers_altmap}{Use the layers as defined in the provided layers_altmap
+object.}
 }}
 
 \item{layers_altmap}{An optional layers_map created using layers_map() that

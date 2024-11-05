@@ -4,8 +4,9 @@
 #'
 #' `r lifecycle::badge('deprecated')`
 #'
-#' This function helps to create the corr_map dataframe for the offset correction.
-#' Based on the Date input, it creates a new section variable and maps it to all SAMPLE_NO.
+#' This function helps to create the corr_map dataframe for the offset
+#' correction. Based on the Date input, it creates a new section variable and
+#' maps it to all SAMPLE_NO.
 #'
 #'
 #'
@@ -23,7 +24,8 @@
 #'   here the median value is being used as a constant factor, and "lin", where
 #'   a linear model is fit against time, to account for an temporal drift.
 #'
-#' @return df (dataframe) The corr_map dataframe used in the offset_correction() function
+#' @return df (dataframe) The corr_map dataframe used in the offset_correction()
+#'  function
 #'
 #' @examples {
 #' data("gasdata")

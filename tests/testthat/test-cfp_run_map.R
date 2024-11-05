@@ -42,24 +42,26 @@ test_that("create runmap works", {
                                            param_id = c(1,2))
     )
 
-  df_2 <-data.frame(run_id = rep(1:4, each = 2),
-                       param = rep(c("TPS","t"),times = 4),
-                       value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
-                       type = "factor",
-                       gas = "CO2",
-                    param_id = rep(1:2,times = 4)) %>%
-    ConFluxPro:::new_cfp_run_map(id_cols = c("gas"),
-                    params = list("TPS" = c(1,1.2),
-                                  "t" = c(1,1.05)),
-                    method = "random",
-                    type = c("factor", "factor"),
-                    n_runs = 4,
-                    layers_different = FALSE,
-                    layers_from = "layers_map",
-                    layers_altmap = NULL,
-                    runmap_type = "base",
-                    params_df = data.frame(param = c("TPS","t"),
-                                           param_id = c(1,2))
+  df_2 <-data.frame(
+    run_id = rep(1:4, each = 2),
+    param = rep(c("TPS","t"),times = 4),
+    value = c(1.18, 1.05, 1.06, 1.04, 1.13, 1.03, 1.15, 1.01),
+    type = "factor",
+    gas = "CO2",
+    param_id = rep(1:2,times = 4)) %>%
+    ConFluxPro:::new_cfp_run_map(
+      id_cols = c("gas"),
+      params = list("TPS" = c(1,1.2),
+                    "t" = c(1,1.05)),
+      method = "random",
+      type = c("factor", "factor"),
+      n_runs = 4,
+      layers_different = FALSE,
+      layers_from = "layers_map",
+      layers_altmap = NULL,
+      runmap_type = "base",
+      params_df = data.frame(param = c("TPS","t"),
+                             param_id = c(1,2))
     )
 
   expect_equal(run_map, df)
@@ -132,8 +134,9 @@ test_that("topheight adjust", {
     dplyr::group_by(site) %>%
     dplyr::slice_min(value, with_ties = FALSE)
 
-  expect_equal(min_topheight$value[which(min_topheight$site == c("site_a", "site_b"))],
-               c(-4,0))
+  expect_equal(
+    min_topheight$value[which(min_topheight$site == c("site_a", "site_b"))],
+    c(-4,0))
 
   expect_error(
     run_mappo <- cfp_run_map(PROFLUX,

@@ -1,13 +1,15 @@
 #' @title Model input data
 #'
 #' @description `cfp_dat` is the essential object class that binds all necessary
-#' input data to run a ConFluxPro model. It automatically combines the different
-#' datasets and checks them for validity. It may split soilphys layers to correspond
-#' with layers_map and gasdata depths.
+#'   input data to run a ConFluxPro model. It automatically combines the
+#'   different datasets and checks them for validity. It may split soilphys
+#'   layers to correspond with layers_map and gasdata depths.
 #'
 #' @param gasdata A cfp_gasdata object created by running \code{cfp_gasdata()}.
-#' @param soilphys A cfp_soilphys object created by running \code{cfp_soilphys()}.
-#' @param layers_map A cfp_layers_map object created by running \code{cfp_layers_map}.
+#' @param soilphys A cfp_soilphys object created by running
+#'   \code{cfp_soilphys()}.
+#' @param layers_map A cfp_layers_map object created by running
+#'   \code{cfp_layers_map}.
 #'
 #' @param x An object of class cfp_dat
 #'
@@ -18,19 +20,24 @@
 #'
 #' @family data formats
 #'
-#' @return A cfp_dat object with the following parameters:
+#'@return A cfp_dat object with the following parameters:
 #' \describe{
-#' \item{gasdata}{The gasdata object with added column "gd_id" that is unique for each profile.}
-#' \item{soilphys}{The soilphys object with added columns "sp_id" that is unique for each profile,
-#' "step_id" indicating the position of each step from the bottom up, "height" in m of each layer,
-#' "pmap" indicating which layer it belongs to from the bottom up. Potentially, some original
+#' \item{gasdata}{The gasdata object with added column "gd_id" that is unique
+#' for each profile.}
+#' \item{soilphys}{The soilphys object with added columns "sp_id" that is unique
+#'  for each profile, "step_id" indicating the position of each step from the
+#'  bottom up, "height" in m of each layer, "pmap" indicating which layer it
+#'  belongs to from the bottom up. Potentially, some original
 #' steps were split to account for the depths within gasdata or layers_map.}
-#' \item{layers_map}{The layers_map object with added column "group_id" indicating each
-#' unique group of the same layer parameterization set by layers_map.}
-#' \item{profiles}{A \code{data.frame} where each row indicates one unique profile that
-#' is characterised by all \code{id_cols} present in the original input as well as the correspongin
-#' "gd_id", "sp_id", and "group_id". Each row has a unique identifier "prof_id".}
-#' \item{id_cols}{A character vector of all columns that identify a profile uniquely.}
+#' \item{layers_map}{The layers_map object with added column "group_id"
+#' indicating each unique group of the same layer parameterization set
+#' by layers_map.}
+#' \item{profiles}{A \code{data.frame} where each row indicates one unique
+#' profile that is characterised by all \code{id_cols} present in the original
+#' input as well as the corresponding "gd_id", "sp_id", and "group_id". Each
+#' row has a unique identifier "prof_id".}
+#'  \item{id_cols}{A character vector of all columns that identify a
+#'  profile uniquely.}
 #'}
 #'
 #'
@@ -63,9 +70,12 @@ cfp_dat <- function(
     soilphys,
     layers_map){
 
-  stopifnot("gasdata must be created with cfp_gasdata() first" = inherits(gasdata,"cfp_gasdata"),
-            "soilphys must be created with cfp_soilphys() first" = inherits(soilphys,"cfp_soilphys"),
-            "layers_map must be created with cfp_layers_map() first" = inherits(layers_map,"cfp_layers_map"))
+  stopifnot("gasdata must be created with cfp_gasdata() first" =
+              inherits(gasdata,"cfp_gasdata"),
+            "soilphys must be created with cfp_soilphys() first" =
+              inherits(soilphys,"cfp_soilphys"),
+            "layers_map must be created with cfp_layers_map() first" =
+              inherits(layers_map,"cfp_layers_map"))
 
   message("\nvalidating datasets")
   gasdata <- validate_cfp_gasdata(gasdata)
@@ -82,11 +92,12 @@ cfp_dat <- function(
 
   if(any(unlist(normal_cols_list) %in% id_cols)){
     problem_cols <- lapply(normal_cols_list, function(x) x[x %in% id_cols])
-    problem_datasets <- sapply(problem_cols, length)
+    problem_datasets <- vapply(problem_cols, length, FUN.VALUE = integer(1))
     problem_message <-
     mapply(problem_cols[problem_datasets],
            c("gasdata", "soilphys", "layers_map")[problem_datasets],
-           FUN = function(x,y) paste0(paste0(paste0('"',x,'"'), collapse = ", "), " in ", y)) %>%
+           FUN = function(x,y) paste0(paste0(paste0('"',x,'"'),
+                                             collapse = ", "), " in ", y)) %>%
       paste0(collapse = " and ")
     stop("id_col of one dataset cannot be a non-id_col in another!\n",
          "remove/rename non-id_cols: ",
@@ -134,9 +145,12 @@ cfp_dat <- function(
   profiles <-
     gasdata %>%
     select_id_cols(c(id_cols,"gd_id")) %>%
-    dplyr::left_join(soilphys %>% select_id_cols(c(id_cols,"sp_id")), by = merger_1) %>%
-    dplyr::left_join(layers_map %>% select_id_cols(c(id_cols,"group_id")), by = merger_2) %>%
-    dplyr::filter((is.na(sp_id) + is.na(gd_id) + is.na(group_id)) == 0) %>% # only complete profiles
+    dplyr::left_join(soilphys %>%
+                       select_id_cols(c(id_cols,"sp_id")), by = merger_1) %>%
+    dplyr::left_join(layers_map %>%
+                       select_id_cols(c(id_cols,"group_id")), by = merger_2) %>%
+    dplyr::filter( # only complete profiles
+      (is.na(sp_id) + is.na(gd_id) + is.na(group_id)) == 0) %>%
     dplyr::mutate(prof_id = dplyr::row_number()) %>%
     dplyr::distinct() %>%
     as.data.frame()
@@ -152,10 +166,12 @@ cfp_dat <- function(
                   !is.na(x_ppm)) %>%
     dplyr::filter(depth >= lower,
                   depth <= upper) %>%
-    dplyr::filter((is.na(gd_id) + is.na(depth) + is.na(pmap) + is.na(group_id)) == 0) %>%
+    dplyr::filter(
+      (is.na(gd_id) + is.na(depth) + is.na(pmap) + is.na(group_id)) == 0) %>%
     dplyr::group_by(group_id, gd_id, pmap) %>%
     dplyr::summarise(n_depths = length(unique(depth))) %>%
-    dplyr::mutate(n_depths = ifelse(.data$n_depths == 1, NA, .data$n_depths)) %>%
+    dplyr::mutate(
+      n_depths = ifelse(.data$n_depths == 1, NA, .data$n_depths)) %>%
     dplyr::right_join(profiles %>%
                         dplyr::left_join(layers_map,
                                   by = c(cfp_id_cols(layers_map), "group_id"),
@@ -171,7 +187,8 @@ cfp_dat <- function(
     data.frame() %>%
     cfp_profile(id_cols = "prof_id")
 
-  stopifnot("No valid profiles! Maybe the input data dont match?" = nrow(profiles) > 0)
+  stopifnot("No valid profiles! Maybe the input data dont match?" =
+              nrow(profiles) > 0)
 
   soilphys <- soilphys %>%
     dplyr::filter(sp_id %in% profiles$sp_id) %>%
@@ -181,7 +198,8 @@ cfp_dat <- function(
     dplyr::filter(gd_id %in% profiles$gd_id) %>%
     dplyr::left_join(
       layers_map %>%
-        dplyr::group_by(dplyr::across(dplyr::any_of(cfp_id_cols(layers_map)))) %>%
+        dplyr::group_by(
+          dplyr::across(dplyr::any_of(cfp_id_cols(layers_map)))) %>%
         dplyr::summarise(upper = max(upper),
                          lower = min(lower)),
         by = cfp_id_cols(layers_map)
@@ -195,7 +213,8 @@ cfp_dat <- function(
   message(paste0(nrow(profiles)," unique profiles"))
 
   # checking if layersmap range = soilphys range
-  stopifnot("layers_map and soilphys must have the same max-min upper/lower bounds per group!" = same_range(soilphys,layers_map))
+  stopifnot("layers_map and soilphys must have the same max-min
+            upper/lower bounds per group!" = same_range(soilphys,layers_map))
 
 
   # splitting soilphys layers to match layers_map and gasdata
@@ -266,7 +285,8 @@ same_range <- function(soilphys,
     dplyr::rename(umax_x = "umax",
            lmin_x = "lmin") %>%
     dplyr::left_join(get_upper_lower_range(layers_map),
-              by = whats_in_both(list(cfp_id_cols(layers_map),cfp_id_cols(soilphys)))
+              by = whats_in_both(list(cfp_id_cols(layers_map),
+                                      cfp_id_cols(soilphys)))
     )
 
   all((sp_summ$umax_x == sp_summ$umax) & (sp_summ$lmin_x == sp_summ$lmin))
@@ -336,7 +356,8 @@ split_soilphys <- function(soilphys,
            SIMPLIFY = FALSE) %>%
     do.call(what = rbind) %>%
     data.frame() %>%
-    stats::setNames(c("upper_new","lower_new","upper","lower","depth_group")) %>%
+    stats::setNames(c("upper_new","lower_new","upper","lower",
+                      "depth_group")) %>%
     dplyr::left_join(soilphys,
                      by = c("upper","lower","depth_group"),
                      relationship = "many-to-many") %>%
@@ -370,7 +391,8 @@ add_between <- function(upper,
 
   l <- length(upper_new)
 
-  matrix(c(upper_new,lower_new,rep(upper, l),rep(lower, l),rep(depth_group, l)), ncol = 5)
+  matrix(c(upper_new,lower_new,rep(upper, l),rep(lower, l),
+           rep(depth_group, l)), ncol = 5)
 }
 
 
@@ -394,7 +416,7 @@ sp_add_pmap <- function(soilphys,
       lmap <- .y %>% dplyr::left_join(layers_map,
                                       by = names(.y))
 
-      .x$pmap <- sapply(1:nrow(.x), function(i){
+      .x$pmap <- flex_length_apply(seq_nrow(.x), function(i){
         lmap$pmap[.x$upper[i] <= lmap$upper & .x$lower[i] >= lmap$lower]
       })
       .x
@@ -457,7 +479,8 @@ join_with_profiles <- function(target_data,
                                profiles,
                                id_cols){
 
-  extra_cols <- c("sp_id", "gd_id", "group_id", "prof_id", "step_id", "pmap", "row_id", "depth_group")
+  extra_cols <- c("sp_id", "gd_id", "group_id", "prof_id",
+                  "step_id", "pmap", "row_id", "depth_group")
   join_cols <- names(profiles)[names(profiles) %in% names(target_data)]
   #id_cols <- join_cols[!join_cols %in% extra_cols]
 
