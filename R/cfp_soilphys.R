@@ -15,9 +15,10 @@
 #' \item{upper (cm) }{The upper bound of each step.}
 #' \item{lower (cm)}{The lower bound of each step.}
 #' \item{gas}{The gas of that step.}
-#' \item{DS (\eqn{m^2 s^-1})}{The specific diffusion coefficient of that gas in that step.}
-#' \item{c_air (\eqn{mol m^-3})}{The number density of air in that step.}
-#' \item{any of \code{id_cols}}{All id_cols that identify one profile uniquely.}
+#' \item{DS (\eqn{m^2 s^-1})}{The specific diffusion coefficient of that gas in
+#' that step.} \item{c_air (\eqn{mol m^-3})}{The number density of air in that
+#' step.} \item{any of \code{id_cols}}{All id_cols that identify one profile
+#' uniquely.}
 #'
 #' }
 #' @inheritDotParams cfp_profile id_cols
@@ -111,7 +112,8 @@ validate_cfp_soilphys <- function(x){
   # no negative values in DS and c_air
   any_negative_DS <- min(x$DS, na.rm = TRUE) < 0
   any_negative_c_air <- min(x$c_air, na.rm = TRUE) < 0
-  stopifnot("Negative diffusion coefficient DS is not allowed!" = !any_negative_DS)
+  stopifnot("Negative diffusion coefficient DS is not allowed!" =
+              !any_negative_DS)
   stopifnot("Negative air density c_air is not allowed!" = !any_negative_c_air)
 
   x

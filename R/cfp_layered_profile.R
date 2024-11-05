@@ -64,7 +64,9 @@ validate_cfp_layered_profile <- function(x){
   validate_cfp_profile(x)
   stopifnot("The data.frame must have the columns 'upper' and 'lower'" =
               all(c("upper", "lower") %in% names(x)))
-  stopifnot("Each unique profile must be layered (by columns 'upper' and 'lower') without gaps or duplicates" = is_ul_consistent(x, cfp_id_cols(x)))
+  stopifnot("Each unique profile must be layered
+            (by columns 'upper' and 'lower') without gaps or duplicates" =
+              is_ul_consistent(x, cfp_id_cols(x)))
 
   x
 }

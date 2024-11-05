@@ -95,7 +95,8 @@ Cannot differ between id_cols.}
     \item{\code{}}{}
   }}
 
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each
+profile.}
 }
 \value{
 A \code{\link[=cfp_layered_profile]{cfp_layered_profile()}} data.frame with the variables \code{upper}
@@ -112,9 +113,8 @@ that intersect at depths defined in the function call. See
 There are different interpolation methods implemented, which might be
 more practical for different parameters or tasks.
 \itemize{
-\item
-A \code{'linear'} interpolation for continuous parameters, (e.g. soil temperature).
-\item The
+\item A \code{'linear'} interpolation for continuous parameters, (e.g. soil
+temperature). \item The
 \code{'boundary'} interpolation is only suitable for data that is already
 layered. It selects the value from the old layer that in which
 the new layer will lay in.

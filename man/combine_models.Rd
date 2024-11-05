@@ -18,7 +18,8 @@ combine_models_by_reference(x_ref, x)
 \arguments{
 \item{x}{A list of models, must inherit from \code{\link[=cfp_dat]{cfp_dat()}}}
 
-\item{x_ref}{Reference element of x that controls the return class and attributes.}
+\item{x_ref}{Reference element of x that controls the return class and
+attributes.}
 }
 \description{
 Combinea list of multiple models or \code{\link[=cfp_dat]{cfp_dat()}} objects into a single object.

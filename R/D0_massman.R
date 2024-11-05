@@ -17,14 +17,16 @@
 
 D0_massman <- function(gas, t, p){
   valid_gases <- c("CO2","CH4","N2O","O2","N2")
-  if(all(gas %in% valid_gases) == F){
-    stop(paste0(c("wrong gas: >",gas,"<! choose one of",valid_gases),collapse = " "))
+  if(!all(gas %in% valid_gases)){
+    stop(paste0(c("wrong gas: >",gas,"<! choose one of",valid_gases),
+                collapse = " "))
   }
 
   a <- c(1.381*1e-5,1.952*1e-5,1.436*1e-5,1.820*1e-5,1.820*1e-5)
   b <- c(1.81,1.81,1.81,1.81,1.81)
   D0 <- unlist(lapply(1:length(t),function(i){
-    D0 <- a[match(gas[i],valid_gases)]*((t[i]+273.15)/273.15)^b[match(gas[i],valid_gases)]*(1013/p[i])
+    D0 <- a[match(gas[i],valid_gases)]*
+      ((t[i]+273.15)/273.15)^b[match(gas[i],valid_gases)]*(1013/p[i])
   return(D0)
     }))
   return(D0)

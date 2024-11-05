@@ -17,7 +17,8 @@
 #' @param sample_from From which dataset to sample the bootstrapping dataset.
 #' Can either be \code{'gasdata'} or \code{'soilphys'} or \code{'both'}.
 #' @param rep_cols The id_cols that represent repetitions. If removed, the
-#' repetitions in soilphys of each profile must match in their structure exactly.
+#' repetitions in soilphys of each profile must match in their structure
+#' exactly.
 #'
 #' @returns x with added columns DELTA_flux and DELTA_prod as an estimate
 #' of the error of of the corresponding columns in the same units.
@@ -141,7 +142,8 @@ bootstrap_error.cfp_pfmod  <- function(x,
     stop("Provide rep_cols that identify the repetition of each profile!")
   }
 
-  stopifnot("rep_cols must be in id_cols or NULL" = is.null(rep_cols) || all(rep_cols %in% cfp_id_cols(x)))
+  stopifnot("rep_cols must be in id_cols or NULL" =
+              is.null(rep_cols) || all(rep_cols %in% cfp_id_cols(x)))
 
   y <- make_bootstrap_model(x,
                             n_samples,
@@ -192,13 +194,15 @@ make_bootstrap_model.cfp_pfmod <- function(x,
 
   if (sample_from_gasdata){
     if (!is.null(rep_cols)){
-      gasdata <- cfp_gasdata(gasdata[!names(gasdata) %in% rep_cols],
-                             id_cols = cfp_id_cols(x$gasdata)[!cfp_id_cols(x$gasdata) %in% rep_cols])
+      gasdata <- cfp_gasdata(
+        gasdata[!names(gasdata) %in% rep_cols],
+        id_cols = cfp_id_cols(x$gasdata)[!cfp_id_cols(x$gasdata) %in% rep_cols])
     }
 
-    gasdata <- create_extended_gasdata(gasdata,
-                                       depth_structure(x, structure_from = "gasdata"),
-                                       sd_x_ppm, n_replicates)
+    gasdata <- create_extended_gasdata(
+      gasdata,
+      depth_structure(x, structure_from = "gasdata"),
+      sd_x_ppm, n_replicates)
 
     gasdata <- create_bootstrap_gasdata(gasdata, n_samples)
   }
@@ -269,13 +273,17 @@ calculate_bootstrap_error.cfp_pfmod <- function(x, y){
     soilphys <- x$soilphys %>%
       dplyr::select(!"sp_id") %>%
       dplyr::group_by(dplyr::across(
-        dplyr::all_of(c(y_id_cols[y_id_cols %in% cfp_id_cols(x$soilphys)],
-                        "upper", "lower", "depth", "pmap", "step_id")))) %>%
-      dplyr::summarise(dplyr::across(dplyr::where(is.numeric), function(x) mean(x, na.rm = TRUE))) %>%
+        dplyr::all_of(
+          c(y_id_cols[y_id_cols %in% cfp_id_cols(x$soilphys)],
+            "upper", "lower", "depth", "pmap", "step_id")))) %>%
+      dplyr::summarise(
+        dplyr::across(dplyr::where(is.numeric),
+                      function(x) mean(x, na.rm = TRUE))) %>%
       cfp_soilphys(id_cols = y_id_cols[y_id_cols %in% cfp_id_cols(x$soilphys)])
 
-    gasdata <- cfp_gasdata(x$gasdata,
-                           id_cols = y_id_cols[y_id_cols %in% cfp_id_cols(x$gasdata)])
+    gasdata <- cfp_gasdata(
+      x$gasdata,
+      id_cols = y_id_cols[y_id_cols %in% cfp_id_cols(x$gasdata)])
 
     x_new <- cfp_dat(gasdata, soilphys, x$layers_map)
     x$profiles <- x_new$profiles
@@ -289,7 +297,9 @@ calculate_bootstrap_error.cfp_pfmod <- function(x, y){
 
   y <-
     x_profiles %>%
-    dplyr::left_join(BOOTSTRAP_FLUX, by = cfp_id_cols(x)[cfp_id_cols(x) %in% names(BOOTSTRAP_FLUX)]) %>%
+    dplyr::left_join(
+      BOOTSTRAP_FLUX,
+      by = cfp_id_cols(x)[cfp_id_cols(x) %in% names(BOOTSTRAP_FLUX)]) %>%
     dplyr::ungroup() %>%
     dplyr::select(dplyr::all_of(c(
       "upper",
@@ -327,31 +337,44 @@ create_extended_gasdata <- function(
     return(gasdata)
   }
 
-  stopifnot("'n_replicates' must be an integer!" = (round(n_replicates) == n_replicates))
+  stopifnot("'n_replicates' must be an integer!" =
+              (round(n_replicates) == n_replicates))
 
-  message(paste0("Adding gasdata replicates as normal distribution of ", n_replicates, " samples around the mean."))
+  message(paste0("Adding gasdata replicates as normal distribution of ",
+                 n_replicates, " samples around the mean."))
 
   if ("sd_x_ppm" %in% names(gasdata)){
-    if (!is.null(sd_x_ppm)) message("Ignoring sd_x_ppm, because it's present in gasdata.")
+    if (!is.null(sd_x_ppm)){
+      message("Ignoring sd_x_ppm, because it's present in gasdata.")
+    }
   } else if (is.data.frame(sd_x_ppm)){
     gasdata_depths <- gasdata_depths %>%
       dplyr::left_join(sd_x_ppm, by = c(cfp_id_cols(gasdata_depths), "depth"))
 
-    stopifnot("Missing column 'sd_x_ppm' in data.frame 'sd_x_ppm'" = ("sd_x_ppm" %in% names(gasdata_depths)))
-    stopifnot("'sd_x_ppm' cannot contain NAs and must cover all profile depths!" = all(!is.na(gasdata_depths$sd_x_ppm)) )
+    stopifnot("Missing column 'sd_x_ppm' in data.frame 'sd_x_ppm'" =
+                ("sd_x_ppm" %in% names(gasdata_depths)))
+    stopifnot(
+      "'sd_x_ppm' cannot contain NAs and must cover all profile depths!" =
+        all(!is.na(gasdata_depths$sd_x_ppm)) )
   } else {
-    stopifnot("Length of 'sd_x_ppm' must be 1 or be a data.frame" = length(sd_x_ppm) == 1)
+    stopifnot("Length of 'sd_x_ppm' must be 1 or be a data.frame" =
+                length(sd_x_ppm) == 1)
     gasdata_depths$sd_x_ppm <- sd_x_ppm
   }
 
   gasdata %>%
-    dplyr::group_by(dplyr::across(dplyr::all_of(c(cfp_id_cols(gasdata), "depth")))) %>%
-    dplyr::summarise(dplyr::across(dplyr::everything(), function(x) mean(x, na.rm = TRUE))) %>%
-    dplyr::left_join(gasdata_depths, by = c(cfp_id_cols(gasdata_depths), "depth")) %>%
+    dplyr::group_by(
+      dplyr::across(dplyr::all_of(c(cfp_id_cols(gasdata), "depth")))) %>%
+    dplyr::summarise(
+      dplyr::across(dplyr::everything(), function(x) mean(x, na.rm = TRUE))) %>%
+    dplyr::left_join(
+      gasdata_depths, by = c(cfp_id_cols(gasdata_depths), "depth")) %>%
     dplyr::ungroup() %>%
     dplyr::rowwise() %>%
-    dplyr::reframe(x_ppm = stats::rnorm(n_replicates, .data$x_ppm, .data$sd_x_ppm),
-                   dplyr::across(-dplyr::any_of("x_ppm"), function(x) rep(x, n_replicates))) %>%
+    dplyr::reframe(
+      x_ppm = stats::rnorm(n_replicates, .data$x_ppm, .data$sd_x_ppm),
+      dplyr::across(-dplyr::any_of("x_ppm"),
+                    function(x) rep(x, n_replicates))) %>%
     cfp_gasdata(cfp_id_cols(gasdata))
 }
 
@@ -360,7 +383,8 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
 
 
   split_id <- gasdata %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(c(cfp_id_cols(gasdata),"depth")))) %>%
+    dplyr::group_by(
+      dplyr::across(dplyr::any_of(c(cfp_id_cols(gasdata),"depth")))) %>%
     dplyr::group_indices()
 
   split_id_split <- split(1:length(split_id), split_id)
@@ -374,7 +398,9 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
   gasdata <- gasdata[new_sel, ]
   gasdata$bootstrap_id <- rep(1:n_samples, each = length(split_id))
 
-  gasdata <- new_cfp_gasdata(gasdata, id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
+  gasdata <- new_cfp_gasdata(
+    gasdata,
+    id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
 
   rownames(gasdata) <- 1:nrow(gasdata)
 

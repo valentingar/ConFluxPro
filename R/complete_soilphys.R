@@ -31,10 +31,11 @@ complete_soilphys <- function(soilphys,
                               quiet = FALSE){
 
   if (quiet){
-    soilphys <- suppressMessages(do_complete_soilphys(soilphys = soilphys,
-                                                      DSD0_formula =DSD0_formula,
-                                                      gases = gases,
-                                                      overwrite = overwrite))
+    soilphys <- suppressMessages(do_complete_soilphys(
+      soilphys = soilphys,
+      DSD0_formula =DSD0_formula,
+      gases = gases,
+      overwrite = overwrite))
   } else{
     soilphys <- do_complete_soilphys(soilphys = soilphys,
                                      DSD0_formula =DSD0_formula,
@@ -52,7 +53,7 @@ do_complete_soilphys <- function(soilphys,
                                  gases = NULL,
                                  overwrite = TRUE){
   df_names <- names(soilphys)
-  if (all(c("depth","upper","lower","TPS","SWC","t","p") %in% df_names)==F){
+  if (all(c("depth","upper","lower","TPS","SWC","t","p") %in% df_names)==FALSE){
     stop("there are essential parameters missing. please run check_soilphys()")
   }
 

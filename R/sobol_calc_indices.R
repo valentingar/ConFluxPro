@@ -54,7 +54,8 @@ sobol_calc_indices <- function(Y,
                                id_cols = character(),
                                run_map){
 
-  stopifnot("Not all effect_cols are in present in Y." = all(effect_cols %in% names(Y)))
+  stopifnot("Not all effect_cols are in present in Y." =
+              all(effect_cols %in% names(Y)))
   stopifnot("Not all id_cols are in present in Y." = all(id_cols %in% names(Y)))
   stopifnot("Not all run_id in Y - did you use a different run_map?" =
               all(unique(run_map$run_id) %in% Y$run_id))
@@ -68,11 +69,6 @@ sobol_calc_indices <- function(Y,
                   "param_id_main") %>%
     dplyr::distinct() %>%
     dplyr::left_join(Y, by = "run_id", relationship = "many-to-many") %>%
-    #dplyr::mutate(param_count = ifelse(is.na(param_id), length(param_ids), 1)) %>%
-    #tidyr::uncount(.data$param_count, .id = "param_id_new") %>%
-    #dplyr::mutate(param_id_new = .data$param_ids[.data$param_id_new]) %>%
-    #dplyr::mutate(param_id = ifelse(is.na(.data$param_id), .data$param_id_new, .data$param_id)) %>%
-    #dplyr::select(!dplyr::any_of(c("param_id_new", "run_id"))) %>%
     dplyr::rename(param_id = "param_id_main") %>%
     dplyr::select(dplyr::any_of(c("param_id", id_cols, effect_cols,
                                 "prof_id", "run_id_sobol", "sobol_mat"))) %>%
@@ -81,13 +77,17 @@ sobol_calc_indices <- function(Y,
                         values_to = "effect_value") %>%
     tidyr::pivot_wider(names_from = "sobol_mat",
                        values_from = "effect_value") %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(c(id_cols, "param_id", "effect_param")))) %>%
-    dplyr::summarise(Vt = sum((.data$B - .data$BA)^2 + (.data$A - .data$AB)^2),
-              Vi = sum((.data$BA - .data$B) * (.data$A - .data$AB)),
-              VY = sum((.data$A - .data$B)^2 + (.data$BA - .data$AB)^2)) %>%
+    dplyr::group_by(
+      dplyr::across(dplyr::any_of(c(id_cols,
+                                    "param_id", "effect_param")))) %>%
+    dplyr::summarise(
+      Vt = sum((.data$B - .data$BA)^2 + (.data$A - .data$AB)^2),
+      Vi = sum((.data$BA - .data$B) * (.data$A - .data$AB)),
+      VY = sum((.data$A - .data$B)^2 + (.data$BA - .data$AB)^2)) %>%
     dplyr::mutate(Si = 2*.data$Vi / .data$VY,
-           ST = .data$Vt / .data$VY) %>%
-    dplyr::left_join(cfp_params_df(run_map), by = "param_id", relationship = "many-to-many")
+                  ST = .data$Vt / .data$VY) %>%
+    dplyr::left_join(cfp_params_df(run_map),
+                     by = "param_id", relationship = "many-to-many")
 
 
 }

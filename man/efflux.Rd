@@ -24,13 +24,14 @@ efflux(x, ...)
 from partial fluxes within the soil. One of
 \describe{
 \item{top}{Use the flux in the topmost model layer.}
-\item{lm}{A linear model where each partial flux is centered in the respective
-layer and the model is evaluated at the top of the soil.}
+\item{lm}{A linear model where each partial flux is centered in the
+respective layer and the model is evaluated at the top of the soil.}
 \item{lex}{Linearly exterpolate using fluxes of two layers in the soil.}
 }}
 
 \item{layers}{Vector of two integers selecting the layers for the \code{lex}
-method. Layers are indexed from 1 (topmost) to the number of layers used in the
+method. Layers are indexed from 1 (topmost) to the number of layers used in
+the
 flux calculation.}
 }
 \description{

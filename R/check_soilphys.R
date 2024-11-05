@@ -11,8 +11,8 @@
 #'
 #' @param df (dataframe) the soilphys dataframe
 #'
-#' @param extra_vars (character vector) column names of additional variables to be
-#'   checked.
+#' @param extra_vars (character vector) column names of additional variables to
+#' be checked.
 #'
 #' @param id_cols (character vector) the columns that, together, identify a
 #' site uniquely (e.g. site, repetition)
@@ -27,7 +27,7 @@
 #'
 #' @family soilphys
 #'
-#' @import tidyr
+# @import tidyr
 #' @importFrom rlang .data
 #'
 #' @export
@@ -39,9 +39,11 @@ check_soilphys <-function(df,
   df_names <- names(df)
 
   #defining a vector of obligatory parameter names
-  param_names <-  c("upper","lower","TPS","SWC","AFPS","t","p","DSD0","D0","DS",extra_vars,id_cols)
+  param_names <-  c("upper","lower","TPS","SWC",
+                    "AFPS","t","p","DSD0","D0","DS",extra_vars,id_cols)
 
-  param_missing <- param_names[!param_names %in% df_names] #missing parameters in df
+  #missing parameters in df
+  param_missing <- param_names[!param_names %in% df_names]
 
   #checking for derived parameters and their obligatory predecessors
   to_fix <- c()
@@ -95,7 +97,7 @@ check_soilphys <-function(df,
   #finding column names of suspects
   class_susp <- sapply(susp, class)
   is_susp <- class_susp == "logical"
-  pars_susp <- names(susp)[is_susp ==T]
+  pars_susp <- names(susp)[is_susp]
 
   if(length(pars_susp)>0){
   susp <-
@@ -103,7 +105,7 @@ check_soilphys <-function(df,
     tidyr::pivot_longer(cols = {pars_susp},
                         names_to = "param",
                         values_to = "value") %>%
-    dplyr::filter(.data$value == T)
+    dplyr::filter(.data$value)
 
   if(anyNA(df$upper)){
     susp <- susp %>%
@@ -130,8 +132,8 @@ check_soilphys <-function(df,
 
 
 
-  sp_ready <- ifelse(length(param_missing) == 0, T, F)
-  sp_fixable <- ifelse(length(param_missing) == length(to_fix), T, F)
+  sp_ready <- ifelse(length(param_missing) == 0, TRUE, FALSE)
+  sp_fixable <- ifelse(length(param_missing) == length(to_fix), TRUE, FALSE)
 
 
   cat(paste0(
@@ -139,22 +141,23 @@ check_soilphys <-function(df,
     "\n"
   ))
   cat(paste0("your soilphys-dataframe is", "\n"),
-      ifelse(sp_ready == T, green("ready"), red("!!not ready!!")),
+      ifelse(sp_ready == TRUE, green("ready"), red("!!not ready!!")),
       "\n")
-  if (sp_ready == F) {
+  if (sp_ready == FALSE) {
     cat(paste0(
       "the dataframe ",
-      ifelse(sp_fixable == T, green("can"), red("cannot")) ,
+      ifelse(sp_fixable == TRUE, green("can"), red("cannot")) ,
       " be fixed by complete_soilphys()",
       "\n"
     ))
   }
-  if (sp_fixable == F) {
+  if (sp_fixable == FALSE) {
     cat(
       paste0(
         "please provide the following parameters to the dataframe first:",
         "\n",
-        paste0(param_missing[!param_missing %in% c(to_fix, not_to_fix)], collapse = " , "),
+        paste0(param_missing[!param_missing %in% c(to_fix, not_to_fix)],
+               collapse = " , "),
         "\n"
       )
     )
@@ -167,7 +170,8 @@ check_soilphys <-function(df,
         "\n",
         "please note that for DSD0 calculation,
         there may be individual prerequesits of the
-        fitting parameters you applied. (If so: provide extra_vars = c('my variable'))",
+        fitting parameters you applied. (If so: provide extra_vars =
+        c('my variable'))",
         "\n"
       )
     )

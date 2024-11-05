@@ -20,7 +20,8 @@
 #'
 #' @param corr_map (dataframe) A dataframe of four columns
 #'   ("gas","SAMPLE_NO","section","mode") mapping each pair of \code{gases} and
-#'   sample-id \code{SAMPLE_NO} of the \code{gasdata} data.frame to a subsection-number
+#'   sample-id \code{SAMPLE_NO} of the \code{gasdata} data.frame to a
+#'   subsection-number
 #'   (section). The column "mode" determines, whether the correction is
 #'   performed using a linear regression, to account for drifts in time ("lin")
 #'   or using the mean ("const"). This dataframe can be created using the
@@ -34,8 +35,8 @@
 #'   (e.g. N2 = 0.78). Must match the order of \code{gases}.
 #'
 #' @param depth_cal (character) A character (-vector) containing the value(s) of
-#'   \code{depth_cat} of the gasdata dataframe to be used for the calculation of the
-#'   correction factor. Should be the depth_cat of the air concentration.
+#'   \code{depth_cat} of the gasdata dataframe to be used for the calculation of
+#'   the correction factor. Should be the depth_cat of the air concentration.
 #'
 #' @return df (dataframe)
 #'
@@ -92,19 +93,21 @@ gas_map <- data.frame(gas = gases, corr_std = gases_std)
 df<-df %>%
   dplyr::filter(.data$depth_cat %in% !!depth_cal) %>%
   dplyr::left_join(corr_map) %>%
-  dplyr::filter(is.na(.data$section) == F) %>%
-  dplyr::filter(is.na(.data$x_ppm) == F) %>%
+  dplyr::filter(!is.na(.data$section)) %>%
+  dplyr::filter(!is.na(.data$x_ppm)) %>%
   dplyr::group_by(.data$gas, .data$section) %>%
   dplyr::group_modify(~{
   if(is.na(.x$mode[1])){
-    med = 1
-    grad = 0
+    med <- 1
+    grad <- 0
   } else  if(.x$mode[1] == "const"){
-      med = stats::median(.x$x_ppm, na.rm = TRUE)
-      grad = 0
+      med <- stats::median(.x$x_ppm, na.rm = TRUE)
+      grad <- 0
   } else if (.x$mode[1]=="lin"){
-    if (.x %>% dplyr::filter(!is.na(.data$Date),!is.na(.data$x_ppm)) %>% nrow() < 2){
-      stop(paste("section", .y$section[1], "does not have enough non-NA cases (>=2)"))
+    if (.x %>% dplyr::filter(
+      !is.na(.data$Date),!is.na(.data$x_ppm)) %>% nrow() < 2){
+      stop(paste("section", .y$section[1],
+                 "does not have enough non-NA cases (>=2)"))
     }
     mod <- stats::lm(x_ppm ~ Date, data = .x)
     med <- stats::coef(mod)[1]
@@ -113,8 +116,10 @@ df<-df %>%
     return(.x %>% dplyr::mutate(corr_med = med, corr_grad = grad))
   }) %>%
   dplyr::left_join(gas_map) %>%
-  dplyr::mutate(corr_fac = .data$corr_std * 10^6 /(.data$corr_med + .data$corr_grad * as.numeric(.data$Date))) %>%
-  dplyr::select(contains(c("Date","Plot","gas","corr_fac"))) %>%
+  dplyr::mutate(
+    corr_fac = .data$corr_std * 10^6 /
+      (.data$corr_med + .data$corr_grad * as.numeric(.data$Date))) %>%
+  dplyr::select(dplyr::contains(c("Date","Plot","gas","corr_fac"))) %>%
   dplyr::right_join(df) %>%
   dplyr::mutate(corr_fac = ifelse(is.na(.data$corr_fac), 1, .data$corr_fac)) %>%
   dplyr::mutate(x_ppm = .data$x_ppm * .data$corr_fac)

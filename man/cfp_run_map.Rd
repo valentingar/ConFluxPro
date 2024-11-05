@@ -46,7 +46,8 @@ should the layers be created? One of:
 \describe{
 \item{layers_map}{(default) Use the layers that are defined in layers_map.}
 \item{soilphys}{Use the layers as defined in soilphys}
-\item{layers_altmap}{Use the layers as defined in the provided layers_altmap object.}
+\item{layers_altmap}{Use the layers as defined in the provided layers_altmap
+object.}
 }}
 
 \item{layers_altmap}{An optional layers_map created using layers_map() that
@@ -58,7 +59,7 @@ automatically adjusted per id_cols indivdually? Default is FALSE, which
 leads to an error in that case.}
 }
 \description{
-An S3 class cfp_run_map to be used in alternate().
-Either create a new run map from a cfp_pfres or
-cfp_fgres model or extract an existing run_map from an cfp_altres object.
+An S3 class cfp_run_map to be used in alternate(). Either create
+a new run map from a cfp_pfres or cfp_fgres model or extract an existing
+run_map from an cfp_altres object.
 }

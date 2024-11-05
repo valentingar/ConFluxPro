@@ -34,37 +34,38 @@ parameter <-
                       "prod_abs",    #30
                       "prod_rel"     #31
                       ),
-             description = c("mole fraction of a gas",               #1
-                             "name of the gas",                      #2
-                             "depth, higher values point up",        #3
-                             "upper border of layer",                #4
-                             "lower border of layer",                #5
-                             "total pore space",                     #6
-                             "air-filled pore space",                #7
-                             "soil water content",                   #8
-                             "temperature",                          #9
-                             "pressure",                             #10
-                             "relative diffusivity",                 #11
-                             "apparent diffusion coefficient",       #12
-                             "diffusion coefficient in air",         #13
-                             "number density of air",                #14
-                             "flux density",                         #15
-                             "incoming flux density at model bottom",#16
-                             "production rate (source term)",        #17
-                             "number concentration",                 #18
-                             "integer, mapping unique production rates 1 = lowest", #19
-                             "id of the soilphys profile in a cfp_dat object", #20
-                             "id of each step within a soilphys profile 1 = lowest", #21
-                             "id of distinct profiles within a cfp_dat object", #22
-                             "real mean square error",               #23
-                             "lower limit for production optimisation", #24
-                             "upper limit for production optimisation", #25
-                             "coupling factor with layer below",     #26
-                             "layer name",                           #27
-                             "id for each combination of id_cols in layers_map", #28
-                             "efflux at the soil/atmosphere interface", #29
-                             "production rate (source term)",        #30
-                             "ratio of production rate to efflux"    #31
+             description = c(
+               "mole fraction of a gas",               #1
+               "name of the gas",                      #2
+               "depth, higher values point up",        #3
+               "upper border of layer",                #4
+               "lower border of layer",                #5
+               "total pore space",                     #6
+               "air-filled pore space",                #7
+               "soil water content",                   #8
+               "temperature",                          #9
+               "pressure",                             #10
+               "relative diffusivity",                 #11
+               "apparent diffusion coefficient",       #12
+               "diffusion coefficient in air",         #13
+               "number density of air",                #14
+               "flux density",                         #15
+               "incoming flux density at model bottom",#16
+               "production rate (source term)",        #17
+               "number concentration",                 #18
+               "integer, mapping unique production rates 1 = lowest", #19
+               "id of the soilphys profile in a cfp_dat object", #20
+               "id of each step within a soilphys profile 1 = lowest", #21
+               "id of distinct profiles within a cfp_dat object", #22
+               "real mean square error",               #23
+               "lower limit for production optimisation", #24
+               "upper limit for production optimisation", #25
+               "coupling factor with layer below",     #26
+               "layer name",                           #27
+               "id for each combination of id_cols in layers_map", #28
+               "efflux at the soil/atmosphere interface", #29
+               "production rate (source term)",        #30
+               "ratio of production rate to efflux"    #31
                              ),
              unit = c("ppm",             #1
                       NA ,               #2

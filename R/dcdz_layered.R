@@ -1,6 +1,7 @@
 #' @title dcdz_layered
 #'
-#' @description This function calculates concentration gradients using different approaches.
+#' @description This function calculates concentration gradients using different
+#' approaches.
 #'
 #'
 #' @param df (dataframe) the gasdata dataframe, filtered to one profile
@@ -39,7 +40,7 @@
 #' }
 #'
 #' @family FLUX
-#' @import splines
+# @import splines
 #'
 #' @keywords internal
 #'
@@ -51,10 +52,12 @@ dcdz_layered <- function(df,
                          layers_map,
                          mode
                          ){
-valid_modes = c("LS","LL","EF","DA")
+valid_modes <- c("LS","LL","EF","DA")
 
-if ((mode %in% valid_modes)==F){
-  stop(paste0("wrong mode selected: ",mode,". Please use one of the following modes: ",paste0(valid_modes,collapse = ", ")))
+if (!(mode %in% valid_modes)){
+  stop(paste0("wrong mode selected: ",mode,
+              ". Please use one of the following modes: ",
+              paste0(valid_modes,collapse = ", ")))
 }
 
 upper <- layers_map$upper
@@ -64,7 +67,8 @@ depth_steps <- upper[-1]
 gd_id <- df$gd_id[1]
 
 
-depths <- rev(sort(unique(c(upper, lower)))) #depths including boundaries from top to bottom
+#depths including boundaries from top to bottom
+depths <- rev(sort(unique(c(upper, lower))))
 
 #depths with values in the df
 depths_df <- rev(sort(unique(df$depth)))
@@ -74,7 +78,7 @@ ls_flag <- length(which(depths > max(depths_df, na.rm = TRUE) |
                           depths < min(depths_df,na.rm = TRUE)))>0
 
 #initializing NA-logical for return
-return_na <- F
+return_na <- FALSE
 
 if (mode == "LS"){
 
@@ -95,7 +99,11 @@ dcdz <- dc / -diff(depths) *100 #from cm^-1 to m^-1
 
 
 # error estimate in ppm/m:
-dcdz_sd <- -rev(as.numeric(summary(mod)$coefficients[,2][-1]+c(0, dplyr::lag(summary(mod)$coefficients[,2][-1],1)[-1]))) /diff(depths) *100
+dcdz_sd <- -rev(
+  as.numeric(
+    summary(mod)$coefficients[,2][-1]+
+      c(0, dplyr::lag(summary(mod)$coefficients[,2][-1],1)[-1])))/
+  diff(depths) *100
 if (!length(dcdz_sd)==length(layers)){
   dcdz_sd <- rep(NA,length(layers))
 }
@@ -113,7 +121,7 @@ create_return <- TRUE
                        upper = upper,
                        lower = lower)
 
-  #This implements a local linear approach using a linear regession model within each layer
+  #A local linear approach using a linear regession model within each layer
   df_ret <- lapply(1:length(upper), function(i){
     df_part <- df[df$depth <= upper[i] &
                     df$depth >= lower[i], ]
@@ -123,7 +131,8 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
     dc <- dcdz * (abs(diff(c(upper[i], lower[i]))) / 100)
 
     suppressWarnings(mod_summary <- summary(mod))
-    dcdz_sd <- as.numeric(mod_summary$coefficients[2,2])*100 #error of gradient in ppm/m
+    #error of gradient in ppm/m
+    dcdz_sd <- as.numeric(mod_summary$coefficients[2,2])*100
     r2 <- mod_summary$r.squared
 
     if (abs(dcdz/100) < 1E-9){
@@ -163,7 +172,8 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
   #If all values are basically the same,
   #problems arise, this checks for the relative
   #difference of all values being less than 1e-10
-  sing_flag <- mean(abs(na.omit(df$x_ppm)-mean(df$x_ppm,na.rm=T)))/mean(df$x_ppm,na.rm=T) < 1e-10
+  sing_flag <- mean(abs(na.omit(df$x_ppm)-mean(df$x_ppm,na.rm=TRUE)))/
+    mean(df$x_ppm,na.rm=TRUE) < 1e-10
 
   if(anyNA(starts) | nrow(df)<4 | sum(starts)==0 | sing_flag){
     #preventing model errors before they occur and replacing with NA
@@ -177,10 +187,11 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
                             "b"=as.numeric(starts[2])*stats::rnorm(1,1,0.01),
                             "c"=1.1*stats::rnorm(1,1,0.01)),
                algorithm = "plinear",
-               control = stats::nls.control(warnOnly = T)),silent = T)
+               control = stats::nls.control(warnOnly = TRUE)),silent = TRUE)
 
     #check for convergence
-    conv_flag <- ifelse(inherits(mod, "nls"),conv_flag <- !mod$convInfo$isConv,F)
+    conv_flag <- ifelse(inherits(mod, "nls"),
+                        conv_flag <- !mod$convInfo$isConv,FALSE)
 
     #na if no convergence or error
     if (conv_flag | inherits(mod, "try-error")){
@@ -197,7 +208,8 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       dcdz <- (c*b)*(d)^(c-1) *100 #in ppm/m
       dcdz_sd <-(b*d^(c-1) * (c*log(d)+1) * dc) +(c*d^(c-1)*db) *100 #in ppm/m
       dc<--diff(starts[1]+(b*((depths-min(depths))^c)))
-      r2 <- summary(stats::lm(x_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),data=df))$r.squared
+      r2 <- summary(stats::lm(x_ppm ~ I(starts[1]+(b*(depth-min(depths))^c)),
+                              data=df))$r.squared
 
       create_return <- TRUE
     }
@@ -209,8 +221,9 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
     y_min <- mean(df$x_ppm[df$depth == max(depths)])
     y_max <- mean(df$x_ppm[df$depth == min(depths)])
     d_max <- max(depths)
-    starts<-stats::coef(stats::lm(I(log(1 - (x_ppm - y_min)/y_max)) ~ 0 +I(-(d_max - depth)),
-                                  data=df))
+    starts<-stats::coef(
+      stats::lm(I(log(1 - (x_ppm - y_min)/y_max)) ~ 0 +I(-(d_max - depth)),
+                data=df))
     starts <- c(y_max, starts)
     } else {
     starts <- NA
@@ -223,17 +236,19 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
     #exponential model based on Davidson 2006
 
 
-    mod <- try(stats::nls(x_ppm ~ b  * (1 - exp(-a*I(d_max - depth))) + I(y_min),
-                          data = df,
-                          start = list(
-                            "a"= starts[2],
-                            "b"= starts[1]),
-                          algorithm = "plinear",
-                          control = stats::nls.control(warnOnly = T, maxiter = 50)),
-               silent = T)
+    mod <- try(stats::nls(
+      x_ppm ~ b  * (1 - exp(-a*I(d_max - depth))) + I(y_min),
+      data = df,
+      start = list(
+        "a"= starts[2],
+        "b"= starts[1]),
+      algorithm = "plinear",
+      control = stats::nls.control(warnOnly = TRUE, maxiter = 50)),
+      silent = TRUE)
 
     #check for convergence
-    conv_flag <- ifelse(inherits(mod, "nls"),conv_flag <- !mod$convInfo$isConv,F)
+    conv_flag <- ifelse(inherits(mod, "nls"),
+                        conv_flag <- !mod$convInfo$isConv,FALSE)
 
     #na if no convergence or error
     if (conv_flag | inherits(mod, "try-error")){
@@ -253,9 +268,11 @@ mod <- stats::lm(x_ppm ~depth, data = df_part)
       }
       #calculating dcdz via the 1st derivative of the exponential Function.
       dcdz <- -a*b*exp(-a*d) *100 #in ppm/m
-      dcdz_sd <- (abs(db*a*exp(-a*d)) + abs(da*(b-a*b*d)*exp(-a*d)))  *100 #in ppm/m
+      dcdz_sd <- (abs(db*a*exp(-a*d)) +
+                    abs(da*(b-a*b*d)*exp(-a*d)))  *100 #in ppm/m
       dc<- ((b*exp(-a*upper)) - (b*exp(-a*lower)))
-      r2 <- 1 -(stats::deviance(mod) / (stats::var(df$x_ppm)*(length(df$x_ppm)-1)))
+      r2 <- 1 -(stats::deviance(mod) /
+                  (stats::var(df$x_ppm)*(length(df$x_ppm)-1)))
 
       create_return <- TRUE
     }

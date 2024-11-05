@@ -8,9 +8,8 @@
 #' There are different interpolation methods implemented, which might be
 #' more practical for different parameters or tasks.
 #'   \itemize{
-#'   \item
-#'   A \code{'linear'} interpolation for continuous parameters, (e.g. soil temperature).
-#'   \item The
+#'   \item A \code{'linear'} interpolation for continuous parameters, (e.g. soil
+#'   temperature). \item The
 #'   \code{'boundary'} interpolation is only suitable for data that is already
 #'   layered. It selects the value from the old layer that in which
 #'   the new layer will lay in.
@@ -86,7 +85,7 @@
 #'
 #' @family soilphys
 #'
-#' @import splines
+# @import splines
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
@@ -178,7 +177,8 @@ l_int <- length(int_depth)
 l_knots <- length(knots)
 
 #check for correct input and warn if problems arise
-warn_names <- c("method","boundary_nearest","boundary_average","int_depth","knots")
+warn_names <- c("method","boundary_nearest","boundary_average",
+                "int_depth","knots")
 warn_lengths <- c(l_meth,l_incl,l_b.av,l_int,l_knots)
 
 for (i in 1:5){
@@ -189,7 +189,8 @@ for (i in 1:5){
     l <- length(get(warn_name))
   }
   if(!l == l_param & !l == 1 ){
-    stop(paste0("'",warn_name,"' must be the same length of param or of length 1"))
+    stop(paste0("'",warn_name,
+                "' must be the same length of param or of length 1"))
   }
 }
 
@@ -201,7 +202,7 @@ if (!all(id_cols %in% df_names)){
 }
 
 if (is.vector(depth_target)){
-  depth_target = data.frame(depth = depth_target, stringsAsFactors = F)
+  depth_target <- data.frame(depth = depth_target, stringsAsFactors = FALSE)
 } else if (!is.data.frame(depth_target)){
   #if it isn't a data frame - what is it? stopping.
   stop("depth_target must be a numeric vector or a data frame!")
@@ -290,7 +291,7 @@ if(length(target_id)>0){
 # each group will have one less row than it started with
 depth_target_mid <-
   depth_target %>%
-  dplyr::group_by(.data$gr_id) %>% #must be grouped! each group has its own structure
+  dplyr::group_by(.data$gr_id) %>% #must be grouped!
   dplyr::mutate(depth_l = dplyr::lag(.data$depth, 1)) %>%
   dplyr::mutate(depth = (.data$depth + .data$depth_l) / 2) %>%
   dplyr::select(-"depth_l") %>%
@@ -298,7 +299,8 @@ depth_target_mid <-
 
 
 #checking for duplicates and stopping if necessary
-dup_flag <- !(nrow(depth_target) == depth_target %>% dplyr::distinct() %>% nrow())
+dup_flag <- !(nrow(depth_target) == depth_target %>%
+                dplyr::distinct() %>% nrow())
 
 if(dup_flag){
   stop("depth_target: rows are not unique!")
@@ -374,7 +376,7 @@ df_ret <- lapply(unique(depth_target$gr_id),function(id_gr){
 
 
 df_ret <- df %>%
-  dplyr::select(any_of({c(id_cols, "prof_id")})) %>%
+  dplyr::select(dplyr::any_of({c(id_cols, "prof_id")})) %>%
   dplyr::distinct() %>%
   dplyr::left_join(df_ret, by = "prof_id")%>%
   dplyr::select(-"prof_id")
@@ -548,12 +550,12 @@ boundary_intdisc <- function(lower,
 
       ####### NEAREST #########
 
-    } else if (boundary_nearest == T &
+    } else if (boundary_nearest &
                upper_new>upper_max) {
       #return upper bound value if layer above region
       return(param[l])
 
-    } else if (boundary_nearest == T &
+    } else if (boundary_nearest &
                lower_new<lower_min) {
       #return lower bound value if layer below region
       return(param[1])
@@ -565,11 +567,11 @@ boundary_intdisc <- function(lower,
       return(NA)
 
     } else if (upper_new > upper_max | lower_new < lower_min) {
-      # if boundary_nearest == F these must be NA,
+      # if boundary_nearest == FALSE these must be NA,
       # otherwise wrong average below
       return(NA)
 
-    } else if (is.numeric(param) == F){
+    } else if (!is.numeric(param)){
       # return NA if param is not numeric
       # (cant average discrete values)
       return(NA)

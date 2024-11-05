@@ -61,7 +61,8 @@ depth_structure.cfp_profile <- function(x, id_cols = NULL, ...){
 #' @rdname depth_structure
 #' @param structure_from From which element should the structure be returned?
 #' @exportS3Method
-depth_structure.cfp_dat <- function(x, id_cols = NULL, structure_from = NULL, ...){
+depth_structure.cfp_dat <- function(x, id_cols = NULL,
+                                    structure_from = NULL, ...){
   rlang::check_dots_empty0()
 
   stopifnot("Must provide 'structure_from'" = !is.null(structure_from))

@@ -1,17 +1,18 @@
-#' @title Inverse model of production profiles
+#'@title Inverse model of production profiles
 #'
-#' @description This implements an inverse modeling approach which optimizes
-#'   vertically resolved production (or consumption) of the gases in question to
-#'   fit a modeled concentration profile to observed data.
+#'@description This implements an inverse modeling approach which optimizes
+#'  vertically resolved production (or consumption) of the gases in question to
+#'  fit a modeled concentration profile to observed data.
 #'
-#'   One boundary condition of this model is, that there is no incoming or
-#'   outgoing flux at the bottom of the lowest layer of the profile. If this
-#'   boundary condition is not met, the flux must be optimised as well. This can
-#'   be set in \code{zero_flux}.
+#'  One boundary condition of this model is, that there is no incoming or
+#'  outgoing flux at the bottom of the lowest layer of the profile. If this
+#'  boundary condition is not met, the flux must be optimised as well. This can
+#'  be set in \code{zero_flux}.
 #'
-#' @param x A `cfp_dat` object with all the necessary input datasets.
+#'@param x A `cfp_dat` object with all the necessary input datasets.
 #'
-#' @inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor known_flux_factor
+#'@inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor
+#'  known_flux_factor
 #'
 #'
 #' @examples {
@@ -45,17 +46,19 @@
 #'  pro_flux()
 #' }
 #'
-#' @family flux models
+#'@family flux models
 #'
 #'
-#' @export
+#'@export
 
 pro_flux <- function(x,
                      ...){
   # for future expansion, remove if implemented
   named_dots <- names(list(...))
-  stopifnot("'...' contains unused arguments or that are not yet implemented fully" =
-              all(named_dots %in% c("zero_flux", "zero_limits", "evenness_factor")))
+  stopifnot("'...' contains unused arguments or that are
+            not yet implemented fully" =
+              all(named_dots %in%
+                    c("zero_flux", "zero_limits", "evenness_factor")))
 
 UseMethod("pro_flux")
 }
@@ -105,7 +108,8 @@ pro_flux.cfp_pfmod <- function(x,
   y <- x$soilphys %>%
     as.data.frame() %>%
     dplyr::left_join(x$profiles,
-                     by = c(names(x$soilphys)[names(x$soilphys) %in% names(x$profiles)]),
+                     by = c(names(x$soilphys)[names(x$soilphys) %in%
+                                                names(x$profiles)]),
                      relationship = "many-to-many") %>%
     dplyr::select(upper, lower, step_id, prof_id, sp_id, pmap) %>%
     dplyr::right_join(y, by = c("step_id", "prof_id")) %>%
@@ -182,7 +186,8 @@ pro_flux_group <-  function(x, p){
     #x <- split_by_prof_barebones(x)
     #env <- rlang::new_environment(trim_cfp_dat(x))
 
-    profs_split <- split(data.frame(x$profiles[,names(x$profiles) %in% c("gd_id", "sp_id")]),
+    profs_split <- split(data.frame(x$profiles[,names(x$profiles) %in%
+                                                 c("gd_id", "sp_id")]),
                          x$profiles$prof_id)
     x <- split_by_prof_env(x)
 
@@ -258,7 +263,8 @@ prof_optim <- function(y,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  C0 <- stats::median(gasdata$x_ppm[gasdata$depth == dmin]*soilphys$c_air[soilphys$lower == dmin])
+  C0 <- stats::median(
+    gasdata$x_ppm[gasdata$depth == dmin]*soilphys$c_air[soilphys$lower == dmin])
 
   #DS and D0
   DS <- soilphys$DS
@@ -269,27 +275,28 @@ prof_optim <- function(y,
   # known_flux <- NA
 
   #optimisation with error handling returning NA
-  prod_optimised <- tryCatch({stats::optim(par=prod_start,
-                                           fn = prod_optim,
-                                           lower = lowlim_tmp,
-                                           upper = highlim_tmp,
-                                           method = "L-BFGS-B",
-                                           height = height,
-                                           DS = DS,
-                                           #D0 = D0,
-                                           C0 = C0,
-                                           pmap = pmap,
-                                           cmap = cmap,
-                                           conc = conc,
-                                           #dstor = dstor,
-                                           zero_flux = zero_flux,
-                                           F0 = F0,
-                                           #known_flux = known_flux,
-                                           known_flux_factor = known_flux_factor,
-                                           DSD0_optim = DSD0_optim,
-                                           layer_couple = layer_couple_tmp,
-                                           wmap = wmap,
-                                           evenness_factor = evenness_factor
+  prod_optimised <- tryCatch({
+    stats::optim(par=prod_start,
+                 fn = prod_optim,
+                 lower = lowlim_tmp,
+                 upper = highlim_tmp,
+                 method = "L-BFGS-B",
+                 height = height,
+                 DS = DS,
+                 #D0 = D0,
+                 C0 = C0,
+                 pmap = pmap,
+                 cmap = cmap,
+                 conc = conc,
+                 #dstor = dstor,
+                 zero_flux = zero_flux,
+                 F0 = F0,
+                 #known_flux = known_flux,
+                 known_flux_factor = known_flux_factor,
+                 DSD0_optim = DSD0_optim,
+                 layer_couple = layer_couple_tmp,
+                 wmap = wmap,
+                 evenness_factor = evenness_factor
   )},
   error = function(cond) NA)
 

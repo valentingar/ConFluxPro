@@ -22,22 +22,22 @@ cfp_altres(
 \item{f}{A function taking in a soilphys object and recalculates the relevant
 columns. See \code{complete_soilphys()}.}
 
-\item{run_map}{A data.frame created by \code{run_map()} with the necessary information
-how the data is to be changed with each distinct \code{run_id}.}
+\item{run_map}{A data.frame created by \code{run_map()} with the necessary
+information how the data is to be changed with each distinct \code{run_id}.}
 
 \item{return_raw}{Should the models be returned as is, or after applying any
 \code{error_funs}. Default is \code{TRUE} - exporting the models.}
 
-\item{error_funs}{A list of functions to be applied after flux calculation
-if \code{return_raw == FALSE}. This can be used to output not the models
-but quality parameters instead. Output must contain the column RMSE.}
+\item{error_funs}{A list of functions to be applied after flux calculation if
+\code{return_raw == FALSE}. This can be used to output not the models but
+quality parameters instead. Output must contain the column RMSE.}
 
 \item{error_args}{A list of additional function arguments to be passed to any
 of the \code{error_funs}. Must match the length of \code{error_funs}}
 }
 \description{
-S3 class for the result of a call to alternate(). Essentially a list with
-added run_map and further attributes.
+S3 class for the result of a call to alternate().
+Essentially a list with added run_map and further attributes.
 }
 \seealso{
 Other model frames: 

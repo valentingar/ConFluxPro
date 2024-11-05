@@ -1,14 +1,15 @@
 #' @title Extract flux rates from deep soil
 #'
-#' @description Extract the incoming and outgoing flux from below the deepest layer
-#' of a \code{pro_flux()} model.
-#' This returns zero, if `zero_flux=TRUE`.
+#' @description Extract the incoming and outgoing flux from below the deepest
+#'   layer of a \code{pro_flux()} model. This returns zero, if `zero_flux=TRUE`.
 #'
 #' @param x A valid \code{cfp_pfres()} object.
 #'
-#' @param ... Further parameters passed on to \code{efflux()} in case of \code{cfp_fgres}.
+#' @param ... Further parameters passed on to \code{efflux()} in case of
+#'   \code{cfp_fgres}.
 #'
-#' @details F0 represents the flux below the lowest layer defined in the \code{cfp_pfres()} model
+#' @details F0 represents the flux below the lowest layer defined in the
+#'   \code{cfp_pfres()} model
 #'
 #' @returns data.frame with F0 (\eqn{µmol / m^2 / s})
 #'
@@ -26,7 +27,8 @@ deepflux.cfp_pfres <- function(x, ...){
   id_cols <- cfp_id_cols(x)
 
   zero_flux <- cfp_zero_flux(x)
-  if(zero_flux) message("zero_flux boundary condition is TRUE -> F0 is always 0.")
+  if(zero_flux) message("zero_flux boundary condition is
+                        TRUE -> F0 is always 0.")
 
   PROD %>%
     dplyr::select(prof_id, .data$F0) %>%

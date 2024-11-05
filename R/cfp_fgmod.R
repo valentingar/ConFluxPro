@@ -15,12 +15,12 @@
 #'   \item{LS}{linear spline approach: A linear spline is fitted over the
 #'   complete profile with nodes at the layer intersections.}
 #'   \item{EF}{exponential fit approach: An exponential function of form
-#'   y=a+b*x^c is fit of concentration against depth. Using the first derivative of
-#'   that function the concentration gradient is evaluated for each layer.}
+#'   y=a+b*x^c is fit of concentration against depth. Using the first derivative
+#'   of that function the concentration gradient is evaluated for each layer.}
 #'   \item{DA}{exponential fit approach: An exponential function of form
-#'   `y=a+b*(1-exp(-a*x))` is fit of concentration against depth. Using the first derivative of
-#'   that function the concentration gradient is evaluated for each layer. From
-#'   Davidson (2006)}
+#'   `y=a+b*(1-exp(-a*x))` is fit of concentration against depth. Using the
+#'   first derivative of that function the concentration gradient is evaluated
+#'   for each layer. From Davidson (2006).}
 #'   }
 #' @param param (character) A vector containing the the parameters of soilphys,
 #'   for which means should be calculated, must contain "c_air" and "DS", more
@@ -34,7 +34,10 @@
 #' adds model specific parameters.
 #'
 #' @references
-#' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
+#' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006).
+#' Vertical partitioning of CO2 production within a temperate forest soil.
+#' In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley.
+#' https://doi.org/10.1111/j.1365-2486.2005.01142.x
 #'
 #' @examples
 #' cfp_fgmod(ConFluxPro::base_dat)
@@ -50,7 +53,8 @@ cfp_fgmod <- function(x,
 
   stopifnot(inherits(x, "cfp_dat"))
 
-  stopifnot("Selected gases not present in dataset" = all(gases %in% unique_gases(x)))
+  stopifnot("Selected gases not present in dataset" =
+              all(gases %in% unique_gases(x)))
 
 
   if (length(gases) > 1){
@@ -90,7 +94,8 @@ validate_fgmod <- function(x){
   stopifnot("DS mus be in param!" = "DS" %in% cfp_param(x),
             "c_air must be in param!" = "c_air" %in% cfp_param(x))
 
-  stopifnot("not a valid mode!" = all(cfp_modes(x) %in% c("LL", "LS", "EF", "DA")))
+  stopifnot("not a valid mode!" =
+              all(cfp_modes(x) %in% c("LL", "LS", "EF", "DA")))
 
   x
 }

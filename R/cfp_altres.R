@@ -1,7 +1,7 @@
 #' @title Model runs as result of parameter variation
 #'
-#' @description S3 class for the result of a call to alternate(). Essentially a list with
-#' added run_map and further attributes.
+#' @description S3 class for the result of a call to alternate().
+#' Essentially a list with added run_map and further attributes.
 #'
 #' @param x A named list of cfp_pfres or cfp_fgres models.
 #'
@@ -70,7 +70,8 @@ validate_cfp_altres <- function(x){
   run_map <- cfp_run_map(x)
   runs <- unique(run_map$run_id)
 
-  stopifnot("Length of result list does not match run_map" = length(runs) == length(x))
+  stopifnot("Length of result list does not match run_map" =
+              length(runs) == length(x))
 
 
   x

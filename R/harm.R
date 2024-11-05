@@ -24,7 +24,9 @@ harm <- function(x, w = 1, na.rm = FALSE){
   if (length(w) == 1){
     w <- rep(w, length(x))
   } else if (!length(w) == length(x)){
-    stop(paste0("Length of w (",length(w),") must be the same length of x (",length(x),") or 1"))
+    stop(paste0("Length of w (",
+                length(w),") must be the same length of x (",
+                length(x),") or 1"))
   } else if (anyNA(w)){
     stop("Cannot compute weighted harmonic mean if w contains NAs")
   }

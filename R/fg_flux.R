@@ -1,8 +1,8 @@
 #' @title Flux-gradient method
 #'
 #' @description `fg_flux()` implements different approaches to the flux-gradient
-#' method (FGM). It takes a valid input dataset from `cfp_dat()` and calculates
-#' for each layer defined in `cfp_layers_map()`.
+#'   method (FGM). It takes a valid input dataset from `cfp_dat()` and
+#'   calculates for each layer defined in `cfp_layers_map()`.
 #'
 #' @inheritParams pro_flux
 #'
@@ -10,8 +10,10 @@
 #'
 #' @family flux models
 #'
-#' @references
-#' DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006). Vertical partitioning of CO2 production within a temperate forest soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley. https://doi.org/10.1111/j.1365-2486.2005.01142.x
+#' @references DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W.
+#' (2006). Vertical partitioning of CO2 production within a temperate forest
+#' soil. In Global Change Biology (Vol. 12, Issue 6, pp. 944–956). Wiley.
+#' https://doi.org/10.1111/j.1365-2486.2005.01142.x
 #'
 #' @importFrom rlang .data
 #' @rdname fg_flux
@@ -71,7 +73,8 @@ fg_flux.cfp_fgmod <- function(x, ...){
   y <- dplyr::bind_rows(y)
 
   y <- y %>%
-    dplyr::left_join(x$profiles, by = names(y)[names(y) %in% names(x$profiles)]) %>%
+    dplyr::left_join(x$profiles,
+                     by = names(y)[names(y) %in% names(x$profiles)]) %>%
     dplyr::select("prof_id",
            "upper",
            "lower",
@@ -178,8 +181,10 @@ calculate_flux <- function(x, p){
                                      id_cols)
 
   soilphys_layers <- soilphys_layers %>%
-    dplyr::left_join(x$profiles,
-                     by = names(soilphys_layers)[names(soilphys_layers) %in% names(x$profiles)]) %>%
+    dplyr::left_join(
+      x$profiles,
+      by = names(soilphys_layers)[names(soilphys_layers) %in%
+                                    names(x$profiles)]) %>%
     dplyr::ungroup() %>%
     dplyr::select(tidyr::any_of(c("prof_id", "upper", "lower" , param)))
 
@@ -187,6 +192,7 @@ calculate_flux <- function(x, p){
     dplyr::left_join(soilphys_layers, by = c("prof_id", "upper", "lower")) %>%
     dplyr::mutate(flux = -.data$DS * .data$c_air * .data$dcdz_ppm) %>%
     dplyr::mutate(depth = (.data$upper + .data$lower)/2) %>%
-    dplyr::mutate(flux_sd = abs(.data$flux * abs(.data$dcdz_sd / .data$dcdz_ppm))) %>%
+    dplyr::mutate(
+      flux_sd = abs(.data$flux * abs(.data$dcdz_sd / .data$dcdz_ppm))) %>%
     dplyr::ungroup()
 }

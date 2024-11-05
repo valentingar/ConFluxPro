@@ -14,7 +14,8 @@ as_cfp_pfmod(x)
 \item{x}{An object which should be coerced}
 }
 \description{
-These functions help coerce different object types in ConFluxPro.
+These functions help coerce different object types in
+ConFluxPro.
 }
 \section{Functions}{
 \itemize{

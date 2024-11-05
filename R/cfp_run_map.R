@@ -1,8 +1,8 @@
-#' @title Create a run plan for parameter variation
+#'@title Create a run plan for parameter variation
 #'
-#' @description An S3 class cfp_run_map to be used in alternate().
-#' Either create a new run map from a cfp_pfres or
-#' cfp_fgres model or extract an existing run_map from an cfp_altres object.
+#'@description An S3 class cfp_run_map to be used in alternate(). Either create
+#'  a new run map from a cfp_pfres or cfp_fgres model or extract an existing
+#'  run_map from an cfp_altres object.
 #'
 #'@param x Either a \link{cfp_pfres} or \link{cfp_fgres} model result.
 #'
@@ -33,7 +33,8 @@
 #'\describe{
 #'\item{layers_map}{(default) Use the layers that are defined in layers_map.}
 #'\item{soilphys}{Use the layers as defined in soilphys}
-#'\item{layers_altmap}{Use the layers as defined in the provided layers_altmap object.}
+#'\item{layers_altmap}{Use the layers as defined in the provided layers_altmap
+#'object.}
 #'}
 #'
 #'@param layers_altmap An optional layers_map created using layers_map() that
@@ -44,9 +45,9 @@
 #'  automatically adjusted per id_cols indivdually? Default is FALSE, which
 #'  leads to an error in that case.
 #'
-#' @importFrom rlang .data
+#'@importFrom rlang .data
 #'
-#' @export
+#'@export
 cfp_run_map <- function(x,
                         params = list(),
                         type = NULL,
@@ -93,15 +94,19 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
     type <- match.arg(type, c("abs", "factor", "addition" ),several.ok = TRUE)
 
     stopifnot("type must be length 1 or the same as params" =
-                (length(type) == 1) | (length(type) = length(params)))
+                (length(type) == 1) | (length(type) == length(params)))
 
     stopifnot("all params must be present in soilphys!" =
                 all(names(params) %in% c(names(x$soilphys), "topheight")))
 
     stopifnot("please give an integer number of runs" =
-                ((!(method == "random")) || (is.numeric(n_runs) && (abs(round(n_runs) - n_runs) < 1E-10))))
+                ((!(method == "random")) ||
+                   (is.numeric(n_runs) &&
+                      (abs(round(n_runs) - n_runs) < 1E-10))))
 
-    layers_from = match.arg(layers_from, c("layers_map", "soilphys", "layers_altmap"))
+    layers_from <- match.arg(layers_from, c("layers_map",
+                                            "soilphys",
+                                            "layers_altmap"))
 
 
     if (length(type) == 1){
@@ -123,12 +128,14 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
         x$soilphys %>%
         dplyr::select(dplyr::any_of(c(cfp_id_cols(x$layers_map), "upper"))) %>%
         dplyr::distinct() %>%
-        dplyr::group_by(dplyr::across(dplyr::any_of(cfp_id_cols(x$layers_map)))) %>%
+        dplyr::group_by(
+          dplyr::across(dplyr::any_of(cfp_id_cols(x$layers_map)))) %>%
         dplyr::slice_max(upper, n = 2) %>%
         dplyr::summarise(top = max(upper),
                          bottom = min(upper))
 
-      if (any((second_depth$top-second_depth$bottom) <= -min(params$topheight))){
+      if (any(
+        (second_depth$top-second_depth$bottom) <= -min(params$topheight))){
         if (topheight_adjust == TRUE){
           message("adjusting topheight limits to fit data.")
 
@@ -191,12 +198,17 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
         x$soilphys %>%
         dplyr::select(!"pmap") %>%
         sp_add_pmap(layers_altmap) %>%
-        dplyr::select(dplyr::any_of(c("pmap", "step_id", cfp_id_cols(layers_altmap)))) %>%
+        dplyr::select(
+          dplyr::any_of(c("pmap",
+                          "step_id", cfp_id_cols(layers_altmap)))) %>%
         dplyr::distinct() %>%
-        dplyr::right_join(layers_altmap[, c("pmap", "upper", "lower", cfp_id_cols(layers_altmap))],
-                          by = c("pmap" ,cfp_id_cols(layers_altmap)),
+        dplyr::right_join(
+          layers_altmap[, c("pmap", "upper", "lower",
+                            cfp_id_cols(layers_altmap))],
+          by = c("pmap" ,cfp_id_cols(layers_altmap)),
                           relationship = "many-to-many") %>%
-        dplyr::right_join(run_map, by = c("upper", "lower", cfp_id_cols(layers_altmap)),
+        dplyr::right_join(
+          run_map, by = c("upper", "lower", cfp_id_cols(layers_altmap)),
                           relationship = "many-to-many") %>%
         dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower")))
     }
@@ -233,7 +245,8 @@ run_map_permutation <- function(x,
 
   params_notop <- params[!names(params) == "topheight"]
 
-  stopifnot("all limits in params be numeric for method = 'permutation' !!!" = all(sapply(params, is.numeric)))
+  stopifnot("all limits in params be numeric for method = 'permutation' !!!" =
+              all(sapply(params, is.numeric)))
 
   if (length(params_notop) > 0){
 
@@ -294,7 +307,8 @@ run_map_permutation <- function(x,
           dplyr::left_join(.x, by = "layer_id")
 
       }) %>%
-      dplyr::left_join(run_map, relationship = "many-to-many", by = "perm_id") %>%
+      dplyr::left_join(run_map,
+                       relationship = "many-to-many", by = "perm_id") %>%
       dplyr::select(!"perm_id") %>%
       dplyr::select(!"layer_id")
   }
@@ -343,7 +357,8 @@ run_map_permutation <- function(x,
   if ("topheight" %in% names(params) && topheight_adjust == TRUE){
     # filter out runs with not possible topheight change
 
-    merger <- cfp_id_cols(x$layers_map)[cfp_id_cols(x$layers_map) %in% names(run_map)]
+    merger <- cfp_id_cols(x$layers_map)[cfp_id_cols(x$layers_map) %in%
+                                          names(run_map)]
 
     run_map <-
       run_map %>%
@@ -380,7 +395,8 @@ run_map_random <- function(x,
                            second_depth){
 
 
-  stopifnot("For method = 'random' give exactly two values per param as limits" =
+  stopifnot("For method = 'random' give exactly two values per
+            param as limits" =
               all(sapply(params,length) == 2))
 
   params <- lapply(params, function(x) {
@@ -391,7 +407,8 @@ run_map_random <- function(x,
   })
 
   # get column names in params, if given as characters
-  columns_for_limits <- unlist(params[sapply(params, is.character)], use.names = FALSE)
+  columns_for_limits <- unlist(params[sapply(params, is.character)],
+                               use.names = FALSE)
 
   stopifnot(  "if limits in params are privided as characters,
             these columns must be present in layers_altmap!"  =
@@ -469,20 +486,27 @@ run_map_random <- function(x,
   run_map <-
     run_map %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(param_min = as.numeric(get(ifelse(is.na(suppressWarnings(as.numeric(param_min))),param_min,"param_min"))),
-                  param_max = as.numeric(get(ifelse(is.na(suppressWarnings(as.numeric(param_max))),param_max,"param_max"))))
+    dplyr::mutate(
+      param_min = as.numeric(
+        get(ifelse(is.na(
+          suppressWarnings(as.numeric(param_min))),param_min,"param_min"))),
+      param_max = as.numeric(
+        get(ifelse(is.na(
+          suppressWarnings(as.numeric(param_max))),param_max,"param_max"))))
 
   if (topheight_adjust == TRUE){
     # only topheight_adjust limits within range of topmost layer!
-    merger <- cfp_id_cols(x$layers_map)[cfp_id_cols(x$layers_map) %in% names(run_map)]
+    merger <- cfp_id_cols(x$layers_map)[cfp_id_cols(x$layers_map) %in%
+                                          names(run_map)]
 
     run_map <-
       run_map %>%
       dplyr::left_join(second_depth, by = merger) %>%
-      dplyr::mutate(param_min = ifelse(.data$param == "topheight" &
-                                         -.data$param_min >= .data$top-.data$bottom,
-                                       (.data$bottom-.data$top)+0.0001,
-                                       .data$param_min)) %>%
+      dplyr::mutate(
+        param_min = ifelse(.data$param == "topheight" &
+                             -.data$param_min >= .data$top-.data$bottom,
+                           (.data$bottom-.data$top)+0.0001,
+                           .data$param_min)) %>%
       dplyr::select(!dplyr::any_of(c("top", "bottom")))
 
   }
@@ -519,7 +543,8 @@ new_cfp_run_map <- function(x,
   stopifnot(is.data.frame(x))
 
   x <- structure(x,
-                 class = c("cfp_run_map",class(x)[!grepl("cfp_run_map",class(x))]),
+                 class = c("cfp_run_map",
+                           class(x)[!grepl("cfp_run_map",class(x))]),
                  params = params,
                  method = method,
                  type = type,

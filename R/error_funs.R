@@ -1,28 +1,28 @@
 #' @title Estimate model error
 #'
-#' @description A set of functions that can be called on an
-#' cfp_pfres object (the result of a call to pro_flux) to assess
-#' the quality of the model.
+#' @description A set of functions that can be called on an cfp_pfres object
+#'   (the result of a call to pro_flux) to assess the quality of the model.
 #'
-#' @param x A cfp_pfres object, that is returned by a call
-#' to pro_flux()
+#' @param x A cfp_pfres object, that is returned by a call to pro_flux()
 #'
-#' @param param_cols The columns that, together, define different parameters (e.g. different gases)
-#' for which NRMSEs should be calculated separately (e.g. "gas"). Defaults to
-#' the id_cols of layers_map. If no such destinction is wished, set to \code{character()}
+#' @param param_cols The columns that, together, define different parameters
+#'   (e.g. different gases) for which NRMSEs should be calculated separately
+#'   (e.g. "gas"). Defaults to the id_cols of layers_map. If no such destinction
+#'   is wished, set to \code{character()}
 #'
-#' @param EFFLUX A data.frame with (at most) one value of efflux per profile of x. Must
-#' contain any id_cols of x needed.
+#' @param EFFLUX A data.frame with (at most) one value of efflux per profile of
+#'   x. Must contain any id_cols of x needed.
 #'
 #' @param ... Further arguments passed to \code{efflux()} in case of cfp_fgres.
 #'
 #' @inheritParams rmse
 #'
-#' @details For error_concentration, the way the error parameter is calculated for cfp_fgres and cfp_pfres objects
-#' is entirely different and should not be used in comparison between the two. NRMSE of
-#' cfp_pfres objects are calculated as the mean of depth-wise NRMSEs of modelled versus
-#' input gas concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
-#' (dcdz_sd / dcdz_ppm) per group described in param_cols.
+#' @details For error_concentration, the way the error parameter is calculated
+#'   for cfp_fgres and cfp_pfres objects is entirely different and should not be
+#'   used in comparison between the two. NRMSE of cfp_pfres objects are
+#'   calculated as the mean of depth-wise NRMSEs of modelled versus input gas
+#'   concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
+#'   (dcdz_sd / dcdz_ppm) per group described in param_cols.
 #'
 #' @aliases error_concentration error_efflux error_funs
 #'
@@ -101,7 +101,7 @@ error_concentration.cfp_pfres <- function(
 
       # then calculation of mean of all depth-NRMSEs
       dplyr::summarise(NRMSE = mean(.data$NRMSE,
-                                    na.rm = T))
+                                    na.rm = TRUE))
 }
 
 #' @rdname error_funs
@@ -121,7 +121,8 @@ error_concentration.cfp_fgres <- function(
   x$FLUX %>%
     dplyr::left_join(x$profiles, by = merger) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(param_cols))) %>%
-    dplyr::summarise(NRMSE = mean(.data$dcdz_sd / abs(.data$dcdz_ppm), na.rm = TRUE))
+    dplyr::summarise(NRMSE = mean(.data$dcdz_sd / abs(.data$dcdz_ppm),
+                                  na.rm = TRUE))
 }
 
 #' @rdname error_funs

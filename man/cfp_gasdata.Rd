@@ -23,7 +23,8 @@ cfp_gasdata(x, ...)
 
 \item{...}{not used}
 
-\item{id_cols}{Column names in data.frame that uniquely identify each profile.}
+\item{id_cols}{Column names in data.frame that uniquely identify each
+profile.}
 }
 \value{
 A \code{cfp_gasdata} object.

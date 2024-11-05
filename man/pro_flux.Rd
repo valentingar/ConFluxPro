@@ -25,14 +25,15 @@ pro_flux(x, ...)
 \code{FALSE}, \code{F0} is optimized alongside the production rates.}
     \item{\code{zero_limits}}{(numeric vector) a vector of length 2 defining the lower
 and upper limit of the lowest flux if \code{zero_flux = FALSE}.}
-    \item{\code{known_flux_factor}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
     \item{\code{DSD0_optim}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
-    \item{\code{evenness_factor}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}(numeric) A user defined factor used to penalise strong
-differences between the optimised production rates. This must be identified by
-trial-and-error and can help prevent that production rates are simply set to zero
-basically the lower a production is relative to the the maximum of the absolute of
-all productions, the higher it is penalised. The \code{evenness_factor} then
-defines the weight of this penalty in the optimisation algorithm \code{\link{prod_optim}}.}
+    \item{\code{evenness_factor}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}(numeric) A user
+defined factor used to penalise strong differences between the optimised
+production rates. This must be identified by trial-and-error and can help
+prevent that production rates are simply set to zero basically the lower a
+production is relative to the the maximum of the absolute of all
+productions, the higher it is penalised. The \code{evenness_factor} then
+defines the weight of this penalty in the optimisation algorithm
+\code{\link{prod_optim}}.}
   }}
 }
 \description{

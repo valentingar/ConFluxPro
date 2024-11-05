@@ -163,7 +163,7 @@ The last thing we need is a function that re-calculates the `soilphys` dataset.
 Because within each run, the TPS value will be adjusted, we have to re-calculate the AFPS and the diffusion coefficient that was calculated from it.
 In our case, we can use the `complete_soilphys()` function. 
 Depending on how your parameters are named and how they relate to another, you may have to write your own function for that.
-```{r call-alternate, cache = TRUE}
+```{r call-alternate}
 mod_pf_alt <- alternate(
   mod_pf,
   f = function(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),

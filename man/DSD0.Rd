@@ -32,8 +32,8 @@ DSD0_linear(AFPS, a_lin, b_lin)
 \item{a_lin, b_lin}{linear model coefficients}
 }
 \description{
-Different functions to estimate soil diffusivity
-from the air-filled pore space.
+Different functions to estimate soil diffusivity from the
+air-filled pore space.
 }
 \details{
 \itemize{
@@ -41,17 +41,19 @@ from the air-filled pore space.
 \code{\link[=DSD0_millington_quirk]{DSD0_millington_quirk()}} is of the form \eqn{D_s / D_0 = \Xi \cdot \epsilon}
 where \eqn{\Xi} is the tortuosity factor (\code{tortuosity}) calulcated as
 \eqn{\Xi = \frac{\epsilon^{(10/3)}}{\Phi^2}}
-}; \eqn{\epsilon} is the air-filled pore space (\code{AFPS}) and \eqn{\Phi} is
-the porosity (\code{TPS}). From Millington & Quirk (1961).
+}; \eqn{\epsilon} is the air-filled pore space (\code{AFPS}) and \eqn{\Phi}
+is the porosity (\code{TPS}). From Millington & Quirk (1961).
 \item{
-\code{\link[=DSD0_moldrup]{DSD0_moldrup()}} is of the form \eqn{D_s / D_0 = (2 \cdot \epsilon_{100}^3 + 0.04 \cdot \epsilon_{100}) \cdot (\frac{\epsilon}{\epsilon_{100}})^{(2 + \frac{3}{b_{campbell}})}}
-where \eqn{\epsilon_{100}} is the air-filled pore space at a matric potential head of -100 cm and
-\eqn{b_{campbell}} is the slope of the water retention curve. From Moldrup et al. (2000).
+\code{\link[=DSD0_moldrup]{DSD0_moldrup()}} is of the form \eqn{D_s / D_0 = (2 \cdot \epsilon_{100}^3 +
+0.04 \cdot \epsilon_{100}) \cdot (\frac{\epsilon}{\epsilon_{100}})^{(2 +
+\frac{3}{b_{campbell}})}} where \eqn{\epsilon_{100}} is the air-filled pore
+space at a matric potential head of -100 cm and \eqn{b_{campbell}} is the
+slope of the water retention curve. From Moldrup et al. (2000).
 }
 \item{
 \code{\link[=DSD0_currie]{DSD0_currie()}} is of the form \eqn{D_s / D_0 = a \cdot \epsilon^b} where
-\eqn{a} and \eqn{b} are fit parameter of an exponential model. From Currie (1960)
-with default values (a=1.9; b=1.4)from Troeh (1982).
+\eqn{a} and \eqn{b} are fit parameter of an exponential model. From Currie
+(1960) with default values (a=1.9; b=1.4)from Troeh (1982).
 }
 \item{
 \code{\link[=DSD0_linear]{DSD0_linear()}} is a linear model of form \eqn{D_s / D_0 = a \cdot \epsilon + b}.
@@ -63,11 +65,20 @@ DSD0_millington_quirk(0.5,0.6)
 
 }
 \references{
-Millington, R. J., & Quirk, J. P. (1961). Permeability of porous solids. In Transactions of the Faraday Society (Vol. 57, p. 1200). Royal Society of Chemistry (RSC). https://doi.org/10.1039/tf9615701200
+Millington, R. J., & Quirk, J. P. (1961). Permeability of porous
+solids. In Transactions of the Faraday Society (Vol. 57, p. 1200). Royal
+Society of Chemistry (RSC). https://doi.org/10.1039/tf9615701200
 
-Moldrup, P., Olesen, T., Schjønning, P., Yamaguchi, T., & Rolston, D. E. (2000). Predicting the Gas Diffusion Coefficient in Undisturbed Soil from Soil Water Characteristics. In Soil Science Society of America Journal (Vol. 64, Issue 1, pp. 94–100). Wiley. https://doi.org/10.2136/sssaj2000.64194x
+Moldrup, P., Olesen, T., Schjønning, P., Yamaguchi, T., & Rolston, D. E.
+(2000). Predicting the Gas Diffusion Coefficient in Undisturbed Soil from
+Soil Water Characteristics. In Soil Science Society of America Journal (Vol.
+64, Issue 1, pp. 94–100). Wiley. https://doi.org/10.2136/sssaj2000.64194x
 
-Currie, J. A. (1960). Gaseous diffusion in porous media. Part 2. - Dry granular materials. In British Journal of Applied Physics (Vol. 11, Issue 8, pp. 318–324). IOP Publishing. https://doi.org/10.1088/0508-3443/11/8/303
+Currie, J. A. (1960). Gaseous diffusion in porous media. Part 2. - Dry
+granular materials. In British Journal of Applied Physics (Vol. 11, Issue 8,
+pp. 318–324). IOP Publishing. https://doi.org/10.1088/0508-3443/11/8/303
 
-Troeh, F. R., Jabro, J. D., & Kirkham, D. (1982). Gaseous diffusion equations for porous materials. In Geoderma (Vol. 27, Issue 3, pp. 239–253). Elsevier BV. https://doi.org/10.1016/0016-7061(82)90033-7
+Troeh, F. R., Jabro, J. D., & Kirkham, D. (1982). Gaseous diffusion equations
+for porous materials. In Geoderma (Vol. 27, Issue 3, pp. 239–253). Elsevier
+BV. https://doi.org/10.1016/0016-7061(82)90033-7
 }

@@ -23,9 +23,9 @@
 #' lower limit of possible production allowed in [pro_flux()] models.
 #' @param highlim (numeric vector)  the same length as gas with the
 #' upper limit of possible production allowed in [pro_flux()] models.
-#' @param layer_couple `r lifecycle::badge("experimental")` (numeric_vector) A vector the same length as gas that
-#' indicates how strongly the layer should be linked to the one below it
-#' (0 for no coupling, the default).
+#' @param layer_couple `r lifecycle::badge("experimental")` (numeric_vector)
+#' A vector the same length as gas that indicates how strongly the layer should
+#' be linked to the one below it (0 for no coupling, the default).
 #' @param ... not used
 #'
 #' @family data formats
@@ -104,9 +104,11 @@ cfp_layers_map.data.frame <- function(x,
   #convenient way of adding multiple gases to layers_map
   if (!is.null(gas)){
 
-    stopifnot("gas must not be present in layers_map already!" = !"gas" %in% names(x))
+    stopifnot("gas must not be present in layers_map already!" =
+                !"gas" %in% names(x))
     stopifnot("gas must be a character (-vector)!" = is.character(gas))
-    stopifnot("gas must contain unique values only!" = length(gas) == length(unique(gas)))
+    stopifnot("gas must contain unique values only!" =
+                length(gas) == length(unique(gas)))
 
     x <-
       lapply(gas, function(i){
@@ -128,7 +130,8 @@ cfp_layers_map.data.frame <- function(x,
                         layer_couple = layer_couple)
 
   } else if (!("gas" %in% names(x))){
-    stop("Please provide 'gas' parameter either as variable in layers_map or directly to this function.")
+    stop("Please provide 'gas' parameter either as variable in
+         layers_map or directly to this function.")
   } else if (!is.null(lowlim) | !is.null(highlim)){
     message("'lowlim' and/or 'highlim' ignored because 'gas' argument missing")
   }
@@ -179,7 +182,8 @@ validate_cfp_layers_map <- function(x){
   stopifnot(inherits(x,"data.frame"))
 
   # are the necessary columns present?
-  base_cols <- c("upper","lower","layer","lowlim","highlim","layer_couple","gas")
+  base_cols <- c("upper","lower","layer","lowlim",
+                 "highlim","layer_couple","gas")
   id_cols <- cfp_id_cols(x)
 
   error_if_missing(x, c(base_cols,id_cols))
@@ -237,7 +241,12 @@ add_if_missing  <- function(df,
 
 
 error_if_missing <- function(df,cols){
-  lapply(cols, function(i) if(!i %in% names(df)) stop(paste0(i, " must be present in layers_map!")))
+  lapply(cols, function(i){
+    if(!i %in% names(df)){
+      stop(paste0(i, " must be present in layers_map!"))
+    }
+  }
+  )
 }
 
 # methods -----------

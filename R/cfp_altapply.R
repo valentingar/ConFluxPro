@@ -43,7 +43,8 @@ cfp_altapply.list <- function(X,
              .f = function(i, run_id, p, X_env, ...){
                df <- FUN(X_env$X[i][[1]], ...)
                p()
-               stopifnot("FUN must return a data.frame or NULL!" = is.data.frame(df) | is.null(df))
+               stopifnot("FUN must return a data.frame or NULL!" =
+                           is.data.frame(df) | is.null(df))
                if (is.null(df)){
                  df <- tibble::tibble()
                }

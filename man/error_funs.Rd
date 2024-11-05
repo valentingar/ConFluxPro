@@ -26,12 +26,12 @@ error_efflux(x, param_cols, EFFLUX, normer = "sd", ...)
 \method{error_efflux}{cfp_altres}(x, param_cols, EFFLUX, normer = "sd", ...)
 }
 \arguments{
-\item{x}{A cfp_pfres object, that is returned by a call
-to pro_flux()}
+\item{x}{A cfp_pfres object, that is returned by a call to pro_flux()}
 
-\item{param_cols}{The columns that, together, define different parameters (e.g. different gases)
-for which NRMSEs should be calculated separately (e.g. "gas"). Defaults to
-the id_cols of layers_map. If no such destinction is wished, set to \code{character()}}
+\item{param_cols}{The columns that, together, define different parameters
+(e.g. different gases) for which NRMSEs should be calculated separately
+(e.g. "gas"). Defaults to the id_cols of layers_map. If no such destinction
+is wished, set to \code{character()}}
 
 \item{normer}{a character string defining the type of
 normalization to be applied. Can be one of
@@ -42,20 +42,20 @@ normalization to be applied. Can be one of
 \item{IQR}{the difference between the interquantile range of a}
 }}
 
-\item{EFFLUX}{A data.frame with (at most) one value of efflux per profile of x. Must
-contain any id_cols of x needed.}
+\item{EFFLUX}{A data.frame with (at most) one value of efflux per profile of
+x. Must contain any id_cols of x needed.}
 
 \item{...}{Further arguments passed to \code{efflux()} in case of cfp_fgres.}
 }
 \description{
-A set of functions that can be called on an
-cfp_pfres object (the result of a call to pro_flux) to assess
-the quality of the model.
+A set of functions that can be called on an cfp_pfres object
+(the result of a call to pro_flux) to assess the quality of the model.
 }
 \details{
-For error_concentration, the way the error parameter is calculated for cfp_fgres and cfp_pfres objects
-is entirely different and should not be used in comparison between the two. NRMSE of
-cfp_pfres objects are calculated as the mean of depth-wise NRMSEs of modelled versus
-input gas concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
+For error_concentration, the way the error parameter is calculated
+for cfp_fgres and cfp_pfres objects is entirely different and should not be
+used in comparison between the two. NRMSE of cfp_pfres objects are
+calculated as the mean of depth-wise NRMSEs of modelled versus input gas
+concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
 (dcdz_sd / dcdz_ppm) per group described in param_cols.
 }

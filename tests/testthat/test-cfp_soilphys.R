@@ -30,7 +30,9 @@ test_that("cfp_soilphys works", {
     ConFluxPro::soilphys %>%
     cfp_soilphys(id_cols = c("site", "Date"))
 
-  expect_equal(class(soilphys), c("cfp_soilphys","cfp_layered_profile","cfp_profile","data.frame"))
+  expect_equal(
+    class(soilphys),
+    c("cfp_soilphys","cfp_layered_profile","cfp_profile","data.frame"))
 
 })
 

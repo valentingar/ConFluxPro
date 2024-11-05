@@ -11,7 +11,8 @@ offset_correction(df, corr_map, gases, gases_std, depth_cal)
 
 \item{corr_map}{(dataframe) A dataframe of four columns
 ("gas","SAMPLE_NO","section","mode") mapping each pair of \code{gases} and
-sample-id \code{SAMPLE_NO} of the \code{gasdata} data.frame to a subsection-number
+sample-id \code{SAMPLE_NO} of the \code{gasdata} data.frame to a
+subsection-number
 (section). The column "mode" determines, whether the correction is
 performed using a linear regression, to account for drifts in time ("lin")
 or using the mean ("const"). This dataframe can be created using the
@@ -25,8 +26,8 @@ concentrations of the gases in the atmosphere. Unit is fraction of Volume
 (e.g. N2 = 0.78). Must match the order of \code{gases}.}
 
 \item{depth_cal}{(character) A character (-vector) containing the value(s) of
-\code{depth_cat} of the gasdata dataframe to be used for the calculation of the
-correction factor. Should be the depth_cat of the air concentration.}
+\code{depth_cat} of the gasdata dataframe to be used for the calculation of
+the correction factor. Should be the depth_cat of the air concentration.}
 }
 \value{
 df (dataframe)

@@ -6,7 +6,8 @@
 #'
 #' @param x A \code{data.frame}
 #'
-#' @param id_cols Column names in data.frame that uniquely identify each profile.
+#' @param id_cols Column names in data.frame that uniquely identify each
+#' profile.
 #'
 #' @family data formats
 #'
@@ -65,11 +66,13 @@ validate_cfp_profile <- function(x){
 
   stopifnot(inherits(x, c("cfp_profile", "data.frame")))
   id_cols <- cfp_id_cols(x)
-  stopifnot("id_cols must be unique!" = length(unique(id_cols)) == length(id_cols))
+  stopifnot("id_cols must be unique!" =
+              length(unique(id_cols)) == length(id_cols))
   id_cols_present <- id_cols %in% names(x)
 
   if (any(!id_cols_present)){
-    stop(paste0("missing id_cols ", paste0(id_cols[!id_cols_present], collapse = " ")))
+    stop(paste0("missing id_cols ",
+                paste0(id_cols[!id_cols_present], collapse = " ")))
   }
 
   x
@@ -92,7 +95,8 @@ print.cfp_profile <- function(x, ...){
                             ...){
   id_cols <- cfp_id_cols(x)
   x_class <- class(x)
-  x_class <- x_class[-match(class(new_cfp_profile(data.frame(), id_cols = NULL)),
+  x_class <- x_class[-match(class(new_cfp_profile(data.frame(),
+                                                  id_cols = NULL)),
                            x_class)]
   x <- data.frame(x)
   x <- x[...]

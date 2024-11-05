@@ -1,29 +1,29 @@
 #' @title Run parameter variation
 #'
-#' @description Alternate cfp_pfres / cfp_fgres models for sensitivity analysis and
-#' more.
+#' @description Alternate cfp_pfres / cfp_fgres models for sensitivity analysis
+#'   and more.
 #'
 #' @param x A cfp_pfres or cfp_fgres model result.
 #'
 #' @param f A function taking in a soilphys object and recalculates the relevant
-#' columns. See \code{complete_soilphys()}.
+#'   columns. See \code{complete_soilphys()}.
 #'
-#' @param run_map A data.frame created by \code{run_map()} with the necessary information
-#' how the data is to be changed with each distinct \code{run_id}.
+#' @param run_map A data.frame created by \code{run_map()} with the necessary
+#'   information how the data is to be changed with each distinct \code{run_id}.
 #'
 #' @param return_raw Should the models be returned as is, or after applying any
-#' \code{error_funs}. Default is \code{TRUE} - exporting the models.
+#'   \code{error_funs}. Default is \code{TRUE} - exporting the models.
 #'
-#' @param error_funs A list of functions to be applied after flux calculation
-#' if \code{return_raw == FALSE}. This can be used to output not the models
-#' but quality parameters instead. Output must contain the column RMSE.
+#' @param error_funs A list of functions to be applied after flux calculation if
+#'   \code{return_raw == FALSE}. This can be used to output not the models but
+#'   quality parameters instead. Output must contain the column RMSE.
 #'
 #' @param error_args A list of additional function arguments to be passed to any
-#' of the \code{error_funs}. Must match the length of \code{error_funs}
+#'   of the \code{error_funs}. Must match the length of \code{error_funs}
 #'
-#' @details \code{alternate_model()} is used internally to change and rerun one model,
-#' but can also be used to update a model with a given unique run_map, e.g. by filtering
-#' the best run_id from the original \code{run_map}.
+#' @details \code{alternate_model()} is used internally to change and rerun one
+#'   model, but can also be used to update a model with a given unique run_map,
+#'   e.g. by filtering the best run_id from the original \code{run_map}.
 #'
 #' @aliases alternate_model
 #'
@@ -161,7 +161,8 @@ update_param <- function(run_param,
                          id_cols){
 
     param <- run_param$param[1]
-    merger <- names(run_param)[names(run_param) %in% c(id_cols,"pmap", "upper", "lower", "step_id")]
+    merger <- names(run_param)[names(run_param) %in%
+                                 c(id_cols,"pmap", "upper", "lower", "step_id")]
 
     soilphys %>%
       dplyr::select(dplyr::any_of(c(
@@ -172,10 +173,11 @@ update_param <- function(run_param,
         "lower",
         "step_id"))) %>%
       dplyr::left_join(run_param, by = merger) %>%
-      dplyr::mutate(dplyr::across({param},
-                                  ~dplyr::case_when(type == "factor" ~ .x * .data$value,
-                                             type == "abs" ~ .data$value,
-                                             type == "addition" ~ .x + .data$value)
+      dplyr::mutate(
+        dplyr::across({param},
+                      ~dplyr::case_when(type == "factor" ~ .x * .data$value,
+                                        type == "abs" ~ .data$value,
+                                        type == "addition" ~ .x + .data$value)
       )) %>%
       dplyr::select({param})
   }
@@ -191,7 +193,8 @@ update_topheight <-
 
     m_lmap <- id_lmap[id_lmap %in% names(topheight)]
 
-    topheight <- topheight %>% dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower", "step_id")))
+    topheight <- topheight %>%
+      dplyr::select(!dplyr::any_of(c("pmap", "upper", "lower", "step_id")))
     topheight_gd <- topheight_sp <- topheight %>%
       dplyr::left_join(x$profiles,
                        by = {m_lmap})
