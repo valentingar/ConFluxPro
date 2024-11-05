@@ -109,7 +109,7 @@ gases_ob <- unlist(lapply(gases_ob,
 
 # Function to correct bal with standard values of missing gases.
 bal_corr <- function(bal,missing_gas){
-  bal_corrected <- unlist(lapply(1:length(bal),function(i){
+  bal_corrected <- unlist(lapply(seq_along(bal),function(i){
     gas_corr<-gases_std[gases %in% unlist(strsplit(missing_gas[i],split = ","))]
     if (length(gas_corr>0)){
       bal_corrected <- bal[i]/(1-sum(gas_corr))

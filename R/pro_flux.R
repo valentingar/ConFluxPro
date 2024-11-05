@@ -316,7 +316,7 @@ prof_optim <- function(y,
     prods <- pars[-1]
   }
   if(DSD0_optim == TRUE){
-    DSD0_fit <- prods[-c(1:length(prods)/2)]
+    DSD0_fit <- prods[-c(1:(length(prods)/2))]
     prods <- prods[1:(length(prods)/2)]
   }
 

@@ -140,3 +140,10 @@ any_negative_values <- function(x){
 
 ## sample function that can handle 1 length vectors
 sample.vec <- function(x, ...) x[sample(length(x), ...)]
+
+# 1:nrow alternative
+seq_nrow <- function(x){
+  n_rows <- nrow(x)
+  if(n_rows < 1) return(integer())
+  1:n_rows
+}

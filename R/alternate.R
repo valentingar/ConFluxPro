@@ -270,7 +270,7 @@ apply_error_funs <- function(x,
 
 
   df_ret <-
-    lapply(1:length(error_funs), function(f_id) {
+    lapply(seq_along(error_funs), function(f_id) {
       error_args_tmp <-
         error_args[[f_id]]
       error_args_tmp$PROFLUX <- x # add PROFLUX argument

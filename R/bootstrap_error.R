@@ -387,7 +387,7 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
       dplyr::across(dplyr::any_of(c(cfp_id_cols(gasdata),"depth")))) %>%
     dplyr::group_indices()
 
-  split_id_split <- split(1:length(split_id), split_id)
+  split_id_split <- split(seq_along(split_id), split_id)
 
   new_sel <-
   replicate(n_samples, sapply(split_id_split, function(x){
@@ -402,7 +402,7 @@ create_bootstrap_gasdata <- function(gasdata, n_samples){
     gasdata,
     id_cols = c(cfp_id_cols(gasdata), "bootstrap_id"))
 
-  rownames(gasdata) <- 1:nrow(gasdata)
+  rownames(gasdata) <- seq_nrow(gasdata)
 
   gasdata
 }
@@ -422,7 +422,7 @@ create_bootstrap_soilphys <- function(
         dplyr::any_of(c(cfp_id_cols(soilphys), "upper", "lower")))) %>%
     dplyr::group_indices()
 
-  split_id_split <- split(1:length(split_id), split_id)
+  split_id_split <- split(seq_along(split_id), split_id)
 
   new_sel <-
     replicate(n_samples, sapply(split_id_split, function(x){
@@ -438,7 +438,7 @@ create_bootstrap_soilphys <- function(
     id_cols = c(cfp_id_cols(soilphys),
                 "bootstrap_id"))
 
-    rownames(soilphys) <- 1:nrow(soilphys)
+    rownames(soilphys) <- seq_nrow(soilphys)
 
   soilphys
 }

@@ -416,7 +416,7 @@ sp_add_pmap <- function(soilphys,
       lmap <- .y %>% dplyr::left_join(layers_map,
                                       by = names(.y))
 
-      .x$pmap <- sapply(1:nrow(.x), function(i){
+      .x$pmap <- sapply(seq_nrow(.x), function(i){
         lmap$pmap[.x$upper[i] <= lmap$upper & .x$lower[i] >= lmap$lower]
       })
       .x

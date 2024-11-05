@@ -35,11 +35,11 @@ cfp_altapply.list <- function(X,
 
   p <- progressr::progressor(length(X))
 
-  if(is.null(names(X))) names(X) <- 1:length(X)
+  if(is.null(names(X))) names(X) <- seq_along(X)
 
   X_env <- rlang::new_environment(data = list(X = X))
 
-  purrr::pmap(.l = list(i = 1:length(X), run_id = names(X)),
+  purrr::pmap(.l = list(i = seq_along(X), run_id = names(X)),
              .f = function(i, run_id, p, X_env, ...){
                df <- FUN(X_env$X[i][[1]], ...)
                p()

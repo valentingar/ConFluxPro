@@ -24,7 +24,7 @@ D0_massman <- function(gas, t, p){
 
   a <- c(1.381*1e-5,1.952*1e-5,1.436*1e-5,1.820*1e-5,1.820*1e-5)
   b <- c(1.81,1.81,1.81,1.81,1.81)
-  D0 <- unlist(lapply(1:length(t),function(i){
+  D0 <- unlist(lapply(seq_along(t),function(i){
     D0 <- a[match(gas[i],valid_gases)]*
       ((t[i]+273.15)/273.15)^b[match(gas[i],valid_gases)]*(1013/p[i])
   return(D0)

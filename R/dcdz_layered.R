@@ -122,7 +122,7 @@ create_return <- TRUE
                        lower = lower)
 
   #A local linear approach using a linear regession model within each layer
-  df_ret <- lapply(1:length(upper), function(i){
+  df_ret <- lapply(seq_along(upper), function(i){
     df_part <- df[df$depth <= upper[i] &
                     df$depth >= lower[i], ]
 
