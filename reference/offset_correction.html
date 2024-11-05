@@ -29,7 +29,7 @@ x_ppm values are then multiplied by that factor."><meta property="og:image" cont
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,8 @@ x_ppm values are then multiplied by that factor.</p>
 <dt id="arg-corr-map">corr_map<a class="anchor" aria-label="anchor" href="#arg-corr-map"></a></dt>
 <dd><p>(dataframe) A dataframe of four columns
 ("gas","SAMPLE_NO","section","mode") mapping each pair of <code>gases</code> and
-sample-id <code>SAMPLE_NO</code> of the <code>gasdata</code> data.frame to a subsection-number
+sample-id <code>SAMPLE_NO</code> of the <code>gasdata</code> data.frame to a
+subsection-number
 (section). The column "mode" determines, whether the correction is
 performed using a linear regression, to account for drifts in time ("lin")
 or using the mean ("const"). This dataframe can be created using the
@@ -112,8 +113,8 @@ concentrations of the gases in the atmosphere. Unit is fraction of Volume
 
 <dt id="arg-depth-cal">depth_cal<a class="anchor" aria-label="anchor" href="#arg-depth-cal"></a></dt>
 <dd><p>(character) A character (-vector) containing the value(s) of
-<code>depth_cat</code> of the gasdata dataframe to be used for the calculation of the
-correction factor. Should be the depth_cat of the air concentration.</p></dd>
+<code>depth_cat</code> of the gasdata dataframe to be used for the calculation of
+the correction factor. Should be the depth_cat of the air concentration.</p></dd>
 
 </dl></div>
     <div class="section level2">
