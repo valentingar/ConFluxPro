@@ -11,3 +11,5 @@ inst/doc
 /README_cache/
 bash.exe.stackdump
 docs
+paper_files
+paper.log
