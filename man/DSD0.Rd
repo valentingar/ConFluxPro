@@ -56,7 +56,8 @@ slope of the water retention curve. From Moldrup et al. (2000).
 (1960) with default values (a=1.9; b=1.4)from Troeh (1982).
 }
 \item{
-\code{\link[=DSD0_linear]{DSD0_linear()}} is a linear model of form \eqn{D_s / D_0 = a \cdot \epsilon + b}.
+\code{\link[=DSD0_linear]{DSD0_linear()}} is a linear model of form
+\eqn{D_s / D_0 = a \cdot \epsilon + b}.
 }
 }
 }
