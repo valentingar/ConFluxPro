@@ -33,95 +33,58 @@ journal: JOSS
 
 # Summary
 ``ConFluxPro`` is an R-package to model soil gas fluxes with the flux-gradient method (FGM).
-The FGM is a cost-effective method to measure the fluxes and production of gases in soils.
-It relies on the principle that gas exchange in soils is driven by molecular diffusion.
-Flux rates can therefore be derived by applying Fick's first law of diffusion.
-First, it requires to measure vertical concentration profiles of gases and estimate the diffusivity of the soil.
-In a second step, flux rates can be modeled by deriving the concentration gradient and diffusion coefficients of the soil.
-``ConFluxPro`` was developed to facilitate any data handling and modeling related to the FGM.
-It (I) provides object classes for the preparation, combination and modification of soil gas and physical data, (II) implements different common FGM models, (III) introduces an inverse modeling approach, (IV) provides functions for post-hoc calibration and (V) uncertainty estimation of the model results.
+The FGM is a cost-effective way to measure fluxes and production rates of gases in soils [@Maier2014].
+It relies on the principle that gas exchange in soils is driven by molecular diffusion and can therefore be described by Fick's first law of diffusion.
+In situ, it requires to measure vertical concentration profiles of soil gases and parameters to estimate the diffusivity of the soil.
+Flux rates can then be modeled by deriving concentration gradients and diffusion coefficients of soil gases.
+
+We developed ``ConFluxPro`` to assist along the entire modeling process, from data handling and preparation to flux modeling and beyond.
+The package (I) provides object classes for the preparation, combination and modification of soil gas and physical data, (II) implements different common FGM models, (III) introduces an inverse modeling approach, (IV) provides functions for post-hoc calibration and (V) uncertainty estimation of the model results.
+All this functionality was built to be modular and user-friendly on the outside with robust internals handling more complex data manipulations.
+This makes it easy to implement an individual approach to the FGM, while improving the reproducibility of the analysis.
 
 # Statement of need
 
-Because the FGM is conceptually simple, it has been applied in numerous studies.
-However, codes or evaluation files have often not been shared publicly and small differences between implementations limits the comparability between studies.
-The goal of ``ConFluxPro`` was to make using the FGM easy, flexible and reproducible.
+The FGM is conceptually simple and has been applied in numerous studies.
+However, codes or evaluation files have often not been shared publicly and there are differences between individual implementations.
+For example, concentration gradients may be calculated using a linear regression [@Tang2003], simple differences between depths [@Jong1972] or by fitting exponential functions [@Davidson2006].
+While there may be valid reasons to favor one approach over another within any study, this makes it hard to compare results between studies. 
+Furthermore, the uncertainty of the approach due to soil heterogeneity and measurement uncertainty is often not considered.
+Still, the FGM is uniquely equipped to address questions on subsurface processes and for long-term measurement [@Maier2020].
+The goal of ``ConFluxPro`` was to make the FGM easy to implement, flexible and reproducible.
 
-The measurement of gas fluxes in soils is important to understand subsurface processes, climate responses and the cycling of elements.
-The flux-gradient method (FGM) is uniquely equipped to estimate fluxes within the soil, is low-cost and ideal for long-term monitoring.
+A first challenge in applying the FGM is to combine the various input parameters needed for the flux calculation.
+These may be from different sources (online measurement or soil samples), be of different types (volumetric or point measurements) and have different spatial and temporal resolutions. 
+For this reason, ``ConFluxPro`` first implements different functions and object classes to shape the data into a predictable frame.
+Once the data is unified in this way, all subsequent operations can be mostly handled internally.
+This limits the need for user intervention, both making it easier to implement and reducing an important source of error in the analysis.
 
+Apart from the commonly used approaches, ``ConFluxPro`` also comes with an inverse model to estimate profiles of gas production rates similar to @SchackKirchner2011.
+Instead of deriving concentration gradients from the measurements, the model calculates a concentration profile form assumed production (or consumption) rates.
+This profile is then fit to the measurements by algorithmically optimizing the production rates. 
+The advantage of the inverse model is that the entire profile is consistently described by functions derived from physical laws.
+While this approach is conceptually more advanced, it is as easy to use within the package.
 
+Soil heterogeneity and measurement error introduces uncertainty in FGM models.
+This is addressed in ``ConFluxPro`` in two ways.
+First, we implemented a calibration approach to reduce the differences between modeled and reference flux rates (e.g. from chamber measurements).
+Second, a bootstrapping approach gives an estimate of the model uncertainty introduced from the variability of the input parameters.
 
-# Template
+``ConFluxPro`` is a versatile toolkit to model soil gas fluxes with the FGM.
+During development, we have already used it in multiple studies [@Maier2020; @Jochheim2022].
+By sharing this package we hope to make it easier to implement the FGM in future studies, furthering our knowledge of important processes in soils.
 
-The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration).
+# Related software
 
-``Gala`` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for ``Gala`` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. ``Gala`` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the ``Astropy`` package [@astropy] (``astropy.units`` and
-``astropy.coordinates``).
+To our knowledge, there is currently no other comprehensive implementation of the FGM.
+An approach in `python` is described in @Bittelli2015.
+The package [``neonSoilFlux``](https://github.com/jmzobitz/neonSoilFlux) [@Zobitz2024] implements the FGM specificly to the National Ecological Observatory Network (NEON).
+There are multiple R-packages to help with the analysis of chamber measurement data, 
+[``gasfluxes``](https://git-dmz.thuenen.de/fuss/gasfluxes) [@Fuss2016], [``goFlux``](https://github.com/Qepanna/goFlux) [@Rheault2024] and [``FluxCalR``](https://github.com/junbinzhao/FluxCalR) [@Zhao2019].
 
-``Gala`` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in ``Gala`` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+# Funding
 
-# Mathematics
-
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
-
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](https://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Rendered R Figures
-
-Figures can be plotted like so:
-
-
-```r
-plot(1:10)
-```
-
-![](paper_files/figure-latex/unnamed-chunk-1-1.pdf)<!-- --> 
-
-# Acknowledgements
-
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+This work was funded in part by the WKF (Waldklimafond/Forest Climate Fund) and the FNR (Fachagentur Nachwachsende Rohstoffe e.V.), jointly managed by the Federal Ministry for the Environment (BMU) and the Federal Ministry of Food and Agriculture (BMEL)—grant number 2218WK58X4.
 
 # References
 
