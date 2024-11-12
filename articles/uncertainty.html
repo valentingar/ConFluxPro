@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,7 @@
     
 <p>This vignette shows how to estimate the uncertainty of the efflux and
 production estimates using <code><a href="../reference/bootstrap_error.html">bootstrap_error()</a></code>. We will first
-generate a dataset of ‘measurment uncertainty’ in the input parameters
+generate a dataset of ‘measurement uncertainty’ in the input parameters
 and then use <code><a href="../reference/bootstrap_error.html">bootstrap_error()</a></code> to estimate the resulting
 uncertainty in the models.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -258,8 +258,8 @@ can see that the uncertainty of the efflux estimate has increased
 compared to using the variability in <code>gasdata</code>. This is both
 because <code>TPS</code>, from which <code>DS</code> is derived, has a
 strong impact on the flux calculation and because the variability within
-the <code>gasdata</code> dataset is probably unrealisticly low and more
-representative of an instrument than of a measurement error.</p>
+the <code>gasdata</code> dataset is probably unrealistically low and
+more representative of an instrument than of a measurement error.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## boostrapping from soilphys</span></span>
 <span><span class="va">mod_pf_bs_soilphys</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>

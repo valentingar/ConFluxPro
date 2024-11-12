@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -281,7 +281,7 @@ can generate different limits within each layer:</p>
 <p>All we have to do now is tell <code>cfp_run_map</code> to use these
 columns in <code>layers_altmap</code> as the new limits. We change the
 numeric limits (<code>c(0.9, 1.1</code>) into a character vector
-specifing the columns where these values are stored
+specifying the columns where these values are stored
 <code>c("TPS_min", "TPS_max")</code>. Depending on our setting in
 <code>layers_from</code>, the function will search for these columns in
 the respective dataset. Because the new values we provided are actual
@@ -431,8 +431,8 @@ You can define weights for each error parameter in
 runs. Here we set <code>scaling_fun = scale_min_median</code>, which
 means that the best run for this parameter has a value of 0 and the best
 50% of runs are &lt;1. For each value in <code>eval_cols</code>, all
-scaled parameters are multiplied with ther weighing factor and summed up
-to an overall estimate of the model quality. Finally, we select the 5
+scaled parameters are multiplied with their weighing factor and summed
+up to an overall estimate of the model quality. Finally, we select the 5
 best runs with the lowest model error by providing
 <code>n_best = 5</code>.</p>
 <p>Let’s have a look at the result. <code>evalueate_models()</code>

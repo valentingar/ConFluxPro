@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -281,7 +281,7 @@ will need the following information:</p>
 <code>AFPS</code>: air-filled pore space, defined as
 <code>AFPS = TPS - SWC</code>.</li>
 <li>
-<code>DSD0</code>: relative diffusivity of the soil, unitless.
+<code>DSD0</code>: relative diffusivity of the soil, unit-less.
 Derived from <code>AFPS</code> with transfer function.</li>
 <li>
 <code>D0</code>: gas-specific free-air diffusion coefficient in
@@ -417,7 +417,7 @@ interpolate the observations:</p>
 <span><span class="co">#&gt; 8  20.83333   -25   -20   -30</span></span>
 <span><span class="co">#&gt; 9  22.50000   -15   -10   -20</span></span>
 <span><span class="co">#&gt; 10 24.16667    -5     0   -10</span></span></code></pre></div>
-<p>The function can handle proile data and treats every profile
+<p>The function can handle profile data and treats every profile
 distinctly. So if we adapt our example data to two profiles identified
 by a <code>date</code> column, the interpolation works in the same way,
 if we provide the necessary <code>id_cols</code>.</p>
@@ -533,7 +533,7 @@ layer in µmol m<sup>-3</sup> s<sup>-1</sup>
 </ul>
 <p>We can either do so in the function call or provide distinct values
 ourselves. The <code>highlim</code> and <code>lowlim</code> values can
-help to explicitly exclude unrealisitc processes in the optimization in
+help to explicitly exclude unrealisitic processes in the optimization in
 <code><a href="../reference/pro_flux.html">pro_flux()</a></code>. For example, we can set <code>lowlim</code> to
 0, if we want to prevent consumption of CO<sub>2</sub>. Again, these
 values are only relevant in the <code><a href="../reference/pro_flux.html">pro_flux()</a></code> model. In our

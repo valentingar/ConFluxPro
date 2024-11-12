@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>A Toolkit for Soil Gas Analysis • ConFluxPro</title>
+<title>A toolkit for soil gas analysis • ConFluxPro</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -16,9 +16,9 @@
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Toolkit for Soil Gas Analysis">
-<meta name="description" content="A collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation based on the gradient-flux method and includes an inverse model for production-based flux estimation.">
-<meta property="og:description" content="A collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation based on the gradient-flux method and includes an inverse model for production-based flux estimation.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A toolkit for soil gas analysis">
+<meta name="description" content="A suite to model soil gas fluxes with the flux gradient method. It includes functions for data handling, a forward and an inverse model for flux estimation and methods for calibration and uncertainty estimation.">
+<meta property="og:description" content="A suite to model soil gas fluxes with the flux gradient method. It includes functions for data handling, a forward and an inverse model for flux estimation and methods for calibration and uncertainty estimation.">
 <meta property="og:image" content="https://valentingar.github.io/ConFluxPro/logo.svg">
 </head>
 <body>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -143,7 +143,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <div class="section level3">
 <h3 id="flux-modeling">Flux modeling<a class="anchor" aria-label="anchor" href="#flux-modeling"></a>
 </h3>
-<p>Once a <code><a href="reference/cfp_dat.html">cfp_dat()</a></code> object is created succesfully, the modelling is very easy:</p>
+<p>Once a <code><a href="reference/cfp_dat.html">cfp_dat()</a></code> object is created successfully, the modelling is very easy:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 'normal' forward model</span></span>
 <span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="va">my_dat</span><span class="op">)</span></span>
@@ -342,6 +342,13 @@ F= -D_s\cdot \frac{dc}{dz}
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -354,6 +361,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Valentin Gartiser <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5320-374X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 

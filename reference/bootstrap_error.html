@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -182,11 +182,11 @@ depth, one observation across all repetitions is chosen for each of
 <code>n_samples</code>. <code>sample_from = "both"</code> applies both methods above.
 Each newly sampled profile is identifiable by the
 added <code>bootstrap_id</code> column which is also added to <code>id_cols</code>.</p>
-<p>After this new model is run again, the bootstap error is caculated in
+<p>After this new model is run again, the bootstap error is calculated in
 <code>calculate_bootstrap_error()</code>. This is the standard deviation of the
 production and flux parameters across all bootstrapped model runs and is
 calculated for each profile and layer of the original model, or for each
-destinct profile in the new model without <code>rep_cols</code>.
+distinct profile in the new model without <code>rep_cols</code>.
 These are returned together with the mean values of <code>prod</code>, <code>flux</code>
 and <code>F0</code> across all runs in the <code>PROFLUX</code> data.frame and can
 thereby be extracted by <code><a href="efflux.html">efflux()</a></code> and <code><a href="production.html">production()</a></code>.</p>

@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ConFluxPro</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -198,8 +198,8 @@ local linear model of <code>x_ppm~depth</code> within each layer
 independently. Other modes fit a single model to the complete
 concentration profile, either a linear spline (<code>"LS"</code>), or an
 exponential model (<code>"EF"</code> and <code>"DA"</code>). We can use
-one or more of thse methods by using the <code>modes</code> argument. If
-we choose multiple modes, we must also specify the <code>gases</code>
+one or more of these methods by using the <code>modes</code> argument.
+If we choose multiple modes, we must also specify the <code>gases</code>
 argument. This allows to choose a different mode for each gas that is
 most applicable.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -305,7 +305,7 @@ boundary and “from-bottom-to-top”, meaning that the lowest layer is
 modeled first. For each layer in <code>layers_map</code>, a production
 rate
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>P</mi><annotation encoding="application/x-tex">P</annotation></semantics></math>
-(µmol m<sup>-3</sup> s<sup>-1</sup>) is algorithmicly optimized to
+(µmol m<sup>-3</sup> s<sup>-1</sup>) is algorithmically optimized to
 achieve the best fit with the measured concentration profile. This is
 achieved with the <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> function and a custom
 objective function. At the lowest layer, two boundary conditions need to
@@ -400,8 +400,9 @@ additional settings are necessary.</p>
 <span><span class="co">#&gt; 4 site_b 2021-02-01 CO2 1.0613224       4</span></span>
 <span><span class="co">#&gt; 5 site_a 2021-03-01 CO2 1.7443084       5</span></span>
 <span><span class="co">#&gt; 6 site_b 2021-03-01 CO2 1.3906597       6</span></span></code></pre></div>
-<p>Similarly, you can call <code><a href="../reference/production.html">production()</a></code> to get the optimzed
-production rates for each layer in <code>layers_map</code>.</p>
+<p>Similarly, you can call <code><a href="../reference/production.html">production()</a></code> to get the
+optimized production rates for each layer in
+<code>layers_map</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PRODUCTION_pf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/production.html">production</a></span><span class="op">(</span><span class="va">mod_pf</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">PRODUCTION_pf</span><span class="op">)</span></span>
