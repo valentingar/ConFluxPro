@@ -75,7 +75,7 @@ neighbor is returned, else returns NA. Default is FALSE.}
 \item{boundary_average}{("character) Defines what happens if the
 new layer contains multiple old layers. one of
 \describe{
-\item{none}{= the deafult \cr the new layer is set to NA}
+\item{none}{= the default \cr the new layer is set to NA}
 \item{arith}{the new layer is calculated as the arithmetic mean of the old}
 \item{harm}{the new layer is calculated as the harmonic mean of the old}
 }}
@@ -136,7 +136,7 @@ multiple column names in \code{param}.
 It is also possible to use different \code{method} and controlling
 parameters \code{int_depth} and \code{knots} for each \code{param}.
 Just provide a list of settings the same length as \code{param}.
-If only one value is given, but multiple \code{param} the settins are
+If only one value is given, but multiple \code{param} the settings are
 reused for each parameter.
 }
 \examples{

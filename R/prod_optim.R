@@ -28,7 +28,7 @@
 #' @param F0 (numeric) flux into lowest layer.
 #' @param known_flux RESERVED FOR FUTURE EXPANSION
 # #' (numeric) known surface flux to be matched
-#' @param known_flux_factor RESRVED FOR FUTURE EXPANSION
+#' @param known_flux_factor RESERVED FOR FUTURE EXPANSION
 # (numeric) a factor defining how much the known flux
 # should weigh in the RMSE calculation
 #' @param DSD0_optim RESERVED FOR FUTURE EXPANSION

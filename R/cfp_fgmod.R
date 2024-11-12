@@ -6,7 +6,7 @@
 #' @param x A \code{cfp_dat} object with all the necessary input datasets.
 #'
 #' @param gases (character) A character vector defining the gases for which
-#' fluxes shall be calulated.
+#' fluxes shall be calculated.
 #' @param modes (character) A character vector specifying mode(s) for dcdz
 #'   calculation. Can be \code{"LL"},\code{"LS"},\code{"EF"}.
 #'   \describe{

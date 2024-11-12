@@ -102,7 +102,7 @@ Typically, you will need the following information:
 
 - **`c_air`: air number density, derived from `t` and `p` with ideal gas law.**
 - `AFPS`: air-filled pore space, defined as `AFPS = TPS - SWC`.
-- `DSD0`: relative diffusivity of the soil, unitless. Derived from `AFPS` with transfer function.
+- `DSD0`: relative diffusivity of the soil, unit-less. Derived from `AFPS` with transfer function.
 - `D0`: gas-specific free-air diffusion coefficient in m^2^ s^-1^. Derived from `t` and `p` with empiric function.
 - **`DS`: gas-specific apparent diffusion coefficient in m^2^ s^-1^, derived as `DS = D0 * DSD0`.**
 
@@ -159,7 +159,7 @@ discretize_depth(temperature_profile,
                  depth_target = boundaries)
 ```
 
-The function can handle proile data and treats every profile distinctly.
+The function can handle profile data and treats every profile distinctly.
 So if we adapt our example data to two profiles identified by a `date` column, the interpolation works in the same way, if we provide the necessary `id_cols`.
 ```{r}
 temperature_profile_dates <-
@@ -215,7 +215,7 @@ These are only needed for a `pro_flux()` inverse model and are set to `NA` if mi
 - `layer_couple`: Penalty factor, defaults to 0. See `?cfp_layers_map()`
 
 We can either do so in the function call or provide distinct values ourselves.
-The `highlim` and `lowlim` values can help to explicitly exclude unrealisitc processes in the optimization in `pro_flux()`.
+The `highlim` and `lowlim` values can help to explicitly exclude unrealisitic processes in the optimization in `pro_flux()`.
 For example, we can set `lowlim` to 0, if we want to prevent consumption of CO~2~.
 Again, these values are only relevant in the `pro_flux()` model. 
 In our case, we want to add the limits for the gas `"CO2"`:

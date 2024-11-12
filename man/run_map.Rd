@@ -55,13 +55,13 @@ defines the layers to be used if layers_different = TRUE.}
 
 \item{topheight_adjust}{(logical) If the proposed change in topheight is
 larger than the highest layer in soilphys, should the limits be
-automatically adjusted per id_cols indivdually? Default is FALSE, which
+automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-\code{run_map()} was deprecated in favour of \code{cfp_run_map()} for concistency.
+\code{run_map()} was deprecated in favor of \code{cfp_run_map()} for consistency.
 
 Create a cfp_run_map for model alteration in alternate()
 }
