@@ -35,7 +35,7 @@ journal: JOSS
 ``ConFluxPro`` is an R-package to model soil gas fluxes with the flux-gradient method (FGM).
 The FGM is a cost-effective way to measure fluxes and production rates of gases in soils [@Maier2014].
 It relies on the principle that gas exchange in soils is driven by molecular diffusion and can therefore be described by Fick's first law of diffusion.
-In situ, it requires to measure vertical concentration profiles of soil gases and parameters to estimate the diffusivity of the soil.
+In situ, it requires measuring vertical concentration profiles of soil gases and parameters to estimate the diffusivity of the soil.
 Flux rates can then be modeled by deriving concentration gradients and diffusion coefficients of soil gases.
 
 We developed ``ConFluxPro`` to assist along the entire modeling process, from data handling and preparation to flux modeling and beyond.
@@ -48,7 +48,7 @@ This makes it easy to implement an individual approach to the FGM, while improvi
 The FGM is conceptually simple and has been applied in numerous studies.
 However, codes or evaluation files have often not been shared publicly and there are differences between individual implementations.
 For example, concentration gradients may be calculated using a linear regression [@Tang2003], simple differences between depths [@Jong1972] or by fitting exponential functions [@Davidson2006].
-While there may be valid reasons to favor one approach over another within any study, this makes it hard to compare results between studies. 
+While there may be valid reasons to favour one approach over another within any study, this makes it hard to compare results between studies. 
 Furthermore, the uncertainty of the approach due to soil heterogeneity and measurement uncertainty is often not considered.
 Still, the FGM is uniquely equipped to address questions on subsurface processes and for long-term measurement [@Maier2020].
 The goal of ``ConFluxPro`` was to make the FGM easy to implement, flexible and reproducible.
@@ -72,7 +72,7 @@ Second, a bootstrapping approach gives an estimate of the model uncertainty intr
 
 ``ConFluxPro`` is a versatile toolkit to model soil gas fluxes with the FGM.
 During development, we have already used it in multiple studies [@Maier2020; @Jochheim2022].
-By sharing this package we hope to make it easier to implement the FGM in future studies, furthering our knowledge of important processes in soils.
+By sharing this package we hope to make it easier to implement the FGM in future studies, furthering our knowledge of important soil processes.
 
 # Related software
 
