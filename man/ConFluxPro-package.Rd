@@ -4,9 +4,9 @@
 \name{ConFluxPro-package}
 \alias{ConFluxPro}
 \alias{ConFluxPro-package}
-\title{ConFluxPro: A Toolkit for Soil Gas Analysis}
+\title{ConFluxPro: A toolkit for soil gas analysis}
 \description{
-A collection of different functions that help analysing soil gas profiles. It implements different approaches for flux calculation based on the gradient-flux method and includes an inverse model for production-based flux estimation.
+A suite to model soil gas fluxes with the flux gradient method. It includes functions for data handling, a forward and an inverse model for flux estimation and methods for calibration and uncertainty estimation.
 }
 \seealso{
 Useful links:
@@ -20,6 +20,12 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Valentin Gartiser \email{code@valentingartiser.de} (\href{https://orcid.org/0000-0001-5320-374X}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Martin Maier \email{martin.freudiger@uni-goettingen.de} (\href{https://orcid.org/0000-0002-7959-0108}{ORCID}) [contributor]
+  \item Verena Lang \email{verena.lang@forst.bwl.de} [contributor]
+}
 
 }
 \keyword{internal}
