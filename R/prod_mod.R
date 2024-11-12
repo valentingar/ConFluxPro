@@ -2,7 +2,7 @@
 #'
 #' @description These functions calculates flux or concentration profile of a
 #'   gas based on fixed production and known diffusion coefficient Ds. The basis
-#'   is a stepwise calculation beginning from the bottom-most layer with
+#'   is a step-wise calculation beginning from the bottom-most layer with
 #'   incoming flux F0 and known concentration C0 at the lower end of the step.
 #'
 #'
@@ -13,7 +13,7 @@
 #'   possible.
 #'
 #' @param height the height of each step in m
-#' @param prod the production assinged to this step production in
+#' @param prod the production assigned to this step production in
 #'   \eqn{\mu~mol/s/m^3}
 #' @param DS the diffusion coefficient DS in \eqn{m^2/s}
 #'

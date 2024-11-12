@@ -138,7 +138,7 @@ unique_tps_with_limits <-
          TPS_max = TPS + TPS_delta)
 ```
 All we have to do now is tell `cfp_run_map` to use these columns in `layers_altmap` as the new limits.
-We change the numeric limits (`c(0.9, 1.1`) into a character vector specifing the columns where these values are stored `c("TPS_min", "TPS_max")`.
+We change the numeric limits (`c(0.9, 1.1`) into a character vector specifying the columns where these values are stored `c("TPS_min", "TPS_max")`.
 Depending on our setting in `layers_from`, the function will search for these columns in the respective dataset.
 Because the new values we provided are actual TPS values, and not factors, we also have to adjust the `type` to `"abs"`.
 ```{r}
@@ -244,7 +244,7 @@ The function calculates an error parameter for each combination of `error_funs` 
 You can define weights for each error parameter in `eval_weights`.
 Finally, each parameter is scaled between the runs. 
 Here we set `scaling_fun = scale_min_median`, which means that the best run for this parameter has a value of 0 and the best 50\% of runs are <1.
-For each value in `eval_cols`, all scaled parameters are multiplied with ther weighing factor and summed up to an overall estimate of the model quality.
+For each value in `eval_cols`, all scaled parameters are multiplied with their weighing factor and summed up to an overall estimate of the model quality.
 Finally, we select the 5 best runs with the lowest model error by providing `n_best = 5`.
 
 

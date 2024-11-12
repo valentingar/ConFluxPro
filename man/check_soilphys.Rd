@@ -23,8 +23,8 @@ values are NA.
 This function analyses the soilphys dataframe before the flux
 calculation. It presents a warning, if there are variables missing and also
 looks for suspicious patterns that suggest an error in the interpolation
-made by discretize_depth. Mainly checks if ceratain columns are present
-and if they are missing, if they can be calcluated from the data present.
+made by discretize_depth. Mainly checks if certain columns are present
+and if they are missing, if they can be calculated from the data present.
 Looks for the following columns by default:
 "upper","lower","TPS","SWC","AFPS","t","p","DSD0","D0","DS"
 }

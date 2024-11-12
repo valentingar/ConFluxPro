@@ -107,7 +107,7 @@ my_dat
 
 ### Flux modeling
 
-Once a `cfp_dat()` object is created succesfully, the modelling is very easy:
+Once a `cfp_dat()` object is created successfully, the modelling is very easy:
 ```{r, message=FALSE, warning=FALSE}
 # 'normal' forward model
 FLUX <- fg_flux(my_dat)
@@ -120,7 +120,7 @@ Each modelling function can be adapted to different needs. For example, we can p
 FLUX <- fg_flux(my_dat, modes = "EF")
 ```
 
-The result in both cases is an object that contains the original data `my_dat` and th flux rates in different soil layers for each of the profiles identified in `cfp_dat()`. From this, the soil/atmoshere efflux rate and the specific production rate in each model soil layer can be extracted.
+The result in both cases is an object that contains the original data `my_dat` and the flux rates in different soil layers for each of the profiles identified in `cfp_dat()`. From this, the soil/atmosphere efflux rate and the specific production rate in each model soil layer can be extracted.
 ```{r, eval=FALSE}
 # soil/atmosphere efflux
 efflux(FLUX)
@@ -227,6 +227,12 @@ This package is being developed by Valentin Gartiser:
 code [at] valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I will be glad to help out where I can.
+
+## Contribute
+
+If you find an error or want to propose a feature you can open an issue in the github repository. Please follow the contribution guidelines.
+
+Please note that the ConFluxPro project is released with a [Contributor Code of Conduct](https://valentingar.github.io/ConFluxPro/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
 ## License
 This program is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html.en) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

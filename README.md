@@ -124,7 +124,7 @@ my_dat
 
 ### Flux modeling
 
-Once a `cfp_dat()` object is created succesfully, the modelling is very
+Once a `cfp_dat()` object is created successfully, the modelling is very
 easy:
 
 ``` r

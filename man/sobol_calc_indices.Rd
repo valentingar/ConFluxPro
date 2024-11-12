@@ -18,7 +18,7 @@ sobol indices should be calculated, e.g. \code{'efflux'}.}
 \item{id_cols}{character vector of column names in \code{Y} specifying
 grouping variables. Indices are then calculated for each group individually.}
 
-\item{run_map}{The \code{cfp_run_map} used for the calculaton of Y
+\item{run_map}{The \code{cfp_run_map} used for the calculation of Y
 produced by a call to \code{\link{sobol_run_map}()}.}
 }
 \value{
@@ -27,7 +27,7 @@ A \code{data.frame} with the following columns
 \item{\code{...}}{Any \code{id_cols} specified}
 \item{\code{param_id, param, pmap}}{Parameter identificators from the
 \code{cfp_run_map} used.}
-\item{\code{effect_param}}{The parameter for which the effect was calulated.}
+\item{\code{effect_param}}{The parameter for which the effect was calculated.}
 \item{\code{Vt, Vi, VY}}{Internal parameters for the indice calculation.}
 \item{\code{Si}}{First order sobol indice.}
 \item{\code{ST}}{Total order sobol indice.}

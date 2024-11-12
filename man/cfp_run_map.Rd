@@ -55,7 +55,7 @@ defines the layers to be used if layers_different = TRUE.}
 
 \item{topheight_adjust}{(logical) If the proposed change in topheight is
 larger than the highest layer in soilphys, should the limits be
-automatically adjusted per id_cols indivdually? Default is FALSE, which
+automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.}
 }
 \description{

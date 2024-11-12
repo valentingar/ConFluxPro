@@ -11,7 +11,7 @@ prod_mod_conc(prod, height, DS, F0, C0)
 prod_mod_flux(prod, height, F0)
 }
 \arguments{
-\item{prod}{the production assinged to this step production in
+\item{prod}{the production assigned to this step production in
 \eqn{\mu~mol/s/m^3}}
 
 \item{height}{the height of each step in m}
@@ -31,7 +31,7 @@ prod_mod_flux(prod, height, F0)
 \description{
 These functions calculates flux or concentration profile of a
 gas based on fixed production and known diffusion coefficient Ds. The basis
-is a stepwise calculation beginning from the bottom-most layer with
+is a step-wise calculation beginning from the bottom-most layer with
 incoming flux F0 and known concentration C0 at the lower end of the step.
 
 The following input parameters must be vectors sorted from the lowest depth

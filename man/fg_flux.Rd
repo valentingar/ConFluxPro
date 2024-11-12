@@ -22,7 +22,7 @@ fg_flux(x, ...)
   Arguments passed on to \code{\link[=cfp_fgmod]{cfp_fgmod}}
   \describe{
     \item{\code{gases}}{(character) A character vector defining the gases for which
-fluxes shall be calulated.}
+fluxes shall be calculated.}
     \item{\code{modes}}{(character) A character vector specifying mode(s) for dcdz
 calculation. Can be \code{"LL"},\code{"LS"},\code{"EF"}.
 \describe{
