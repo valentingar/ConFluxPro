@@ -75,7 +75,7 @@ With this we mean a typical 'forward' calculation of the concentration gradient 
 In truth, `fg_flux()` is a collection of models, because there exist different philosophies on how to calculate the concentration gradient and how to extrapolate the flux rates to the surface. 
 The default mode `"LL"` is to fit a local linear model of `x_ppm~depth` within each layer independently. 
 Other modes fit a single model to the complete concentration profile, either a linear spline (`"LS"`), or an exponential model (`"EF"` and `"DA"`). 
-We can use one or more of thse methods by using the `modes` argument. 
+We can use one or more of these methods by using the `modes` argument. 
 If we choose multiple modes, we must also specify the `gases` argument. 
 This allows to choose a different mode for each gas that is most applicable.
 ```{r flux-modes, warning=FALSE}
@@ -146,7 +146,7 @@ $$
 c(z) = - \frac{P}{2D_S} \cdot z^2 - \frac{F_0}{D_S} \cdot z + c_0
 $$
 The model is evaluated at each layer boundary and "from-bottom-to-top", meaning that the lowest layer is modeled first.
-For each layer in `layers_map`, a production rate $P$ (µmol m^-3^ s^-1^) is algorithmicly optimized to achieve the best fit with the measured concentration profile. 
+For each layer in `layers_map`, a production rate $P$ (µmol m^-3^ s^-1^) is algorithmically optimized to achieve the best fit with the measured concentration profile. 
 This is achieved with the `stats::optim()` function and a custom objective function.
 At the lowest layer, two boundary conditions need to be met: the concentration $c_0$ and the incoming flux $F_0$ from the deep soil. 
 While $c_0$ is set to the median of the measured value at that depth, $F_0$ can be either set to zero, or optimized together with the production rates $P$.
@@ -190,7 +190,7 @@ EFFLUX_pf <- efflux(mod_pf)
 head(EFFLUX_pf)
 ```
 
-Similarly, you can call `production()` to get the optimzed production rates for each layer in `layers_map`.
+Similarly, you can call `production()` to get the optimized production rates for each layer in `layers_map`.
 ```{r pf_prod}
 PRODUCTION_pf <- production(mod_pf)
 head(PRODUCTION_pf)

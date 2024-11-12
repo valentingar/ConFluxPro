@@ -3,7 +3,7 @@
 #' @description
 #' Create a [cfp_soilphys] object. This is a data.frame containing layered
 #' data of soil physical properties, at the minimum of the air density
-#' \code{c_air} and diffsution coeffecient \code{DS} for one or multiple soil
+#' \code{c_air} and diffusion coefficient \code{DS} for one or multiple soil
 #' profiles.
 #' Each soil profile is uniquely identified by columns in the data.frame
 #' specified by the \code{id_cols} attribute. Each profile is further subdivided

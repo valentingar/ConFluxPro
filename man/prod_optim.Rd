@@ -54,7 +54,7 @@ represents the incoming flux to the lowest layer.}
 
 \item{known_flux}{RESERVED FOR FUTURE EXPANSION}
 
-\item{known_flux_factor}{RESRVED FOR FUTURE EXPANSION}
+\item{known_flux_factor}{RESERVED FOR FUTURE EXPANSION}
 
 \item{DSD0_optim}{RESERVED FOR FUTURE EXPANSION}
 

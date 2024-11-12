@@ -44,7 +44,7 @@ Provide the weights as a numeric in the \code{parameter_weight} column.}
 
 \item{param_cols}{The columns that, together, define different parameters
 (e.g. different gases) for which NRMSEs should be calculated separately
-(e.g. "gas"). Defaults to the id_cols of layers_map. If no such destinction
+(e.g. "gas"). Defaults to the id_cols of layers_map. If no such distinction
 is wished, set to \code{character()}}
 
 \item{eval_cols}{A character vector of columns for which the model error

@@ -132,11 +132,11 @@ depth, one observation across all repetitions is chosen for each of
 Each newly sampled profile is identifiable by the
 added \code{bootstrap_id} column which is also added to \code{id_cols}.
 
-After this new model is run again, the bootstap error is caculated in
+After this new model is run again, the bootstap error is calculated in
 \code{\link[=calculate_bootstrap_error]{calculate_bootstrap_error()}}. This is the standard deviation of the
 production and flux parameters across all bootstrapped model runs and is
 calculated for each profile and layer of the original model, or for each
-destinct profile in the new model without \code{rep_cols}.
+distinct profile in the new model without \code{rep_cols}.
 These are returned together with the mean values of \code{prod}, \code{flux}
 and \code{F0} across all runs in the \code{PROFLUX} data.frame and can
 thereby be extracted by \code{\link[=efflux]{efflux()}} and \code{\link[=production]{production()}}.

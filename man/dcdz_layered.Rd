@@ -19,15 +19,15 @@ dcdz_layered(df, layers_map, mode)
 \item{mode}{(character) One of ("LL","LS","EF","DA").}
 }
 \value{
-df (dataframe) same structure as layer_map with folowing columns:
+df (dataframe) same structure as layer_map with following columns:
 
 mode (character) the used gradient method.
 
 layer (character) the layer name
 
-upper (numeric) upper boundry in cm
+upper (numeric) upper boundary in cm
 
-lower (numeric) lower boundry in cm
+lower (numeric) lower boundary in cm
 
 dcdz_ppm (numeric) concentration gradient in ppm/cm.
 

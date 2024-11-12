@@ -3,7 +3,7 @@
 #'@description
 #' `r lifecycle::badge('deprecated')`
 #'
-#' `run_map()` was deprecated in favour of `cfp_run_map()` for concistency.
+#' `run_map()` was deprecated in favor of `cfp_run_map()` for consistency.
 #'
 #' Create a cfp_run_map for model alteration in alternate()
 #'

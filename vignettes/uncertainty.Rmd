@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 This vignette shows how to estimate the uncertainty of the efflux and production estimates using `bootstrap_error()`.
-We will first generate a dataset of 'measurment uncertainty' in the input parameters and then use `bootstrap_error()` to estimate the resulting uncertainty in the models.
+We will first generate a dataset of 'measurement uncertainty' in the input parameters and then use `bootstrap_error()` to estimate the resulting uncertainty in the models.
 
 ```{r setup}
 library(ConFluxPro)
@@ -130,7 +130,7 @@ mod_pf_bs_soilphys <-
                   rep_cols = "replicate_id")
 ```
 If we take a look into the result of `efflux()` again, we can see that the uncertainty of the efflux estimate has increased compared to using the variability in `gasdata`.
-This is both because `TPS`, from which `DS` is derived, has a strong impact on the flux calculation and because the variability within the `gasdata` dataset is probably unrealisticly low and more representative of an instrument than of a measurement error.
+This is both because `TPS`, from which `DS` is derived, has a strong impact on the flux calculation and because the variability within the `gasdata` dataset is probably unrealistically low and more representative of an instrument than of a measurement error.
 
 ```{r}
 ## boostrapping from soilphys
