@@ -228,6 +228,12 @@ code [at] valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I will be glad to help out where I can.
 
+## Contribute
+
+If you find an error or want to propose a feature you can open an issue in the github repository. Please follow the contribution guidelines.
+
+Please note that the ConFluxPro project is released with a [Contributor Code of Conduct](https://valentingar.github.io/ConFluxPro/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+
 ## License
 This program is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html.en) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
