@@ -8,12 +8,12 @@ tags:
   - flux
 authors:
   - name: Valentin Gartiser
-    orcid: 0000-0003-0872-7098
+    orcid: 0000-0001-5320-374X
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
   - name: Verena Lang
     affiliation: 1
   - name: Martin Maier
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-7959-0108
     affiliation: 2
 affiliations:
  - name: Forest Research Institute, Freiburg, Germany
