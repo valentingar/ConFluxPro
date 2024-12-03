@@ -11,6 +11,7 @@ authors:
     orcid: 0000-0001-5320-374X
     affiliation: "1, 2" # (Multiple affiliations must be quoted)
   - name: Verena Lang
+    orcid: 0000-0002-5316-2746
     affiliation: 1
   - name: Martin Maier
     orcid: 0000-0002-7959-0108
