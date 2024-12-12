@@ -91,7 +91,7 @@ pro_flux.cfp_pfmod <- function(x,
 
 
   # first separate groups
-  x_split <- split_by_group(x)
+  x_split <- split_by_group_efficient(x)
 
   #apply function to all grouped cfp_pfmods
   p <- progressr::progressor(steps = nrow(x$profiles)/53)
