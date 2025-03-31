@@ -249,7 +249,7 @@ prof_optim <- function(y,
                                      soilphys$upper)]
 
   #from ppm to mumol/m^3
-  conc <- gasdata$x_ppm * soilphys$c_air[cmap]
+  conc <- gasdata$x_ppm #* soilphys$c_air[cmap]
 
   #shortening to valid cmaps
   conc <- conc[is.finite(cmap)]
@@ -263,8 +263,8 @@ prof_optim <- function(y,
   wmap <- weights[deg_free_obs]
 
   #C0 at lower end of production model
-  C0 <- stats::median(
-    gasdata$x_ppm[gasdata$depth == dmin]*soilphys$c_air[soilphys$lower == dmin])
+  x0 <- stats::median(
+    gasdata$x_ppm[gasdata$depth == dmin])#*soilphys$c_air[soilphys$lower == dmin])
 
   #DS and D0
   DS <- soilphys$DS
@@ -283,8 +283,9 @@ prof_optim <- function(y,
                  method = "L-BFGS-B",
                  height = height,
                  DS = DS,
+                 c_air = soilphys$c_air,
                  #D0 = D0,
-                 C0 = C0,
+                 x0 = x0,
                  pmap = pmap,
                  cmap = cmap,
                  conc = conc,
@@ -326,7 +327,7 @@ prof_optim <- function(y,
 
   #calculating flux
   fluxs <- prod_mod_flux(prod,height,F0)
-  conc_mod <- prod_mod_conc(prod,height,soilphys$DS,F0,C0)
+  conc_mod <- prod_mod_conc(prod,height,soilphys$DS,soilphys$c_air,F0,x0)
 
   # do not allow negative concentrations!
   if (any_negative_values(conc_mod)){

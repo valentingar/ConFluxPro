@@ -57,7 +57,8 @@ prod_optim<- function(X,
                       height,
                       DS,
                       D0 = NA,
-                      C0,
+                      x0,
+                      c_air,
                       pmap,
                       cmap,
                       conc,
@@ -89,7 +90,13 @@ prod_optim<- function(X,
   # prod <- prod+dstor
 
   #calculate concentration using the values provided
-  conc_mod <- prod_mod_conc(prod,height,DS,F0,C0)
+  conc_mod <- prod_mod_conc(
+    prod,
+    height,
+    DS,
+    c_air,
+    F0,
+    x0)
 
   #assign moddeled concentrations to match observations
   conc_mod <- conc_mod[cmap]
