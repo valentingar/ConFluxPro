@@ -617,3 +617,50 @@ split_by_group.cfp_dat <- function(x){
   })
   out
 }
+
+split_by_group_efficient <-
+  function (x) {
+    sp <- x$soilphys %>%
+      dplyr::left_join(x$profiles[, c("sp_id", "group_id")] %>%
+                         dplyr::distinct(),
+                       by = "sp_id") %>%
+      dplyr::group_by(group_id) %>%
+      dplyr::group_split(.keep = FALSE)
+
+    gd <- x$gasdata %>%
+      dplyr::left_join(x$profiles[, c("gd_id", "group_id")] %>%
+                         dplyr::distinct(),
+                       by = "gd_id") %>%
+      dplyr::group_by(group_id) %>%
+      dplyr::group_split(.keep = FALSE)
+
+    pf <- x$profiles %>%
+      dplyr::group_by(group_id) %>%
+      dplyr::group_split()
+
+    lmap <- x$layers_map %>%
+      dplyr::group_by(group_id) %>%
+      dplyr::group_split()
+
+
+    out <- purrr::pmap(list(
+      sp = sp,
+      gd = gd,
+      pf = pf,
+      lmap = lmap
+    ), function(sp, gd, pf, lmap) {
+      cfp_dat_group <- ConFluxPro:::new_cfp_dat(
+        new_cfp_gasdata(gd,
+                        id_cols = cfp_id_cols(x$gasdata)),
+        new_cfp_soilphys(sp,
+                         id_cols = cfp_id_cols(x$soilphys)),
+        cfp_layers_map(lmap,
+                       id_cols = cfp_id_cols(x$layers_map)),
+        new_cfp_profile(pf, id_cols = "prof_id"),
+        id_cols = cfp_id_cols(x))
+      attributes(cfp_dat_group) <- attributes(x)
+      cfp_dat_group
+    })
+    out
+  }
+

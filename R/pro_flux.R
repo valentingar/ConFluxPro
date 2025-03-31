@@ -91,14 +91,32 @@ pro_flux.cfp_pfmod <- function(x,
 
 
   # first separate groups
-  x_split <- split_by_group(x)
+  x_split <- split_by_group_efficient(x)
+
+  # mean profiles per group
+  number_of_groups <- length(x_split)
+  mean_profiles <- n_profiles(x) / number_of_groups
+  max_profiles <- lapply(x_split, n_profiles) %>%
+    unlist() %>% max(na.rm = TRUE)
+
+  parallel_over_groups <- (number_of_groups > 24) &
+    (max_profiles/mean_profiles < 3)
 
   #apply function to all grouped cfp_pfmods
   p <- progressr::progressor(steps = nrow(x$profiles)/53)
-  y <- purrr::map(x_split,
-                  pro_flux_group,
-                  p = p
-  )
+  if(parallel_over_groups){
+    y <- furrr::future_map(
+      x_split,
+      pro_flux_group,
+      p = p
+    )
+  } else {
+    y <- purrr::map(x_split,
+                    pro_flux_group,
+                    p = p
+    )
+  }
+
   #y <- purrr::map(x_split,pro_flux_group)
 
   #combine PROFLUX result
