@@ -345,7 +345,14 @@ prof_optim <- function(y,
 
   #calculating flux
   fluxs <- prod_mod_flux(prod,height,F0)
-  conc_mod <- prod_mod_conc(prod,height,soilphys$DS,soilphys$c_air,F0,x0)
+  x_ppm_mod <- prod_mod_conc(
+    prod,
+    height,
+    soilphys$DS,
+    soilphys$c_air,
+    F0,
+    x0)
+  conc_mod <- x_ppm_mod*soilphys$c_air
 
   # do not allow negative concentrations!
   if (any_negative_values(conc_mod)){
@@ -370,6 +377,7 @@ prof_optim <- function(y,
     F0 = F0,
     prod = prod,
     conc = conc_mod,
+    x_ppm = x_ppm_mod,
     RMSE = RMSE)
   if(DSD0_optim == TRUE){
     df$DSD0_fit <- DSD0_fit[pmap]
