@@ -61,7 +61,7 @@ prod_optim<- function(X,
                       c_air,
                       pmap,
                       cmap,
-                      conc,
+                      x_ppm,
                       dstor = 0,
                       zero_flux = TRUE,
                       F0 = 0,
@@ -90,7 +90,7 @@ prod_optim<- function(X,
   # prod <- prod+dstor
 
   #calculate concentration using the values provided
-  conc_mod <- prod_mod_conc(
+  x_ppm_mod <- prod_mod_conc(
     prod,
     height,
     DS,
@@ -98,15 +98,15 @@ prod_optim<- function(X,
     F0,
     x0)
 
-  #assign moddeled concentrations to match observations
-  conc_mod <- conc_mod[cmap]
+  #assign modeled concentrations to match observations
+  x_ppm_mod <- x_ppm_mod[cmap]
 
   #calculate RMSE
-  k <- (conc-conc_mod)^2
+  k <- (x_ppm-x_ppm_mod)^2
   k <- k*wmap #weigh the observations that depend on higher degrees of
   # freedom more
   #k <- k[is.finite(k)]
-  RMSE <- sqrt(sum(k)/length(k))/(sum(conc)/length(conc))
+  RMSE <- sqrt(sum(k)/length(k))/(sum(x_ppm)/length(x_ppm))
 
   #penalty for too different production rates
   prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) /

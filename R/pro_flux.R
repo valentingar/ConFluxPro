@@ -266,11 +266,10 @@ prof_optim <- function(y,
   cmap <- soilphys$step_id[match(gasdata$depth,
                                      soilphys$upper)]
 
-  #from ppm to mumol/m^3
-  conc <- gasdata$x_ppm #* soilphys$c_air[cmap]
+  x_ppm <- gasdata$x_ppm #* soilphys$c_air[cmap]
 
   #shortening to valid cmaps
-  conc <- conc[is.finite(cmap)]
+  x_ppm <- x_ppm[is.finite(cmap)]
   cmap <- cmap[is.finite(cmap)]
 
   #weigh the observations based on the degrees of freedom
@@ -306,7 +305,7 @@ prof_optim <- function(y,
                  x0 = x0,
                  pmap = pmap,
                  cmap = cmap,
-                 conc = conc,
+                 x_ppm = x_ppm,
                  #dstor = dstor,
                  zero_flux = zero_flux,
                  F0 = F0,
