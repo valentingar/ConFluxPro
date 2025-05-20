@@ -37,14 +37,14 @@ Install the current development version from github:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("valentingar/ConFluxPro")
+remotes::install_github("valentingar/ConFluxPro", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 To get started, check out the provided vignette after installation:
 
 
 ``` r
-vignette("overview", package = "ConFluxPro")
+vignette("ConFluxPro",package = "ConFluxPro")
 ```
 
 ## Basis

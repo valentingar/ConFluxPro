@@ -1,5 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
 
 [![Lifecycle:
@@ -24,13 +25,13 @@ Install the current development version from github:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("valentingar/ConFluxPro")
+remotes::install_github("valentingar/ConFluxPro", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 To get started, check out the provided vignette after installation:
 
 ``` r
-vignette("overview", package = "ConFluxPro")
+vignette("ConFluxPro",package = "ConFluxPro")
 ```
 
 ## Basis
@@ -144,10 +145,10 @@ FLUX <- fg_flux(my_dat, modes = "EF")
 ```
 
 The result in both cases is an object that contains the original data
-`my_dat` and th flux rates in different soil layers for each of the
-profiles identified in `cfp_dat()`. From this, the soil/atmoshere efflux
-rate and the specific production rate in each model soil layer can be
-extracted.
+`my_dat` and the flux rates in different soil layers for each of the
+profiles identified in `cfp_dat()`. From this, the soil/atmosphere
+efflux rate and the specific production rate in each model soil layer
+can be extracted.
 
 ``` r
 # soil/atmosphere efflux
@@ -343,6 +344,16 @@ valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I
 will be glad to help out where I can.
+
+## Contribute
+
+If you find an error or want to propose a feature you can open an issue
+in the github repository. Please follow the contribution guidelines.
+
+Please note that the ConFluxPro project is released with a [Contributor
+Code of
+Conduct](https://valentingar.github.io/ConFluxPro/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
 
 ## License
 
