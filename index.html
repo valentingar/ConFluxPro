@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>A toolkit for soil gas analysis • ConFluxPro</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -77,10 +76,10 @@
 <p>Install the current development version from github:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"valentingar/ConFluxPro"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"valentingar/ConFluxPro"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>To get started, check out the provided vignette after installation:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"overview"</span>, package <span class="op">=</span> <span class="st">"ConFluxPro"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"ConFluxPro"</span>,package <span class="op">=</span> <span class="st">"ConFluxPro"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="basis">Basis<a class="anchor" aria-label="anchor" href="#basis"></a>
@@ -152,7 +151,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <p>Each modelling function can be adapted to different needs. For example, we can provide a different <code>modes</code> argument to <code><a href="reference/fg_flux.html">fg_flux()</a></code> to calculate the concentration gradient form an exponential fit instead of a linear model.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="va">my_dat</span>, modes <span class="op">=</span> <span class="st">"EF"</span><span class="op">)</span></span></code></pre></div>
-<p>The result in both cases is an object that contains the original data <code>my_dat</code> and th flux rates in different soil layers for each of the profiles identified in <code><a href="reference/cfp_dat.html">cfp_dat()</a></code>. From this, the soil/atmoshere efflux rate and the specific production rate in each model soil layer can be extracted.</p>
+<p>The result in both cases is an object that contains the original data <code>my_dat</code> and the flux rates in different soil layers for each of the profiles identified in <code><a href="reference/cfp_dat.html">cfp_dat()</a></code>. From this, the soil/atmosphere efflux rate and the specific production rate in each model soil layer can be extracted.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># soil/atmosphere efflux</span></span>
 <span><span class="fu"><a href="reference/efflux.html">efflux</a></span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span>
@@ -196,9 +195,9 @@ F= -D_s\cdot \frac{dc}{dz}
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># enable paralell processing with future</span></span>
-<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
 <span><span class="co"># disable</span></span>
-<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">sequential</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># enable progress bars for one function call</span></span>
 <span><span class="fu"><a href="https://progressr.futureverse.org/reference/with_progress.html" class="external-link">with_progress</a></span><span class="op">(</span><span class="op">{</span><span class="fu"><a href="reference/pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">my_dat</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
@@ -319,6 +318,12 @@ F= -D_s\cdot \frac{dc}{dz}
 <p>Please contact me if you experience any problems or have questions - I will be glad to help out where I can.</p>
 </div>
 <div class="section level2">
+<h2 id="contribute">Contribute<a class="anchor" aria-label="anchor" href="#contribute"></a>
+</h2>
+<p>If you find an error or want to propose a feature you can open an issue in the github repository. Please follow the contribution guidelines.</p>
+<p>Please note that the ConFluxPro project is released with a <a href="https://valentingar.github.io/ConFluxPro/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+</div>
+<div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
 <p>This program is free software: you can redistribute it and/or modify it under the terms of the <a href="https://www.gnu.org/licenses/gpl-3.0.html.en" class="external-link">GNU General Public License</a> as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
@@ -360,7 +365,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Valentin Gartiser <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5320-374X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Valentin Gartiser <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-5320-374X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -383,7 +388,7 @@ F= -D_s\cdot \frac{dc}{dz}
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
