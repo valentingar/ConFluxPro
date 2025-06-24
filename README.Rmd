@@ -168,9 +168,9 @@ library(future)
 library(progressr)
 
 # enable paralell processing with future
-plan(multisession())
+plan(multisession)
 # disable
-plan(sequential())
+plan(sequential)
 
 # enable progress bars for one function call
 with_progress({pro_flux(my_dat)})
