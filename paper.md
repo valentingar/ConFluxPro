@@ -72,13 +72,14 @@ First, we implemented a calibration approach to reduce the differences between m
 Second, a bootstrapping approach gives an estimate of the model uncertainty introduced from the variability of the input parameters.
 
 ``ConFluxPro`` is a versatile toolkit to model soil gas fluxes with the FGM.
-During development, we have already used it in multiple studies [@Maier2020; @Jochheim2022].
+During development, we have already used it in multiple studies [@Maier2020; @Jochheim2022]. 
+The scientific background of the methods are described in @Gartiser2025.
 By sharing this package we hope to make it easier to implement the FGM in future studies, furthering our knowledge of important soil processes.
 
 # Related software
 
 To our knowledge, there is currently no other comprehensive implementation of the FGM.
-An approach in `python` is described in @Bittelli2015.
+An approach in `Python` is described in @Bittelli2015.
 The package [``neonSoilFlux``](https://github.com/jmzobitz/neonSoilFlux) [@Zobitz2024] implements the FGM specificly to the National Ecological Observatory Network (NEON).
 There are multiple R-packages to help with the analysis of chamber measurement data, 
 [``gasfluxes``](https://git-dmz.thuenen.de/fuss/gasfluxes) [@Fuss2016], [``goFlux``](https://github.com/Qepanna/goFlux) [@Rheault2024] and [``FluxCalR``](https://github.com/junbinzhao/FluxCalR) [@Zhao2019].
