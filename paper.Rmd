@@ -73,7 +73,7 @@ Second, a bootstrapping approach gives an estimate of the model uncertainty intr
 
 ``ConFluxPro`` is a versatile toolkit to model soil gas fluxes with the FGM.
 During development, we have already used it in multiple studies [@Maier2020; @Jochheim2022]. 
-The scientific background of the methods are described in @Gartiser2025.
+The scientific background of the methods is described in @Gartiser2025.
 By sharing this package we hope to make it easier to implement the FGM in future studies, furthering our knowledge of important soil processes.
 
 # Related software
