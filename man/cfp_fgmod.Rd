@@ -51,6 +51,11 @@ cfp_dat and adds any model specific parameters.
 }
 \examples{
 cfp_fgmod(ConFluxPro::base_dat)
+
+### coercion from other object types (internal)
+fg_flux(ConFluxPro::base_dat) |>
+  as_cfp_fgmod()
+
 }
 \references{
 DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W. (2006).
