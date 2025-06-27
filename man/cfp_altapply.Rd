@@ -24,3 +24,11 @@ Apply a function to a list of cfp_pfres pr cfp_fgres objects
 stored in an cfp_altres object. This can be used to summarise
 alternate() results.
 }
+\examples{
+PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+model_list <- list('1' = PROFLUX, '2' = PROFLUX)
+
+cfp_altapply(model_list, efflux)
+
+
+}

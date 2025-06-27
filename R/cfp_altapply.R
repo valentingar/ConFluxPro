@@ -9,8 +9,15 @@
 #'
 #' @inheritParams base::lapply
 #'
-#' @return data.frame with the results of FUN bound together with added
+#' @returns data.frame with the results of FUN bound together with added
 #' column run_id as identifier of the original list elements.
+#'
+#' @examples
+#' PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+#' model_list <- list('1' = PROFLUX, '2' = PROFLUX)
+#'
+#' cfp_altapply(model_list, efflux)
+#'
 #'
 #' @export
 
