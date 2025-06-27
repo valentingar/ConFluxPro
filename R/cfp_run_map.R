@@ -45,6 +45,19 @@
 #'  automatically adjusted per id_cols individually? Default is FALSE, which
 #'  leads to an error in that case.
 #'
+#' @returns An object of type \code{cfp_run_map} that can be used within
+#' \link{alternate}.
+#'
+#' @examples
+#' PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+#'# Create a cfp_run_map where TPS is changed between 90 % and 110 %
+#'# of the original value for 50 runs.
+#' cfp_run_map(
+#'   PROFLUX,
+#'   list("TPS" = c(0.9, 1.1)),
+#'   "factor",
+#'   n_runs = 50)
+#'
 #'@importFrom rlang .data
 #'
 #'@export
