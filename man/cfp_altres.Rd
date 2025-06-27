@@ -35,9 +35,19 @@ quality parameters instead. Output must contain the column RMSE.}
 \item{error_args}{A list of additional function arguments to be passed to any
 of the \code{error_funs}. Must match the length of \code{error_funs}}
 }
+\value{
+A \code{list} of mdoel results of type \code{cfp_altres}.
+}
 \description{
 S3 class for the result of a call to alternate().
 Essentially a list with added run_map and further attributes.
+}
+\examples{
+# internal
+PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+
+cfp_altres(list(PROFLUX), PROFLUX, complete_soilphys, data.frame(run_id = 1))
+
 }
 \seealso{
 Other model frames: 
@@ -47,3 +57,4 @@ Other model frames:
 \code{\link{cfp_pfres}()}
 }
 \concept{model frames}
+\keyword{internal}
