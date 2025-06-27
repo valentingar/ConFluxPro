@@ -8,7 +8,7 @@ balance_correction(
   df,
   limits = c(-999, +999),
   gases = c("N2", "O2", "Ar", "CO2"),
-  gases_std = c(0.78084, 0.20946, 0.00934, 0.0407),
+  gases_std = c(0.7808, 0.2095, 0.0093, 4e-04),
   gases_ob = c("N2", "O2"),
   set_na = FALSE
 )
@@ -32,15 +32,15 @@ used for missing gases as fraction of total volume. Values of b_tot
 recalculated to account for the missing gases based on the gases present
 and these standard values. This is achieved by assuming a balance of the
 gases present first and recalculating gases_st accordingly. \cr Order must
-match input of gases. Defaults to c(0.78084,0.20946,0.009340,0.0407))}
+match input of gases. Defaults to c(0.7808, 0.2095, 0.0093, 0.0004))}
 
 \item{gases_ob}{(vector, character) A vector of obligatory gases that must be
 present for correct balance calculation. x_ppm of samples missing any
 of these gases will be flagged in bal_flag and not corrected or set NA.
 Defaults to c("N2","O2").}
 
-\item{set_na}{(logical) Should flagged values be set to NA (bal_flag == T)?
-Default is F.}
+\item{set_na}{(logical) Should flagged values be set to NA
+(bal_flag == TRUE)? Default is FALSE.}
 }
 \value{
 gasdata (dataframe) With added columns
@@ -62,9 +62,13 @@ from calibration errors. Values over 1 are treated the same and are
 corrected. Then, each x_ppm is corrected: x_ppm / b_tot
 }
 \examples{
-{
-data("gasdata")
-                              }
+my_gasdata <-
+data.frame(
+SAMPLE_NO = 1,
+gas = c("N2", "O2", "Ar", "CO2"),
+x_ppm = c(0.7808,0.2095,0.0093,0.0004) * 0.9)
+
+balance_correction(my_gasdata)
 
 
 }
