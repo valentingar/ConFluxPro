@@ -31,4 +31,7 @@ Combinea list of multiple models or \code{\link[=cfp_dat]{cfp_dat()}} objects in
 mod1 <- filter(base_dat, site == "site_a")
 mod2 <- filter(base_dat, site == "site_b")
 combine_models(list(mod1, mod2))
+
+# use a reference model for coercion
+combine_models_by_reference(mod1, list(mod1, mod2))
 }
