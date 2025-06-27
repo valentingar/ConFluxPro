@@ -14,11 +14,16 @@ D0_massman(gas, t, p)
 \item{p}{(numeric) pressure in hpa}
 }
 \value{
-D0 in m^2/s
+A numeric vector of D0 in m^2/s
 }
 \description{
 This function calculates the free-air diffusion coefficients
 of different gases for a given temperature and pressure.
+}
+\examples{
+D0_massman("CO2", 10, 1013)
+
+
 }
 \references{
 Massman, W. J. A review of the molecular diffusivities of H2O,

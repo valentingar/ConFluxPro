@@ -26,6 +26,10 @@ calculate D0 and DS.}
 
 \item{quiet}{(logical) Suppress messages.}
 }
+\value{
+A \code{data.frame()} with all necessary columns for
+\link{cfp_soilphys}.
+}
 \description{
 This function completes the soilphys dataset by calculating
 different parameters if necessary, as long as all required parameters are
