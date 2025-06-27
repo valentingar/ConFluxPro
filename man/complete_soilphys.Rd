@@ -33,7 +33,25 @@ available. Diffusion coefficients, as well as the air density are
 calculated if missing.
 }
 \examples{
-soilphys <- complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b")
+soilphys_barebones <- ConFluxPro::soilphys |>
+ select(
+   c("site",
+     "Date",
+     "upper",
+     "lower",
+     "depth",
+     "t",
+     "p",
+     "TPS",
+     "SWC",
+     "a",
+     "b")
+     )
+
+complete_soilphys(
+  soilphys_barebones,
+  DSD0_formula = "a*AFPS^b",
+  gases = "CO2")
 
 
 }

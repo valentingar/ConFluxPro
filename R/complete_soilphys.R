@@ -15,7 +15,29 @@
 #'
 #' @param quiet (logical) Suppress messages.
 #'
-#' @examples soilphys <- complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b")
+#' @returns A \code{data.frame()} with all necessary columns for
+#' \link{cfp_soilphys}.
+#'
+#' @examples
+#' soilphys_barebones <- ConFluxPro::soilphys |>
+#'  select(
+#'    c("site",
+#'      "Date",
+#'      "upper",
+#'      "lower",
+#'      "depth",
+#'      "t",
+#'      "p",
+#'      "TPS",
+#'      "SWC",
+#'      "a",
+#'      "b")
+#'      )
+#'
+#' complete_soilphys(
+#'   soilphys_barebones,
+#'   DSD0_formula = "a*AFPS^b",
+#'   gases = "CO2")
 #'
 #'
 #' @seealso D0_massman
