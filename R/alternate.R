@@ -27,6 +27,30 @@
 #'
 #' @aliases alternate_model
 #'
+#' @returns A \code{list} of type \code{cfp_altres}, each entry an
+#' updated model.
+#'
+#' @examples
+#' PROFLUX <- ConFluxPro::base_dat |>
+#'   filter(site == "site_a") |> # use only 'site_a' for example
+#'   pro_flux()
+#'
+#'# Create a cfp_run_map where TPS is changed between 90 % and 110 %
+#'# of the original value for 2 runs.
+#' my_run_map <-
+#' cfp_run_map(
+#'   PROFLUX,
+#'   list("TPS" = c(0.9, 1.1)),
+#'   "factor",
+#'   n_runs = 2)
+#'
+#'# run the new models by providing a function `f`
+#'# that updates the soilphys data.frame.
+#' alternate(
+#'   x = PROFLUX,
+#'   f = \(x) complete_soilphys(x, "a+AFPS^b", quiet = TRUE),
+#'   run_map = my_run_map)
+#'
 #' @importFrom rlang .data
 #'
 #' @export
