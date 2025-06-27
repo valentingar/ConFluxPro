@@ -1,15 +1,15 @@
 Package: ConFluxPro
 Type: Package
-Title: A toolkit for soil gas analysis
+Title: A Toolkit for Soil Gas Analysis
 Version: 1.2.2
 Authors@R: c(
-    person("Valentin","Gartiser",email = "code@valentingartiser.de",role = c("aut", "cre"),
+    person("Valentin","Gartiser",email = "code@valentingartiser.de",role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-5320-374X")),
     person("Martin","Maier",email = "martin.freudiger@uni-goettingen.de",role = c("ctb"),
            comment = c(ORCID = "0000-0002-7959-0108")),
     person("Verena","Lang",email = "verena.lang@forst.bwl.de",role = c("ctb"))
            )
-Description: A suite to model soil gas fluxes with the flux gradient method. 
+Description: A suite to model soil gas fluxes with the Flux-Gradient Method. 
     It includes functions for data handling, a forward and an inverse model for 
     flux estimation and methods for calibration and uncertainty estimation.
 Imports: 
