@@ -1,0 +1,11 @@
+bibentry(
+  "Article",
+  title = "{ConFluxPro}: A toolkit for soil gas analysis",
+  author = "Valentin Gartiser,  Verena Lang,  Martin Maier",
+  journal = "{Journal of Open Source Software}",
+  year = 2025,
+  volume = 10,
+  number = 110,
+  pages = 8094,
+  DOI = "10.21105/joss.08094",
+)

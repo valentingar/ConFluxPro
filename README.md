@@ -8,6 +8,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ConFluxPro)](https://CRAN.R-project.org/package=ConFluxPro)
 [![R-CMD-check](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08094/status.svg)](https://doi.org/10.21105/joss.08094)
 <!-- badges: end -->
 
 # ConFluxPro <a href="https://valentingar.github.io/ConFluxPro/"><img src="man/figures/logo.svg" align="right" height="139" alt="ConFluxPro website" /></a>
