@@ -20,7 +20,7 @@
 #'
 #' @family data formats
 #'
-#'@return A cfp_dat object with the following parameters:
+#'@returns A cfp_dat object with the following parameters:
 #' \describe{
 #' \item{gasdata}{The gasdata object with added column "gd_id" that is unique
 #' for each profile.}
@@ -60,6 +60,11 @@
 #' ### filter similar to dplyr::fliter
 #' filter(base_dat, site == "site_a")
 #' filter(base_dat, prof_id %in%  1:5)
+#'
+#' ### coersion from derived objects
+#' PROFLUX <- pro_flux(base_dat)
+#' as_cfp_dat(PROFLUX)
+#'
 
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
