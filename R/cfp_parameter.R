@@ -6,6 +6,18 @@
 #' @param x Any object or data.frame to match the parameters to, or a character
 #' vector of parameter names.
 #'
+#' @returns A \code{data.frame()} with the name, description and unit of the
+#' parameter
+#'
+#' @examples
+#' #list parameters within an object
+#' cfp_parameter(soilphys)
+#' cfp_parameter(gasdata)
+#'
+#' #list all paramters
+#' cfp_parameter()
+#'
+#'
 #' @export
 #'
 

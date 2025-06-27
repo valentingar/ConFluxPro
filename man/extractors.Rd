@@ -126,6 +126,4 @@ alternate(
 cfp_og_model(my_altres)
 cfp_run_map(my_altres)
 
-
-
 }
