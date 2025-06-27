@@ -21,6 +21,9 @@ combine_models_by_reference(x_ref, x)
 \item{x_ref}{Reference element of x that controls the return class and
 attributes.}
 }
+\value{
+An object of the same type as  the first object in \code{x}.
+}
 \description{
 Combinea list of multiple models or \code{\link[=cfp_dat]{cfp_dat()}} objects into a single object.
 }

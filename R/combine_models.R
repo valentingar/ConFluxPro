@@ -5,6 +5,8 @@
 #'
 #' @param x A list of models, must inherit from [cfp_dat()]
 #'
+#' @returns An object of the same type as  the first object in \code{x}.
+#'
 #' @examples
 #' mod1 <- filter(base_dat, site == "site_a")
 #' mod2 <- filter(base_dat, site == "site_b")
