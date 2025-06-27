@@ -20,22 +20,16 @@ dcdz_layered(df, layers_map, mode)
 }
 \value{
 df (dataframe) same structure as layer_map with following columns:
-
-mode (character) the used gradient method.
-
-layer (character) the layer name
-
-upper (numeric) upper boundary in cm
-
-lower (numeric) lower boundary in cm
-
-dcdz_ppm (numeric) concentration gradient in ppm/cm.
-
-dcdz_sd (numeric) standard error in ppm/cm.
-
-dc_ppm (numeric) concentration difference in ppm.
-
-r2 (linearised) R^2 for the model.
+\describe{
+\item{mode (character)}{The used gradient method.}
+\item{layer (character)}{the layer name}
+\item{upper (numeric)}{upper boundary in cm}
+\item{lower (numerirc)}{lower boundary in cm}
+\item{dcdz_ppm (numeric)}{concentration gradient in ppm/cm.}
+\item{dcdz_sd (numeric)}{standard error in ppm/cm.}
+\item{dc_ppm (numeric)}{concentration difference in ppm.}
+\item{r2}{(linearised) R^2 for the model.}
+}
 }
 \description{
 This function calculates concentration gradients using different
