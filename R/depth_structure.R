@@ -9,6 +9,13 @@
 #' to extract (e.g. a site identifier).
 #' @param ... internal
 #' One of `"gasdata"` `"soilphys"` or `"layers_map"`.
+#'
+#' @returns A \link{cfp_profile} with columns depth, or upper and lower.
+#'
+#' @examples
+#' depth_structure(cfp_soilphys(ConFluxPro::base_dat))
+#' depth_structure(cfp_gasdata(ConFluxPro::base_dat))
+#'
 #' @name depth_structure
 #' @export
 depth_structure <- function(x, id_cols = NULL, ...){
