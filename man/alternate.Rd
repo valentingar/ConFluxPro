@@ -20,9 +20,9 @@ alternate_model(run_map, x, f)
 \item{x}{A cfp_pfres or cfp_fgres model result.}
 
 \item{f}{A function taking in a soilphys object and recalculates the relevant
-columns. See \code{complete_soilphys()}.}
+columns. See \code{\link[=complete_soilphys]{complete_soilphys()}}.}
 
-\item{run_map}{A data.frame created by \code{run_map()} with the necessary
+\item{run_map}{A data.frame created by \code{\link[=run_map]{run_map()}} with the necessary
 information how the data is to be changed with each distinct \code{run_id}.}
 
 \item{return_raw}{Should the models be returned as is, or after applying any
@@ -36,15 +36,15 @@ quality parameters instead. Output must contain the column RMSE.}
 of the \code{error_funs}. Must match the length of \code{error_funs}}
 }
 \value{
-A \code{list} of type \code{cfp_altres}, each entry an
+A \code{list} of type \code{\link[=cfp_altres]{cfp_altres()}}, each entry an
 updated model.
 }
 \description{
-Alternate cfp_pfres / cfp_fgres models for sensitivity analysis
+Alternate \code{\link[=cfp_pfres]{cfp_pfres()}} / \code{\link[=cfp_fgres]{cfp_fgres()}} models for sensitivity analysis
 and more.
 }
 \details{
-\code{alternate_model()} is used internally to change and rerun one
+\code{\link[=alternate_model]{alternate_model()}} is used internally to change and rerun one
 model, but can also be used to update a model with a given unique run_map,
 e.g. by filtering the best run_id from the original \code{run_map}.
 }

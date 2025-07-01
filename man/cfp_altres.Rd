@@ -20,9 +20,9 @@ cfp_altres(
 \item{og_model}{The original model that was altered}
 
 \item{f}{A function taking in a soilphys object and recalculates the relevant
-columns. See \code{complete_soilphys()}.}
+columns. See \code{\link[=complete_soilphys]{complete_soilphys()}}.}
 
-\item{run_map}{A data.frame created by \code{run_map()} with the necessary
+\item{run_map}{A data.frame created by \code{\link[=run_map]{run_map()}} with the necessary
 information how the data is to be changed with each distinct \code{run_id}.}
 
 \item{return_raw}{Should the models be returned as is, or after applying any

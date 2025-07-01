@@ -73,3 +73,27 @@ value of \code{run_id} is remapped to values \code{1:n_best}.
 Evaluate the model runs produced by a call to \code{\link[=alternate]{alternate()}} with
 user-defined error functions.
 }
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+PROFLUX <- pro_flux(base_dat \%>\% filter(site == "site_a"))
+
+run_map <-
+ cfp_run_map(
+   PROFLUX,
+   params = list(TPS = c(0.9, 1.1)),
+   type = "factor",
+   n_runs = 5)
+
+PF_alt <- alternate(
+  PROFLUX,
+  \(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),
+  run_map)
+
+evaluate_models(
+  PF_alt,
+  eval_funs = list("NRMSE_conc" = error_concentration)
+    )
+
+
+\dontshow{\}) # examplesIf}
+}
