@@ -13,9 +13,11 @@
 #' @param EFFLUX A data.frame with (at most) one value of efflux per profile of
 #'   x. Must contain any id_cols of x needed.
 #'
-#' @param ... Further arguments passed to \code{efflux()} in case of cfp_fgres.
-#'
 #' @inheritParams rmse
+#' @inheritDotParams efflux
+#'
+#' @returns The calculated error estimate for a single model, a list of models
+#' (\link{cfp_altres}) and for each parameter combination in \code{param_cols}
 #'
 #' @details For error_concentration, the way the error parameter is calculated
 #'   for cfp_fgres and cfp_pfres objects is entirely different and should not be
@@ -28,6 +30,15 @@
 #'
 #' @rdname error_funs
 #' @importFrom rlang .data
+#'
+#' @examples
+#' PROFLUX <- pro_flux(base_dat)
+#'
+#' error_concentration(PROFLUX)
+#' error_efflux(
+#'   PROFLUX,
+#'   EFFLUX = data.frame(efflux = 1),
+#'   param_cols = c("site"))
 #'
 #' @export
 

@@ -45,7 +45,15 @@ normalization to be applied. Can be one of
 \item{EFFLUX}{A data.frame with (at most) one value of efflux per profile of
 x. Must contain any id_cols of x needed.}
 
-\item{...}{Further arguments passed to \code{efflux()} in case of cfp_fgres.}
+\item{...}{
+  Arguments passed on to \code{\link[=efflux]{efflux}}
+  \describe{
+    \item{\code{}}{}
+  }}
+}
+\value{
+The calculated error estimate for a single model, a list of models
+(\link{cfp_altres}) and for each parameter combination in \code{param_cols}
 }
 \description{
 A set of functions that can be called on an cfp_pfres object
@@ -58,4 +66,14 @@ used in comparison between the two. NRMSE of cfp_pfres objects are
 calculated as the mean of depth-wise NRMSEs of modelled versus input gas
 concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
 (dcdz_sd / dcdz_ppm) per group described in param_cols.
+}
+\examples{
+PROFLUX <- pro_flux(base_dat)
+
+error_concentration(PROFLUX)
+error_efflux(
+  PROFLUX,
+  EFFLUX = data.frame(efflux = 1),
+  param_cols = c("site"))
+
 }
