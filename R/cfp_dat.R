@@ -621,14 +621,14 @@ split_by_group.cfp_dat <- function(x){
 split_by_group_efficient <-
   function (x) {
     sp <- x$soilphys %>%
-      dplyr::left_join(x$profiles[, c("sp_id", "group_id")] %>%
+      dplyr::right_join(x$profiles[, c("sp_id", "group_id")] %>%
                          dplyr::distinct(),
                        by = "sp_id") %>%
       dplyr::group_by(group_id) %>%
       dplyr::group_split(.keep = FALSE)
 
     gd <- x$gasdata %>%
-      dplyr::left_join(x$profiles[, c("gd_id", "group_id")] %>%
+      dplyr::right_join(x$profiles[, c("gd_id", "group_id")] %>%
                          dplyr::distinct(),
                        by = "gd_id") %>%
       dplyr::group_by(group_id) %>%
@@ -639,6 +639,7 @@ split_by_group_efficient <-
       dplyr::group_split()
 
     lmap <- x$layers_map %>%
+      dplyr::filter(group_id %in% x$profiles$group_id) %>%
       dplyr::group_by(group_id) %>%
       dplyr::group_split()
 
