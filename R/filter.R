@@ -2,9 +2,20 @@
 #'
 #' @description
 #' Filter profiles by their `id_cols` or (where available) by their `prof_id`.
-#' This is built on `dplyr::filter()`.
+#' This is built on [dplyr::filter()].
+#'
+#' @param .data A [cfp_dat()] object or its derivatives.
 #'
 #' @inheritParams dplyr::filter
+#'
+#' @returns A subset of the original data.
+#'
+#' @examples
+#' base_dat %>%
+#'   filter(site == "site_a")
+#'
+#' base_dat %>%
+#'   filter(Date > "2022-03-01")
 #'
 #' @rdname filter
 #' @export
