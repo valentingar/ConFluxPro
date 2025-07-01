@@ -163,5 +163,7 @@ efflux(PROFLUX_BSE)
 
 PROFLUX_BSE <- bootstrap_error(PROFLUX, n_replicates = 5, sd_x_ppm = 25)
 efflux(PROFLUX_BSE)
+
+make_bootstrap_model(PROFLUX) # internal
 \dontshow{\}) # examplesIf}
 }
