@@ -468,6 +468,11 @@ cfp_id_cols.default <- function(x){
 
 #' @rdname utility
 #' @param x A `cfp_dat` object.
+#'
+#' @returns An iteger giving the number of groups of the object.
+#' @examples
+#' n_groups(base_dat)
+#'
 #' @export
 n_groups <- function(x) {
   UseMethod("n_groups")

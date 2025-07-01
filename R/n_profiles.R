@@ -1,4 +1,8 @@
 #' @rdname utility
+#' @returns An integer giving the number of profiles of the object.
+#' @examples
+#' n_profiles(base_dat)
+#' n_profiles(cfp_soilphys(base_dat))
 #' @export
 n_profiles <- function(x) {
   UseMethod("n_profiles")

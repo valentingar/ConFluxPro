@@ -6,6 +6,13 @@
 #'
 #' @returns A character vector of gases in that object.
 #'
+#' @examples
+#' unique_gases(base_dat)
+#'
+#' data.frame(gas = c("CO2", "CH4")) |>
+#' cfp_profile(id_cols = "gas") |>
+#' unique_gases()
+#'
 #' @export
 
 unique_gases <- function(x){
