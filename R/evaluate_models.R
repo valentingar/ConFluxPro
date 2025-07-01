@@ -195,6 +195,11 @@ apply_eval_fun <- function(x,
 #' Scale a vector between its minimum and median.
 #' @param x a numeric vector
 #'
+#' @returns \code{x} scaled between min and median of \code{x}.
+#'
+#' @examples
+#' scale_min_median(1:10)
+#'
 #' @export
 scale_min_median <- function(x){
   x_min <- min(x, na.rm = TRUE)

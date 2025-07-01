@@ -10,7 +10,7 @@ season(d)
 \item{d}{(Date) Any date object}
 }
 \value{
-m (character)
+A character vector the same length as d
 }
 \description{
 A simple function to return a character (-vector)
