@@ -67,8 +67,6 @@
 #' @importFrom rlang .data
 #'
 #' @family gasdata
-#' @export
-
 
 offset_correction <- function(df,
                               corr_map,

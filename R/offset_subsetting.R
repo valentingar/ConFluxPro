@@ -62,7 +62,6 @@
 #'
 #' @importFrom rlang .data
 #'
-#' @export
 
 
 offset_subsetting <- function(df,
