@@ -19,13 +19,15 @@ split_by_prof(x)
 \item{x}{A object that is grouped into profiles by its \code{id_cols}.}
 }
 \value{
-A list with where each entry is one profile of the same
+A list  where each entry is one profile/group of the same
 class as \code{x}.
 }
 \description{
 Split profile data into a list for each single profile.
 }
 \examples{
+split_by_group(base_dat)
+
 df <- cfp_profile(
   data.frame(
       site = rep(c("site_a", "site_b"),

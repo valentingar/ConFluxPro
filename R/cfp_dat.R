@@ -593,6 +593,9 @@ as_cfp_dat.cfp_dat <- function(x){
 
 ##### SPLITTING #####
 #' @rdname split_by_prof
+#' @examples
+#' split_by_group(base_dat)
+#'
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
