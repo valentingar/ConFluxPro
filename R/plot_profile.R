@@ -23,6 +23,15 @@
 #'@returns A ggplot2 plot with facets for each distinct profile. If more than 20
 #'profiles are plotted a message is sent because this can take a long time.
 #'
+#' @examplesIf interactive()
+#' data_subset <-  base_dat %>%
+#'   filter(Date == "2021-02-01")
+#'
+#' plot_profile(cfp_soilphys(data_subset))
+#' plot_profile(cfp_gasdata(data_subset))
+#' plot_profile(cfp_layers_map(data_subset))
+#'
+#'
 #' @importFrom ggplot2 aes
 #' @export
 plot_profile <- function(x) {
