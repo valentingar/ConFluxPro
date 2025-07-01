@@ -41,6 +41,25 @@
 #'  https://doi.org/10.1016/j.envsoft.2021.105167
 #'
 #'
+#'
+#' @examplesIf interactive()
+#' PROFLUX <- pro_flux(base_dat)
+#'
+#' sobol_map <- sobol_run_map(PROFLUX,
+#'  params = list("TPS" = c(0.9, 1.1),
+#'                "t" = c(0.9, 1.1)),
+#'  type = c("factor", "factor"),
+#'  n_runs = 10)
+#'
+#'  PF_sobol <-
+#' alternate(
+#'   PROFLUX,
+#'   \(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),
+#'   sobol_map)
+#'
+#' sobol_calc_indices(efflux(PF_sobol), "efflux", c("site"), sobol_map)
+#'
+#'
 #' @family sobol
 #'
 #'

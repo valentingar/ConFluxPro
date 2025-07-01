@@ -59,6 +59,17 @@ leads to an error in that case.}
 Modify an existing \code{cfp_run_map} for sobol indice estimation or create a
 new one from scratch.
 }
+\examples{
+\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+PROFLUX <- pro_flux(base_dat)
+
+sobol_run_map(PROFLUX,
+ params = list("TPS" = c(0.9, 1.1),
+               "t" = c(0.9, 1.1)),
+ type = c("factor", "factor"),
+ n_runs = 10)
+\dontshow{\}) # examplesIf}
+}
 \seealso{
 Other sobol: 
 \code{\link{sobol_calc_indices}()}
