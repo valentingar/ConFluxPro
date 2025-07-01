@@ -40,3 +40,9 @@ the errors are propagated as follows:
 \frac{prod_{abs}}{efflux^2}| +
 |\Delta prod_{abs}\cdot\frac{1}{efflux}|}
 }
+\examples{
+PROFLUX <- pro_flux(base_dat)
+
+production(PROFLUX)
+
+}
