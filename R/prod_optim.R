@@ -42,8 +42,19 @@
 #' @param evenness_factor (numeric) Defines strong should stark differences
 #' between the production rates and very small production rates be penalized.
 #'
-#' @return A modified RMSE root mean square error of the modeled and measured
+#' @returns A modified RMSE root mean square error of the modeled and measured
 #' concentration.
+#' @examplesIf FALSE
+#' prod_optim(c(1,1,1),
+#'  c(0.1,0.1,0.1),
+#'  DS = D0_massman("CO2", 10, 1013),
+#'  C0 = c(42*2000/1000/1000),
+#'  conc = c(400, 1000, 2000)*42/1000/1000,
+#'  wmap = 1,
+#'  layer_couple = 1,
+#'  evenness_factor = 1)
+#'
+#'
 
 #' @family proflux
 #'
