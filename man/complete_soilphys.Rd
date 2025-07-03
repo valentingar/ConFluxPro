@@ -26,6 +26,10 @@ calculate D0 and DS.}
 
 \item{quiet}{(logical) Suppress messages.}
 }
+\value{
+A \code{data.frame()} with all necessary columns for
+\link{cfp_soilphys}.
+}
 \description{
 This function completes the soilphys dataset by calculating
 different parameters if necessary, as long as all required parameters are
@@ -33,7 +37,25 @@ available. Diffusion coefficients, as well as the air density are
 calculated if missing.
 }
 \examples{
-soilphys <- complete_soilphys(soilphys, DSD0_formula = "a*AFPS^b")
+soilphys_barebones <- ConFluxPro::soilphys |>
+ dplyr::select(
+   c("site",
+     "Date",
+     "upper",
+     "lower",
+     "depth",
+     "t",
+     "p",
+     "TPS",
+     "SWC",
+     "a",
+     "b")
+     )
+
+complete_soilphys(
+  soilphys_barebones,
+  DSD0_formula = "a*AFPS^b",
+  gases = "CO2")
 
 
 }

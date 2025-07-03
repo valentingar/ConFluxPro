@@ -10,9 +10,7 @@ filter(.data, ..., .by = NULL, .preserve = FALSE)
 \method{filter}{cfp_dat}(.data, ..., .preserve = FALSE)
 }
 \arguments{
-\item{.data}{A data frame, data frame extension (e.g. a tibble), or a
-lazy data frame (e.g. from dbplyr or dtplyr). See \emph{Methods}, below, for
-more details.}
+\item{.data}{A \code{\link[=cfp_dat]{cfp_dat()}} object or its derivatives.}
 
 \item{...}{<\code{\link[rlang:args_data_masking]{data-masking}}> Expressions that
 return a logical value, and are defined in terms of the variables in
@@ -30,7 +28,18 @@ details and examples, see \link[dplyr:dplyr_by]{?dplyr_by}.}
 If \code{.preserve = FALSE} (the default), the grouping structure
 is recalculated based on the resulting data, otherwise the grouping is kept as is.}
 }
+\value{
+A subset of the original data.
+}
 \description{
 Filter profiles by their \code{id_cols} or (where available) by their \code{prof_id}.
-This is built on \code{dplyr::filter()}.
+This is built on \code{\link[dplyr:filter]{dplyr::filter()}}.
+}
+\examples{
+base_dat |>
+  filter(site == "site_a")
+
+base_dat |>
+  filter(Date > "2022-03-01")
+
 }

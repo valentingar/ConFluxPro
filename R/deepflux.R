@@ -13,6 +13,12 @@
 #'
 #' @returns data.frame with F0 (\eqn{µmol / m^2 / s})
 #'
+#' @examples
+#' PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+#'
+#' deepflux(PROFLUX)
+#'
+#'
 #' @importFrom rlang .data
 #'
 #' @export

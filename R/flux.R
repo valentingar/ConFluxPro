@@ -5,6 +5,14 @@
 #'
 #' @param x A valid \code{cfp_fgmod} or \code{cfp_pfmod} object.
 #'
+#' @returns Either a \link{cfp_pfres} or \link{cfp_fgres} model result.
+#'
+#' @examples
+#' FLUX <- ConFluxPro::base_dat |> fg_flux()
+#' FLUX2 <- flux(FLUX)
+#'
+#' all.equal(FLUX, FLUX2)
+#'
 #' @export
 
 flux <- function(x){

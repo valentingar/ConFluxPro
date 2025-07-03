@@ -17,6 +17,14 @@
 #'
 #' @family sobol
 #'
+#' @examplesIf FALSE
+#' PROFLUX <- pro_flux(base_dat)
+#'
+#' sobol_run_map(PROFLUX,
+#'  params = list("TPS" = c(0.9, 1.1),
+#'                "t" = c(0.9, 1.1)),
+#'  type = c("factor", "factor"),
+#'  n_runs = 10)
 #'
 #' @export
 

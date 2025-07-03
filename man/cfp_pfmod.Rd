@@ -44,6 +44,11 @@ from cfp_dat and adds any model specific parameters.
 }
 \examples{
 cfp_pfmod(ConFluxPro::base_dat)
+
+### coercion from other object types (internal)
+pro_flux(ConFluxPro::base_dat) |>
+  as_cfp_pfmod()
+
 }
 \seealso{
 Other model frames: 

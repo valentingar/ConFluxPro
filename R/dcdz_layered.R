@@ -13,15 +13,17 @@
 #' \item "lower" = lower limit of the layer in cm;}
 #' @param mode (character) One of ("LL","LS","EF","DA").
 #'
-#' @return df (dataframe) same structure as layer_map with following columns:
-#' @return mode (character) the used gradient method.
-#' @return layer (character) the layer name
-#' @return upper (numeric) upper boundary in cm
-#' @return lower (numeric) lower boundary in cm
-#' @return dcdz_ppm (numeric) concentration gradient in ppm/cm.
-#' @return dcdz_sd (numeric) standard error in ppm/cm.
-#' @return dc_ppm (numeric) concentration difference in ppm.
-#' @return r2 (linearised) R^2 for the model.
+#' @returns df (dataframe) same structure as layer_map with following columns:
+#' \describe{
+#' \item{mode (character)}{The used gradient method.}
+#' \item{layer (character)}{the layer name}
+#' \item{upper (numeric)}{upper boundary in cm}
+#' \item{lower (numerirc)}{lower boundary in cm}
+#' \item{dcdz_ppm (numeric)}{concentration gradient in ppm/cm.}
+#' \item{dcdz_sd (numeric)}{standard error in ppm/cm.}
+#' \item{dc_ppm (numeric)}{concentration difference in ppm.}
+#' \item{r2}{(linearised) R^2 for the model.}
+#'}
 #'
 #' @examples {
 #' df <- data.frame(depth = c(10,0,-100),
@@ -45,6 +47,7 @@
 #' @keywords internal
 #'
 #' @importFrom rlang .data
+#' @importFrom stats na.omit
 #'
 #' @export
 

@@ -5,10 +5,15 @@
 #'
 #' @param x A list of models, must inherit from [cfp_dat()]
 #'
+#' @returns An object of the same type as  the first object in \code{x}.
+#'
 #' @examples
 #' mod1 <- filter(base_dat, site == "site_a")
 #' mod2 <- filter(base_dat, site == "site_b")
 #' combine_models(list(mod1, mod2))
+#'
+#' # use a reference model for coercion
+#' combine_models_by_reference(mod1, list(mod1, mod2))
 #' @export
 
 combine_models <- function(x){

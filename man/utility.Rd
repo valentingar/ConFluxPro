@@ -12,6 +12,17 @@ n_profiles(x)
 \arguments{
 \item{x}{A \code{cfp_dat} object.}
 }
+\value{
+An integer giving the number of groups of the object.
+
+An integer giving the number of profiles of the object.
+}
 \description{
 Get number of groups/profiles
+}
+\examples{
+n_groups(base_dat)
+
+n_profiles(base_dat)
+n_profiles(cfp_soilphys(base_dat))
 }

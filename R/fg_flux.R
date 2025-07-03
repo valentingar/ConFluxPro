@@ -8,6 +8,17 @@
 #'
 #' @inheritDotParams cfp_fgmod gases modes param funs
 #'
+#' @returns A \link{cfp_fgres} model result.
+#'
+#' @details
+#' The model result contains the original data, but adds the
+#' dataset \code{FLUX}, which contains the calculated flux rates.
+#' You can use functions \link{efflux} and \link{production} to calculate
+#' different elements or access the raw result with \code{model_result$FLUX}.
+#'
+#' @examples
+#' fg_flux(ConFluxPro::base_dat)
+#'
 #' @family flux models
 #'
 #' @references DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W.

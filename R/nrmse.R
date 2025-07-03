@@ -14,6 +14,16 @@
 #' \item{IQR}{the difference between the interquantile range of a}
 #' }
 #'
+#' @returns The (normalised) rmse of the provided vector.
+#'
+#' @examples
+#'
+#' set.seed(42)
+#' a <- c(1, 2, 3, 4)
+#' b <- a * rnorm(4, 1, 0.1)
+#' rmse(a, b)
+#' nrmse(a, b, normer = "sd")
+#' nrmse(a, b, normer = "mean")
 #'
 #'
 #' @export
@@ -21,10 +31,12 @@
                    b
   ){
     RMSE <- sqrt(mean((a-b)^2,na.rm = TRUE))
+    RMSE
   }
 
 
 #' @rdname rmse
+#' @export
   nrmse <- function(a,
                     b,
                     normer = "sd"){
@@ -40,4 +52,5 @@
     } else {
       stop("normer must be one of mean,sd , range, IQR")
     }
+    NRMSE
   }

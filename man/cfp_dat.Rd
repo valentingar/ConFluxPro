@@ -69,6 +69,11 @@ base_dat <- cfp_dat(gasdata, soilphys, layers_map)
 ### filter similar to dplyr::fliter
 filter(base_dat, site == "site_a")
 filter(base_dat, prof_id \%in\%  1:5)
+
+### coersion from derived objects
+PROFLUX <- pro_flux(base_dat)
+as_cfp_dat(PROFLUX)
+
 }
 \seealso{
 Other data formats: 

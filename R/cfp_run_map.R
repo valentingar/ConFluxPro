@@ -45,6 +45,19 @@
 #'  automatically adjusted per id_cols individually? Default is FALSE, which
 #'  leads to an error in that case.
 #'
+#' @returns An object of type \code{cfp_run_map} that can be used within
+#' \link{alternate}.
+#'
+#' @examples
+#' PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+#'# Create a cfp_run_map where TPS is changed between 90 % and 110 %
+#'# of the original value for 50 runs.
+#' cfp_run_map(
+#'   PROFLUX,
+#'   list("TPS" = c(0.9, 1.1)),
+#'   "factor",
+#'   n_runs = 50)
+#'
 #'@importFrom rlang .data
 #'
 #'@export
@@ -77,9 +90,8 @@ cfp_run_map.cfp_altres <- function(x,
 }
 
 # helper ----
-
 #' @exportS3Method
-cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
+cfp_run_map.cfp_pfres <-
   function(x,
            params = list(),
            type = NULL,
@@ -231,6 +243,9 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
   run_map <- validate_cfp_run_map(run_map)
   run_map
 }
+
+#' @exportS3Method
+cfp_run_map.cfp_fgres <- cfp_run_map.cfp_pfres
 
 
 run_map_permutation <- function(x,

@@ -9,7 +9,17 @@ flux(x)
 \arguments{
 \item{x}{A valid \code{cfp_fgmod} or \code{cfp_pfmod} object.}
 }
+\value{
+Either a \link{cfp_pfres} or \link{cfp_fgres} model result.
+}
 \description{
 A function to either run \code{fg_flux()} or \code{pro_flux()}
 models from valid \code{cfp_fgmod} or \code{cfp_pfmod} objects.
+}
+\examples{
+FLUX <- ConFluxPro::base_dat |> fg_flux()
+FLUX2 <- flux(FLUX)
+
+all.equal(FLUX, FLUX2)
+
 }

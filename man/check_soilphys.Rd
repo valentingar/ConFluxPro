@@ -29,10 +29,8 @@ Looks for the following columns by default:
 "upper","lower","TPS","SWC","AFPS","t","p","DSD0","D0","DS"
 }
 \examples{
-{
-data("soilphys")
-check_soilphys(soilphys,id_cols = c("site"))
-}
+check_soilphys(ConFluxPro::soilphys, id_cols = c("site", "Date"))
+
 
 }
 \seealso{

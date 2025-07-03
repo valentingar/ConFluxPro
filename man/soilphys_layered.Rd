@@ -29,27 +29,27 @@ uniquely identify one profile.}
 \value{
 soilphys, reduced to any \code{id_cols} and \code{param} columns and
 summarised to the layers provided in \code{layers_map}
-
-#' @examples {data(soildiff)
+}
+\description{
+This function calculates (harmonic-) means of the soilphys
+dataframe per layer for the flux calculation.
+}
+\examples{
+data(soildiff)
 layers_map <- data.frame(site = rep(c("site_a",
-"site_b"),each = 2),
-upper = c(5,0,7,0),
-lower = c(0,-100,0,-100),
-layer = rep(c("HU","M1"),times = 2)
+                                      "site_b"),each = 2),
+                         upper = c(5,0,7,0),
+                         lower = c(0,-100,0,-100),
+                         layer = rep(c("HU","M1"),times = 2)
 )
 
 soildiff$depth <- (soildiff$upper + soildiff$lower) / 2
 
 soilphys_layered(soilphys = soildiff,
-layers_map = layers_map,
-param = c("TPS","a"),
-funs = c("harm","arith"),
-id_cols = c("site"))
-}
-}
-\description{
-This function calculates (harmonic-) means of the soilphys
-dataframe per layer for the flux calculation.
+                 layers_map = layers_map,
+                 param = c("TPS","a"),
+                 funs = c("harm","arith"),
+                 id_cols = c("site"))
 }
 \seealso{
 Other soilphys: 

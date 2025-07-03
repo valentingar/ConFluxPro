@@ -17,13 +17,12 @@
 #' @param id_cols (character vector) the columns that, together, identify a
 #' site uniquely (e.g. site, repetition)
 #'
-#' @return data frame of 'suspicious' parameter/depth combinations, where all
+#' @returns data frame of 'suspicious' parameter/depth combinations, where all
 #'   values are NA.
 #'
-#' @examples {
-#' data("soilphys")
-#' check_soilphys(soilphys,id_cols = c("site"))
-#' }
+#' @examples
+#' check_soilphys(ConFluxPro::soilphys, id_cols = c("site", "Date"))
+#'
 #'
 #' @family soilphys
 #'

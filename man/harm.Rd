@@ -24,10 +24,9 @@ This function calculates harmonic mean of a vector and can be
 used analogous to the base functions mean() or median()
 }
 \examples{
-{
  harm(c(1:10))
  harm(c(1:10),c(10:1))
-}
+
 
 
 }

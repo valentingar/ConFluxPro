@@ -31,6 +31,9 @@ DSD0_linear(AFPS, a_lin, b_lin)
 
 \item{a_lin, b_lin}{linear model coefficients}
 }
+\value{
+A numeric vector of DSD0.
+}
 \description{
 Different functions to estimate soil diffusivity from the
 air-filled pore space.
@@ -62,7 +65,10 @@ slope of the water retention curve. From Moldrup et al. (2000).
 }
 }
 \examples{
-DSD0_millington_quirk(0.5,0.6)
+DSD0_millington_quirk(0.2, 0.6)
+DSD0_moldrup(0.2, 0.6, 1)
+DSD0_currie(0.2)
+DSD0_linear(0.2, a_lin = 1.4, b_lin = 0)
 
 }
 \references{

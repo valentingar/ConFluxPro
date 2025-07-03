@@ -10,12 +10,12 @@
 #'  calculated with the remaining values. If FALSE (default) then returns NA if
 #'  x contains NA values.
 #'
-#'@return (numeric) harmonic mean of x
+#'@returns (numeric) harmonic mean of x
 #'
-#'@examples {
+#'@examples
 #'  harm(c(1:10))
 #'  harm(c(1:10),c(10:1))
-#'}
+#'
 #'
 #'
 #'@export

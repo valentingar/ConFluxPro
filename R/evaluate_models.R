@@ -31,6 +31,28 @@
 #'   `best_runs` model configurations. Note, that for `best_runs_runmap` the
 #'   value of `run_id` is remapped to values `1:n_best`.
 #'
+#' @examplesIf FALSE
+#' PROFLUX <- pro_flux(base_dat |> filter(site == "site_a"))
+#'
+#' run_map <-
+#'  cfp_run_map(
+#'    PROFLUX,
+#'    params = list(TPS = c(0.9, 1.1)),
+#'    type = "factor",
+#'    n_runs = 5)
+#'
+#' PF_alt <- alternate(
+#'   PROFLUX,
+#'   \(x) complete_soilphys(x, DSD0_formula = "a*AFPS^b", quiet = TRUE),
+#'   run_map)
+#'
+#' evaluate_models(
+#'   PF_alt,
+#'   eval_funs = list("NRMSE_conc" = error_concentration)
+#'     )
+#'
+#'
+#'
 #' @export
 evaluate_models <- function(x,
                             eval_funs = NULL,
@@ -172,6 +194,11 @@ apply_eval_fun <- function(x,
 #' @description
 #' Scale a vector between its minimum and median.
 #' @param x a numeric vector
+#'
+#' @returns \code{x} scaled between min and median of \code{x}.
+#'
+#' @examples
+#' scale_min_median(1:10)
 #'
 #' @export
 scale_min_median <- function(x){

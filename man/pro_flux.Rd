@@ -36,6 +36,9 @@ defines the weight of this penalty in the optimisation algorithm
 \code{\link{prod_optim}}.}
   }}
 }
+\value{
+A \code{\link[=cfp_pfres]{cfp_pfres()}} model result.
+}
 \description{
 This implements an inverse modeling approach which optimizes
 vertically resolved production (or consumption) of the gases in question to
@@ -47,7 +50,6 @@ boundary condition is not met, the flux must be optimised as well. This can
 be set in \code{zero_flux}.
 }
 \examples{
-{
 
 soilphys <-
  cfp_soilphys(
@@ -76,7 +78,7 @@ PROFLUX <-
          soilphys,
          lmap ) |>
  pro_flux()
-}
+
 
 }
 \seealso{

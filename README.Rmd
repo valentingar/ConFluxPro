@@ -34,6 +34,11 @@ ConFluxPro is a free toolbox for modelling soil gas fluxes using the Flux Gradie
 
 ## Installation
 
+You can install the latest release from CRAN:
+```{r}
+install.packages("ConFluxPro")
+```
+
 Install the current development version from github: 
 
 ``` r

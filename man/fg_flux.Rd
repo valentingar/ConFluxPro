@@ -45,10 +45,23 @@ parameters may help interpretation.}
 each parameter in \code{param}. One of "arith" or "harm".}
   }}
 }
+\value{
+A \link{cfp_fgres} model result.
+}
 \description{
 \code{fg_flux()} implements different approaches to the flux-gradient
 method (FGM). It takes a valid input dataset from \code{cfp_dat()} and
 calculates for each layer defined in \code{cfp_layers_map()}.
+}
+\details{
+The model result contains the original data, but adds the
+dataset \code{FLUX}, which contains the calculated flux rates.
+You can use functions \link{efflux} and \link{production} to calculate
+different elements or access the raw result with \code{model_result$FLUX}.
+}
+\examples{
+fg_flux(ConFluxPro::base_dat)
+
 }
 \references{
 DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., & BORKEN, W.

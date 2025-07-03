@@ -21,9 +21,23 @@ normalization to be applied. Can be one of
 \item{IQR}{the difference between the interquantile range of a}
 }}
 }
+\value{
+The (normalised) rmse of the provided vector.
+}
 \description{
 (Normalized) root mean square error
 
 Calculate the (normalized) root-mean-square-error of
 two vectors.
+}
+\examples{
+
+set.seed(42)
+a <- c(1, 2, 3, 4)
+b <- a * rnorm(4, 1, 0.1)
+rmse(a, b)
+nrmse(a, b, normer = "sd")
+nrmse(a, b, normer = "mean")
+
+
 }

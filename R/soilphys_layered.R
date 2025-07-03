@@ -17,10 +17,11 @@
 #'   One of "arith" or "harm"
 #' @param id_cols (character vector) A list of all columns, that, together,
 #'   uniquely identify one profile.
-#' @return soilphys, reduced to any \code{id_cols} and \code{param} columns and
+#' @returns soilphys, reduced to any \code{id_cols} and \code{param} columns and
 #' summarised to the layers provided in \code{layers_map}
 #'
-#' #' @examples {data(soildiff)
+#' @examples
+#' data(soildiff)
 #' layers_map <- data.frame(site = rep(c("site_a",
 #'                                       "site_b"),each = 2),
 #'                          upper = c(5,0,7,0),
@@ -36,7 +37,6 @@
 #'                  funs = c("harm","arith"),
 #'                  id_cols = c("site"))
 
-#' }
 #' @family soilphys
 #'
 #' @keywords internal
