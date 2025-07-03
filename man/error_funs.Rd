@@ -48,11 +48,7 @@ normalization to be applied. Can be one of
 \item{EFFLUX}{A data.frame with (at most) one value of efflux per profile of
 x. Must contain any id_cols of x needed.}
 
-\item{...}{
-  Arguments passed on to \code{\link[=efflux]{efflux}}
-  \describe{
-    \item{\code{}}{}
-  }}
+\item{...}{Further arguments passed to \link{efflux}}
 }
 \value{
 The calculated error estimate for a single model, a list of models

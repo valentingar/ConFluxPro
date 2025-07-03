@@ -13,8 +13,9 @@
 #' @param EFFLUX A data.frame with (at most) one value of efflux per profile of
 #'   x. Must contain any id_cols of x needed.
 #'
+#' @param ... Further arguments passed to [efflux]
+#'
 #' @inheritParams rmse
-#' @inheritDotParams efflux
 #'
 #' @returns The calculated error estimate for a single model, a list of models
 #' (\link{cfp_altres}) and for each parameter combination in \code{param_cols}

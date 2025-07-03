@@ -89,11 +89,7 @@ Default = 0.5}
 list of numeric vectors with the same length as "param" can be provided.
 Cannot differ between id_cols.}
 
-\item{...}{
-  Arguments passed on to \code{\link[=cfp_profile]{cfp_profile}}
-  \describe{
-    \item{\code{}}{}
-  }}
+\item{...}{Internal, must be empty.}
 
 \item{id_cols}{Column names in data.frame that uniquely identify each
 profile.}

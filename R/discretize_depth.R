@@ -74,8 +74,8 @@
 #'   'linspline' method are to be placed. If this differs for the parameters, a
 #'   list of numeric vectors with the same length as "param" can be provided.
 #'   Cannot differ between id_cols.
-#'
-#' @inheritDotParams cfp_profile id_cols
+#' @inheritParams cfp_profile
+#' @param ... Internal, must be empty.
 #'
 #'
 #' @returns A [cfp_layered_profile()] data.frame with the variables \code{upper}
