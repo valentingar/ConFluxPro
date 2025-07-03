@@ -75,7 +75,7 @@ user-defined error functions.
 }
 \examples{
 \dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-PROFLUX <- pro_flux(base_dat \%>\% filter(site == "site_a"))
+PROFLUX <- pro_flux(base_dat |> filter(site == "site_a"))
 
 run_map <-
  cfp_run_map(

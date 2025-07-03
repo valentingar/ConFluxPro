@@ -11,10 +11,10 @@
 #' @returns A subset of the original data.
 #'
 #' @examples
-#' base_dat %>%
+#' base_dat |>
 #'   filter(site == "site_a")
 #'
-#' base_dat %>%
+#' base_dat |>
 #'   filter(Date > "2022-03-01")
 #'
 #' @rdname filter

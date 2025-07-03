@@ -34,7 +34,7 @@ as well as the allowed production range.}
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-data_subset <-  base_dat \%>\%
+data_subset <-  base_dat |>
   filter(Date == "2021-02-01")
 
 plot_profile(cfp_soilphys(data_subset))

@@ -24,7 +24,7 @@
 #'profiles are plotted a message is sent because this can take a long time.
 #'
 #' @examplesIf interactive()
-#' data_subset <-  base_dat %>%
+#' data_subset <-  base_dat |>
 #'   filter(Date == "2021-02-01")
 #'
 #' plot_profile(cfp_soilphys(data_subset))

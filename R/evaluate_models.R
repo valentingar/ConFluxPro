@@ -32,7 +32,7 @@
 #'   value of `run_id` is remapped to values `1:n_best`.
 #'
 #' @examplesIf FALSE
-#' PROFLUX <- pro_flux(base_dat %>% filter(site == "site_a"))
+#' PROFLUX <- pro_flux(base_dat |> filter(site == "site_a"))
 #'
 #' run_map <-
 #'  cfp_run_map(

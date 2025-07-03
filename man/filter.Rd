@@ -36,10 +36,10 @@ Filter profiles by their \code{id_cols} or (where available) by their \code{prof
 This is built on \code{\link[dplyr:filter]{dplyr::filter()}}.
 }
 \examples{
-base_dat \%>\%
+base_dat |>
   filter(site == "site_a")
 
-base_dat \%>\%
+base_dat |>
   filter(Date > "2022-03-01")
 
 }
