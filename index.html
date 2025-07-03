@@ -54,7 +54,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/ConFluxPro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -74,12 +74,15 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install the current development version from github:</p>
+<p>You can install the latest release from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ConFluxPro"</span><span class="op">)</span></span></code></pre></div>
+<p>Install the current development version from github:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"valentingar/ConFluxPro"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>To get started, check out the provided vignette after installation:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"ConFluxPro"</span>,package <span class="op">=</span> <span class="st">"ConFluxPro"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -109,7 +112,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <li>
 <code><a href="reference/cfp_layers_map.html">cfp_layers_map()</a></code> A <code>data.frame</code> that is layered similarly and gives information for the model structure, i.e. for which layers a production rate should be calculated.</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gasdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cfp_gasdata.html">cfp_gasdata</a></span><span class="op">(</span><span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="reference/gasdata.html">gasdata</a></span>,</span>
 <span>                       id_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site"</span>, <span class="st">"Date"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -131,7 +134,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; added 'gas' to id_cols</span></span></code></pre></div>
 <p>These three datasets are then combined in the central data class <code><a href="reference/cfp_dat.html">cfp_dat()</a></code>, and automatically adjusted to correctly match each other. This object contains then all necessary information.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cfp_dat.html">cfp_dat</a></span><span class="op">(</span><span class="va">gasdata</span>, <span class="va">soilphys</span>, <span class="va">layers_map</span><span class="op">)</span></span>
 <span><span class="va">my_dat</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -144,16 +147,16 @@ F= -D_s\cdot \frac{dc}{dz}
 <h3 id="flux-modeling">Flux modeling<a class="anchor" aria-label="anchor" href="#flux-modeling"></a>
 </h3>
 <p>Once a <code><a href="reference/cfp_dat.html">cfp_dat()</a></code> object is created successfully, the modelling is very easy:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 'normal' forward model</span></span>
 <span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="va">my_dat</span><span class="op">)</span></span>
 <span><span class="co"># inverse model</span></span>
 <span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">my_dat</span><span class="op">)</span></span></code></pre></div>
 <p>Each modelling function can be adapted to different needs. For example, we can provide a different <code>modes</code> argument to <code><a href="reference/fg_flux.html">fg_flux()</a></code> to calculate the concentration gradient form an exponential fit instead of a linear model.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="va">my_dat</span>, modes <span class="op">=</span> <span class="st">"EF"</span><span class="op">)</span></span></code></pre></div>
 <p>The result in both cases is an object that contains the original data <code>my_dat</code> and the flux rates in different soil layers for each of the profiles identified in <code><a href="reference/cfp_dat.html">cfp_dat()</a></code>. From this, the soil/atmosphere efflux rate and the specific production rate in each model soil layer can be extracted.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># soil/atmosphere efflux</span></span>
 <span><span class="fu"><a href="reference/efflux.html">efflux</a></span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/efflux.html">efflux</a></span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span>
@@ -163,7 +166,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <span><span class="fu"><a href="reference/production.html">production</a></span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></code></pre></div>
 <p>In the case of the forward model <code>FLUX</code>, this may require some consideration for which method of extrapolation to be used (see the manual <code><a href="reference/efflux.html">?efflux</a></code>), as different approaches are implemented.</p>
 <p><code><a href="reference/efflux.html">efflux()</a></code> returns a <code>data.frame</code> with one row per profile and the corresponding efflux rate.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/efflux.html">efflux</a></span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Date</span>, y <span class="op">=</span> <span class="va">efflux</span>, col <span class="op">=</span> <span class="va">site</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -172,13 +175,13 @@ F= -D_s\cdot \frac{dc}{dz}
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span>date_minor_breaks <span class="op">=</span> <span class="st">"1 month"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"CO"</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">~</span><span class="st">"efflux ["</span><span class="op">*</span><span class="va">mu</span><span class="op">*</span><span class="st">"mol m"</span><span class="op">^</span><span class="st">"-2"</span><span class="op">~</span><span class="st">"s"</span><span class="op">^</span><span class="st">"-1"</span><span class="op">*</span><span class="st">"]"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-8-1.svg" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-9-1.svg" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="extracting-information">Extracting information<a class="anchor" aria-label="anchor" href="#extracting-information"></a>
 </h3>
 <p>Most information stored in the objects can be easily extracted. Extraction functions have the prefix <code>cfp_</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Get the id_cols that identify the unique profiles of an object:</span></span>
 <span><span class="fu"><a href="reference/extractors.html">cfp_id_cols</a></span><span class="op">(</span><span class="va">gasdata</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/extractors.html">cfp_id_cols</a></span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span>
@@ -191,7 +194,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <h3 id="big-datasets-parallel-processing-and-progress-bars">Big datasets: Parallel processing and progress bars<a class="anchor" aria-label="anchor" href="#big-datasets-parallel-processing-and-progress-bars"></a>
 </h3>
 <p>For big datasets (1000+ profiles), some calculations may takes some time. ConFluxPro uses the excellent <a href="https://github.com/HenrikBengtsson/future" class="external-link"><code>future</code></a> and <a href="https://github.com/HenrikBengtsson/progressr" class="external-link"><code>progressr</code></a> packages for parallel processing and progress bars in some cpu-intensive functions.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org" class="external-link">future</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://progressr.futureverse.org" class="external-link">progressr</a></span><span class="op">)</span></span>
 <span></span>
@@ -216,7 +219,7 @@ F= -D_s\cdot \frac{dc}{dz}
 <h3 id="subsetting">Subsetting<a class="anchor" aria-label="anchor" href="#subsetting"></a>
 </h3>
 <p>Subsetting for all main data types happens analogous to <code>dplyr</code> by calling <code><a href="reference/filter.html">filter()</a></code>. You can select profiles based on any <code>id_cols</code> or by selecting the <code>prof_id</code> generated in the call to <code><a href="reference/cfp_dat.html">cfp_dat()</a></code>. This also works for model results.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/filter.html">filter</a></span><span class="op">(</span><span class="va">soilphys</span>, </span>
 <span>       <span class="va">Date</span> <span class="op">==</span> <span class="st">"2021-04-01"</span>,</span>
 <span>       <span class="va">site</span> <span class="op">==</span> <span class="st">"site_b"</span><span class="op">)</span></span>
@@ -271,25 +274,25 @@ F= -D_s\cdot \frac{dc}{dz}
 <h3 id="plotting">Plotting<a class="anchor" aria-label="anchor" href="#plotting"></a>
 </h3>
 <p>To get a better understanding of your data, you can plot profiles with the <code><a href="reference/plot_profile.html">plot_profile()</a></code> function. This returns an editable <code>ggplot2</code> plot.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PROFLUX</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/filter.html">filter</a></span><span class="op">(</span><span class="va">prof_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">17</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/plot_profile.html">plot_profile</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-12-1.svg" width="75%" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p><img src="reference/figures/README-unnamed-chunk-13-1.svg" width="75%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">soilphys</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Date</span> <span class="op">==</span> <span class="st">"2021-08-01"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="reference/plot_profile.html">plot_profile</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_light</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-12-2.svg" width="75%" style="display: block; margin: auto;"></p>
+<p><img src="reference/figures/README-unnamed-chunk-13-2.svg" width="75%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h3>
 <p>Most functionality, background and output is documented in the internal manual. Just run <code>?function_name</code> to access it. Furthermore, you can get descriptions of all parameters and their respective units with a special function <code><a href="reference/cfp_parameter.html">cfp_parameter()</a></code>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/cfp_parameter.html">cfp_parameter</a></span><span class="op">(</span><span class="st">"efflux"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      name                             description           unit</span></span>
 <span><span class="co">#&gt; 29 efflux efflux at the soil/atmosphere interface µmol m^-2 s^-1</span></span>
@@ -335,8 +338,8 @@ F= -D_s\cdot \frac{dc}{dz}
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/valentingar/confluxpro/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/valentingar/confluxpro/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/valentingar/ConFluxPro/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/valentingar/ConFluxPro/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
