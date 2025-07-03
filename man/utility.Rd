@@ -13,7 +13,7 @@ n_profiles(x)
 \item{x}{A \code{cfp_dat} object.}
 }
 \value{
-An iteger giving the number of groups of the object.
+An integer giving the number of groups of the object.
 
 An integer giving the number of profiles of the object.
 }

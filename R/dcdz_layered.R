@@ -47,6 +47,7 @@
 #' @keywords internal
 #'
 #' @importFrom rlang .data
+#' @importFrom stats na.omit
 #'
 #' @export
 

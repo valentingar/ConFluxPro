@@ -36,6 +36,7 @@
 
 
 #' @rdname rmse
+#' @export
   nrmse <- function(a,
                     b,
                     normer = "sd"){

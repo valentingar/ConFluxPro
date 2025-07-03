@@ -469,7 +469,7 @@ cfp_id_cols.default <- function(x){
 #' @rdname utility
 #' @param x A `cfp_dat` object.
 #'
-#' @returns An iteger giving the number of groups of the object.
+#' @returns An integer giving the number of groups of the object.
 #' @examples
 #' n_groups(base_dat)
 #'

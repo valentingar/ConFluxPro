@@ -36,7 +36,7 @@
 #'               C0=48000E-6)
 #' @export
 
-prod_mod_conc <- function(prod,height,DS,F0,C0){
+prod_mod_conc <- function(prod, height, DS, F0, C0){
   flux <- cumsum(((prod) * height))+F0
   conc <- cumsum(-((prod)/(2*DS)) *
                    height^2  - c(F0,flux[-length(flux)])/DS *height)+C0
@@ -50,7 +50,8 @@ prod_mod_conc <- function(prod,height,DS,F0,C0){
 #'               height = c(0.5,0.2,0.1,0.03,0.02),
 #'               F0=0
 #'               )
-prod_mod_flux <- function(prod,height,F0){
+#' @export
+prod_mod_flux <- function(prod, height, F0){
   flux <- cumsum(((prod) * height))+F0
   return(flux)
 }
