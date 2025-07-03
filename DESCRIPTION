@@ -1,7 +1,7 @@
 Package: ConFluxPro
 Type: Package
 Title: A Toolkit for Soil Gas Analysis
-Version: 1.2.2
+Version: 1.2.2.9000
 Authors@R: c(
     person("Valentin","Gartiser",email = "code@valentingartiser.de",role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-5320-374X")),
