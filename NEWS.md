@@ -1,5 +1,3 @@
-# ConFluxPro (development version)
-
-# ConFluxPro 1.2.2
+# ConFluxPro 1.3.0
 
 * Initial CRAN submission.
