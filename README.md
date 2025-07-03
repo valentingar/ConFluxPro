@@ -22,6 +22,12 @@ including an inverse approach.
 
 ## Installation
 
+You can install the latest release from CRAN:
+
+``` r
+install.packages("ConFluxPro")
+```
+
 Install the current development version from github:
 
 ``` r
@@ -179,7 +185,7 @@ efflux(PROFLUX) %>%
   theme_minimal()
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.svg" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.svg" width="100%" />
 
 ### Extracting information
 
@@ -296,7 +302,7 @@ PROFLUX %>%
   ggplot2::theme_light()
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.svg" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-13-1.svg" width="75%" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -306,7 +312,7 @@ soilphys %>%
   ggplot2::theme_light()
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-2.svg" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-13-2.svg" width="75%" style="display: block; margin: auto;" />
 
 ### Getting help
 
