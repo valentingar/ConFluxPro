@@ -156,9 +156,10 @@ error_efflux <-function(x,
   UseMethod("error_efflux")
 }
 
+
 #' @rdname error_funs
 #' @exportS3Method
-  error_efflux.cfp_pfres <- error_efflux.cfp_fgres <- function(
+  error_efflux.cfp_pfres <- function(
     x,
     param_cols,
     EFFLUX,
@@ -187,6 +188,10 @@ error_efflux <-function(x,
                                      normer = !!normer))
 
   }
+
+#' @rdname error_funs
+#' @exportS3Method
+  error_efflux.cfp_fgres <- error_efflux.cfp_pfres
 
 #' @rdname error_funs
 #' @exportS3Method

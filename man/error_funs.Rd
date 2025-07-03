@@ -8,6 +8,7 @@
 \alias{error_concentration.cfp_fgres}
 \alias{error_concentration.cfp_altres}
 \alias{error_efflux.cfp_pfres}
+\alias{error_efflux.cfp_fgres}
 \alias{error_efflux.cfp_altres}
 \title{Estimate model error}
 \usage{
@@ -22,6 +23,8 @@ error_concentration(x, param_cols = NULL, normer = "sd")
 error_efflux(x, param_cols, EFFLUX, normer = "sd", ...)
 
 \method{error_efflux}{cfp_pfres}(x, param_cols, EFFLUX, normer = "sd", ...)
+
+\method{error_efflux}{cfp_fgres}(x, param_cols, EFFLUX, normer = "sd", ...)
 
 \method{error_efflux}{cfp_altres}(x, param_cols, EFFLUX, normer = "sd", ...)
 }

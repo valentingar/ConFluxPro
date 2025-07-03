@@ -38,7 +38,7 @@ calculated if missing.
 }
 \examples{
 soilphys_barebones <- ConFluxPro::soilphys |>
- select(
+ dplyr::select(
    c("site",
      "Date",
      "upper",

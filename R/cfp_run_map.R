@@ -90,9 +90,8 @@ cfp_run_map.cfp_altres <- function(x,
 }
 
 # helper ----
-
 #' @exportS3Method
-cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
+cfp_run_map.cfp_pfres <-
   function(x,
            params = list(),
            type = NULL,
@@ -244,6 +243,9 @@ cfp_run_map.cfp_pfres <- cfp_run_map.cfp_fgres <-
   run_map <- validate_cfp_run_map(run_map)
   run_map
 }
+
+#' @exportS3Method
+cfp_run_map.cfp_fgres <- cfp_run_map.cfp_pfres
 
 
 run_map_permutation <- function(x,
