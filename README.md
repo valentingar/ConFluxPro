@@ -206,8 +206,8 @@ cfp_layers_map(PROFLUX)
 
 For big datasets (1000+ profiles), some calculations may takes some
 time. ConFluxPro uses the excellent
-[`future`](https://github.com/HenrikBengtsson/future) and
-[`progressr`](https://github.com/HenrikBengtsson/progressr) packages for
+[`future`](https://github.com/futureverse/future) and
+[`progressr`](https://github.com/futureverse/progressr) packages for
 parallel processing and progress bars in some cpu-intensive functions.
 
 ``` r
