@@ -28,6 +28,7 @@ calculates for each layer defined in cfp_layers_map()."><meta property="og:image
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -114,6 +115,17 @@ each parameter in <code>param</code>. One of "arith" or "harm".</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <a href="cfp_fgres.html">cfp_fgres</a> model result.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The model result contains the original data, but adds the
+dataset <code>FLUX</code>, which contains the calculated flux rates.
+You can use functions <a href="efflux.html">efflux</a> and <a href="production.html">production</a> to calculate
+different elements or access the raw result with <code>model_result$FLUX</code>.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>DAVIDSON, E. A., SAVAGE, K. E., TRUMBORE, S. E., &amp; BORKEN, W.
 (2006). Vertical partitioning of CO2 production within a temperate forest
@@ -126,6 +138,32 @@ https://doi.org/10.1111/j.1365-2486.2005.01142.x</p>
 <code><a href="pro_flux.html">pro_flux</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">fg_flux</span><span class="op">(</span><span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="base_dat.html">base_dat</a></span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> validating datasets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> id_cols: site, Date, gas</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 24 unique profiles</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_fgres fg_flux model result. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mean R2 achieved:  0.956653 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of failed fits:  0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_fgmod fg_flux model. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gases: CO2  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> modes:  LL  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> param:  c_air DS  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> funs:  arith harm  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_dat object to be used as input in ConFluxPro models. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of profiles:  24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of groups:  2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

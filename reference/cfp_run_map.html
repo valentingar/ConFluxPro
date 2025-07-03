@@ -28,6 +28,7 @@ run_map from an cfp_altres object."><meta property="og:image" content="https://v
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -137,7 +138,82 @@ automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>An object of type <code>cfp_run_map</code> that can be used within
+<a href="alternate.html">alternate</a>.</p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="base_dat.html">base_dat</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Create a cfp_run_map where TPS is changed between 90 % and 110 %</span></span></span>
+<span class="r-in"><span><span class="co"># of the original value for 50 runs.</span></span></span>
+<span class="r-in"><span><span class="fu">cfp_run_map</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">PROFLUX</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"TPS"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span>, <span class="fl">1.1</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"factor"</span>,</span></span>
+<span class="r-in"><span>  n_runs <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_run_map to be used in alternate(). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of runs:  50 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> parameters to alternate:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   param param_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   TPS        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    run_id param     value   type gas param_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       1   TPS 1.0412868 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2   TPS 1.0897153 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       3   TPS 0.9360678 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       4   TPS 0.9433800 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       5   TPS 1.0360326 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6       6   TPS 0.9997691 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7       7   TPS 1.0283359 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8       8   TPS 1.0320569 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9       9   TPS 0.9192048 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     10   TPS 1.0531200 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     11   TPS 1.0539350 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     12   TPS 1.0981425 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13     13   TPS 1.0941042 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     14   TPS 0.9778366 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15     15   TPS 0.9922373 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16     16   TPS 0.9630484 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17     17   TPS 0.9349352 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     18   TPS 1.0063147 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19     19   TPS 0.9987274 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     20   TPS 1.0558617 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21     21   TPS 0.9408357 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22     22   TPS 1.0426795 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23     23   TPS 0.9130432 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24     24   TPS 0.9708414 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25     25   TPS 1.0650399 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26     26   TPS 0.9547636 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27     27   TPS 1.0140090 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28     28   TPS 0.9671438 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29     29   TPS 1.0192526 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30     30   TPS 0.9383036 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31     31   TPS 1.0895528 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32     32   TPS 1.0084961 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33     33   TPS 1.0089207 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34     34   TPS 0.9557194 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35     35   TPS 0.9893405 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36     36   TPS 0.9743022 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37     37   TPS 0.9056122 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38     38   TPS 0.9931974 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39     39   TPS 0.9780063 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40     40   TPS 0.9040130 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41     41   TPS 0.9753942 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42     42   TPS 1.0119826 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43     43   TPS 1.0714167 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44     44   TPS 0.9769619 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45     45   TPS 1.0055834 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46     46   TPS 1.0201275 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47     47   TPS 0.9522743 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48     48   TPS 0.9580100 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49     49   TPS 0.9960150 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50     50   TPS 1.0840011 factor CO2        1</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

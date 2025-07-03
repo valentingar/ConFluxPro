@@ -26,6 +26,7 @@ from cfp_pfres or cfp_fgres model results."><meta property="og:image" content="h
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -95,7 +96,49 @@ the
 flux calculation.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>data.frame</code> with one row for each
+combination of <code>id_cols</code> and the column <code>efflux</code>
+in \(µmol m^{-2}s^{-1}\).</p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_dat</span> <span class="op">&lt;-</span> <span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="base_dat.html">base_dat</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="filter.html">filter</a></span><span class="op">(</span><span class="va">Date</span> <span class="op">&lt;</span> <span class="st">"2021-03-01"</span><span class="op">)</span> <span class="co">#subset to speed up example</span></span></span>
+<span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">my_dat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="va">my_dat</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> validating datasets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> id_cols: site, Date, gas</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 4 unique profiles</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">efflux</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     site       Date gas    efflux prof_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 site_a 2021-01-01 CO2 0.8347288       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 site_b 2021-01-01 CO2 0.6741332       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 site_a 2021-02-01 CO2 1.3672901       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 site_b 2021-02-01 CO2 1.0613224       4</span>
+<span class="r-in"><span><span class="fu">efflux</span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   mode prof_id    efflux   site       Date gas</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   LL       1 0.3531993 site_a 2021-01-01 CO2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   LL       2 0.2884947 site_b 2021-01-01 CO2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   LL       3 0.5675383 site_a 2021-02-01 CO2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   LL       4 0.4411681 site_b 2021-02-01 CO2</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

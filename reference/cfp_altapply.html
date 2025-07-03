@@ -28,6 +28,7 @@ alternate() results."><meta property="og:image" content="https://valentingar.git
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -78,6 +79,70 @@ alternate() results.</p>
 column run_id as identifier of the original list elements.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="base_dat.html">base_dat</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">model_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'1'</span> <span class="op">=</span> <span class="va">PROFLUX</span>, <span class="st">'2'</span> <span class="op">=</span> <span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cfp_altapply</span><span class="op">(</span><span class="va">model_list</span>, <span class="va">efflux</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      site       Date gas     efflux prof_id run_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  site_a 2021-01-01 CO2  0.8347288       1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  site_b 2021-01-01 CO2  0.6741332       2      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  site_a 2021-02-01 CO2  1.3672901       3      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  site_b 2021-02-01 CO2  1.0613224       4      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  site_a 2021-03-01 CO2  1.7443084       5      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  site_b 2021-03-01 CO2  1.3906597       6      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  site_a 2021-04-01 CO2  4.1451861       7      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  site_b 2021-04-01 CO2  3.3212976       8      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  site_a 2021-05-01 CO2  5.9120294       9      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 site_b 2021-05-01 CO2  4.4778132      10      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 site_a 2021-06-01 CO2  7.2487756      11      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 site_b 2021-06-01 CO2  5.6816381      12      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 site_a 2021-07-01 CO2 10.1179566      13      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 site_b 2021-07-01 CO2  8.5211395      14      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 site_a 2021-08-01 CO2  8.1122940      15      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 site_b 2021-08-01 CO2  6.8952154      16      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 site_a 2021-09-01 CO2  6.2227577      17      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 site_b 2021-09-01 CO2  5.2422286      18      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 site_a 2021-10-01 CO2  3.9622685      19      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 site_b 2021-10-01 CO2  3.2499313      20      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 site_a 2021-11-01 CO2  1.7419033      21      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 site_b 2021-11-01 CO2  1.5511484      22      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 site_a 2021-12-01 CO2  1.2133351      23      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 site_b 2021-12-01 CO2  1.0829190      24      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 site_a 2021-01-01 CO2  0.8347288       1      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 site_b 2021-01-01 CO2  0.6741332       2      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 site_a 2021-02-01 CO2  1.3672901       3      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 site_b 2021-02-01 CO2  1.0613224       4      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 site_a 2021-03-01 CO2  1.7443084       5      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 site_b 2021-03-01 CO2  1.3906597       6      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 site_a 2021-04-01 CO2  4.1451861       7      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32 site_b 2021-04-01 CO2  3.3212976       8      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33 site_a 2021-05-01 CO2  5.9120294       9      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34 site_b 2021-05-01 CO2  4.4778132      10      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35 site_a 2021-06-01 CO2  7.2487756      11      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36 site_b 2021-06-01 CO2  5.6816381      12      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37 site_a 2021-07-01 CO2 10.1179566      13      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38 site_b 2021-07-01 CO2  8.5211395      14      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39 site_a 2021-08-01 CO2  8.1122940      15      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40 site_b 2021-08-01 CO2  6.8952154      16      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41 site_a 2021-09-01 CO2  6.2227577      17      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42 site_b 2021-09-01 CO2  5.2422286      18      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43 site_a 2021-10-01 CO2  3.9622685      19      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44 site_b 2021-10-01 CO2  3.2499313      20      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45 site_a 2021-11-01 CO2  1.7419033      21      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46 site_b 2021-11-01 CO2  1.5511484      22      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47 site_a 2021-12-01 CO2  1.2133351      23      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48 site_b 2021-12-01 CO2  1.0829190      24      2</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

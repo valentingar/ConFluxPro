@@ -26,6 +26,7 @@
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -62,6 +63,9 @@
 <span><span class="fu">error_efflux</span><span class="op">(</span><span class="va">x</span>, <span class="va">param_cols</span>, <span class="va">EFFLUX</span>, normer <span class="op">=</span> <span class="st">"sd"</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'cfp_pfres'</span></span>
+<span><span class="fu">error_efflux</span><span class="op">(</span><span class="va">x</span>, <span class="va">param_cols</span>, <span class="va">EFFLUX</span>, normer <span class="op">=</span> <span class="st">"sd"</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'cfp_fgres'</span></span>
 <span><span class="fu">error_efflux</span><span class="op">(</span><span class="va">x</span>, <span class="va">param_cols</span>, <span class="va">EFFLUX</span>, normer <span class="op">=</span> <span class="st">"sd"</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for class 'cfp_altres'</span></span>
@@ -107,9 +111,18 @@ x. Must contain any id_cols of x needed.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Further arguments passed to <code><a href="efflux.html">efflux()</a></code> in case of cfp_fgres.</p></dd>
+<dd><p>Arguments passed on to <code><a href="efflux.html">efflux</a></code></p><dl><dt><code></code></dt>
+<dd></dd>
+
+
+</dl></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>The calculated error estimate for a single model, a list of models
+(<a href="cfp_altres.html">cfp_altres</a>) and for each parameter combination in <code>param_cols</code></p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For error_concentration, the way the error parameter is calculated
@@ -120,6 +133,29 @@ concentrations. 'NRMSE's of cfp_fgres objects simply calculate the mean of
 (dcdz_sd / dcdz_ppm) per group described in param_cols.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">base_dat</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">error_concentration</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Groups:   site [2]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   site   gas   NRMSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> site_a CO2   0.209</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> site_b CO2   0.237</span>
+<span class="r-in"><span><span class="fu">error_efflux</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">PROFLUX</span>,</span></span>
+<span class="r-in"><span>  EFFLUX <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>efflux <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  param_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   site   NRMSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> site_a  1.45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> site_b  1.39</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

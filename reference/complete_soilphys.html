@@ -30,6 +30,7 @@ calculated if missing."><meta property="og:image" content="https://valentingar.g
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -91,6 +92,11 @@ calculate D0 and DS.</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> with all necessary columns for
+<a href="cfp_soilphys.html">cfp_soilphys</a>.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>D0_massman</p>
 <p>Other soilphys:
@@ -101,8 +107,389 @@ calculate D0 and DS.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">soilphys</span> <span class="op">&lt;-</span> <span class="fu">complete_soilphys</span><span class="op">(</span><span class="va">soilphys</span>, DSD0_formula <span class="op">=</span> <span class="st">"a*AFPS^b"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following columns were overwritten: AFPS DSD0 D0 DS c_air</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">soilphys_barebones</span> <span class="op">&lt;-</span> <span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="soilphys.html">soilphys</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>   <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"Date"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"upper"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"lower"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"depth"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"t"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"p"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"TPS"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"SWC"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"a"</span>,</span></span>
+<span class="r-in"><span>     <span class="st">"b"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>     <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">complete_soilphys</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">soilphys_barebones</span>,</span></span>
+<span class="r-in"><span>  DSD0_formula <span class="op">=</span> <span class="st">"a*AFPS^b"</span>,</span></span>
+<span class="r-in"><span>  gases <span class="op">=</span> <span class="st">"CO2"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following columns were added: AFPS DSD0 D0 DS c_air</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following columns were overwritten: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       site       Date upper lower depth            t    p  TPS        SWC    a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   site_a 2021-01-01   -60  -100 -80.0 -0.789903514 1013 0.38 0.16135277 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   site_a 2021-02-01   -60  -100 -80.0  0.005814771 1013 0.38 0.12392743 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   site_a 2021-03-01   -60  -100 -80.0  2.059937865 1013 0.38 0.12227893 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   site_a 2021-04-01   -60  -100 -80.0  4.725217894 1013 0.38 0.14464345 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   site_a 2021-05-01   -60  -100 -80.0  8.825682240 1013 0.38 0.11446588 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   site_a 2021-06-01   -60  -100 -80.0 10.377836383 1013 0.38 0.09537391 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   site_a 2021-07-01   -60  -100 -80.0 11.202861092 1013 0.38 0.06935668 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   site_a 2021-08-01   -60  -100 -80.0 10.009073112 1013 0.38 0.06097648 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   site_a 2021-09-01   -60  -100 -80.0  7.940632454 1013 0.38 0.06987624 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  site_a 2021-10-01   -60  -100 -80.0  5.093914320 1013 0.38 0.07014097 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11  site_a 2021-11-01   -60  -100 -80.0  1.513765537 1013 0.38 0.09199596 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  site_a 2021-12-01   -60  -100 -80.0 -0.138361143 1013 0.38 0.13516790 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13  site_a 2021-01-01   -40   -60 -50.0 -1.974758784 1013 0.38 0.12779751 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14  site_a 2021-02-01   -40   -60 -50.0 -1.056152663 1013 0.38 0.12206169 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15  site_a 2021-03-01   -40   -60 -50.0  1.279122687 1013 0.38 0.12005613 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16  site_a 2021-04-01   -40   -60 -50.0  4.900923939 1013 0.38 0.13754664 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17  site_a 2021-05-01   -40   -60 -50.0  9.041512140 1013 0.38 0.08588769 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18  site_a 2021-06-01   -40   -60 -50.0 11.049650601 1013 0.38 0.09087161 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19  site_a 2021-07-01   -40   -60 -50.0 12.872511761 1013 0.38 0.06887892 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20  site_a 2021-08-01   -40   -60 -50.0 10.640454211 1013 0.38 0.06647048 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21  site_a 2021-09-01   -40   -60 -50.0  7.837381218 1013 0.38 0.05841746 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22  site_a 2021-10-01   -40   -60 -50.0  5.167411136 1013 0.38 0.06444560 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23  site_a 2021-11-01   -40   -60 -50.0  1.156822624 1013 0.38 0.07093349 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24  site_a 2021-12-01   -40   -60 -50.0 -1.379337638 1013 0.38 0.11855012 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25  site_a 2021-01-01   -23   -40 -31.5 -2.705419534 1013 0.38 0.10824738 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26  site_a 2021-02-01   -23   -40 -31.5 -1.711032581 1013 0.38 0.11046777 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27  site_a 2021-03-01   -23   -40 -31.5  0.797619994 1013 0.38 0.10054849 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28  site_a 2021-04-01   -23   -40 -31.5  5.009276001 1013 0.38 0.09319393 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29  site_a 2021-05-01   -23   -40 -31.5  9.174607245 1013 0.38 0.09450679 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30  site_a 2021-06-01   -23   -40 -31.5 11.463936036 1013 0.38 0.07354319 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31  site_a 2021-07-01   -23   -40 -31.5 13.902129673 1013 0.38 0.05759840 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32  site_a 2021-08-01   -23   -40 -31.5 11.029805889 1013 0.38 0.05295930 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33  site_a 2021-09-01   -23   -40 -31.5  7.773709622 1013 0.38 0.04922287 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34  site_a 2021-10-01   -23   -40 -31.5  5.212734172 1013 0.38 0.05183900 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35  site_a 2021-11-01   -23   -40 -31.5  0.936707828 1013 0.38 0.04445528 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36  site_a 2021-12-01   -23   -40 -31.5 -2.144606477 1013 0.38 0.10601860 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37  site_a 2021-01-01   -15   -23 -19.0 -4.778507694 1013 0.45 0.10269426 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38  site_a 2021-02-01   -15   -23 -19.0 -2.760253024 1013 0.45 0.09167729 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39  site_a 2021-03-01   -15   -23 -19.0  0.438113008 1013 0.45 0.06997404 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40  site_a 2021-04-01   -15   -23 -19.0  4.178396294 1013 0.45 0.10165638 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41  site_a 2021-05-01   -15   -23 -19.0  9.950314584 1013 0.45 0.08055249 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42  site_a 2021-06-01   -15   -23 -19.0 11.910006233 1013 0.45 0.06479207 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43  site_a 2021-07-01   -15   -23 -19.0 14.510511310 1013 0.45 0.06098852 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44  site_a 2021-08-01   -15   -23 -19.0 13.833408605 1013 0.45 0.04653729 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45  site_a 2021-09-01   -15   -23 -19.0 10.468082402 1013 0.45 0.03815859 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46  site_a 2021-10-01   -15   -23 -19.0  4.666227261 1013 0.45 0.05305960 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47  site_a 2021-11-01   -15   -23 -19.0  0.474415162 1013 0.45 0.06141455 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48  site_a 2021-12-01   -15   -23 -19.0 -2.452538053 1013 0.45 0.11749614 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49  site_a 2021-01-01    -7   -15 -11.0 -4.941950172 1013 0.45 0.12111059 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  site_a 2021-02-01    -7   -15 -11.0 -3.450711479 1013 0.45 0.08458007 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51  site_a 2021-03-01    -7   -15 -11.0  0.045924822 1013 0.45 0.08159875 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52  site_a 2021-04-01    -7   -15 -11.0  4.658218991 1013 0.45 0.07058679 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53  site_a 2021-05-01    -7   -15 -11.0 10.056091363 1013 0.45 0.07305746 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54  site_a 2021-06-01    -7   -15 -11.0 11.386819636 1013 0.45 0.05492004 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55  site_a 2021-07-01    -7   -15 -11.0 13.493560406 1013 0.45 0.05215679 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56  site_a 2021-08-01    -7   -15 -11.0 14.932568341 1013 0.45 0.04825040 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57  site_a 2021-09-01    -7   -15 -11.0 10.345954855 1013 0.45 0.04443048 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58  site_a 2021-10-01    -7   -15 -11.0  4.431750849 1013 0.45 0.04135314 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59  site_a 2021-11-01    -7   -15 -11.0  0.067754406 1013 0.45 0.06293469 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60  site_a 2021-12-01    -7   -15 -11.0 -3.557185253 1013 0.45 0.07107141 1.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61  site_a 2021-01-01     0    -7  -3.5 -5.095177495 1013 0.52 0.09415401 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62  site_a 2021-02-01     0    -7  -3.5 -4.098016281 1013 0.52 0.09556181 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63  site_a 2021-03-01     0    -7  -3.5 -0.321751602 1013 0.52 0.09159233 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64  site_a 2021-04-01     0    -7  -3.5  5.108052769 1013 0.52 0.10448052 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65  site_a 2021-05-01     0    -7  -3.5 10.155257092 1013 0.52 0.07428442 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66  site_a 2021-06-01     0    -7  -3.5 10.896332201 1013 0.52 0.04825304 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67  site_a 2021-07-01     0    -7  -3.5 12.540168934 1013 0.52 0.04138080 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68  site_a 2021-08-01     0    -7  -3.5 15.963030593 1013 0.52 0.05557555 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69  site_a 2021-09-01     0    -7  -3.5 10.231460278 1013 0.52 0.04235123 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70  site_a 2021-10-01     0    -7  -3.5  4.211929213 1013 0.52 0.04045612 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71  site_a 2021-11-01     0    -7  -3.5 -0.313490052 1013 0.52 0.06440254 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72  site_a 2021-12-01     0    -7  -3.5 -4.592792003 1013 0.52 0.11012308 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73  site_a 2021-01-01     5     0   2.5 -5.979843913 1013 0.84 0.18170958 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74  site_a 2021-02-01     5     0   2.5 -4.354791034 1013 0.84 0.14611772 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75  site_a 2021-03-01     5     0   2.5 -0.723156720 1013 0.84 0.14588659 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76  site_a 2021-04-01     5     0   2.5  5.317203251 1013 0.84 0.15689576 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77  site_a 2021-05-01     5     0   2.5 11.281448127 1013 0.84 0.12042988 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78  site_a 2021-06-01     5     0   2.5 14.059040328 1013 0.84 0.10016325 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79  site_a 2021-07-01     5     0   2.5 17.249086822 1013 0.84 0.09155761 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80  site_a 2021-08-01     5     0   2.5 16.956101791 1013 0.84 0.07517403 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81  site_a 2021-09-01     5     0   2.5 12.157481114 1013 0.84 0.07527369 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82  site_a 2021-10-01     5     0   2.5  4.538994367 1013 0.84 0.07531779 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83  site_a 2021-11-01     5     0   2.5 -0.769278882 1013 0.84 0.10862922 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84  site_a 2021-12-01     5     0   2.5 -5.461548369 1013 0.84 0.17177981 0.35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 85  site_b 2021-01-01   -60  -100 -80.0 -0.760136684 1013 0.35 0.15177347 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 86  site_b 2021-02-01   -60  -100 -80.0  0.013657432 1013 0.35 0.14754014 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 87  site_b 2021-03-01   -60  -100 -80.0  2.069232975 1013 0.35 0.12499533 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 88  site_b 2021-04-01   -60  -100 -80.0  5.131912309 1013 0.35 0.14674436 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 89  site_b 2021-05-01   -60  -100 -80.0  7.977336506 1013 0.35 0.08702691 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90  site_b 2021-06-01   -60  -100 -80.0 10.092462468 1013 0.35 0.10550513 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 91  site_b 2021-07-01   -60  -100 -80.0  9.298023160 1013 0.35 0.08173583 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 92  site_b 2021-08-01   -60  -100 -80.0 10.447606285 1013 0.35 0.06670726 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 93  site_b 2021-09-01   -60  -100 -80.0  7.482481342 1013 0.35 0.05150596 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 94  site_b 2021-10-01   -60  -100 -80.0  5.980034473 1013 0.35 0.07206531 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 95  site_b 2021-11-01   -60  -100 -80.0  1.816129076 1013 0.35 0.09464874 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96  site_b 2021-12-01   -60  -100 -80.0 -0.059126606 1013 0.35 0.13536420 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97  site_b 2021-01-01   -40   -60 -50.0 -1.900341711 1013 0.35 0.12588911 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 98  site_b 2021-02-01   -40   -60 -50.0 -0.982639296 1013 0.35 0.10311066 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 99  site_b 2021-03-01   -40   -60 -50.0  1.432492143 1013 0.35 0.10062188 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100 site_b 2021-04-01   -40   -60 -50.0  5.248726225 1013 0.35 0.12995582 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 101 site_b 2021-05-01   -40   -60 -50.0  9.239455905 1013 0.35 0.08644474 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 102 site_b 2021-06-01   -40   -60 -50.0 11.941627123 1013 0.35 0.06641329 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 103 site_b 2021-07-01   -40   -60 -50.0 10.736706519 1013 0.35 0.06416576 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104 site_b 2021-08-01   -40   -60 -50.0 12.658908520 1013 0.35 0.05436811 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 105 site_b 2021-09-01   -40   -60 -50.0  8.032934896 1013 0.35 0.05377151 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 106 site_b 2021-10-01   -40   -60 -50.0  5.423667933 1013 0.35 0.06590843 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 107 site_b 2021-11-01   -40   -60 -50.0  1.301116278 1013 0.35 0.06709121 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 108 site_b 2021-12-01   -40   -60 -50.0 -1.166417621 1013 0.35 0.11924550 1.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 109 site_b 2021-01-01   -20   -40 -30.0 -2.660478396 1013 0.20 0.05038321 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 110 site_b 2021-02-01   -20   -40 -30.0 -1.646837116 1013 0.20 0.06399921 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111 site_b 2021-03-01   -20   -40 -30.0  1.007998255 1013 0.20 0.04205140 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 112 site_b 2021-04-01   -20   -40 -30.0  5.326602170 1013 0.20 0.04510915 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 113 site_b 2021-05-01   -20   -40 -30.0 10.080868838 1013 0.20 0.04582019 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 114 site_b 2021-06-01   -20   -40 -30.0 13.174403560 1013 0.20 0.02499814 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 115 site_b 2021-07-01   -20   -40 -30.0 11.695828759 1013 0.20 0.02772383 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 116 site_b 2021-08-01   -20   -40 -30.0 14.133110009 1013 0.20 0.01572449 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 117 site_b 2021-09-01   -20   -40 -30.0  8.399903932 1013 0.20 0.02873606 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118 site_b 2021-10-01   -20   -40 -30.0  5.052756906 1013 0.20 0.02352881 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 119 site_b 2021-11-01   -20   -40 -30.0  0.957774412 1013 0.20 0.02979040 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 120 site_b 2021-12-01   -20   -40 -30.0 -1.904611631 1013 0.20 0.03527563 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121 site_b 2021-01-01   -13   -20 -16.5 -4.021340872 1013 0.20 0.05000081 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122 site_b 2021-02-01   -13   -20 -16.5 -3.162888934 1013 0.20 0.05799344 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123 site_b 2021-03-01   -13   -20 -16.5  0.320792733 1013 0.20 0.05823557 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124 site_b 2021-04-01   -13   -20 -16.5  4.975450052 1013 0.20 0.03230483 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125 site_b 2021-05-01   -13   -20 -16.5 10.547663028 1013 0.20 0.03394412 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 126 site_b 2021-06-01   -13   -20 -16.5 14.082632961 1013 0.20 0.03926870 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 127 site_b 2021-07-01   -13   -20 -16.5 15.709877051 1013 0.20 0.02198031 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 128 site_b 2021-08-01   -13   -20 -16.5 12.315149405 1013 0.20 0.02219643 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 129 site_b 2021-09-01   -13   -20 -16.5 10.462670598 1013 0.20 0.01955716 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 130 site_b 2021-10-01   -13   -20 -16.5  5.596401189 1013 0.20 0.01736414 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131 site_b 2021-11-01   -13   -20 -16.5  0.278406107 1013 0.20 0.02656958 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 132 site_b 2021-12-01   -13   -20 -16.5 -2.889328092 1013 0.20 0.04465928 0.80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 133 site_b 2021-01-01    -5   -13  -9.0 -5.090781792 1013 0.61 0.12826312 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 134 site_b 2021-02-01    -5   -13  -9.0 -3.586434020 1013 0.61 0.11569024 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 135 site_b 2021-03-01    -5   -13  -9.0 -0.039957854 1013 0.61 0.12572711 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 136 site_b 2021-04-01    -5   -13  -9.0  5.118653778 1013 0.61 0.12086816 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 137 site_b 2021-05-01    -5   -13  -9.0 10.892628777 1013 0.61 0.10246451 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138 site_b 2021-06-01    -5   -13  -9.0 14.590509433 1013 0.61 0.08471983 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 139 site_b 2021-07-01    -5   -13  -9.0 15.197550175 1013 0.61 0.06947414 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 140 site_b 2021-08-01    -5   -13  -9.0 12.594039210 1013 0.61 0.05481658 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 141 site_b 2021-09-01    -5   -13  -9.0 11.201612308 1013 0.61 0.05261122 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 142 site_b 2021-10-01    -5   -13  -9.0  5.383928248 1013 0.61 0.06686093 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 143 site_b 2021-11-01    -5   -13  -9.0 -0.077424856 1013 0.61 0.09197552 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 144 site_b 2021-12-01    -5   -13  -9.0 -3.608523637 1013 0.61 0.12637355 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145 site_b 2021-01-01     0    -5  -2.5 -6.017630590 1013 0.61 0.13635078 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146 site_b 2021-02-01     0    -5  -2.5 -3.953506429 1013 0.61 0.12200566 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147 site_b 2021-03-01     0    -5  -2.5 -0.352608363 1013 0.61 0.11382624 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148 site_b 2021-04-01     0    -5  -2.5  5.242763674 1013 0.61 0.12189161 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149 site_b 2021-05-01     0    -5  -2.5 11.191599092 1013 0.61 0.09005652 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 150 site_b 2021-06-01     0    -5  -2.5 15.030669043 1013 0.61 0.07706251 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 151 site_b 2021-07-01     0    -5  -2.5 14.753533549 1013 0.61 0.05760801 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152 site_b 2021-08-01     0    -5  -2.5 12.835743708 1013 0.61 0.05842371 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 153 site_b 2021-09-01     0    -5  -2.5 11.842028457 1013 0.61 0.05133646 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 154 site_b 2021-10-01     0    -5  -2.5  5.199785032 1013 0.61 0.07428544 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 155 site_b 2021-11-01     0    -5  -2.5 -0.385811691 1013 0.61 0.07117977 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 156 site_b 2021-12-01     0    -5  -2.5 -4.231826442 1013 0.61 0.12219178 0.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 157 site_b 2021-01-01     3     0   1.5 -6.203144794 1013 0.80 0.15587423 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 158 site_b 2021-02-01     3     0   1.5 -4.227370951 1013 0.80 0.13712901 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159 site_b 2021-03-01     3     0   1.5 -0.580427948 1013 0.80 0.14352841 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 160 site_b 2021-04-01     3     0   1.5  5.378220427 1013 0.80 0.15749876 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 161 site_b 2021-05-01     3     0   1.5 11.265885759 1013 0.80 0.12660724 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 162 site_b 2021-06-01     3     0   1.5 16.146877945 1013 0.80 0.10751626 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 163 site_b 2021-07-01     3     0   1.5 15.830225898 1013 0.80 0.07862567 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 164 site_b 2021-08-01     3     0   1.5 14.275232537 1013 0.80 0.08451232 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165 site_b 2021-09-01     3     0   1.5 12.268583588 1013 0.80 0.06434240 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 166 site_b 2021-10-01     3     0   1.5  5.178563225 1013 0.80 0.07610873 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 167 site_b 2021-11-01     3     0   1.5 -0.570407603 1013 0.80 0.09808550 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 168 site_b 2021-12-01     3     0   1.5 -4.491658964 1013 0.80 0.15002019 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 169 site_b 2021-01-01     7     3   5.0 -5.804223887 1013 0.80 0.13205671 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 170 site_b 2021-02-01     7     3   5.0 -4.536964214 1013 0.80 0.13510797 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 171 site_b 2021-03-01     7     3   5.0 -0.831423188 1013 0.80 0.12055431 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172 site_b 2021-04-01     7     3   5.0  5.582905509 1013 0.80 0.12795519 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 173 site_b 2021-05-01     7     3   5.0 11.170914622 1013 0.80 0.10733342 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 174 site_b 2021-06-01     7     3   5.0 18.356350349 1013 0.80 0.09133064 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 175 site_b 2021-07-01     7     3   5.0 18.740984505 1013 0.80 0.07896058 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 176 site_b 2021-08-01     7     3   5.0 17.417125513 1013 0.80 0.06265722 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 177 site_b 2021-09-01     7     3   5.0 12.689146454 1013 0.80 0.06020139 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 178 site_b 2021-10-01     7     3   5.0  5.294302406 1013 0.80 0.07106000 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179 site_b 2021-11-01     7     3   5.0 -0.724373984 1013 0.80 0.07973527 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 180 site_b 2021-12-01     7     3   5.0 -4.538560535 1013 0.80 0.12185287 0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       b      AFPS       DSD0 gas           D0           DS    c_air</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   1.5 0.2186472 0.12268662 CO2 1.373780e-05 1.685444e-06 44.73588</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   1.5 0.2560726 0.15549836 CO2 1.381053e-05 2.147515e-06 44.60556</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   1.5 0.2577211 0.15700234 CO2 1.399908e-05 2.197889e-06 44.27263</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   1.5 0.2353565 0.13701581 CO2 1.424543e-05 1.951850e-06 43.84798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   1.5 0.2655341 0.16419569 CO2 1.462819e-05 2.401886e-06 43.21035</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   1.5 0.2846261 0.18221885 CO2 1.477426e-05 2.692149e-06 42.97380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   1.5 0.3106433 0.20776590 CO2 1.485216e-05 3.085773e-06 42.84911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   1.5 0.3190235 0.21622968 CO2 1.473950e-05 3.187117e-06 43.02976</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   1.5 0.3101238 0.20724488 CO2 1.454519e-05 3.014416e-06 43.34640</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  1.5 0.3098590 0.20697957 CO2 1.427966e-05 2.955599e-06 43.78988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11  1.5 0.2880040 0.18547232 CO2 1.394884e-05 2.587123e-06 44.36067</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  1.5 0.2448321 0.14537301 CO2 1.379734e-05 2.005761e-06 44.62911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13  1.5 0.2522025 0.15198660 CO2 1.362982e-05 2.071550e-06 44.93134</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14  1.5 0.2579383 0.15720090 CO2 1.371350e-05 2.155775e-06 44.77965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15  1.5 0.2599439 0.15903790 CO2 1.392728e-05 2.214965e-06 44.39860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16  1.5 0.2424534 0.14325954 CO2 1.426174e-05 2.043130e-06 43.82027</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17  1.5 0.2941123 0.19140402 CO2 1.464846e-05 2.803775e-06 43.17730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18  1.5 0.2891284 0.18655949 CO2 1.483768e-05 2.768111e-06 42.87221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19  1.5 0.3111211 0.20824539 CO2 1.501039e-05 3.125844e-06 42.59898</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20  1.5 0.3135295 0.21066816 CO2 1.479904e-05 3.117686e-06 42.93403</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21  1.5 0.3215825 0.21883659 CO2 1.453552e-05 3.180904e-06 43.36233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22  1.5 0.3155544 0.21271230 CO2 1.428649e-05 3.038912e-06 43.77832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23  1.5 0.3090665 0.20618600 CO2 1.391604e-05 2.869293e-06 44.41839</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24  1.5 0.2614499 0.16042199 CO2 1.368403e-05 2.195220e-06 44.83290</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25  1.5 0.2717526 0.16999723 CO2 1.356342e-05 2.305744e-06 45.05273</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26  1.5 0.2695322 0.16791801 CO2 1.365382e-05 2.292722e-06 44.88769</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27  1.5 0.2794515 0.17727233 CO2 1.388308e-05 2.461085e-06 44.47663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28  1.5 0.2868061 0.18431630 CO2 1.427180e-05 2.630526e-06 43.80320</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29  1.5 0.2854932 0.18305219 CO2 1.466097e-05 2.683723e-06 43.15694</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30  1.5 0.3064568 0.20358002 CO2 1.487686e-05 3.028631e-06 42.80981</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31  1.5 0.3224016 0.21967317 CO2 1.510833e-05 3.318895e-06 42.44618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32  1.5 0.3270407 0.22443157 CO2 1.483581e-05 3.329624e-06 42.87521</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33  1.5 0.3307771 0.22828872 CO2 1.452956e-05 3.316935e-06 43.37216</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34  1.5 0.3281610 0.22558577 CO2 1.429070e-05 3.223779e-06 43.77119</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35  1.5 0.3355447 0.23324206 CO2 1.389584e-05 3.241094e-06 44.45406</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36  1.5 0.2739814 0.17209287 CO2 1.361437e-05 2.342936e-06 44.95950</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37  1.6 0.3473057 0.19334299 CO2 1.337582e-05 2.586121e-06 45.40075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38  1.6 0.3583227 0.20324891 CO2 1.355844e-05 2.755739e-06 45.06187</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39  1.6 0.3800260 0.22330092 CO2 1.385012e-05 3.092744e-06 44.53508</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40  1.6 0.3483436 0.19426827 CO2 1.419473e-05 2.757586e-06 43.93444</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41  1.6 0.3694475 0.21343896 CO2 1.473396e-05 3.144801e-06 43.03869</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42  1.6 0.3852079 0.22819265 CO2 1.491908e-05 3.404425e-06 42.74282</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43  1.6 0.3890115 0.23180840 CO2 1.516634e-05 3.515685e-06 42.35641</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44  1.6 0.4034627 0.24573937 CO2 1.510179e-05 3.711103e-06 42.45635</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45  1.6 0.4118414 0.25395532 CO2 1.478277e-05 3.754164e-06 42.96012</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46  1.6 0.3969404 0.23941413 CO2 1.423996e-05 3.409248e-06 43.85729</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47  1.6 0.3885854 0.23140234 CO2 1.385344e-05 3.205720e-06 44.52917</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48  1.6 0.3325039 0.18032835 CO2 1.358638e-05 2.450010e-06 45.01065</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49  1.6 0.3288894 0.17720221 CO2 1.336108e-05 2.367612e-06 45.42842</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  1.6 0.3654199 0.20972821 CO2 1.349584e-05 2.830459e-06 45.17723</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51  1.6 0.3684013 0.21247266 CO2 1.381420e-05 2.935140e-06 44.59901</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52  1.6 0.3794132 0.22272513 CO2 1.423922e-05 3.171431e-06 43.85856</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53  1.6 0.3769425 0.22040911 CO2 1.474393e-05 3.249696e-06 43.02262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54  1.6 0.3950800 0.23762127 CO2 1.486956e-05 3.533324e-06 42.82141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55  1.6 0.3978432 0.24028597 CO2 1.506943e-05 3.620973e-06 42.50668</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56  1.6 0.4017496 0.24407204 CO2 1.520664e-05 3.711515e-06 42.29436</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57  1.6 0.4055695 0.24779571 CO2 1.477125e-05 3.660253e-06 42.97863</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58  1.6 0.4086469 0.25081088 CO2 1.421821e-05 3.566083e-06 43.89434</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59  1.6 0.3870653 0.22995566 CO2 1.381620e-05 3.177114e-06 44.59545</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60  1.6 0.3789286 0.22227013 CO2 1.348620e-05 2.997579e-06 45.19508</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61  1.7 0.4258460 0.18742147 CO2 1.334726e-05 2.501564e-06 45.45439</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62  1.7 0.4244382 0.18636938 CO2 1.343727e-05 2.504296e-06 45.28592</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63  1.7 0.4284077 0.18934214 CO2 1.378057e-05 2.609243e-06 44.65911</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64  1.7 0.4155195 0.17976095 CO2 1.428098e-05 2.567162e-06 43.78765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65  1.7 0.4457156 0.20252950 CO2 1.475327e-05 2.987973e-06 43.00756</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66  1.7 0.4717470 0.22304653 CO2 1.482320e-05 3.306263e-06 42.89535</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67  1.7 0.4786192 0.22859840 CO2 1.497883e-05 3.424137e-06 42.64854</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68  1.7 0.4644244 0.21719289 CO2 1.530523e-05 3.324188e-06 42.14361</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69  1.7 0.4776488 0.22781101 CO2 1.476046e-05 3.362595e-06 42.99599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70  1.7 0.4795439 0.22934970 CO2 1.419784e-05 3.256271e-06 43.92913</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71  1.7 0.4555975 0.21022201 CO2 1.378133e-05 2.897138e-06 44.65776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72  1.7 0.4098769 0.17563088 CO2 1.339258e-05 2.352150e-06 45.36936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73  1.2 0.6582904 0.21191860 CO2 1.326764e-05 2.811660e-06 45.60490</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74  1.2 0.6938823 0.22574129 CO2 1.341407e-05 3.028109e-06 45.32918</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75  1.2 0.6941134 0.22583152 CO2 1.374389e-05 3.103805e-06 44.72492</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76  1.2 0.6831042 0.22154014 CO2 1.430041e-05 3.168115e-06 43.75477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77  1.2 0.7195701 0.23580651 CO2 1.485960e-05 3.503989e-06 42.83727</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78  1.2 0.7398367 0.24379855 CO2 1.512328e-05 3.687034e-06 42.42299</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79  1.2 0.7484424 0.24720548 CO2 1.542868e-05 3.814055e-06 41.95698</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80  1.2 0.7648260 0.25371328 CO2 1.540052e-05 3.907317e-06 41.99935</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81  1.2 0.7647263 0.25367360 CO2 1.494254e-05 3.790527e-06 42.70574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82  1.2 0.7646822 0.25365605 CO2 1.422816e-05 3.609058e-06 43.87739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83  1.2 0.7313708 0.24045465 CO2 1.373968e-05 3.303771e-06 44.73249</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84  1.2 0.6682202 0.21576031 CO2 1.331426e-05 2.872690e-06 45.51660</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 85  1.5 0.1982265 0.10590682 CO2 1.374052e-05 1.455214e-06 44.73099</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 86  1.5 0.2024599 0.10931749 CO2 1.381125e-05 1.509811e-06 44.60428</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 87  1.5 0.2250047 0.12807623 CO2 1.399994e-05 1.793059e-06 44.27113</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 88  1.5 0.2032556 0.10996264 CO2 1.428319e-05 1.570618e-06 43.78390</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 89  1.5 0.2629731 0.16182596 CO2 1.454863e-05 2.354346e-06 43.34074</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90  1.5 0.2444949 0.14507276 CO2 1.474735e-05 2.139439e-06 43.01709</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 91  1.5 0.2682642 0.16673441 CO2 1.467257e-05 2.446423e-06 43.13809</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 92  1.5 0.2832927 0.18093993 CO2 1.478084e-05 2.674444e-06 42.96322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 93  1.5 0.2984940 0.19569726 CO2 1.450231e-05 2.838062e-06 43.41717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 94  1.5 0.2779347 0.17583097 CO2 1.436208e-05 2.525299e-06 43.65087</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 95  1.5 0.2553513 0.15484181 CO2 1.397664e-05 2.164169e-06 44.31189</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96  1.5 0.2146358 0.11932584 CO2 1.380459e-05 1.647244e-06 44.61617</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97  1.5 0.2241109 0.12731386 CO2 1.363659e-05 1.736127e-06 44.91902</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 98  1.5 0.2468893 0.14720913 CO2 1.372021e-05 2.019740e-06 44.76756</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 99  1.5 0.2493781 0.14944066 CO2 1.394137e-05 2.083407e-06 44.37380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100 1.5 0.2200442 0.12386427 CO2 1.429405e-05 1.770522e-06 43.76553</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 101 1.5 0.2635553 0.16236364 CO2 1.466707e-05 2.381398e-06 43.14703</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 102 1.5 0.2835867 0.18122164 CO2 1.492208e-05 2.704204e-06 42.73808</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 103 1.5 0.2858342 0.18338027 CO2 1.480812e-05 2.715518e-06 42.91947</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104 1.5 0.2956319 0.19288931 CO2 1.499010e-05 2.891431e-06 42.63082</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 105 1.5 0.2962285 0.19347350 CO2 1.455384e-05 2.815782e-06 43.33217</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 106 1.5 0.2840916 0.18170579 CO2 1.431031e-05 2.600266e-06 43.73804</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 107 1.5 0.2829088 0.18057221 CO2 1.392930e-05 2.515244e-06 44.39504</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 108 1.5 0.2307545 0.13301680 CO2 1.370345e-05 1.822788e-06 44.79781</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 109 1.3 0.1496168 0.06769622 CO2 1.356750e-05 9.184684e-07 45.04525</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 110 1.3 0.1360008 0.05979899 CO2 1.365967e-05 8.168341e-07 44.87707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111 1.3 0.1579486 0.07263743 CO2 1.390238e-05 1.009833e-06 44.44250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 112 1.3 0.1548909 0.07081471 CO2 1.430129e-05 1.012741e-06 43.75329</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 113 1.3 0.1541798 0.07039239 CO2 1.474626e-05 1.038025e-06 43.01885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 114 1.3 0.1750019 0.08299376 CO2 1.503908e-05 1.248149e-06 42.55407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 115 1.3 0.1722762 0.08131726 CO2 1.489880e-05 1.211530e-06 42.77495</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 116 1.3 0.1842755 0.08875603 CO2 1.513034e-05 1.342909e-06 42.41206</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 117 1.3 0.1712639 0.08069668 CO2 1.458823e-05 1.177222e-06 43.27569</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118 1.3 0.1764712 0.08390077 CO2 1.427584e-05 1.197754e-06 43.79636</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 119 1.3 0.1702096 0.08005146 CO2 1.389777e-05 1.112537e-06 44.45065</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 120 1.3 0.1647244 0.07671410 CO2 1.363620e-05 1.046089e-06 44.91972</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121 1.3 0.1499992 0.06792124 CO2 1.344420e-05 9.131468e-07 45.27302</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122 1.3 0.1420066 0.06325443 CO2 1.352192e-05 8.553213e-07 45.12907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123 1.3 0.1417644 0.06311426 CO2 1.383937e-05 8.734615e-07 44.55418</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124 1.3 0.1676952 0.07851755 CO2 1.426866e-05 1.120340e-06 43.80853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125 1.3 0.1660559 0.07752120 CO2 1.479028e-05 1.146560e-06 42.94807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 126 1.3 0.1607313 0.07430543 CO2 1.512553e-05 1.123909e-06 42.41951</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 127 1.3 0.1780197 0.08485910 CO2 1.528099e-05 1.296731e-06 42.18055</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 128 1.3 0.1778036 0.08472520 CO2 1.495749e-05 1.267276e-06 42.68215</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 129 1.3 0.1804428 0.08636376 CO2 1.478226e-05 1.276652e-06 42.96094</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 130 1.3 0.1826359 0.08773075 CO2 1.432637e-05 1.256864e-06 43.71094</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131 1.3 0.1734304 0.08202625 CO2 1.383549e-05 1.134873e-06 44.56109</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 132 1.3 0.1553407 0.07108221 CO2 1.354673e-05 9.629314e-07 45.08339</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 133 1.4 0.4817369 0.25178618 CO2 1.334766e-05 3.360756e-06 45.45364</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 134 1.4 0.4943098 0.26103389 CO2 1.348355e-05 3.519664e-06 45.19998</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 135 1.4 0.4842729 0.25364381 CO2 1.380634e-05 3.501894e-06 44.61303</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 136 1.4 0.4891318 0.25721385 CO2 1.428196e-05 3.673518e-06 43.78599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 137 1.4 0.5075355 0.27086384 CO2 1.482285e-05 4.014974e-06 42.89591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138 1.4 0.5252802 0.28421399 CO2 1.517397e-05 4.312656e-06 42.34464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 139 1.4 0.5405259 0.29582925 CO2 1.523197e-05 4.506061e-06 42.25549</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 140 1.4 0.5551834 0.30712072 CO2 1.498395e-05 4.601880e-06 42.64050</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 141 1.4 0.5573888 0.30883005 CO2 1.485205e-05 4.586758e-06 42.84930</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 142 1.4 0.5431391 0.29783347 CO2 1.430661e-05 4.260989e-06 43.74428</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 143 1.4 0.5180245 0.27873303 CO2 1.380292e-05 3.847328e-06 44.61915</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 144 1.4 0.4836264 0.25316992 CO2 1.348155e-05 3.413123e-06 45.20368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145 1.4 0.4736492 0.24588815 CO2 1.326424e-05 3.261520e-06 45.61135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146 1.4 0.4879943 0.25637681 CO2 1.345034e-05 3.448354e-06 45.26161</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147 1.4 0.4961738 0.26241300 CO2 1.377775e-05 3.615461e-06 44.66416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148 1.4 0.4881084 0.25646070 CO2 1.429349e-05 3.665719e-06 43.76647</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149 1.4 0.5199435 0.28017968 CO2 1.485110e-05 4.160976e-06 42.85081</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 150 1.4 0.5329375 0.29003127 CO2 1.521601e-05 4.413119e-06 42.27996</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 151 1.4 0.5523920 0.30496104 CO2 1.518954e-05 4.632217e-06 42.32066</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152 1.4 0.5515763 0.30433077 CO2 1.500689e-05 4.567060e-06 42.60446</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 153 1.4 0.5586635 0.30981933 CO2 1.491265e-05 4.620226e-06 42.75301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 154 1.4 0.5357146 0.29214931 CO2 1.428950e-05 4.174667e-06 43.77322</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 155 1.4 0.5388202 0.29452318 CO2 1.377471e-05 4.056973e-06 44.66960</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 156 1.4 0.4878082 0.25623993 CO2 1.342518e-05 3.440066e-06 45.30846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 157 1.5 0.6441258 0.20678356 CO2 1.324758e-05 2.739381e-06 45.64305</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 158 1.5 0.6628710 0.21587558 CO2 1.342558e-05 2.898254e-06 45.30771</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159 1.5 0.6564716 0.21275702 CO2 1.375693e-05 2.926883e-06 44.70150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 160 1.5 0.6425012 0.20600177 CO2 1.430608e-05 2.947079e-06 43.74518</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 161 1.5 0.6733928 0.22103582 CO2 1.485812e-05 3.284177e-06 42.83962</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 162 1.5 0.6924837 0.23050182 CO2 1.532285e-05 3.531946e-06 42.11683</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 163 1.5 0.7213743 0.24507613 CO2 1.529251e-05 3.747830e-06 42.16298</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 164 1.5 0.7154877 0.24208241 CO2 1.514389e-05 3.666070e-06 42.39109</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165 1.5 0.7356576 0.25239084 CO2 1.495307e-05 3.774018e-06 42.68912</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 166 1.5 0.7238913 0.24635989 CO2 1.428753e-05 3.519874e-06 43.77656</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 167 1.5 0.7019145 0.23522654 CO2 1.375785e-05 3.236210e-06 44.69985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 168 1.5 0.6499798 0.20960893 CO2 1.340171e-05 2.809117e-06 45.35228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 169 1.5 0.6679433 0.21835814 CO2 1.328343e-05 2.900545e-06 45.57494</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 170 1.5 0.6648920 0.21686361 CO2 1.339762e-05 2.905455e-06 45.35993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 171 1.5 0.6794457 0.22402274 CO2 1.373401e-05 3.076731e-06 44.74270</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172 1.5 0.6720448 0.22037247 CO2 1.432512e-05 3.156862e-06 43.71306</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 173 1.5 0.6926666 0.23059312 CO2 1.484914e-05 3.424111e-06 42.85393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 174 1.5 0.7086694 0.23863024 CO2 1.553533e-05 3.707199e-06 41.79761</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 175 1.5 0.7210394 0.24490548 CO2 1.557245e-05 3.813778e-06 41.74253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 176 1.5 0.7373428 0.25325856 CO2 1.544485e-05 3.911540e-06 41.93271</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 177 1.5 0.7397986 0.25452489 CO2 1.499297e-05 3.816085e-06 42.62631</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 178 1.5 0.7289400 0.24894171 CO2 1.429828e-05 3.559439e-06 43.75837</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179 1.5 0.7202647 0.24451090 CO2 1.374378e-05 3.360505e-06 44.72512</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 180 1.5 0.6781471 0.22338082 CO2 1.339747e-05 2.992738e-06 45.36020</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

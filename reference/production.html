@@ -28,6 +28,7 @@ calculate the relative contribution per layer."><meta property="og:image" conten
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -91,6 +92,117 @@ $$\Delta prod_{rel} = |\Delta efflux \cdot
 |\Delta prod_{abs}\cdot\frac{1}{efflux}|$$</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">base_dat</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">production</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_layered_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      site       Date gas upper lower layer   prod_abs   prod_rel     efflux F0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  site_a 2021-01-01 CO2     0  -100     1 0.09704722 0.11626198  0.8347288  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  site_a 2021-01-01 CO2     5     0     2 0.73768158 0.88373802  0.8347288  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  site_b 2021-01-01 CO2     0  -100     1 0.05406110 0.08019349  0.6741332  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  site_b 2021-01-01 CO2     7     0     2 0.62007213 0.91980651  0.6741332  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  site_a 2021-02-01 CO2     0  -100     1 0.14909176 0.10904179  1.3672901  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  site_a 2021-02-01 CO2     5     0     2 1.21819835 0.89095821  1.3672901  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  site_b 2021-02-01 CO2     0  -100     1 0.07545566 0.07109589  1.0613224  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  site_b 2021-02-01 CO2     7     0     2 0.98586674 0.92890411  1.0613224  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  site_a 2021-03-01 CO2     0  -100     1 0.21995218 0.12609707  1.7443084  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 site_a 2021-03-01 CO2     5     0     2 1.52435622 0.87390293  1.7443084  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 site_b 2021-03-01 CO2     0  -100     1 0.11665458 0.08388434  1.3906597  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 site_b 2021-03-01 CO2     7     0     2 1.27400517 0.91611566  1.3906597  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 site_a 2021-04-01 CO2     0  -100     1 0.48068516 0.11596226  4.1451861  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 site_a 2021-04-01 CO2     5     0     2 3.66450097 0.88403774  4.1451861  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 site_b 2021-04-01 CO2     0  -100     1 0.26309931 0.07921582  3.3212976  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 site_b 2021-04-01 CO2     7     0     2 3.05819826 0.92078418  3.3212976  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 site_a 2021-05-01 CO2     0  -100     1 0.70711699 0.11960647  5.9120294  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 site_a 2021-05-01 CO2     5     0     2 5.20491244 0.88039353  5.9120294  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 site_b 2021-05-01 CO2     0  -100     1 0.36976329 0.08257676  4.4778132  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 site_b 2021-05-01 CO2     7     0     2 4.10804991 0.91742324  4.4778132  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 site_a 2021-06-01 CO2     0  -100     1 0.88398720 0.12194986  7.2487756  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 site_a 2021-06-01 CO2     5     0     2 6.36478843 0.87805014  7.2487756  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 site_b 2021-06-01 CO2     0  -100     1 0.48507683 0.08537623  5.6816381  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 site_b 2021-06-01 CO2     7     0     2 5.19656128 0.91462377  5.6816381  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 site_a 2021-07-01 CO2     0  -100     1 1.41410170 0.13976159 10.1179566  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 site_a 2021-07-01 CO2     5     0     2 8.70385488 0.86023841 10.1179566  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 site_b 2021-07-01 CO2     0  -100     1 0.72565469 0.08515935  8.5211395  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 site_b 2021-07-01 CO2     7     0     2 7.79548476 0.91484065  8.5211395  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 site_a 2021-08-01 CO2     0  -100     1 1.12309044 0.13844302  8.1122940  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 site_a 2021-08-01 CO2     5     0     2 6.98920351 0.86155698  8.1122940  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 site_b 2021-08-01 CO2     0  -100     1 0.59169696 0.08581269  6.8952154  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32 site_b 2021-08-01 CO2     7     0     2 6.30351841 0.91418731  6.8952154  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33 site_a 2021-09-01 CO2     0  -100     1 0.85303684 0.13708341  6.2227577  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34 site_a 2021-09-01 CO2     5     0     2 5.36972091 0.86291659  6.2227577  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35 site_b 2021-09-01 CO2     0  -100     1 0.43407869 0.08280423  5.2422286  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36 site_b 2021-09-01 CO2     7     0     2 4.80814986 0.91719577  5.2422286  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37 site_a 2021-10-01 CO2     0  -100     1 0.57140027 0.14421038  3.9622685  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38 site_a 2021-10-01 CO2     5     0     2 3.39086828 0.85578962  3.9622685  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39 site_b 2021-10-01 CO2     0  -100     1 0.28265560 0.08697279  3.2499313  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40 site_b 2021-10-01 CO2     7     0     2 2.96727568 0.91302721  3.2499313  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41 site_a 2021-11-01 CO2     0  -100     1 0.26446303 0.15182417  1.7419033  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42 site_a 2021-11-01 CO2     5     0     2 1.47744028 0.84817583  1.7419033  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43 site_b 2021-11-01 CO2     0  -100     1 0.13451829 0.08672174  1.5511484  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44 site_b 2021-11-01 CO2     7     0     2 1.41663016 0.91327826  1.5511484  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45 site_a 2021-12-01 CO2     0  -100     1 0.15180244 0.12511172  1.2133351  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46 site_a 2021-12-01 CO2     5     0     2 1.06153271 0.87488828  1.2133351  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47 site_b 2021-12-01 CO2     0  -100     1 0.08442466 0.07796027  1.0829190  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48 site_b 2021-12-01 CO2     7     0     2 0.99849435 0.92203973  1.0829190  0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    DELTA_F0 DELTA_prod_abs DELTA_prod_rel</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9        NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47       NA             NA             NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48       NA             NA             NA</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

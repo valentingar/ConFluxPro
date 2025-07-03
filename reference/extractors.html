@@ -26,6 +26,7 @@ different objects that can be created in ConFluxPro."><meta property="og:image" 
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -94,7 +95,184 @@ different objects that can be created in ConFluxPro.</p>
 <dd><p>An object from which to extract the information.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>The extracted component, e.g. a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> or
+<code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code>.</p>
+    </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu">ConFluxPro</span><span class="fu">::</span><span class="va"><a href="base_dat.html">base_dat</a></span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="filter.html">filter</a></span><span class="op">(</span><span class="va">Date</span> <span class="op">==</span> <span class="st">"2021-01-01"</span><span class="op">)</span> <span class="co"># subset for example = faster runtime</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### from cfp_dat objects (and derivatives)</span></span></span>
+<span class="r-in"><span><span class="fu">cfp_id_cols</span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "site" "Date" "gas" </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="cfp_gasdata.html">cfp_gasdata</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_gasdata object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     site       Date gas depth    x_ppm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 site_a 2021-01-01 CO2     5 422.7419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 site_a 2021-01-01 CO2     0 552.1412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 site_a 2021-01-01 CO2     0 555.8525</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 site_a 2021-01-01 CO2     0 556.9315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 site_a 2021-01-01 CO2   -10 716.4256</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 site_a 2021-01-01 CO2   -10 713.3633</span>
+<span class="r-in"><span><span class="fu"><a href="cfp_soilphys.html">cfp_soilphys</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_soilphys object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     site       Date gas upper lower  TPS    a   b depth       SWC          t</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 site_a 2021-01-01 CO2   -60  -100 0.38 1.20 1.5 -80.0 0.1613528 -0.7899035</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 site_a 2021-01-01 CO2   -40   -60 0.38 1.20 1.5 -50.0 0.1277975 -1.9747588</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 site_a 2021-01-01 CO2   -23   -40 0.38 1.20 1.5 -31.5 0.1082474 -2.7054195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 site_a 2021-01-01 CO2   -20   -23 0.45 1.05 1.6 -21.5 0.1026943 -4.7785077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 site_a 2021-01-01 CO2   -15   -20 0.45 1.05 1.6 -17.5 0.1026943 -4.7785077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 site_a 2021-01-01 CO2   -10   -15 0.45 1.05 1.6 -12.5 0.1211106 -4.9419502</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      p      AFPS      DSD0           D0           DS    c_air height</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1013 0.2186472 0.1226866 1.373780e-05 1.685444e-06 44.73588   0.40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1013 0.2522025 0.1519866 1.362982e-05 2.071550e-06 44.93134   0.20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1013 0.2717526 0.1699972 1.356342e-05 2.305744e-06 45.05273   0.17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1013 0.3473057 0.1933430 1.337582e-05 2.586121e-06 45.40075   0.03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1013 0.3473057 0.1933430 1.337582e-05 2.586121e-06 45.40075   0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1013 0.3288894 0.1772022 1.336108e-05 2.367612e-06 45.42842   0.05</span>
+<span class="r-in"><span><span class="fu"><a href="cfp_layers_map.html">cfp_layers_map</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_layers_map object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     site upper lower gas lowlim highlim layer_couple layer pmap</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 site_a     0  -100 CO2      0    1000            0     1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 site_b     0  -100 CO2      0    1000            0     1    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 site_a     5     0 CO2      0    1000            0     2    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 site_b     7     0 CO2      0    1000            0     2    2</span>
+<span class="r-in"><span><span class="va">my_data</span><span class="op">$</span><span class="va">profiles</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: prof_id </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     site       Date gas gd_id sp_id group_id prof_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 site_a 2021-01-01 CO2     1     1        1       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 site_b 2021-01-01 CO2    13    13        2       2</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### from cfp_pfmod or cfp_pfres objects</span></span></span>
+<span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="va">my_data</span> <span class="op">|&gt;</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">cfp_zero_flux</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="fu">cfp_zero_limits</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -Inf  Inf</span>
+<span class="r-in"><span><span class="fu">cfp_DSD0_optim</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span> <span class="co">#deprecated</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-in"><span><span class="fu">cfp_evenness_factor</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-in"><span><span class="fu">cfp_known_flux_factor</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-in"><span><span class="va">PROFLUX</span><span class="op">$</span><span class="va">PROFLUX</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_layered_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: prof_id </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   upper lower step_id prof_id sp_id pmap       flux F0       prod     conc</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   -60  -100       1       1     1    1 0.03881889  0 0.09704722 45120.83</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   -60  -100       1       2    13    1 0.02162444  0 0.05406110 44810.55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   -40   -60       2       1     1    1 0.05822833  0 0.09704722 40436.06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   -40   -60       2       2    13    1 0.03243666  0 0.05406110 41696.66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   -23   -40       3       1     1    1 0.07472636  0 0.09704722 35534.76</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   -20   -23       4       1     1    1 0.07763778  0 0.09704722 34651.02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         RMSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.01988220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.01960087</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.01988220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.01960087</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.01988220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.01988220</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### from cfp_fgmod or cfp_fgres objects</span></span></span>
+<span class="r-in"><span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="va">my_data</span> <span class="op">|&gt;</span> <span class="fu"><a href="fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> validating datasets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> id_cols: site, Date, gas</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2 unique profiles</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cfp_gases</span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CO2"</span>
+<span class="r-in"><span><span class="fu">cfp_modes</span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "LL"</span>
+<span class="r-in"><span><span class="fu">cfp_param</span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "c_air" "DS"   </span>
+<span class="r-in"><span><span class="fu">cfp_funs</span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "arith" "harm" </span>
+<span class="r-in"><span><span class="va">FLUX</span><span class="op">$</span><span class="va">FLUX</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_layered_profile object </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: prof_id mode </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  unique profiles </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   prof_id upper lower depth layer gas mode       flux     flux_sd   dcdz_ppm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       1     5     0   2.5     2 CO2   LL 0.33911308 0.007440940 -2644.6628</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       1     0  -100 -50.0     1 CO2   LL 0.04330173 0.004201945  -481.5574</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       2     7     0   3.5     2 CO2   LL 0.27251404 0.004201454 -2112.1249</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4       2     0  -100 -50.0     1 CO2   LL 0.02823777 0.002426925  -454.3658</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    dcdz_sd    dc_ppm    c_air           DS        r2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 58.03013 -132.2331 45.60490 2.811660e-06 0.9990380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 46.72972 -481.5574 44.98772 1.998771e-06 0.9139388</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 32.56345 -147.8487 45.60413 2.829210e-06 0.9995248</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 39.05094 -454.3658 44.97122 1.381943e-06 0.9312138</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### from cfp_run_map</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_run_map</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="cfp_run_map.html">cfp_run_map</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">PROFLUX</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"TPS"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span>, <span class="fl">1.1</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"factor"</span>,</span></span>
+<span class="r-in"><span>  n_runs <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cfp_params_df</span><span class="op">(</span><span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   param param_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   TPS        1</span>
+<span class="r-in"><span><span class="fu">cfp_n_runs</span><span class="op">(</span><span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-in"><span><span class="fu">cfp_layers_from</span><span class="op">(</span><span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "layers_map"</span>
+<span class="r-in"><span><span class="fu">cfp_layers_different</span><span class="op">(</span><span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-in"><span><span class="fu">cfp_runmap_type</span><span class="op">(</span><span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "base"</span>
+<span class="r-in"><span><span class="fu">cfp_layers_altmap</span><span class="op">(</span><span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### from cfp_altres</span></span></span>
+<span class="r-in"><span><span class="va">my_altres</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="alternate.html">alternate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="va">PROFLUX</span>,</span></span>
+<span class="r-in"><span>  f <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="complete_soilphys.html">complete_soilphys</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"a+AFPS^b"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  run_map <span class="op">=</span> <span class="va">my_run_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">cfp_og_model</span><span class="op">(</span><span class="va">my_altres</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="cfp_run_map.html">cfp_run_map</a></span><span class="op">(</span><span class="va">my_altres</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_run_map to be used in alternate(). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of runs:  2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> parameters to alternate:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   param param_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   TPS        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   run_id param    value   type gas param_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      1   TPS 1.082961 factor CO2        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      2   TPS 1.087415 factor CO2        1</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

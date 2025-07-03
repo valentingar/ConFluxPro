@@ -26,6 +26,7 @@ dataframe per layer for the flux calculation."><meta property="og:image" content
     <li><a class="dropdown-item" href="../articles/calibration.html">Calibration</a></li>
     <li><a class="dropdown-item" href="../articles/uncertainty.html">Uncertainty estimation</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/valentingar/confluxpro/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -95,17 +96,6 @@ uniquely identify one profile.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>soilphys, reduced to any <code>id_cols</code> and <code>param</code> columns and
 summarised to the layers provided in <code>layers_map</code></p>
-<p>#' @examples data(soildiff)
-layers_map &lt;- data.frame(site = rep(c("site_a",
-"site_b"),each = 2),
-upper = c(5,0,7,0),
-lower = c(0,-100,0,-100),
-layer = rep(c("HU","M1"),times = 2)
-)soildiff$depth &lt;- (soildiff$upper + soildiff$lower) / 2soilphys_layered(soilphys = soildiff,
-layers_map = layers_map,
-param = c("TPS","a"),
-funs = c("harm","arith"),
-id_cols = c("site"))</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -115,6 +105,33 @@ id_cols = c("site"))</p>
 <code><a href="discretize_depth.html">discretize_depth</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soildiff</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">layers_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>site <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site_a"</span>,</span></span>
+<span class="r-in"><span>                                      <span class="st">"site_b"</span><span class="op">)</span>,each <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                         upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">0</span>,<span class="fl">7</span>,<span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                         lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="op">-</span><span class="fl">100</span>,<span class="fl">0</span>,<span class="op">-</span><span class="fl">100</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                         layer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HU"</span>,<span class="st">"M1"</span><span class="op">)</span>,times <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">soildiff</span><span class="op">$</span><span class="va">depth</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">soildiff</span><span class="op">$</span><span class="va">upper</span> <span class="op">+</span> <span class="va">soildiff</span><span class="op">$</span><span class="va">lower</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">soilphys_layered</span><span class="op">(</span>soilphys <span class="op">=</span> <span class="va">soildiff</span>,</span></span>
+<span class="r-in"><span>                 layers_map <span class="op">=</span> <span class="va">layers_map</span>,</span></span>
+<span class="r-in"><span>                 param <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TPS"</span>,<span class="st">"a"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 funs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"harm"</span>,<span class="st">"arith"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 id_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Groups:   site [2]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   site   layer   TPS     a upper lower</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> site_a HU    0.84   0.35     5     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> site_a M1    0.397  1.15     0  -<span style="color: #BB0000;">100</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> site_b HU    0.8    0.4      7     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> site_b M1    0.305  1.03     0  -<span style="color: #BB0000;">100</span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
