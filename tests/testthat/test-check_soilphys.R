@@ -39,10 +39,11 @@ test_that("check_soilphys_supects", {
 
   utils::capture.output(check_res <- check_soilphys(df, id_cols = c())$suspects)
 
-  expect_equal(check_res,
-               tibble(upper = c(10, 10, 10),
-                      param = c("TPS", "SWC", "t"),
-                      value = c(TRUE, TRUE, TRUE))
+  expect_equal(
+    check_res,
+    tibble::tibble(upper = c(10, 10, 10),
+                   param = c("TPS", "SWC", "t"),
+                   value = c(TRUE, TRUE, TRUE))
   )
 
   df <- data.frame(upper = c(NA, NA),
@@ -55,9 +56,10 @@ test_that("check_soilphys_supects", {
 
   utils::capture.output(check_res <- check_soilphys(df, id_cols = c())$suspects)
 
-  expect_equal(check_res,
-               tibble(param = c("upper"),
-                      value = c(TRUE))
+  expect_equal(
+    check_res,
+    tibble::tibble(param = c("upper"),
+                   value = c(TRUE))
   )
 
 })
