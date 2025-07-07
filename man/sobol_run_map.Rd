@@ -53,6 +53,9 @@ automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.}
   }}
 }
+\value{
+A \link{cfp_run_map} to be used in \link{alternate} for sensitivity analysis.
+}
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 

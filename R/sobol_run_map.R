@@ -17,6 +17,8 @@
 #'
 #' @family sobol
 #'
+#' @returns A [cfp_run_map] to be used in [alternate] for sensitivity analysis.
+#'
 #' @examplesIf FALSE
 #' PROFLUX <- pro_flux(base_dat)
 #'
