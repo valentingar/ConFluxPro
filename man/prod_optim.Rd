@@ -83,7 +83,7 @@ This function is embedded in \code{\link[=pro_flux]{pro_flux()}} and is not inte
 used manually.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\donttest{
 prod_optim(c(1,1,1),
  c(0.1,0.1,0.1),
  DS = D0_massman("CO2", 10, 1013),
@@ -92,8 +92,8 @@ prod_optim(c(1,1,1),
  wmap = 1,
  layer_couple = 1,
  evenness_factor = 1)
+ }
 
-\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other proflux: 

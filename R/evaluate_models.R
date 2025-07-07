@@ -31,7 +31,8 @@
 #'   `best_runs` model configurations. Note, that for `best_runs_runmap` the
 #'   value of `run_id` is remapped to values `1:n_best`.
 #'
-#' @examplesIf FALSE
+#' @examples
+#' \donttest{
 #' PROFLUX <- pro_flux(base_dat |> filter(site == "site_a"))
 #'
 #' run_map <-
@@ -50,6 +51,8 @@
 #'   PF_alt,
 #'   eval_funs = list("NRMSE_conc" = error_concentration)
 #'     )
+#' }
+#'
 #'
 #'
 #'

@@ -44,7 +44,8 @@
 #'
 #' @returns A modified RMSE root mean square error of the modeled and measured
 #' concentration.
-#' @examplesIf FALSE
+#' @examples
+#' \donttest{
 #' prod_optim(c(1,1,1),
 #'  c(0.1,0.1,0.1),
 #'  DS = D0_massman("CO2", 10, 1013),
@@ -53,7 +54,7 @@
 #'  wmap = 1,
 #'  layer_couple = 1,
 #'  evenness_factor = 1)
-#'
+#'  }
 #'
 
 #' @family proflux

@@ -74,7 +74,7 @@ Evaluate the model runs produced by a call to \code{\link[=alternate]{alternate(
 user-defined error functions.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\donttest{
 PROFLUX <- pro_flux(base_dat |> filter(site == "site_a"))
 
 run_map <-
@@ -93,7 +93,9 @@ evaluate_models(
   PF_alt,
   eval_funs = list("NRMSE_conc" = error_concentration)
     )
+}
 
 
-\dontshow{\}) # examplesIf}
+
+
 }

@@ -19,7 +19,8 @@
 #'
 #' @returns A [cfp_run_map] to be used in [alternate] for sensitivity analysis.
 #'
-#' @examplesIf FALSE
+#' @examples
+#' \donttest{
 #' PROFLUX <- pro_flux(base_dat)
 #'
 #' sobol_run_map(PROFLUX,
@@ -27,7 +28,7 @@
 #'                "t" = c(0.9, 1.1)),
 #'  type = c("factor", "factor"),
 #'  n_runs = 10)
-#'
+#'  }
 #' @export
 
 sobol_run_map <- function(x, ...){
@@ -37,7 +38,7 @@ sobol_run_map <- function(x, ...){
 #' @rdname sobol_run_map
 #' @exportS3Method
 sobol_run_map.cfp_dat <- function(x, ...){
-  x <- run_map(x, ...)
+  x <- cfp_run_map(x, ...)
   .Class <- "cfp_run_map"
   NextMethod()
 }
