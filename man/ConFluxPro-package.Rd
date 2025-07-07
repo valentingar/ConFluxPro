@@ -4,9 +4,9 @@
 \name{ConFluxPro-package}
 \alias{ConFluxPro}
 \alias{ConFluxPro-package}
-\title{ConFluxPro: A Toolkit for Soil Gas Analysis}
+\title{ConFluxPro: Soil Gas Analysis and Flux Modeling}
 \description{
-A suite to model soil gas fluxes with the Flux-Gradient Method. It includes functions for data handling, a forward and an inverse model for flux estimation and methods for calibration and uncertainty estimation.
+Model soil gas fluxes with the Flux-Gradient Method. It includes functions for data handling, a forward and an inverse model for flux modeling and methods for calibration and uncertainty estimation. For more details see Gartiser et al. (2025a) \doi{10.21105/joss.08094} and Gartiser et al. (2025b) \doi{10.1111/ejss.70126}.
 }
 \seealso{
 Useful links:
