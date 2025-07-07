@@ -58,10 +58,25 @@ larger than the highest layer in soilphys, should the limits be
 automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.}
 }
+\value{
+An object of type \code{cfp_run_map} that can be used within
+\link{alternate}.
+}
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-\code{run_map()} was deprecated in favor of \code{cfp_run_map()} for consistency.
+\code{run_map()} was deprecated in favor of \link{cfp_run_map} for consistency.
 
 Create a cfp_run_map for model alteration in alternate()
+}
+\examples{
+PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+# Create a cfp_run_map where TPS is changed between 90 \% and 110 \%
+# of the original value for 50 runs.
+cfp_run_map(
+  PROFLUX,
+  list("TPS" = c(0.9, 1.1)),
+  "factor",
+  n_runs = 50)
+
 }

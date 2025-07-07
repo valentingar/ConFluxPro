@@ -3,11 +3,11 @@
 #'@description
 #' `r lifecycle::badge('deprecated')`
 #'
-#' `run_map()` was deprecated in favor of `cfp_run_map()` for consistency.
+#' `run_map()` was deprecated in favor of [cfp_run_map] for consistency.
 #'
 #' Create a cfp_run_map for model alteration in alternate()
 #'
-#' @inheritParams cfp_run_map
+#' @inherit cfp_run_map
 #'
 #' @export
 run_map <- function(x,
