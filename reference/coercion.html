@@ -63,12 +63,56 @@ ConFluxPro.</p>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>Either a <a href="cfp_fgmod.html">cfp_fgmod</a> or <a href="cfp_pfmod.html">cfp_pfmod</a> model frame</p>
+    </div>
+    <div class="section level2">
     <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
 
 <ul><li><p><code>as_cfp_fgmod()</code>: to cfp_fgmod</p></li>
 <li><p><code>as_cfp_pfmod()</code>: to cfp_pfmod</p></li>
 </ul></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">base_dat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">as_cfp_pfmod</span><span class="op">(</span><span class="va">PROFLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_pfmod pro_flux model. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> zero_flux: TRUE  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> zero_limits:  -Inf Inf  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DSD0_optim:  FALSE  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> evenness_factor:  0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> known_flux_factor:  0  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_dat object to be used as input in ConFluxPro models. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of profiles:  24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of groups:  2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">FLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="fg_flux.html">fg_flux</a></span><span class="op">(</span><span class="va">base_dat</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> validating datasets</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> id_cols: site, Date, gas</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 24 unique profiles</span>
+<span class="r-in"><span><span class="fu">as_cfp_fgmod</span><span class="op">(</span><span class="va">FLUX</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_fgmod fg_flux model. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> gases: CO2  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> modes:  LL  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> param:  c_air DS  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> funs:  arith harm  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_dat object to be used as input in ConFluxPro models. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> id_cols: site Date gas </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of profiles:  24 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of groups:  2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

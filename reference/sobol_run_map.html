@@ -134,6 +134,10 @@ leads to an error in that case.</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <a href="cfp_run_map.html">cfp_run_map</a> to be used in <a href="alternate.html">alternate</a> for sensitivity analysis.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other sobol:
 <code><a href="sobol_calc_indices.html">sobol_calc_indices</a>()</code></p></div>
@@ -141,7 +145,7 @@ leads to an error in that case.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">PROFLUX</span> <span class="op">&lt;-</span> <span class="fu"><a href="pro_flux.html">pro_flux</a></span><span class="op">(</span><span class="va">base_dat</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">sobol_run_map</span><span class="op">(</span><span class="va">PROFLUX</span>,</span></span>
@@ -149,7 +153,136 @@ leads to an error in that case.</p></dd>
 <span class="r-in"><span>               <span class="st">"t"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span>, <span class="fl">1.1</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span> type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"factor"</span>, <span class="st">"factor"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span> n_runs <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A cfp_run_map to be used in alternate(). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> number of runs:  30 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> parameters to alternate:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   param param_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   TPS        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     t        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    param     value   type gas param_id run_id_og run_id_sobol sobol_mat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    TPS 1.0386410 factor CO2        1         1            1         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      t 0.9481089 factor CO2        2         1            1         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    TPS 0.9085978 factor CO2        1         2            2         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      t 0.9280958 factor CO2        2         2            2         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    TPS 0.9432771 factor CO2        1         3            3         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      t 0.9958797 factor CO2        2         3            3         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7    TPS 0.9394821 factor CO2        1         4            4         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      t 1.0438712 factor CO2        2         4            4         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9    TPS 0.9015769 factor CO2        1         5            5         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     t 0.9750980 factor CO2        2         5            5         A</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11   TPS 1.0028815 factor CO2        1         6            1         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     t 0.9003141 factor CO2        2         6            1         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13   TPS 1.0163208 factor CO2        1         7            2         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     t 0.9315810 factor CO2        2         7            2         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15   TPS 0.9718057 factor CO2        1         8            3         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16     t 1.0291264 factor CO2        2         8            3         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17   TPS 1.0551647 factor CO2        1         9            4         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     t 1.0127294 factor CO2        2         9            4         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19   TPS 0.9467407 factor CO2        1        10            5         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     t 0.9179961 factor CO2        2        10            5         B</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21     t 0.9003141 factor CO2        2         6            1        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22     t 0.9315810 factor CO2        2         7            2        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23     t 1.0291264 factor CO2        2         8            3        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24     t 1.0127294 factor CO2        2         9            4        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25     t 0.9179961 factor CO2        2        10            5        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26   TPS 1.0386410 factor CO2        1         1            1        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27   TPS 0.9085978 factor CO2        1         2            2        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28   TPS 0.9432771 factor CO2        1         3            3        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29   TPS 0.9394821 factor CO2        1         4            4        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30   TPS 0.9015769 factor CO2        1         5            5        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31   TPS 1.0028815 factor CO2        1         6            1        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32   TPS 1.0163208 factor CO2        1         7            2        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33   TPS 0.9718057 factor CO2        1         8            3        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34   TPS 1.0551647 factor CO2        1         9            4        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35   TPS 0.9467407 factor CO2        1        10            5        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36     t 0.9481089 factor CO2        2         1            1        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37     t 0.9280958 factor CO2        2         2            2        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38     t 0.9958797 factor CO2        2         3            3        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39     t 1.0438712 factor CO2        2         4            4        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40     t 0.9750980 factor CO2        2         5            5        BA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41   TPS 1.0028815 factor CO2        1         6            1        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42   TPS 1.0163208 factor CO2        1         7            2        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43   TPS 0.9718057 factor CO2        1         8            3        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44   TPS 1.0551647 factor CO2        1         9            4        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45   TPS 0.9467407 factor CO2        1        10            5        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46     t 0.9481089 factor CO2        2         1            1        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47     t 0.9280958 factor CO2        2         2            2        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48     t 0.9958797 factor CO2        2         3            3        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49     t 1.0438712 factor CO2        2         4            4        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50     t 0.9750980 factor CO2        2         5            5        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51     t 0.9003141 factor CO2        2         6            1        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52     t 0.9315810 factor CO2        2         7            2        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53     t 1.0291264 factor CO2        2         8            3        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54     t 1.0127294 factor CO2        2         9            4        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55     t 0.9179961 factor CO2        2        10            5        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56   TPS 1.0386410 factor CO2        1         1            1        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57   TPS 0.9085978 factor CO2        1         2            2        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58   TPS 0.9432771 factor CO2        1         3            3        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59   TPS 0.9394821 factor CO2        1         4            4        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60   TPS 0.9015769 factor CO2        1         5            5        AB</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    param_id_main run_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1              1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2              2      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3              1      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4              2      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5              1      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6              2      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7              1      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8              2      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9              1      5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10             2      5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11             1      6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12             2      6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13             1      7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14             2      7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15             1      8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16             2      8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17             1      9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18             2      9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19             1     10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20             2     10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21             1     11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22             1     12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23             1     13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24             1     14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25             1     15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26             1     11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27             1     12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28             1     13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29             1     14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30             1     15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31             2     16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32             2     17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33             2     18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34             2     19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35             2     20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36             2     16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37             2     17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38             2     18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39             2     19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40             2     20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41             1     21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42             1     22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43             1     23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44             1     24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45             1     25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46             1     21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47             1     22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48             1     23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49             1     24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50             1     25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51             2     26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52             2     27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53             2     28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54             2     29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55             2     30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56             2     26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57             2     27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58             2     28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59             2     29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60             2     30</span>
+<span class="r-in"><span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
