@@ -13,6 +13,9 @@ as_cfp_pfmod(x)
 \arguments{
 \item{x}{An object which should be coerced}
 }
+\value{
+Either a \link{cfp_fgmod} or \link{cfp_pfmod} model frame
+}
 \description{
 These functions help coerce different object types in
 ConFluxPro.
@@ -24,4 +27,13 @@ ConFluxPro.
 \item \code{as_cfp_pfmod()}: to cfp_pfmod
 
 }}
+\examples{
+PROFLUX <- pro_flux(base_dat)
+as_cfp_pfmod(PROFLUX)
+
+FLUX <- fg_flux(base_dat)
+as_cfp_fgmod(FLUX)
+
+
+}
 \keyword{internal}

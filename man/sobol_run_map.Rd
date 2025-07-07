@@ -53,6 +53,9 @@ automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.}
   }}
 }
+\value{
+A \link{cfp_run_map} to be used in \link{alternate} for sensitivity analysis.
+}
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
@@ -60,7 +63,7 @@ Modify an existing \code{cfp_run_map} for sobol indice estimation or create a
 new one from scratch.
 }
 \examples{
-\dontshow{if (FALSE) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\donttest{
 PROFLUX <- pro_flux(base_dat)
 
 sobol_run_map(PROFLUX,
@@ -68,7 +71,7 @@ sobol_run_map(PROFLUX,
                "t" = c(0.9, 1.1)),
  type = c("factor", "factor"),
  n_runs = 10)
-\dontshow{\}) # examplesIf}
+ }
 }
 \seealso{
 Other sobol: 
