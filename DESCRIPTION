@@ -1,6 +1,6 @@
 Package: ConFluxPro
 Type: Package
-Title: A Toolkit for Soil Gas Analysis
+Title: Soil Gas Analysis and Flux Modeling
 Version: 1.3.0
 Authors@R: c(
     person("Valentin","Gartiser",email = "code@valentingartiser.de",role = c("aut", "cre", "cph"),
@@ -9,9 +9,9 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-7959-0108")),
     person("Verena","Lang",email = "verena.lang@forst.bwl.de",role = c("ctb"))
            )
-Description: A suite to model soil gas fluxes with the Flux-Gradient Method. 
-    It includes functions for data handling, a forward and an inverse model for 
-    flux estimation and methods for calibration and uncertainty estimation.
+Description: Model soil gas fluxes with the Flux-Gradient Method. It includes
+    functions for data handling, a forward and an inverse model for flux
+    estimation and methods for calibration and uncertainty estimation.
 Imports: 
     stats (>= 4.1.0),
     lubridate (>= 1.9.2),
