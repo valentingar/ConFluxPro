@@ -3,8 +3,6 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ConFluxPro)](https://CRAN.R-project.org/package=ConFluxPro)
 [![R-CMD-check](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml)
@@ -26,6 +24,10 @@ You can install the latest release from CRAN:
 
 ``` r
 install.packages("ConFluxPro")
+#> package 'ConFluxPro' successfully unpacked and MD5 sums checked
+#> 
+#> The downloaded binary packages are in
+#>  C:\Users\Valentin.Gartiser\AppData\Local\Temp\RtmpYlTMb2\downloaded_packages
 ```
 
 Install the current development version from github:
