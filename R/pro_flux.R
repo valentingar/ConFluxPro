@@ -14,8 +14,9 @@
 #'@inheritDotParams cfp_pfmod zero_flux zero_limits DSD0_optim evenness_factor
 #'  known_flux_factor
 #'
+#' @returns A [cfp_pfres()] model result.
 #'
-#' @examples {
+#' @examples
 #'
 #'soilphys <-
 #'  cfp_soilphys(
@@ -44,7 +45,7 @@
 #'          soilphys,
 #'          lmap ) |>
 #'  pro_flux()
-#' }
+#'
 #'
 #'@family flux models
 #'

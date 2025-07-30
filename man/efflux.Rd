@@ -34,7 +34,22 @@ method. Layers are indexed from 1 (topmost) to the number of layers used in
 the
 flux calculation.}
 }
+\value{
+A \code{data.frame} with one row for each
+combination of \code{id_cols} and the column \code{efflux}
+in \eqn{µmol m^{-2}s^{-1}}.
+}
 \description{
 Calculate or extract the soil/atmosphere efflux
 from \code{cfp_pfres} or \code{cfp_fgres} model results.
+}
+\examples{
+my_dat <- ConFluxPro::base_dat |>
+  filter(Date < "2021-03-01") #subset to speed up example
+PROFLUX <- pro_flux(my_dat)
+FLUX <- fg_flux(my_dat)
+
+efflux(PROFLUX)
+efflux(FLUX)
+
 }

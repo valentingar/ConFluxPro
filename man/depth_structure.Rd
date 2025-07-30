@@ -26,7 +26,15 @@ One of \code{"gasdata"} \code{"soilphys"} or \code{"layers_map"}.}
 
 \item{structure_from}{From which element should the structure be returned?}
 }
+\value{
+A \link{cfp_profile} with columns depth, or upper and lower.
+}
 \description{
 Get the unique layers or depths, i.e. the backbone
 of an object given a set of identifying columns.
+}
+\examples{
+depth_structure(cfp_soilphys(ConFluxPro::base_dat))
+depth_structure(cfp_gasdata(ConFluxPro::base_dat))
+
 }

@@ -9,6 +9,16 @@
 #'
 #' @inheritParams alternate
 #'
+#' @returns A \code{list} of mdoel results of type \code{cfp_altres}.
+#'
+#' @keywords internal
+#'
+#' @examples
+#' # internal
+#' PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+#'
+#' cfp_altres(list(PROFLUX), PROFLUX, complete_soilphys, data.frame(run_id = 1))
+#'
 #' @family model frames
 #'
 #' @export

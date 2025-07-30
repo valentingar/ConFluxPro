@@ -89,11 +89,7 @@ Default = 0.5}
 list of numeric vectors with the same length as "param" can be provided.
 Cannot differ between id_cols.}
 
-\item{...}{
-  Arguments passed on to \code{\link[=cfp_profile]{cfp_profile}}
-  \describe{
-    \item{\code{}}{}
-  }}
+\item{...}{Internal, must be empty.}
 
 \item{id_cols}{Column names in data.frame that uniquely identify each
 profile.}
@@ -140,17 +136,13 @@ If only one value is given, but multiple \code{param} the settings are
 reused for each parameter.
 }
 \examples{
-{
 
 data("soiltemp")
 library(dplyr)
 
-dt <- soiltemp \%>\%
-  select(site,depth) \%>\%
-  distinct() \%>\%
-  group_by(site) \%>\%
-  slice_max(depth) \%>\%
-  reframe(depth = c(depth,seq(0,-100,-10)))
+dt <- data.frame(
+  site = rep(c("site_a", "site_b"), each = 12),
+  depth = c(5, seq(0,-100,-10), 7, seq(0,-100,-10)))
 
 discretize_depth(df = soiltemp,
                  param = "t",
@@ -158,7 +150,6 @@ discretize_depth(df = soiltemp,
                  depth_target = dt,
                  id_cols = c(
                    "site","Date"))
-}
 
 }
 \seealso{

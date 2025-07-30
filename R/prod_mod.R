@@ -21,19 +21,19 @@
 #' @param C0 (numeric) Concentration at the lower end of the lowest step in
 #'   \eqn{\mu mol/m^3}.
 #'
-#' @return \code{conc} at top of each step in \eqn{\mu mol/m^3}
-#' @return \code{flux} at top of each step in \eqn{\mu mol/m^2/s}
+#' @returns \code{conc} in \eqn{\mu mol/m^3} or
+#' \code{flux} in \eqn{\mu mol/m^2/s} at top of each step.
 #'
 #' @family proflux
 #' @keywords internal
 #' @aliases prod_mod prod_mod_flux prod_mod_conc
 #'
-#' @examples{
+#' @examples
 #' prod_mod_conc(prod = c(0.01,0.02,0.65,0.5,0.4),
 #'               height = c(0.5,0.2,0.1,0.03,0.02),
 #'               DS = c(rep(2.5E-7,3),rep(1E-6,2)),
 #'               F0=0,
-#'               C0=48000E-6)}
+#'               C0=48000E-6)
 #' @export
 
 prod_mod_conc <- function(prod,
@@ -50,13 +50,13 @@ prod_mod_conc <- function(prod,
 
 #' @describeIn prod_mod_conc flux output only
 #'
-#' examples{
+#' @examples
 #' prod_mod_flux(prod = c(0.01,0.02,0.65,0.5,0.4),
 #'               height = c(0.5,0.2,0.1,0.03,0.02),
 #'               F0=0
 #'               )
-#' }
-prod_mod_flux <- function(prod,height,F0){
+#' @export
+prod_mod_flux <- function(prod, height, F0){
   flux <- cumsum(((prod) * height))+F0
   return(flux)
 }

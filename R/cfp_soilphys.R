@@ -21,7 +21,9 @@
 #' uniquely.}
 #'
 #' }
-#' @inheritDotParams cfp_profile id_cols
+#' @inheritParams cfp_profile
+#' @param ... Internal, must be empty.
+#'
 #'
 #' @family data formats
 #'

@@ -5,8 +5,13 @@
 #'
 #' @param AFPS The air-filled porosity.
 #'
+#' @returns A numeric vector of DSD0.
+#'
 #' @examples
-#' DSD0_millington_quirk(0.5,0.6)
+#' DSD0_millington_quirk(0.2, 0.6)
+#' DSD0_moldrup(0.2, 0.6, 1)
+#' DSD0_currie(0.2)
+#' DSD0_linear(0.2, a_lin = 1.4, b_lin = 0)
 #'
 #' @details
 #' \itemize{

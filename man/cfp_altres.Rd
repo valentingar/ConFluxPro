@@ -20,9 +20,9 @@ cfp_altres(
 \item{og_model}{The original model that was altered}
 
 \item{f}{A function taking in a soilphys object and recalculates the relevant
-columns. See \code{complete_soilphys()}.}
+columns. See \code{\link[=complete_soilphys]{complete_soilphys()}}.}
 
-\item{run_map}{A data.frame created by \code{run_map()} with the necessary
+\item{run_map}{A data.frame created by \code{\link[=run_map]{run_map()}} with the necessary
 information how the data is to be changed with each distinct \code{run_id}.}
 
 \item{return_raw}{Should the models be returned as is, or after applying any
@@ -35,9 +35,19 @@ quality parameters instead. Output must contain the column RMSE.}
 \item{error_args}{A list of additional function arguments to be passed to any
 of the \code{error_funs}. Must match the length of \code{error_funs}}
 }
+\value{
+A \code{list} of mdoel results of type \code{cfp_altres}.
+}
 \description{
 S3 class for the result of a call to alternate().
 Essentially a list with added run_map and further attributes.
+}
+\examples{
+# internal
+PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+
+cfp_altres(list(PROFLUX), PROFLUX, complete_soilphys, data.frame(run_id = 1))
+
 }
 \seealso{
 Other model frames: 
@@ -47,3 +57,4 @@ Other model frames:
 \code{\link{cfp_pfres}()}
 }
 \concept{model frames}
+\keyword{internal}

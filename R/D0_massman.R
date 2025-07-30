@@ -9,7 +9,12 @@
 #' @param t (numeric) temperature in °C
 #' @param p (numeric) pressure in hpa
 #'
-#' @return D0 in m^2/s
+#' @returns A numeric vector of D0 in m^2/s
+#'
+#' @examples
+#' D0_massman("CO2", 10, 1013)
+#'
+#'
 #' @references Massman, W. J. A review of the molecular diffusivities of H2O,
 #'   CO2, CH4, CO, O3, SO2, NH3, N2O, NO, and NO2 in air, O2 and N2 near STP.
 #'   Atmospheric Environment 1998, 32(6), 1111–1127

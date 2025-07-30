@@ -1,14 +1,14 @@
 #' @title Run parameter variation
 #'
-#' @description Alternate cfp_pfres / cfp_fgres models for sensitivity analysis
+#' @description Alternate [cfp_pfres()] / [cfp_fgres()] models for sensitivity analysis
 #'   and more.
 #'
 #' @param x A cfp_pfres or cfp_fgres model result.
 #'
 #' @param f A function taking in a soilphys object and recalculates the relevant
-#'   columns. See \code{complete_soilphys()}.
+#'   columns. See [complete_soilphys()].
 #'
-#' @param run_map A data.frame created by \code{run_map()} with the necessary
+#' @param run_map A data.frame created by [run_map()] with the necessary
 #'   information how the data is to be changed with each distinct \code{run_id}.
 #'
 #' @param return_raw Should the models be returned as is, or after applying any
@@ -21,11 +21,35 @@
 #' @param error_args A list of additional function arguments to be passed to any
 #'   of the \code{error_funs}. Must match the length of \code{error_funs}
 #'
-#' @details \code{alternate_model()} is used internally to change and rerun one
+#' @details [alternate_model()] is used internally to change and rerun one
 #'   model, but can also be used to update a model with a given unique run_map,
 #'   e.g. by filtering the best run_id from the original \code{run_map}.
 #'
 #' @aliases alternate_model
+#'
+#' @returns A \code{list} of type [cfp_altres()], each entry an
+#' updated model.
+#'
+#' @examples
+#' PROFLUX <- ConFluxPro::base_dat |>
+#'   filter(site == "site_a") |> # use only 'site_a' for example
+#'   pro_flux()
+#'
+#'# Create a cfp_run_map where TPS is changed between 90 % and 110 %
+#'# of the original value for 2 runs.
+#' my_run_map <-
+#' cfp_run_map(
+#'   PROFLUX,
+#'   list("TPS" = c(0.9, 1.1)),
+#'   "factor",
+#'   n_runs = 2)
+#'
+#'# run the new models by providing a function `f`
+#'# that updates the soilphys data.frame.
+#' alternate(
+#'   x = PROFLUX,
+#'   f = \(x) complete_soilphys(x, "a+AFPS^b", quiet = TRUE),
+#'   run_map = my_run_map)
 #'
 #' @importFrom rlang .data
 #'
@@ -99,7 +123,6 @@ apply_one_run <- function(run_map,
 }
 
 #' @rdname alternate
-#' @export
 alternate_model <- function(run_map,
                             x,
                             f){

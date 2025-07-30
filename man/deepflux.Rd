@@ -23,3 +23,10 @@ layer of a \code{pro_flux()} model. This returns zero, if \code{zero_flux=TRUE}.
 F0 represents the flux below the lowest layer defined in the
 \code{cfp_pfres()} model
 }
+\examples{
+PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+
+deepflux(PROFLUX)
+
+
+}

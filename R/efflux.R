@@ -7,6 +7,19 @@
 #'
 #' @param ... Arguments passed to methods.
 #'
+#' @returns A \code{data.frame} with one row for each
+#' combination of \code{id_cols} and the column \code{efflux}
+#' in \eqn{µmol m^{-2}s^{-1}}.
+#'
+#' @examples
+#' my_dat <- ConFluxPro::base_dat |>
+#'   filter(Date < "2021-03-01") #subset to speed up example
+#' PROFLUX <- pro_flux(my_dat)
+#' FLUX <- fg_flux(my_dat)
+#'
+#' efflux(PROFLUX)
+#' efflux(FLUX)
+#'
 #' @importFrom rlang .data
 #'
 #' @export

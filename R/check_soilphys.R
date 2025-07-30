@@ -17,13 +17,12 @@
 #' @param id_cols (character vector) the columns that, together, identify a
 #' site uniquely (e.g. site, repetition)
 #'
-#' @return data frame of 'suspicious' parameter/depth combinations, where all
+#' @returns data frame of 'suspicious' parameter/depth combinations, where all
 #'   values are NA.
 #'
-#' @examples {
-#' data("soilphys")
-#' check_soilphys(soilphys,id_cols = c("site"))
-#' }
+#' @examples
+#' check_soilphys(ConFluxPro::soilphys, id_cols = c("site", "Date"))
+#'
 #'
 #' @family soilphys
 #'
@@ -136,34 +135,36 @@ check_soilphys <-function(df,
   sp_fixable <- ifelse(length(param_missing) == length(to_fix), TRUE, FALSE)
 
 
-  cat(paste0(
+  out_message <-
+    paste0(
     "--------------------------------------------------------",
-    "\n"
-  ))
-  cat(paste0("your soilphys-dataframe is", "\n"),
-      ifelse(sp_ready == TRUE, green("ready"), red("!!not ready!!")),
-      "\n")
+    "\n",
+    "your soilphys-dataframe is", "\n",
+    ifelse(sp_ready == TRUE, green("ready"), red("!!not ready!!")),
+    "\n")
   if (sp_ready == FALSE) {
-    cat(paste0(
+    out_message <- paste0(
+      out_message,
       "the dataframe ",
       ifelse(sp_fixable == TRUE, green("can"), red("cannot")) ,
       " be fixed by complete_soilphys()",
       "\n"
-    ))
+    )
   }
   if (sp_fixable == FALSE) {
-    cat(
+    out_message <-
       paste0(
+        out_message,
         "please provide the following parameters to the dataframe first:",
         "\n",
         paste0(param_missing[!param_missing %in% c(to_fix, not_to_fix)],
                collapse = " , "),
         "\n"
       )
-    )
   } else {
-    cat(
+    out_message <-
       paste0(
+        out_message,
         "the following parameters are still missing: ",
         "\n",
         paste0(param_missing, collapse = " , "),
@@ -174,25 +175,28 @@ check_soilphys <-function(df,
         c('my variable'))",
         "\n"
       )
-    )
   }
-  if (is.data.frame(susp)) {
-    cat("\n")
-    cat(yellow(
+  if (is.data.frame(susp) && nrow(susp)>0) {
+    out_message <-
       paste0(
-        "the following parameters have depths with all NA",
+        out_message,
         "\n",
-        "please check if they were discretized correctly",
-        "\n"
-      )
-    ))
-
-
+        yellow(
+          paste0(
+            "the following parameters have depths with all NA",
+            "\n",
+            "please check if they were discretized correctly",
+            "\n"
+          )
+        ))
   }
-  cat(paste0(
+  out_message <-
+    paste0(
+      out_message,
     "--------------------------------------------------------",
     "\n"
-  ))
+  )
+  message(out_message)
 list(result = sp_fixable,
      suspects = susp)
 }

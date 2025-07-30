@@ -15,3 +15,11 @@ A character vector of gases in that object.
 \description{
 Get the gases from a CFP object.
 }
+\examples{
+unique_gases(base_dat)
+
+data.frame(gas = c("CO2", "CH4")) |>
+cfp_profile(id_cols = "gas") |>
+unique_gases()
+
+}

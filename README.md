@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ConFluxPro)](https://CRAN.R-project.org/package=ConFluxPro)
 [![R-CMD-check](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/valentingar/ConFluxPro/actions/workflows/R-CMD-check.yaml)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.08094/status.svg)](https://doi.org/10.21105/joss.08094)
 <!-- badges: end -->
 
 # ConFluxPro <a href="https://valentingar.github.io/ConFluxPro/"><img src="man/figures/logo.svg" align="right" height="139" alt="ConFluxPro website" /></a>
@@ -20,17 +20,27 @@ including an inverse approach.
 
 ## Installation
 
+You can install the latest release from CRAN:
+
+``` r
+install.packages("ConFluxPro")
+#> package 'ConFluxPro' successfully unpacked and MD5 sums checked
+#> 
+#> The downloaded binary packages are in
+#>  C:\Users\Valentin.Gartiser\AppData\Local\Temp\RtmpYlTMb2\downloaded_packages
+```
+
 Install the current development version from github:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("valentingar/ConFluxPro")
+remotes::install_github("valentingar/ConFluxPro", build_vignettes = TRUE, dependencies = TRUE)
 ```
 
 To get started, check out the provided vignette after installation:
 
 ``` r
-vignette("overview", package = "ConFluxPro")
+vignette("ConFluxPro",package = "ConFluxPro")
 ```
 
 ## Basis
@@ -144,10 +154,10 @@ FLUX <- fg_flux(my_dat, modes = "EF")
 ```
 
 The result in both cases is an object that contains the original data
-`my_dat` and th flux rates in different soil layers for each of the
-profiles identified in `cfp_dat()`. From this, the soil/atmoshere efflux
-rate and the specific production rate in each model soil layer can be
-extracted.
+`my_dat` and the flux rates in different soil layers for each of the
+profiles identified in `cfp_dat()`. From this, the soil/atmosphere
+efflux rate and the specific production rate in each model soil layer
+can be extracted.
 
 ``` r
 # soil/atmosphere efflux
@@ -177,7 +187,7 @@ efflux(PROFLUX) %>%
   theme_minimal()
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.svg" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.svg" width="100%" />
 
 ### Extracting information
 
@@ -198,8 +208,8 @@ cfp_layers_map(PROFLUX)
 
 For big datasets (1000+ profiles), some calculations may takes some
 time. ConFluxPro uses the excellent
-[`future`](https://github.com/HenrikBengtsson/future) and
-[`progressr`](https://github.com/HenrikBengtsson/progressr) packages for
+[`future`](https://github.com/futureverse/future) and
+[`progressr`](https://github.com/futureverse/progressr) packages for
 parallel processing and progress bars in some cpu-intensive functions.
 
 ``` r
@@ -207,9 +217,9 @@ library(future)
 library(progressr)
 
 # enable paralell processing with future
-plan(multisession())
+plan(multisession)
 # disable
-plan(sequential())
+plan(sequential)
 
 # enable progress bars for one function call
 with_progress({pro_flux(my_dat)})
@@ -294,7 +304,7 @@ PROFLUX %>%
   ggplot2::theme_light()
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.svg" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-13-1.svg" width="75%" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -304,7 +314,7 @@ soilphys %>%
   ggplot2::theme_light()
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-2.svg" width="75%" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-13-2.svg" width="75%" style="display: block; margin: auto;" />
 
 ### Getting help
 
@@ -343,6 +353,16 @@ valentingartiser.de
 
 Please contact me if you experience any problems or have questions - I
 will be glad to help out where I can.
+
+## Contribute
+
+If you find an error or want to propose a feature you can open an issue
+in the github repository. Please follow the contribution guidelines.
+
+Please note that the ConFluxPro project is released with a [Contributor
+Code of
+Conduct](https://valentingar.github.io/ConFluxPro/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
 
 ## License
 

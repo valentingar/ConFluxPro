@@ -4,9 +4,9 @@
 \name{ConFluxPro-package}
 \alias{ConFluxPro}
 \alias{ConFluxPro-package}
-\title{ConFluxPro: A toolkit for soil gas analysis}
+\title{ConFluxPro: Soil Gas Analysis and Flux Modeling}
 \description{
-A suite to model soil gas fluxes with the flux gradient method. It includes functions for data handling, a forward and an inverse model for flux estimation and methods for calibration and uncertainty estimation.
+Model soil gas fluxes with the Flux-Gradient Method. It includes functions for data handling, a forward and an inverse model for flux modeling and methods for calibration and uncertainty estimation. For more details see Gartiser et al. (2025a) \doi{10.21105/joss.08094} and Gartiser et al. (2025b) \doi{10.1111/ejss.70126}.
 }
 \seealso{
 Useful links:
@@ -14,12 +14,12 @@ Useful links:
   \item \url{https://confluxpro.valentingartiser.de/}
   \item \url{https://github.com/valentingar/ConFluxPro}
   \item \url{https://valentingar.github.io/ConFluxPro/}
-  \item Report bugs at \url{https://github.com/valentingar/confluxpro/issues}
+  \item Report bugs at \url{https://github.com/valentingar/ConFluxPro/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Valentin Gartiser \email{code@valentingartiser.de} (\href{https://orcid.org/0000-0001-5320-374X}{ORCID})
+\strong{Maintainer}: Valentin Gartiser \email{code@valentingartiser.de} (\href{https://orcid.org/0000-0001-5320-374X}{ORCID}) [copyright holder]
 
 Other contributors:
 \itemize{

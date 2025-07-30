@@ -58,8 +58,23 @@ larger than the highest layer in soilphys, should the limits be
 automatically adjusted per id_cols individually? Default is FALSE, which
 leads to an error in that case.}
 }
+\value{
+An object of type \code{cfp_run_map} that can be used within
+\link{alternate}.
+}
 \description{
 An S3 class cfp_run_map to be used in alternate(). Either create
 a new run map from a cfp_pfres or cfp_fgres model or extract an existing
 run_map from an cfp_altres object.
+}
+\examples{
+PROFLUX <- ConFluxPro::base_dat |> pro_flux()
+# Create a cfp_run_map where TPS is changed between 90 \% and 110 \%
+# of the original value for 50 runs.
+cfp_run_map(
+  PROFLUX,
+  list("TPS" = c(0.9, 1.1)),
+  "factor",
+  n_runs = 50)
+
 }

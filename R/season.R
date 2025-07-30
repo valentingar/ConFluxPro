@@ -12,7 +12,7 @@
 #'
 #' @param d (Date) Any date object
 #'
-#' @return m (character)
+#' @returns A character vector the same length as d
 #'
 #' @examples season(as.Date(c("1955-01-15","1985-06-15","2015-10-15")))
 #'

@@ -10,7 +10,21 @@ cfp_parameter(x = NULL)
 \item{x}{Any object or data.frame to match the parameters to, or a character
 vector of parameter names.}
 }
+\value{
+A \code{data.frame()} with the name, description and unit of the
+parameter
+}
 \description{
 Function to access parameter descriptions and units
 used in \code{ConFluxPro}
+}
+\examples{
+#list parameters within an object
+cfp_parameter(soilphys)
+cfp_parameter(gasdata)
+
+#list all paramters
+cfp_parameter()
+
+
 }

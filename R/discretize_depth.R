@@ -74,11 +74,11 @@
 #'   'linspline' method are to be placed. If this differs for the parameters, a
 #'   list of numeric vectors with the same length as "param" can be provided.
 #'   Cannot differ between id_cols.
+#' @inheritParams cfp_profile
+#' @param ... Internal, must be empty.
 #'
-#' @inheritDotParams cfp_profile id_cols
 #'
-#'
-#' @return A [cfp_layered_profile()] data.frame with the variables \code{upper}
+#' @returns A [cfp_layered_profile()] data.frame with the variables \code{upper}
 #' and \code{lower} defining the layers derived from depth_target.
 #' The column \code{depth} is the middle of each layer. And all variables from
 #' \code{param}
@@ -89,17 +89,14 @@
 #' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
-#' @examples {
+#' @examples
 #'
 #' data("soiltemp")
 #' library(dplyr)
 #'
-#' dt <- soiltemp %>%
-#'   select(site,depth) %>%
-#'   distinct() %>%
-#'   group_by(site) %>%
-#'   slice_max(depth) %>%
-#'   reframe(depth = c(depth,seq(0,-100,-10)))
+#' dt <- data.frame(
+#'   site = rep(c("site_a", "site_b"), each = 12),
+#'   depth = c(5, seq(0,-100,-10), 7, seq(0,-100,-10)))
 #'
 #' discretize_depth(df = soiltemp,
 #'                  param = "t",
@@ -107,7 +104,6 @@
 #'                  depth_target = dt,
 #'                  id_cols = c(
 #'                    "site","Date"))
-#' }
 #'
 #' @export
 discretize_depth<- function(df,

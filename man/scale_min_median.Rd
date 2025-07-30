@@ -9,6 +9,13 @@ scale_min_median(x)
 \arguments{
 \item{x}{a numeric vector}
 }
+\value{
+\code{x} scaled between min and median of \code{x}.
+}
 \description{
 Scale a vector between its minimum and median.
+}
+\examples{
+scale_min_median(1:10)
+
 }

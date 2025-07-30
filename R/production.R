@@ -32,6 +32,11 @@
 #'
 #' @importFrom rlang .data
 #'
+#' @examples
+#' PROFLUX <- pro_flux(base_dat)
+#'
+#' production(PROFLUX)
+#'
 #' @export
 
 production <- function(x, ...){

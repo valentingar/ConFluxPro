@@ -41,6 +41,11 @@
 #'
 #' @examples
 #' cfp_fgmod(ConFluxPro::base_dat)
+#'
+#' ### coercion from other object types (internal)
+#' fg_flux(ConFluxPro::base_dat) |>
+#'   as_cfp_fgmod()
+#'
 
 #' @export
 

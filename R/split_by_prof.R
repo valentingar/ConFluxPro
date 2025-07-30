@@ -4,7 +4,7 @@
 #' Split profile data into a list for each single profile.
 #' @param x A object that is grouped into profiles by its \code{id_cols}.
 #'
-#' @returns A list with where each entry is one profile of the same
+#' @returns A list  where each entry is one profile/group of the same
 #' class as \code{x}.
 #'
 #' @examples

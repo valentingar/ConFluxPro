@@ -20,7 +20,7 @@
 #'
 #' @family data formats
 #'
-#'@return A cfp_dat object with the following parameters:
+#'@returns A cfp_dat object with the following parameters:
 #' \describe{
 #' \item{gasdata}{The gasdata object with added column "gd_id" that is unique
 #' for each profile.}
@@ -60,6 +60,11 @@
 #' ### filter similar to dplyr::fliter
 #' filter(base_dat, site == "site_a")
 #' filter(base_dat, prof_id %in%  1:5)
+#'
+#' ### coersion from derived objects
+#' PROFLUX <- pro_flux(base_dat)
+#' as_cfp_dat(PROFLUX)
+#'
 
 #' @importFrom dplyr filter
 #' @importFrom rlang .data
@@ -463,6 +468,11 @@ cfp_id_cols.default <- function(x){
 
 #' @rdname utility
 #' @param x A `cfp_dat` object.
+#'
+#' @returns An integer giving the number of groups of the object.
+#' @examples
+#' n_groups(base_dat)
+#'
 #' @export
 n_groups <- function(x) {
   UseMethod("n_groups")
@@ -583,6 +593,9 @@ as_cfp_dat.cfp_dat <- function(x){
 
 ##### SPLITTING #####
 #' @rdname split_by_prof
+#' @examples
+#' split_by_group(base_dat)
+#'
 #' @export
 split_by_group <- function(x){
   UseMethod("split_by_group")
