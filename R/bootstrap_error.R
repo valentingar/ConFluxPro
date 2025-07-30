@@ -184,8 +184,8 @@ make_bootstrap_model.cfp_pfmod <- function(x,
   sample_from_gasdata <- any(c("gasdata", "both") %in% sample_from)
   sample_from_soilphys <- any(c("soilphys", "both") %in% sample_from)
 
-  gasdata <- x$gasdata
-  soilphys <- x$soilphys
+  gasdata <- cfp_gasdata(x)
+  soilphys <- cfp_soilphys(x)
 
   gd_id_cols <- cfp_id_cols(gasdata)
   sp_id_cols <- cfp_id_cols(soilphys)
