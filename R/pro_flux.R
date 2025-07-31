@@ -239,6 +239,7 @@ prof_optim <- function(y,
                        zero_flux,
                        dmin,
                        p){
+  fit_to <- "concentration"
   gasdata <- get(as.character(y$gd_id),envir = env$gasdata)
   soilphys <- get(as.character(y$sp_id),envir = env$soilphys)
   #gasdata <- env$gasdata[env$gasdata$gd_id == y$gd_id, ]
@@ -255,11 +256,17 @@ prof_optim <- function(y,
   cmap <- soilphys$step_id[match(gasdata$depth,
                                      soilphys$upper)]
 
-  x_ppm <- gasdata$x_ppm #* soilphys$c_air[cmap]
+  x_ppm <- gasdata$x_ppm
+  conc <- x_ppm * soilphys$c_air[cmap]
 
   #shortening to valid cmaps
   x_ppm <- x_ppm[is.finite(cmap)]
+  conc <- conc[is.finite(cmap)]
   cmap <- cmap[is.finite(cmap)]
+
+  profile_ref <- switch(fit_to,
+                        "concentration" = conc,
+                        "molar_fraction" = x_ppm)
 
   #weigh the observations based on the degrees of freedom
   deg_free_obs <- pmap[cmap]
@@ -270,15 +277,17 @@ prof_optim <- function(y,
 
   #C0 at lower end of production model
   x0 <- stats::median(
-    gasdata$x_ppm[gasdata$depth == dmin])#*soilphys$c_air[soilphys$lower == dmin])
+    gasdata$x_ppm[gasdata$depth == dmin])
+  C0 <- x0 * soilphys$c_air[soilphys$lower == dmin]
+
+  lower_boundry_ref <- switch(
+    fit_to,
+    "concentration" = C0,
+    "molar_fraction" = x0
+  )
 
   #DS and D0
   DS <- soilphys$DS
-
-  #temporary until implementation
-  # D0 <- DS
-  # dstor <- 0
-  # known_flux <- NA
 
   #optimisation with error handling returning NA
   prod_optimised <- tryCatch({
@@ -290,17 +299,16 @@ prof_optim <- function(y,
                  height = height,
                  DS = DS,
                  c_air = soilphys$c_air,
-                 #D0 = D0,
-                 x0 = x0,
+                 lower_boundry_ref = lower_boundry_ref,
                  pmap = pmap,
                  cmap = cmap,
-                 x_ppm = x_ppm,
-                 #dstor = dstor,
+                 profile_ref = profile_ref,
                  zero_flux = zero_flux,
                  F0 = F0,
                  layer_couple = layer_couple_tmp,
                  wmap = wmap,
-                 evenness_factor = evenness_factor
+                 evenness_factor = evenness_factor,
+                 fit_to = fit_to
   )},
   error = function(cond) NA)
 
@@ -325,14 +333,13 @@ prof_optim <- function(y,
 
   #calculating flux
   fluxs <- prod_mod_flux(prod,height,F0)
-  x_ppm_mod <- prod_mod_conc(
+  conc_mod <- prod_mod_conc(
     prod,
     height,
     soilphys$DS,
-    soilphys$c_air,
     F0,
-    x0)
-  conc_mod <- x_ppm_mod*soilphys$c_air
+    C0)
+  x_ppm_mod <- conc_mod / soilphys$c_air
 
   # do not allow negative concentrations!
   if (any_negative_values(conc_mod)){
@@ -357,7 +364,7 @@ prof_optim <- function(y,
     F0 = F0,
     prod = prod,
     conc = conc_mod,
-    x_ppm = x_ppm_mod,
+   # x_ppm = x_ppm_mod,
     RMSE = RMSE)
   df
 }

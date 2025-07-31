@@ -69,17 +69,18 @@ prod_optim<- function(X,
                       height,
                       DS,
                       D0 = NA,
-                      x0,
+                      lower_boundry_ref,
                       c_air,
                       pmap,
                       cmap,
-                      x_ppm,
+                      profile_ref,
                       dstor = 0,
                       zero_flux = TRUE,
                       F0 = 0,
                       layer_couple,
                       wmap,
-                      evenness_factor){
+                      evenness_factor,
+                      fit_to){
 
   # zero-flux boundary condition, TRUE: there is no flux below lowest layer
   if (!zero_flux){
@@ -91,23 +92,33 @@ prod_optim<- function(X,
   prod <- X[pmap]
 
   #calculate concentration using the values provided
-  x_ppm_mod <- prod_mod_conc(
-    prod,
-    height,
-    DS,
-    c_air,
-    F0,
-    x0)
+  profile_mod <-
+    switch(
+      fit_to,
+      "concentration" = prod_mod_conc(
+        prod,
+        height,
+        DS,
+        F0,
+        lower_boundry_ref),
+      "molar_fraction" = prod_mod_x(
+      prod,
+      height,
+      DS,
+      c_air,
+      F0,
+      lower_boundry_ref)
+    )
 
   #assign modeled concentrations to match observations
-  x_ppm_mod <- x_ppm_mod[cmap]
+  profile_mod <- profile_mod[cmap]
 
   #calculate RMSE
-  k <- (x_ppm-x_ppm_mod)^2
+  k <- (profile_ref-profile_mod)^2
   k <- k*wmap #weigh the observations that depend on higher degrees of
   # freedom more
   #k <- k[is.finite(k)]
-  RMSE <- sqrt(sum(k)/length(k))/(sum(x_ppm)/length(x_ppm))
+  RMSE <- sqrt(sum(k)/length(k))/(sum(profile_ref)/length(profile_ref))
 
   #penalty for too different production rates
   prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) /
