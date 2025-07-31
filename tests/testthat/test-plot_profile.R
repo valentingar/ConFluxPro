@@ -7,15 +7,15 @@ test_that("no errors in plot_profile()", {
 
 
   expect_no_error(p <- plot_profile(PROFLUX))
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is_ggplot(p))
   expect_no_error(p <- plot_profile(FLUX))
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is_ggplot(p))
   expect_no_error(p <- plot_profile(get_soilphys(PROFLUX)))
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is_ggplot(p))
   expect_no_error(p <- plot_profile(get_gasdata(PROFLUX)))
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is_ggplot(p))
   expect_no_error(p <- plot_profile(get_layers_map(PROFLUX)))
-  expect_true(ggplot2::is.ggplot(p))
+  expect_true(ggplot2::is_ggplot(p))
 
 
 
