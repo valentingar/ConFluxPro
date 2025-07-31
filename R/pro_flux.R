@@ -332,19 +332,33 @@ prof_optim <- function(y,
   prod <-prods[pmap]
 
   #calculating flux
-  fluxs <- prod_mod_flux(prod,height,F0)
-  conc_mod <- prod_mod_conc(
-    prod,
-    height,
-    soilphys$DS,
-    F0,
-    C0)
-  x_ppm_mod <- conc_mod / soilphys$c_air
+  fluxs <- prod_mod_flux(prod, height, F0)
+
+  # calculating concentration and molar fraction
+  if (fit_to == "concentration"){
+    conc_mod <- prod_mod_conc(
+      prod,
+      height,
+      soilphys$DS,
+      F0,
+      C0)
+    x_ppm_mod <- conc_mod / soilphys$c_air
+  } else if(fit_to == "molar_fraction"){
+    x_ppm_mod <- prod_mod_x(
+      prod,
+      height,
+      soilphys$DS,
+      soilphys$c_air,
+      F0,
+      x0)
+    conc_mod <- x_ppm_mod * soilphys$c_air
+  }
 
   # do not allow negative concentrations!
   if (any_negative_values(conc_mod)){
     fluxs <- NA
     conc_mod <- NA
+    x_ppm_mod <- NA
     prod <- NA
     RMSE <- NA
   }
@@ -364,7 +378,7 @@ prof_optim <- function(y,
     F0 = F0,
     prod = prod,
     conc = conc_mod,
-   # x_ppm = x_ppm_mod,
+    x_ppm = x_ppm_mod,
     RMSE = RMSE)
   df
 }
