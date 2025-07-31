@@ -379,7 +379,7 @@ prof_optim <- function(y,
     F0 = F0,
     prod = prod,
     conc = conc_mod,
-    #x_ppm = x_ppm_mod,
+    x_ppm = x_ppm_mod,
     RMSE = RMSE)
   df
 }
