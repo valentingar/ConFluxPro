@@ -180,13 +180,8 @@ pro_flux_group <-  function(x, p){
 
     layer_couple_tmp <- layers_map$layer_couple[-1]
 
-    # If either the DS or the F0 are optimised as well,
+    # If F0 are optimised as well,
     # more starting parameters need to be set!
-    if(cfp_DSD0_optim(x) == TRUE){
-      prod_start <- c(prod_start,rep(0.5,length(prod_start)))
-      lowlim_tmp <- c(lowlim_tmp,rep(0,length(lowlim_tmp)))
-      highlim_tmp <- c(highlim_tmp,rep(1,length(highlim_tmp)))
-    }
     if (cfp_zero_flux(x) == FALSE){
       prod_start <- c(0,prod_start)
       lowlim_tmp <- c(min(cfp_zero_limits(x)), lowlim_tmp)
@@ -194,11 +189,8 @@ pro_flux_group <-  function(x, p){
     }
 
 
-    DSD0_optim <- cfp_DSD0_optim(x)
     evenness_factor <- cfp_evenness_factor(x)
     zero_flux <- cfp_zero_flux(x)
-    known_flux_factor <- cfp_known_flux_factor(x)
-
 
     dmin <- min(x$layers_map$lower)
 
@@ -218,10 +210,8 @@ pro_flux_group <-  function(x, p){
                          layer_couple_tmp = layer_couple_tmp,
                          lowlim_tmp = lowlim_tmp,
                          highlim_tmp = highlim_tmp,
-                         DSD0_optim = DSD0_optim,
                          evenness_factor = evenness_factor,
                          zero_flux = zero_flux,
-                         known_flux_factor = known_flux_factor,
                          dmin = dmin,
                          p = p,
                          prof_optim#,
@@ -245,10 +235,8 @@ prof_optim <- function(y,
                        layer_couple_tmp,
                        lowlim_tmp,
                        highlim_tmp,
-                       DSD0_optim,
                        evenness_factor,
                        zero_flux,
-                       known_flux_factor,
                        dmin,
                        p){
   gasdata <- get(as.character(y$gd_id),envir = env$gasdata)
@@ -310,9 +298,6 @@ prof_optim <- function(y,
                  #dstor = dstor,
                  zero_flux = zero_flux,
                  F0 = F0,
-                 #known_flux = known_flux,
-                 known_flux_factor = known_flux_factor,
-                 DSD0_optim = DSD0_optim,
                  layer_couple = layer_couple_tmp,
                  wmap = wmap,
                  evenness_factor = evenness_factor
@@ -334,11 +319,6 @@ prof_optim <- function(y,
     F0 <- pars[1]
     prods <- pars[-1]
   }
-  if(DSD0_optim == TRUE){
-    DSD0_fit <- prods[-c(1:(length(prods)/2))]
-    prods <- prods[1:(length(prods)/2)]
-  }
-
 
   #mapping production to correct steps in soilphys
   prod <-prods[pmap]
@@ -379,9 +359,6 @@ prof_optim <- function(y,
     conc = conc_mod,
     x_ppm = x_ppm_mod,
     RMSE = RMSE)
-  if(DSD0_optim == TRUE){
-    df$DSD0_fit <- DSD0_fit[pmap]
-  }
   df
 }
 

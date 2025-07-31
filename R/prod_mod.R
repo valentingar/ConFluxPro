@@ -39,14 +39,29 @@
 prod_mod_conc <- function(prod,
                           height,
                           DS,
-                          c_air,
                           F0,
-                          x0){
+                          C0){
+  flux <- cumsum(((prod) * height))+F0
+  conc <- cumsum(-((prod)/(2*DS)) *
+                   height^2  - c(F0,flux[-length(flux)])/DS *height)+C0
+  return(conc)
+}
+
+
+#' @rdname prod_mod_conc
+#' @export
+prod_mod_x <- function(prod,
+                       height,
+                       DS,
+                       c_air,
+                       F0,
+                       x0){
   flux <- cumsum(((prod) * height))+F0
   conc <- cumsum(-((prod)/(2 * DS * c_air)) * height^2
                  - c(F0,flux[-length(flux)])/(DS * c_air) * height) + x0
   return(conc)
 }
+
 
 #' @describeIn prod_mod_conc flux output only
 #'

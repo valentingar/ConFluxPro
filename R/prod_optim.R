@@ -77,9 +77,6 @@ prod_optim<- function(X,
                       dstor = 0,
                       zero_flux = TRUE,
                       F0 = 0,
-                      known_flux = NA,
-                      known_flux_factor = 0,
-                      DSD0_optim = FALSE,
                       layer_couple,
                       wmap,
                       evenness_factor){
@@ -89,17 +86,9 @@ prod_optim<- function(X,
     F0 <- X[1]
     X <- X[-1]
   }
-  # if(DSD0_optim){
-  #   DSD0_fit <- X[((length(X) / 2) + 1):length(X)]
-  #   X <- X[1:length(X) / 2]
-  #   DS <-  DSD0_fit[pmap]*D0
-  #
-  # }
 
   #assign production values to steps (pmap provided in function call)
   prod <- X[pmap]
-  #add storage term to production
-  # prod <- prod+dstor
 
   #calculate concentration using the values provided
   x_ppm_mod <- prod_mod_conc(
@@ -123,21 +112,13 @@ prod_optim<- function(X,
   #penalty for too different production rates
   prod_penal <- ((sum(abs((X[-1]-X[-length(X)])*layer_couple))/(length(X))) /
                    (abs(sum(prod*height))+0.000001) )
-  #if (is.finite(prod_penal)){
-    RMSE <- RMSE + prod_penal
-  #}
+  RMSE <- RMSE + prod_penal
 
   #penalty to prevent zero_fluxes
   pmax <- max(X, na.rm = TRUE)
   evenness_penal <- evenness_factor*sum(pmax^2 / (abs(prod/height) + 0.00001))
 
   RMSE <- RMSE + evenness_penal
-
-  #penalty for not meeting known_flux
-  # if (!is.na(known_flux)){
-  #   RMSE <- RMSE + sum(abs(known_flux -
-  #             (sum(height*prod)+F0)))*known_flux_factor
-  # }
 
   return(RMSE)
 }
