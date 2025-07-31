@@ -56,10 +56,10 @@ pro_flux <- function(x,
                      ...){
   # for future expansion, remove if implemented
   named_dots <- names(list(...))
-  stopifnot("'...' contains unused arguments or that are
-            not yet implemented fully" =
-              all(named_dots %in%
-                    c("zero_flux", "zero_limits", "evenness_factor")))
+  stopifnot(
+    "'...' contains unused arguments or that are not yet implemented fully" =
+      all(named_dots %in%
+            c("zero_flux", "zero_limits", "evenness_factor", "fit_to")))
 
 UseMethod("pro_flux")
 }
@@ -191,6 +191,7 @@ pro_flux_group <-  function(x, p){
 
     evenness_factor <- cfp_evenness_factor(x)
     zero_flux <- cfp_zero_flux(x)
+    fit_to <- cfp_fit_to(x)
 
     dmin <- min(x$layers_map$lower)
 
@@ -203,21 +204,21 @@ pro_flux_group <-  function(x, p){
     x <- split_by_prof_env(x)
 
 
-    df_ret <-furrr::future_imap(profs_split,
-                                env = x,
-                         prod_start = prod_start,
-                         F0 = F0,
-                         layer_couple_tmp = layer_couple_tmp,
-                         lowlim_tmp = lowlim_tmp,
-                         highlim_tmp = highlim_tmp,
-                         evenness_factor = evenness_factor,
-                         zero_flux = zero_flux,
-                         dmin = dmin,
-                         p = p,
-                         prof_optim#,
-                         #.options = furrr::furrr_options(globals = FALSE),
-                         #.env_globals = environment()
-                         )
+    df_ret <-furrr::future_imap(
+      profs_split,
+      env = x,
+      prod_start = prod_start,
+      F0 = F0,
+      layer_couple_tmp = layer_couple_tmp,
+      lowlim_tmp = lowlim_tmp,
+      highlim_tmp = highlim_tmp,
+      evenness_factor = evenness_factor,
+      zero_flux = zero_flux,
+      dmin = dmin,
+      p = p,
+      fit_to = fit_to,
+      prof_optim
+    )
 
     df_ret <- df_ret %>%
       dplyr::bind_rows()
@@ -238,8 +239,8 @@ prof_optim <- function(y,
                        evenness_factor,
                        zero_flux,
                        dmin,
-                       p){
-  fit_to <- "concentration"
+                       p,
+                       fit_to){
   gasdata <- get(as.character(y$gd_id),envir = env$gasdata)
   soilphys <- get(as.character(y$sp_id),envir = env$soilphys)
   #gasdata <- env$gasdata[env$gasdata$gd_id == y$gd_id, ]
@@ -378,7 +379,7 @@ prof_optim <- function(y,
     F0 = F0,
     prod = prod,
     conc = conc_mod,
-    x_ppm = x_ppm_mod,
+    #x_ppm = x_ppm_mod,
     RMSE = RMSE)
   df
 }

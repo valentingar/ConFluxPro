@@ -54,16 +54,31 @@
 cfp_pfmod <- function(x,
                       zero_flux = TRUE,
                       zero_limits = c(-Inf, Inf),
-                      DSD0_optim = FALSE,
+                      DSD0_optim = deprecated(),
                       evenness_factor = 0,
-                      known_flux_factor = 0){
+                      known_flux_factor = deprecated(),
+                      fit_to = "concentration"){
+
+  fit_to <- match.arg(fit_to, c("concentration", "molar_fraction"))
+
+  if(lifecycle::is_present(DSD0_optim)){
+  lifecycle::deprecate_warn(
+    when = "1.0.0",
+    what = "cfp_pfmod(DSD0_optim)",
+    details = "This deprecated feature was removed entirely."
+  )}
+  if(lifecycle::is_present(known_flux_factor)){
+  lifecycle::deprecate_warn(
+    when = "1.0.0",
+    what = "cfp_pfmod(known_flux_factor)",
+    details = "This deprecated feature was removed entirely."
+  )}
 
   x <- new_cfp_pfmod(x,
-                      zero_flux,
-                      zero_limits,
-                      DSD0_optim,
-                      evenness_factor,
-                      known_flux_factor
+                     zero_flux,
+                     zero_limits,
+                     evenness_factor,
+                     fit_to
   )
   x <- validate_cfp_pfmod(x)
   x
@@ -73,9 +88,8 @@ cfp_pfmod <- function(x,
 new_cfp_pfmod <- function(x,
                           zero_flux,
                           zero_limits,
-                          DSD0_optim,
                           evenness_factor,
-                          known_flux_factor
+                          fit_to
 ){
   stopifnot(inherits(x,"cfp_dat"))
 
@@ -87,9 +101,10 @@ new_cfp_pfmod <- function(x,
                  class = c("cfp_pfmod", "cfp_dat", "list"),
                  zero_flux = zero_flux,
                  zero_limits = zero_limits,
-                 DSD0_optim = DSD0_optim,
+                 DSD0_optim = NULL,
                  evenness_factor = evenness_factor,
-                 known_flux_factor = known_flux_factor)
+                 known_flux_factor = NULL,
+                 fit_to = fit_to)
   x
 }
 
@@ -112,9 +127,10 @@ print.cfp_pfmod <- function(x, ...){
   cat("\nA cfp_pfmod pro_flux model. \n")
   cat("zero_flux:", cfp_zero_flux(x)," \n")
   cat("zero_limits: ", cfp_zero_limits(x), " \n")
-  cat("DSD0_optim: ", cfp_DSD0_optim(x), " \n")
+  #cat("DSD0_optim: ", cfp_DSD0_optim(x), " \n")
   cat("evenness_factor: ", cfp_evenness_factor(x)," \n")
-  cat("known_flux_factor: ", cfp_known_flux_factor(x)," \n")
+  #cat("known_flux_factor: ", cfp_known_flux_factor(x)," \n")
+  cat("fit to:", cfp_fit_to(x), "\n")
   NextMethod()
 }
 
@@ -176,6 +192,18 @@ cfp_known_flux_factor <- function(x){
 #' @exportS3Method
 cfp_known_flux_factor.default <- function(x){
   out <- attr(x,"known_flux_factor")
+  out
+}
+
+
+#' @rdname extractors
+#' @export
+cfp_fit_to <- function(x){
+  UseMethod("cfp_fit_to")
+}
+#' @exportS3Method
+cfp_fit_to.default <- function(x){
+  out <- attr(x,"fit_to")
   out
 }
 
