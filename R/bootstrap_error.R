@@ -226,11 +226,10 @@ make_bootstrap_model.cfp_pfmod <- function(x,
   }
 
   y <- cfp_pfmod(cfp_dat(gasdata, soilphys, cfp_layers_map(x)),
-                 cfp_zero_flux(x),
-                 cfp_zero_limits(x),
-                 cfp_DSD0_optim(x),
-                 cfp_evenness_factor(x),
-                 cfp_known_flux_factor(x)
+                 zero_flux = cfp_zero_flux(x),
+                 zero_limits = cfp_zero_limits(x),
+                 evenness_factor = cfp_evenness_factor(x),
+                 fit_to = cfp_fit_to(x)
   )
   y
 }

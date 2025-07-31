@@ -90,9 +90,8 @@ combine_models_by_reference.cfp_pfmod <- function(x_ref, x){
   new_cfp_pfmod(NextMethod(),
                 zero_flux = cfp_zero_flux(x_ref),
                 zero_limits = cfp_zero_limits(x_ref),
-                DSD0_optim = cfp_DSD0_optim(x_ref),
                 evenness_factor = cfp_evenness_factor(x_ref),
-                known_flux_factor = cfp_known_flux_factor(x_ref))
+                fit_to = cfp_fit_to(x_ref))
 }
 
 #' @exportS3Method
