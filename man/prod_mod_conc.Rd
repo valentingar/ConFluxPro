@@ -4,9 +4,12 @@
 \alias{prod_mod_conc}
 \alias{prod_mod}
 \alias{prod_mod_flux}
+\alias{prod_mod_x}
 \title{prod_mod}
 \usage{
 prod_mod_conc(prod, height, DS, F0, C0)
+
+prod_mod_x(prod, height, DS, c_air, F0, x0)
 
 prod_mod_flux(prod, height, F0)
 }

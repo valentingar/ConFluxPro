@@ -8,20 +8,18 @@ prod_optim(
   X,
   height,
   DS,
-  D0 = NA,
-  C0,
+  lower_boundry_ref,
+  c_air,
   pmap,
   cmap,
-  conc,
+  profile_ref,
   dstor = 0,
   zero_flux = TRUE,
   F0 = 0,
-  known_flux = NA,
-  known_flux_factor = 0,
-  DSD0_optim = FALSE,
   layer_couple,
   wmap,
-  evenness_factor
+  evenness_factor,
+  fit_to
 )
 }
 \arguments{
@@ -31,32 +29,23 @@ prod_optim(
 
 \item{DS}{(numeric vector) giving the DS of each step}
 
-\item{D0}{RESERVED FOR FUTURE EXPANSION}
-
-\item{C0}{(numeric) The concentration at the
+\item{lower_boundry_ref}{(numeric) The concentration or molar fraction at the
 bottom of the lowermost step.}
+
+\item{c_air}{Molar density of air.}
 
 \item{pmap}{(integer vector) assigning a production from X to each step}
 
 \item{cmap}{(integer vector) assigning the modeled concentrations to the
 observed concentrations as there can be multiple observations per depth}
 
-\item{conc}{(numeric) the observed concentrations (in the same unit as
-the modelled concentrations).}
+\item{profile_ref}{(numeric) the observed concentrations or molar fractions
+(in the same unit as the modelled concentrations).}
 
-\item{dstor}{RESERVED FOR FUTURE EXPANSION}
-
-\item{zero_flux}{(logical) Applies the zero-flux boundary
-condition(\code{TRUE})? If \code{FALSE}, the first value in \code{X}.
-represents the incoming flux to the lowest layer.}
+\item{zero_flux}{(logical) Applies the zero-flux boundary condition? If
+\code{FALSE}, \code{F0} is optimized alongside the production rates.}
 
 \item{F0}{(numeric) flux into lowest layer.}
-
-\item{known_flux}{RESERVED FOR FUTURE EXPANSION}
-
-\item{known_flux_factor}{RESERVED FOR FUTURE EXPANSION}
-
-\item{DSD0_optim}{RESERVED FOR FUTURE EXPANSION}
 
 \item{layer_couple}{(numeric vector) A vector defining the weights that bind
 the different layers together. If all is zero, no penalisation for stark
@@ -64,10 +53,24 @@ differences between the optimized production rates of adjacent layers takes
 place}
 
 \item{wmap}{(numeric) A vector defining the weights of the different
-concentration measurements in the RMSE calculation.}
+concentration measurements in the RMSE calculation.
+#'}
 
-\item{evenness_factor}{(numeric) Defines strong should stark differences
-between the production rates and very small production rates be penalized.}
+\item{evenness_factor}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}(numeric) A user
+defined factor used to penalise strong differences between the optimised
+production rates. This must be identified by trial-and-error and can help
+prevent that production rates are simply set to zero basically the lower a
+production is relative to the the maximum of the absolute of all
+productions, the higher it is penalised. The \code{evenness_factor} then
+defines the weight of this penalty in the optimisation algorithm
+\code{\link{prod_optim}}.}
+
+\item{fit_to}{(character) Either\code{"concentration"} or
+\code{"molar_fraction"}. Should the profile be fitted to measured
+concentration \eqn{[µmol~m^{-3}]} or molar fraction [\eqn{ppm}]? Makes only little
+differences for trace gases but is important for gases with a high molar
+fraction (\eqn{O_2} and \eqn{N_2}), where molar fraction should be used. Default is
+\code{"concentration"}}
 }
 \value{
 A modified RMSE root mean square error of the modeled and measured

@@ -38,6 +38,13 @@
 #'   defines the weight of this penalty in the optimisation algorithm
 #'   \code{\link{prod_optim}}.
 #'
+#' @param fit_to (character) Either\code{"concentration"} or
+#' \code{"molar_fraction"}. Should the profile be fitted to measured
+#' concentration \eqn{[µmol~m^{-3}]} or molar fraction \[\eqn{ppm}\]? Makes only little
+#' differences for trace gases but is important for gases with a high molar
+#' fraction (\eqn{O_2} and \eqn{N_2}), where molar fraction should be used. Default is
+#' \code{"concentration"}
+#'
 #' @family model frames
 #'
 #' @returns A \code{cfp_pfmod} object that inherits from [cfp_dat()]

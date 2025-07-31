@@ -8,9 +8,10 @@ cfp_pfmod(
   x,
   zero_flux = TRUE,
   zero_limits = c(-Inf, Inf),
-  DSD0_optim = FALSE,
+  DSD0_optim = deprecated(),
   evenness_factor = 0,
-  known_flux_factor = 0
+  known_flux_factor = deprecated(),
+  fit_to = "concentration"
 )
 }
 \arguments{
@@ -34,6 +35,13 @@ defines the weight of this penalty in the optimisation algorithm
 \code{\link{prod_optim}}.}
 
 \item{known_flux_factor}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}
+
+\item{fit_to}{(character) Either\code{"concentration"} or
+\code{"molar_fraction"}. Should the profile be fitted to measured
+concentration \eqn{[µmol~m^{-3}]} or molar fraction [\eqn{ppm}]? Makes only little
+differences for trace gases but is important for gases with a high molar
+fraction (\eqn{O_2} and \eqn{N_2}), where molar fraction should be used. Default is
+\code{"concentration"}}
 }
 \value{
 A \code{cfp_pfmod} object that inherits from \code{\link[=cfp_dat]{cfp_dat()}}

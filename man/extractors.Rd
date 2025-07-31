@@ -15,6 +15,7 @@
 \alias{cfp_DSD0_optim}
 \alias{cfp_evenness_factor}
 \alias{cfp_known_flux_factor}
+\alias{cfp_fit_to}
 \alias{cfp_runmap_type}
 \alias{cfp_params_df}
 \alias{cfp_n_runs}
@@ -46,6 +47,8 @@ cfp_DSD0_optim(x)
 cfp_evenness_factor(x)
 
 cfp_known_flux_factor(x)
+
+cfp_fit_to(x)
 
 cfp_runmap_type(x)
 
