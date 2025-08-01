@@ -21,14 +21,19 @@
 #' @export
 filter.cfp_dat <- function(.data,
                            ...,
+                           .by = NULL,
                            .preserve = FALSE){
-  tables <- names(.data)
-  tables <- tables[tables == "profiles"]
 
   .data$profiles <- .data$profiles %>%
     dplyr::filter(...)
 
-  possible_cols <- names(.data$profiles)
+  reduce_cfp_profiles(.data)
+}
+
+
+ reduce_cfp_profiles <- function(.data){
+
+    possible_cols <- names(.data$profiles)
 
   out <-
     lapply(.data, function(t){
@@ -55,4 +60,5 @@ filter.cfp_dat <- function(.data,
   attributes(out) <- attributes(.data)
 
   out
+
 }

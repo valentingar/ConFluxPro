@@ -7,7 +7,7 @@
 \usage{
 filter(.data, ..., .by = NULL, .preserve = FALSE)
 
-\method{filter}{cfp_dat}(.data, ..., .preserve = FALSE)
+\method{filter}{cfp_dat}(.data, ..., .by = NULL, .preserve = FALSE)
 }
 \arguments{
 \item{.data}{A \code{\link[=cfp_dat]{cfp_dat()}} object or its derivatives.}
