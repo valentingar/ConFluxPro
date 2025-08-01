@@ -14,8 +14,13 @@
 slice.cfp_dat <-
   function(.data, ..., .by = NULL, .preserve = FALSE){
 
-    .data$profiles <- .data$profiles %>%
-      dplyr::slice(...)
+    .data$profiles <- profiles_to_grouped_df(.data$profiles)
+
+    .data$profiles <-
+      new_cfp_profile(
+        slice(.data$profiles, ...),
+        id_cols = "prof_id"
+      )
 
     reduce_cfp_profiles(.data)
   }
@@ -25,10 +30,19 @@ slice.cfp_dat <-
 slice_head.cfp_dat <-
   function(.data, ..., .by = NULL, .preserve = FALSE){
 
-  .data$profiles <- .data$profiles %>%
-    dplyr::slice_head(...)
+    .data$profiles <- profiles_to_grouped_df(.data$profiles)
 
-  reduce_cfp_profiles(.data)
+    fcall <- match.call(expand.dots = FALSE)
+    fcall[[1]] <- slice_head
+    fcall[[2]] <- .data$profiles
+
+    .data$profiles <-
+      new_cfp_profile(
+        eval(fcall),
+        id_cols = "prof_id"
+      )
+
+    reduce_cfp_profiles(.data)
   }
 
 #' @rdname slice
@@ -36,8 +50,17 @@ slice_head.cfp_dat <-
 slice_tail.cfp_dat <-
   function(.data, ..., .by = NULL, .preserve = FALSE){
 
-    .data$profiles <- .data$profiles %>%
-      dplyr::slice_tail(...)
+    .data$profiles <- profiles_to_grouped_df(.data$profiles)
+
+    fcall <- match.call(expand.dots = FALSE)
+    fcall[[1]] <- slice_tail
+    fcall[[2]] <- .data$profiles
+
+     .data$profiles <-
+      new_cfp_profile(
+        eval(fcall),
+        id_cols = "prof_id"
+      )
 
     reduce_cfp_profiles(.data)
   }
@@ -55,10 +78,17 @@ slice_min.cfp_dat <-
     with_ties = TRUE,
     na_rm = FALSE){
 
+    .data$profiles <- profiles_to_grouped_df(.data$profiles)
+
     fcall <- match.call(expand.dots = FALSE)
     fcall[[1]] <- slice_min
     fcall[[2]] <- .data$profiles
-    .data$profiles <- eval(fcall, parent.frame())
+
+    .data$profiles <-
+      new_cfp_profile(
+        eval(fcall),
+        id_cols = "prof_id"
+      )
 
     reduce_cfp_profiles(.data)
   }
@@ -76,10 +106,17 @@ slice_max.cfp_dat <-
     with_ties = TRUE,
     na_rm = FALSE){
 
+    .data$profiles <- profiles_to_grouped_df(.data$profiles)
+
     fcall <- match.call(expand.dots = FALSE)
     fcall[[1]] <- slice_max
     fcall[[2]] <- .data$profiles
-    .data$profiles <- eval(fcall, parent.frame())
+
+     .data$profiles <-
+      new_cfp_profile(
+        eval(fcall),
+        id_cols = "prof_id"
+      )
 
     reduce_cfp_profiles(.data)
   }
@@ -97,11 +134,29 @@ slice_sample.cfp_dat <-
     with_ties = TRUE,
     na_rm = FALSE){
 
+    .data$profiles <- profiles_to_grouped_df(.data$profiles)
+
     fcall <- match.call(expand.dots = FALSE)
     fcall[[1]] <- slice_sample
     fcall[[2]] <- .data$profiles
-    .data$profiles <- eval(fcall, parent.frame())
+
+    .data$profiles <-
+      new_cfp_profile(
+        eval(fcall),
+        id_cols = "prof_id"
+      )
 
     reduce_cfp_profiles(.data)
   }
 
+
+### helper -------
+profiles_to_grouped_df <- function(profiles){
+  if("groups" %in% names(attributes(profiles))){
+    profiles <-
+      dplyr::new_grouped_df(
+        profiles,
+        groups = attr(profiles, "groups"))
+  }
+  profiles
+}

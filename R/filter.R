@@ -24,8 +24,13 @@ filter.cfp_dat <- function(.data,
                            .by = NULL,
                            .preserve = FALSE){
 
-  .data$profiles <- .data$profiles %>%
-    dplyr::filter(...)
+  .data$profiles <- profiles_to_grouped_df(.data$profiles)
+
+  .data$profiles <-
+    new_cfp_profile(
+      filter(.data$profiles, ...),
+      id_cols = "prof_id"
+    )
 
   reduce_cfp_profiles(.data)
 }

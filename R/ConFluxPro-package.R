@@ -43,3 +43,8 @@ dplyr::slice_max
 #' @importFrom dplyr slice_sample
 #' @export
 dplyr::slice_sample
+
+#' @name group_by
+#' @importFrom dplyr group_by
+#' @export
+dplyr::group_by
