@@ -147,12 +147,23 @@ split_by_prof_barebones <- function(x){
 }
 
 split_by_prof_env <- function(x){
-  x <- trim_cfp_dat(x)
-
   soilphys_split <- split(
-    data.frame(x$soilphys)[,!names(x$soilphys) == "sp_id"], x$soilphys$sp_id)
+    data.frame(x$soilphys)[,
+                           c(
+                             "upper",
+                             "lower",
+                             "depth",
+                             "height",
+                             "pmap",
+                             "step_id",
+                             "DS",
+                             "c_air")],
+    x$soilphys$sp_id)
+
   gasdata_split <- split(
-    data.frame(x$gasdata)[,!names(x$gasdata) == "gd_id"], x$gasdata$gd_id)
+    data.frame(x$gasdata)[,c(
+      "depth",
+      "x_ppm")], x$gasdata$gd_id)
 
   rlang::new_environment(
     data = list(gasdata =
