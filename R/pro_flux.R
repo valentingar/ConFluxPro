@@ -243,7 +243,7 @@ prof_optim <- function(
 
 
   if (is.na(prod_optimised[1])){
-    pars <- rep(NA, length(prod_start))
+    pars <- rep(NA, length(group_parameters$prod_start))
     RMSE <- NA
   } else {
     pars <- prod_optimised$par

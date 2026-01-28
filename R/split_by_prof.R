@@ -152,7 +152,6 @@ split_by_prof_env <- function(x){
                            c(
                              "upper",
                              "lower",
-                             "depth",
                              "height",
                              "pmap",
                              "step_id",
