@@ -61,20 +61,20 @@ is_ul_consistent <- function(df,
   }
 
 
-  df <- df %>%
-    dplyr::arrange(.data$upper) %>%
-    dplyr::group_by(dplyr::across(dplyr::any_of(id_cols)))
-
+  # finds profiles where the adjacent layers overlap or have gaps
   n_no_fit <-
     df %>%
-    dplyr::mutate(is_lowest = (.data$lower == min(.data$lower))) %>%
-    dplyr::filter(!(lower == dplyr::lag(.data$upper) |
-                    .data$is_lowest)) %>%
+    group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
+    mutate(profile_id = cur_group_id()) %>%
+    ungroup() %>%
+    arrange(profile_id, upper) %>%
+    mutate(limit_the_same = .data$lower == dplyr::lag(.data$upper),
+           group_id_the_same = .data$profile_id == dplyr::lag(.data$profile_id)) %>%
+    filter(!limit_the_same & group_id_the_same) %>%
     nrow()
 
   n_no_fit == 0
 }
-
 
 # reduce size of cfp_dat to necessary only
 trim_cfp_dat <- function(x){
