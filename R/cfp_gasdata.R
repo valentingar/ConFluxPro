@@ -105,19 +105,27 @@ validate_cfp_gasdata <- function(x){
   stopifnot("id_cols cannot contain NAs" =
               anyNA(x[id_cols]) == FALSE)
 
+  # no negative values in x_ppm
+  any_negative_x_ppm <- min(x$x_ppm, na.rm = TRUE) < 0
+  stopifnot("Negative mixing ratios are not allowed!" = !any_negative_x_ppm)
+
+  # no NAs in x_ppm or depth
+  stopifnot("x_ppm cannot contain NAs" =
+              anyNA(x$x_ppm) == FALSE)
+  stopifnot("depth cannot contain NAs" =
+              anyNA(x$depth) == FALSE)
+
   #check that at least two depths per group are present
   problem_groups <-
     x %>%
+    distinct(across(all_of(c(id_cols, "depth")))) %>%
     dplyr::group_by(dplyr::across(dplyr::any_of(id_cols))) %>%
-    dplyr::summarise(n_depths = length(unique(depth[!is.na(x_ppm)]))) %>%
+    dplyr::summarise(n_depths = n()) %>%
     dplyr::filter(.data$n_depths < 2)
 
   stopifnot("There are combinations of id_cols with less than 2 non-NA depths" =
               nrow(problem_groups) == 0 )
 
-  # no negative values in x_ppm
-  any_negative_x_ppm <- min(x$x_ppm, na.rm = TRUE) < 0
-  stopifnot("Negative mixing ratios are not allowed!" = !any_negative_x_ppm)
 
   x
 }
