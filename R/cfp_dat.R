@@ -160,37 +160,10 @@ cfp_dat <- function(
     dplyr::distinct() %>%
     as.data.frame()
 
-  profiles_insufficient_gasdata <-
-    profiles %>%
-    dplyr::left_join(gasdata, by = c(cfp_id_cols(gasdata), "gd_id"),
-                     relationship = "many-to-many") %>%
-    dplyr::left_join(layers_map,
-                     by = c(cfp_id_cols(layers_map),"group_id"),
-                     relationship = "many-to-many") %>%
-    dplyr::filter(!is.na(depth),
-                  !is.na(x_ppm)) %>%
-    dplyr::filter(depth >= lower,
-                  depth <= upper) %>%
-    dplyr::filter(
-      (is.na(gd_id) + is.na(depth) + is.na(pmap) + is.na(group_id)) == 0) %>%
-    dplyr::group_by(group_id, gd_id, pmap) %>%
-    dplyr::summarise(n_depths = length(unique(depth))) %>%
-    dplyr::mutate(
-      n_depths = ifelse(.data$n_depths == 1, NA, .data$n_depths)) %>%
-    dplyr::right_join(profiles %>%
-                        dplyr::left_join(layers_map,
-                                  by = c(cfp_id_cols(layers_map), "group_id"),
-                                  relationship = "many-to-many"),
-                    by = c("gd_id", "group_id", "pmap")) %>%
-  dplyr::group_by(prof_id) %>%
-    dplyr::filter(anyNA(.data$n_depths)) %>%
-    dplyr::pull(prof_id)
-
-  profiles <-
-    profiles %>%
-    dplyr::filter(!prof_id %in% profiles_insufficient_gasdata) %>%
-    data.frame() %>%
-    cfp_profile(id_cols = "prof_id")
+  profiles <- remove_profiles_with_insufficient_gasdata(
+    gasdata,
+    layers_map,
+    profiles)
 
   stopifnot("No valid profiles! Maybe the input data dont match?" =
               nrow(profiles) > 0)
@@ -678,3 +651,58 @@ split_by_group_efficient <-
     out
   }
 
+
+
+remove_profiles_with_insufficient_gasdata <- function(
+    gasdata,
+    layers_map,
+    profiles){
+
+  merger <-
+    whats_in_both(list(cfp_id_cols(layers_map), cfp_id_cols(gasdata)))
+
+  # workaround because join_by() does not handle a list of column names
+  joiner <-
+    do.call(
+      join_by,
+      c(merger,
+        rlang::quo(between(x$depth, y$lower, y$upper))))
+
+  profiles_insufficient_gasdata <-
+    gasdata %>%
+    dplyr::left_join(
+      layers_map,
+      by = joiner,
+      relationship = "many-to-many") %>%
+    # remove any profiles without a join in gasdata
+    dplyr::filter(!is.na(depth),
+                  !is.na(x_ppm)) %>%
+    # keep all where there is a gd_id, depth, pmap and group_id
+    dplyr::filter(
+      !is.na(gd_id),
+      !is.na(depth),
+      !is.na(pmap),
+      !is.na(group_id)) %>%
+    # calculate number of depths within each production layer
+    dplyr::distinct(group_id, gd_id, pmap, depth) %>%
+    dplyr::group_by(group_id, gd_id, pmap) %>%
+    dplyr::summarise(n_depths = n()) %>%
+    filter(.data$n_depths > 1) %>%
+    # join each with profiles
+    dplyr::right_join(
+      profiles %>%
+        dplyr::left_join(layers_map,
+                         by = c(cfp_id_cols(layers_map), "group_id"),
+                         relationship = "many-to-many"),
+      by = c("gd_id", "group_id", "pmap")) %>%
+    dplyr::group_by(prof_id) %>%
+    dplyr::filter(anyNA(.data$n_depths)) %>%
+    dplyr::pull(prof_id)
+
+  profiles <-
+    profiles %>%
+    dplyr::filter(!prof_id %in% !!profiles_insufficient_gasdata) %>%
+    data.frame() %>%
+    cfp_profile(id_cols = "prof_id")
+  profiles
+}
